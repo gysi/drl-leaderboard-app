@@ -1,15 +1,18 @@
-FROM python:3.11-bullseye
+FROM eclipse-temurin:17.0.5_8-jdk-alpine as backend-builder
+WORKDIR /app
+COPY backend/.mvn .mvn
+COPY backend/mvnw backend/pom.xml ./
+RUN ./mvnw dependency:resolve
+COPY backend/src ./src
+RUN ./mvnw install
+
+FROM python:3.11-bullseye as runner
 WORKDIR /
 
 RUN apt-get update
 
 #Install JQ
 RUN apt-get install -y jq
-
-# INSTALL ANSIBLE
-#RUN apt-get install -y curl
-#RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-#RUN python get-pip.py --user
 
 # INSTALL TERRAFORM
 ARG terraformversion_arg
@@ -21,25 +24,35 @@ RUN wget --quiet https://releases.hashicorp.com/terraform/${terraformversion_arg
 # Adds user which should mostly match the host users id and group id
 # This is needed to avoid permission issues when mounting volumes
 RUN groupadd -g 1000 mygroup
-RUN useradd -u 1000 -g 1000 -G root myuser
+RUN useradd -u 1000 -g 1000 -G root -m myuser
 USER myuser
+WORKDIR /home/myuser
+
+# INSTALL ANSIBLE
+ENV PATH="/home/myuser/.local/bin:${PATH}"
+RUN python3 -m pip install --user ansible
+
 
 # INIT TERRAFORM
-COPY --chown=myuser:mygroup terraform terraform
+COPY --chown=myuser:mygroup server/terraform terraform
 RUN cd terraform && \
     terraform init && \
     chmod +x *.sh
 
 # COPY SSH KEYS
-COPY --chown=myuser:mygroup .ssh .ssh
+COPY --chown=myuser:mygroup server/.ssh .ssh
 
 ARG sshpassword_arg
 # Removes password from private_key_file to avoid passwordprompt when for example using git commands or using ansible
 RUN ssh-keygen -p -P $sshpassword_arg -N '' -f .ssh/id_ed25519
 
+COPY --chown=myuser:mygroup server/ansible ansible
+
+COPY --from=backend-builder --chown=myuser:mygroup /app/target/*.jar /home/myuser/backend/
+
 # COPY ENTRYPOINT
-COPY --chown=myuser:mygroup entrypoint.sh entrypoint.sh
+COPY --chown=myuser:mygroup server/entrypoint.sh entrypoint.sh
 RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/home/myuser/entrypoint.sh"]
 CMD ["deploy"]
