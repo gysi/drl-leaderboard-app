@@ -156,7 +156,7 @@ public class TracksDataUpdater {
 
     @Transactional
     @EventListener(ApplicationReadyEvent.class)
-    @Order(200)
+    @Order(100)
     public void initialize() {
         long count = tracksRepository.count();
         if(count <= 0) {
