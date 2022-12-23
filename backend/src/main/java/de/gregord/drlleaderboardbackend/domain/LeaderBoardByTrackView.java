@@ -14,7 +14,7 @@ public interface LeaderBoardByTrackView {
     String getProfilePlatform();
     String getFlagUrl();
     String getDroneName();
-    Boolean isInvalidRun();
+    Boolean getisInvalidRun();
     String getInvalidRunReason();
     LocalDateTime getCreatedAt();
 }
