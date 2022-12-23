@@ -1,14 +1,23 @@
-# Setup
-## Config
+# DRL Leaderboard Server
+This module contains the server that runs the DRL Leaderboard backend and frontend. It is a docker container that can be run with different commands.
+* It uses terraform to create (and delete) a server on hetzner.cloud
+* It uses Ansible to provision the server
+  * Keeping it up to date
+  * Configures SSH, SSL (certbot, letsencrypt), Nginx
+  * Deploys the frontend & backend.
+  
+## Setup
+
+### Config
 - Copy .dockerenv-example to .dockerenv and fill in the ssh password
 - Copy terraform/config.tfvars.example and fill in the hetznercloudtoken
 
-## Build Dockerimage
+### Build Dockerimage
 ```bash
 docker build --tag drl-leaderboard-app-pipeline:v1 $(./build_docker_args.sh) .
 ```
 
-# Docker Commands
+## Docker Commands
 Here you can manually run stuff:
 ```bash
 docker run --rm -it -v $(pwd)/docker_state:/docker_state drl-leaderboard-app-pipeline:v1 bash
