@@ -99,7 +99,7 @@ public class LeaderboardUpdater {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    @Order(100)
+    @Order(200)
     public void initialize() {
         long count = leaderboardRepository.count();
         if(count <= 0) {
