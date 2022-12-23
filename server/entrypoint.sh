@@ -1,19 +1,23 @@
 #!/bin/bash
-set -e
+set -xe
+
+if [[ -e ~/docker_state/terraform.tfstate ]]; then
+  cp ~/docker_state/terraform.tfstate ~/terraform/terraform.tfstate
+fi
 
 while [[ $# -gt 0 ]]
 do
   case $1 in
     create-server)
-      cd /terraform && ./setup.sh
+      cd terraform && ./setup.sh
       shift
       ;;
     destroy-server)
-      cd /terraform && ./destroy.sh
+      cd terraform && ./destroy.sh
       shift
       ;;
     deploy-app)
-      bash
+      ansible-playbook -i $(terraform/get_server_ip.sh), ansible/playbook.yaml
       shift
       ;;
     bash)
