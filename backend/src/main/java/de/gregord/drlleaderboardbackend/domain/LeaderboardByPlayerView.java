@@ -15,17 +15,17 @@ public interface LeaderboardByPlayerView {
     String getDroneName();
     Boolean getIsInvalidRun();
     String getInvalidRunReason();
-    Track getTrack();
-    List<LeaderboardEntryMinimal> getBeatenBy();
+    LeaderboardByPlayerView_Track getTrack();
+    List<LeaderboardByPlayerView_LeaderboardEntryMinimal> getBeatenBy();
 
-    interface Track {
+    interface LeaderboardByPlayerView_Track {
         Long getId();
         String getName();
         String getMapName();
         String getParentCategory();
     }
 
-    interface LeaderboardEntryMinimal {
+    interface LeaderboardByPlayerView_LeaderboardEntryMinimal {
         Long getId();
         String getPlayerName();
         Long getPosition();
