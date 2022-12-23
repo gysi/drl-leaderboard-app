@@ -12,7 +12,7 @@ To encode it run the following command in your terminal:
 ```bash
 echo '{"steamId":"[YOUR STEAM ID]","xbuid":null,"playstationId":null,"epicId":null,"ticket":"","os":"win","version":"4.0.d74d.rls-win"}' | base64
 ```
-Now paste your token into the src/main/resources/applicaiton.yaml file under 'app.drl-api.token'
+Now paste your token into the src/main/resources/application.yaml file under 'app.drl-api.token'
 
 ### Run the application locally
 #### Run the postgres docker container:
