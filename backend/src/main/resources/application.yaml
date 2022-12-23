@@ -41,6 +41,10 @@ app:
     tracks:
       cron: "0 0 0 * * *" # every day at 0:00
 
+server:
+  servlet:
+    context-path: /api
+
 logging:
   logback:
     rollingpolicy:
