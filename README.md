@@ -6,7 +6,7 @@
 * server
 
 # TODOs
-* Backend 
+* Server 
   * Update server
   * Modify SSH config
   * Check ports
