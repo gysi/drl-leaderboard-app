@@ -5,14 +5,14 @@ import de.gregord.drlleaderboardbackend.repositories.TracksRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/api/tracks")
+@RestController
+@RequestMapping("/tracks")
 public class TrackController {
 
     private final TracksRepository tracksRepository;
