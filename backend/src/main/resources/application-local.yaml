@@ -1,0 +1,14 @@
+app:
+  drl-api:
+    # To finish within 30 minutes I need at least 1 request every 2.1 seconds = 0.47 requests/s
+#    duration-between-requests: 2000ms # ~0.5 requests/s
+    duration-between-requests: 200ms # ~0.4 requests/s
+  data-updater:
+    leaderboards:
+      cron: "0 */30 * * * *" # every 30 Minutes
+
+logging:
+  logback:
+    rollingpolicy:
+      file-name-pattern: logs/drl-api-crawler-%d{yyyy-MM-dd}.%i
+      clean-history-on-start: true
