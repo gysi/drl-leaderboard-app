@@ -30,7 +30,8 @@ WORKDIR /home/myuser
 
 # INSTALL ANSIBLE
 ENV PATH="/home/myuser/.local/bin:${PATH}"
-RUN python3 -m pip install --user ansible
+RUN python3 -m pip install --user ansible && \
+    python3 -m pip install --user "ansible-lint"
 
 
 # INIT TERRAFORM

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -e
+set -exuET -o pipefail
+shopt -s inherit_errexit
+
+cd "$(dirname "$0")"
 terraform apply \
 -var-file=config.tfvars \
 -auto-approve

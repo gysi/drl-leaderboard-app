@@ -22,28 +22,37 @@ docker build \
 ## Docker Commands
 Here you can manually run stuff:
 ```bash
-docker run --rm -it -v $(pwd)/docker_state:/home/myuser/docker_state \
-  drl-leaderboard-app-pipeline:v1 bash
+./docker_run.sh bash
 ```
+### Infrastructure
 Applies terraform state:
 ```bash
-docker run --rm -v $(pwd)/docker_state:/home/myuser/docker_state \
-drl-leaderboard-app-pipeline:v1 create-server
+./docker_run.sh create-server
 ```
 Destroys terraform state:
 ```bash
-docker run --rm -v $(pwd)/docker_state:/home/myuser/docker_state \
-drl-leaderboard-app-pipeline:v1 destroy-server
+./docker_run.sh destroy-server
 ```
-Deploys the leaderboard app:
-```bash
-docker run --rm -v $(pwd)/docker_state:/home/myuser/docker_state \
-drl-leaderboard-app-pipeline:v1 deploy-app
-```
-<br/>
 
-Example: Apply Terraformstate and deploy app (Command chaining)
+### Test server
+
+Updates distro on the test server:
 ```bash
-docker run --rm -v $(pwd)/docker_state:/home/myuser/docker_state \
-  drl-leaderboard-app-pipeline:v1 create-server deploy-app
+./docker_run.sh update-testserver
+```
+This should be done after creating a new server. Make a snapshot of the test server before doing this after you deployed the app so that when this fails you can revert to the snapshot and retest.
+
+Deploys the leaderboard app to test server:
+```bash
+./docker_run.sh deploy-app-testserver
+```
+
+### Production server
+Updates distro on the test server:
+```bash
+./docker_run.sh update-prodserver
+```
+Deploys the leaderboard app to main server:
+```bash
+./docker_run.sh deploy-app-prodserver
 ```

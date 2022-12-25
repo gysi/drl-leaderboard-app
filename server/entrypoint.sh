@@ -1,5 +1,6 @@
-#!/bin/bash
-set -xe
+#!/usr/bin/env bash
+set -exuET -o pipefail
+shopt -s inherit_errexit
 
 if [[ -e ~/docker_state/terraform.tfstate ]]; then
   cp ~/docker_state/terraform.tfstate ~/terraform/terraform.tfstate
@@ -8,20 +9,32 @@ fi
 while [[ $# -gt 0 ]]
 do
   case $1 in
+    bash)
+      bash
+      shift
+      ;;
     create-server)
-      cd terraform && ./setup.sh
+      ./terraform/setup.sh
       shift
       ;;
     destroy-server)
-      cd terraform && ./destroy.sh
+      ./terraform/destroy.sh
       shift
       ;;
-    deploy-app)
-      ansible-playbook -i $(terraform/get_server_ip.sh), ansible/playbook.yaml
+    update-testserver)
+      ./ansible/run_playbook.sh test playbook_update-server.yaml
       shift
       ;;
-    bash)
-      bash
+    deploy-app-testserver)
+      ./ansible/run_playbook.sh test playbook_deploy-app.yaml
+      shift
+      ;;
+    update-prodserver)
+      ./ansible/run_playbook.sh prod playbook_update-server.yaml
+      shift
+      ;;
+    deploy-app-prodserver)
+      ./ansible/run_playbook.sh prod playbook_deploy-app.yaml
       shift
       ;;
     *)
