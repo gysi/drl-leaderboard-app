@@ -14,7 +14,6 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
-# Creates kube nodes
 resource "hcloud_server" "prod" {
   name = "${var.hcloud_name}"
   server_type = "cx21"
