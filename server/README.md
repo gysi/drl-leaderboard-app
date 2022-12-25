@@ -14,9 +14,7 @@ This module contains the server that runs the DRL Leaderboard backend and fronte
 
 ### Build Dockerimage
 ```bash
-docker build \
-  --tag drl-leaderboard-app-pipeline:v1 $(./build_docker_args.sh) \
-  -f Dockerfile ..
+./docker_run.sh build
 ```
 
 ## Docker Commands
