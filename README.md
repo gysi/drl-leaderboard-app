@@ -1,9 +1,10 @@
 # DRL Leaderboard App
+Webapp for displaying DRL Simulator leaderboards.
 
 **Modules**
-* backend
-* frontend
-* server
+* backend (Data processing and storage)
+* frontend (Webapp)
+* server (Infrastructure configuration)
 
 # TODOs
 * [ ] Server
