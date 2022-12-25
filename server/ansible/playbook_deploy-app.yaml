@@ -1,0 +1,53 @@
+---
+- name: "Deploy App"
+  hosts: all
+  user: root
+
+  tasks:
+    - name: "SSHD configuration"
+      ansible.builtin.blockinfile:
+        path: /etc/ssh/sshd_config
+        insertbefore: BOF # Beginning of the file
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        block: |
+          PasswordAuthentication no
+          PermitRootLogin prohibit-password
+          # For failtoban to work correctly set:
+          LogLevel VERBOSE
+        backup: true
+        validate: /usr/sbin/sshd -T -f %s
+      notify: Restart SSHD
+
+    - name: "Install UFW"
+      ansible.builtin.apt:
+        name: ufw
+        state: present
+        update_cache: true
+
+    - name: "Allow incoming traffic for SSH"
+      community.general.ufw:
+        rule: limit
+        port: ssh
+        proto: tcp
+
+    - name: "Allow incoming traffic for HTTP"
+      community.general.ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+    - name: "Allow incoming traffic for HTTPS"
+      community.general.ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
+
+    - name: "Enable UFW"
+      community.general.ufw:
+        state: enabled
+
+  handlers:
+    - name: "Restart SSHD"
+      ansible.builtin.service:
+        name: sshd
+        state: restarted

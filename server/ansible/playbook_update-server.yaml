@@ -5,19 +5,27 @@
 
   tasks:
     - name: "Updates everything"
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         upgrade: dist
       register: apt_output
 
-    - debug: var=apt_output
+    - name: "APT stdout"
+      ansible.builtin.debug:
+        var: apt_output.stdout_lines
+
+    - name: "APT stderr"
+      ansible.builtin.debug:
+        var: apt_output.stderr_lines
 
     - name: "Check if a reboot is needed"
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_md5: false
       register: reboot_required_file
-      stat: path=/var/run/reboot-required get_md5=no
 
     - name: Reboot the box if kernel updated
-      reboot:
+      ansible.builtin.reboot:
         msg: "Reboot initiated by Ansible for kernel updates"
         connect_timeout: 5
         reboot_timeout: 300
