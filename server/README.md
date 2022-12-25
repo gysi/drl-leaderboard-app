@@ -34,23 +34,24 @@ Destroys terraform state:
 
 ### Test server
 
-Updates distro on the test server:
+Updates distro:
 ```bash
 ./docker_run.sh update-testserver
 ```
-This should be done after creating a new server. Make a snapshot of the test server before doing this after you deployed the app so that when this fails you can revert to the snapshot and retest.
+This should be done after creating a new server. Make a snapshot of the server before doing this after you deployed the app so that when this fails you can revert to the snapshot and retest.
 
-Deploys the leaderboard app to test server:
+Deploys the leaderboard app:
 ```bash
 ./docker_run.sh deploy-app-testserver
 ```
 
 ### Production server
-Updates distro on the test server:
+Updates distro:
 ```bash
 ./docker_run.sh update-prodserver
 ```
-Deploys the leaderboard app to main server:
+Deploys the leaderboard app:
 ```bash
 ./docker_run.sh deploy-app-prodserver
 ```
+This should be done after creating a new server. Make a snapshot of the server before doing this after you deployed the app so that when this fails you can revert to the snapshot and retest.
