@@ -15,9 +15,19 @@ provider "hcloud" {
 }
 
 # Creates kube nodes
-resource "hcloud_server" "node" {
+resource "hcloud_server" "prod" {
   name = "${var.hcloud_name}"
   server_type = "cx21"
+  image = "debian-11"
+  location = "nbg1"
+  ssh_keys = ["ssh_key_drl_leaderboard_app"]
+
+  depends_on = [hcloud_ssh_key.ssh_key_drl_leaderboard_app]
+}
+
+resource "hcloud_server" "test" {
+  name = "${var.hcloud_name}-test"
+  server_type = "cx11"
   image = "debian-11"
   location = "nbg1"
   ssh_keys = ["ssh_key_drl_leaderboard_app"]

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -e
+set -exuET -o pipefail
+shopt -s inherit_errexit
 
-cd ~/terraform
-echo $(terraform state pull | jq -r "[.resources[] | select(.type == \"hcloud_server\") | .instances[].attributes.ipv4_address] | .[0]")
+cd "$(dirname "$0")"
+terraform state pull | jq -r "[.resources[] | select(.name == \"${1}\") | .instances[].attributes.ipv4_address] | .[0]"

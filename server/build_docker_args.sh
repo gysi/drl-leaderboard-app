@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -e
+set -exuET -o pipefail
+shopt -s inherit_errexit
 
 out=""
 
@@ -12,4 +13,4 @@ do
   [[ ! $line == \#* ]] && out+="--build-arg $line "
 done <.dockerenv
 
-echo $out
+echo "$out"
