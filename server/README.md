@@ -33,7 +33,6 @@ Destroys terraform state:
 ```
 
 ### Test server
-
 Updates distro:
 ```bash
 ./docker_run.sh update-testserver
