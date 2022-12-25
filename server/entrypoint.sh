@@ -39,7 +39,7 @@ do
       ;;
     *)
       echo "Unknown Command: $1"
-      exit 0
+      exit 1
       ;;
   esac
 done
