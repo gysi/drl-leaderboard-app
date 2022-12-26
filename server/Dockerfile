@@ -11,8 +11,8 @@ WORKDIR /
 
 RUN apt-get update
 
-#Install JQ
-RUN apt-get install -y jq
+#Install JQ, RYSNC
+RUN apt-get install -y jq rsync
 
 # INSTALL TERRAFORM
 ARG terraformversion_arg

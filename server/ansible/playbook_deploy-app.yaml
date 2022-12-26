@@ -46,6 +46,63 @@
       community.general.ufw:
         state: enabled
 
+    - name: "Add packages necessary for docker to work"
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+          - lsb-release
+          - python3-pip
+        state: present
+        update_cache: true
+
+    - name: "Add Docker GPG apt Key"
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: "Add Docker to apt Repo"
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable
+        state: present
+
+    - name: "Install Docker"
+      ansible.builtin.apt:
+        name: docker-ce=5:20.*
+        state: present
+        update_cache: true
+
+    - name: "Install Docker Module for Python"
+      ansible.builtin.pip:
+        name:
+          - docker>=6.0.0,<7.0.0
+          - docker-compose==1.29.2
+        state: present
+
+    - name: Synchronize Docker Compose project with remote host
+      ansible.posix.synchronize:
+        src: composetest/
+        dest: /root/composetest
+
+    - name: "Tear down existing services"
+      community.docker.docker_compose:
+        project_src: /root/composetest
+        state: absent
+
+    - name: "Create and start services"
+      community.docker.docker_compose:
+        project_src: /root/composetest
+        build: true
+        state: present
+      register: output
+
+    - name: "Docker-compose debug"
+      ansible.builtin.debug:
+        var: output
+
   handlers:
     - name: "Restart SSHD"
       ansible.builtin.service:
