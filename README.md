@@ -23,7 +23,7 @@ Webapp for displaying DRL Simulator leaderboards.
     * [x] ~~SSL certificate (letsencrypt)~~
   * [x] Backend
     * [x] ~~Docker JRE Container~~ 
-    * [x] ~~Nginx configuration ~~
+    * [x] ~~Nginx configuration~~
     * [ ] Postgres Volume
 * [ ] Frontend (Maybe Quasar framework?)
   * [ ] Nginx configuration
