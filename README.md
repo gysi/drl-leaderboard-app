@@ -24,6 +24,6 @@ Webapp for displaying DRL Simulator leaderboards.
   * [x] Backend
     * [x] ~~Docker JRE Container~~ 
     * [x] ~~Nginx configuration~~
-    * [ ] Postgres Volume
+    * [x] ~~Postgres Volume~~
 * [ ] Frontend (Maybe Quasar framework?)
   * [ ] Nginx configuration
