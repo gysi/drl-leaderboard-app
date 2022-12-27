@@ -24,3 +24,7 @@ cd src/docker/local && docker-compose up
 mvn clean package spring-boot:run -Dspring-boot.run.profiles=local
 ```
 If the db is empty it will initialize the database with the latest data from the drl api on startup.
+
+## Open API
+You can access the open api documentation at http://localhost:8080/swagger-ui.html  
+Or as a json file at http://localhost:8080/v3/api-docs

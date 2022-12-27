@@ -15,13 +15,13 @@ Webapp for displaying DRL Simulator leaderboards.
   * [ ] Nginx configuration
     * [ ] Fail to ban
     * [ ] Logrotate
-    * [ ] certbot
-    * [ ] ratelimiting
+    * [x] ~~certbot~~
+    * [x] ~~ratelimiting~~
     * [ ] caching (frontend, maybe backend?)
-  * [ ] Certbot config
-    * [ ] AWS DNS
-    * [ ] SSL certificate (letsencrypt)
-  * [ ] Backend docker jre container
-    * [ ] Nginx configuration 
+  * [x] ~~Certbot config~~
+    * [x] ~~AWS DNS~~
+    * [x] ~~SSL certificate (letsencrypt)~~
+  * [x] ~~Backend docker jre container~~
+    * [x] ~~Nginx configuration ~~
 * [ ] Frontend (Maybe Quasar framework?)
   * [ ] Nginx configuration
