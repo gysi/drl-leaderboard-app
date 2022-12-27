@@ -1,0 +1,56 @@
+log_format postdata escape=none '$remote_addr - $remote_user [$time_local] '
+                       '"$request" $status $bytes_sent '
+                       '"$http_referer" "$http_user_agent" "$request_body"';
+
+server {
+    listen 80;
+    server_name {{ server.hostname }};
+
+    access_log  /var/log/nginx/http-{{ server.hostname }}.access.log main;
+    error_log  /var/log/nginx/http-{{ server.hostname }}.error.log warn;
+
+    location / {
+        return 302 https://$host$request_uri;
+        #return 200 'Hello World!';
+        #add_header Content-Type text/plain;
+
+        # Docker DNS Resolver, this is needed so that nginx doesn't crash when the upstream is not available
+        #resolver 127.0.0.11 valid=30s ipv6=off;
+        # This variable is needed so that the resolver actually works
+        #set $upstream_web web;
+        #proxy_pass http://$upstream_web:5000;
+    }
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name {{ server.hostname }};
+    ssl_certificate /etc/letsencrypt/live/{{ server.hostname }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ server.hostname }}/privkey.pem;
+
+    access_log  /var/log/nginx/https-{{ server.hostname }}.access.log main;
+    error_log  /var/log/nginx/https-{{ server.hostname }}.error.log warn;
+
+    location /api {
+        #return 302 https://$host$request_uri;
+        #return 200 'Hello World!';
+        #add_header Content-Type text/plain;
+
+        # Docker DNS Resolver, this is needed so that nginx doesn't crash when the upstream is not available
+        resolver 127.0.0.11 valid=30s ipv6=off;
+        # This variable is needed so that the resolver actually works
+        set $upstream_backend backend;
+        proxy_pass http://$upstream_backend:8080;
+        proxy_http_version  1.1;
+        proxy_set_header Connection "";
+
+        proxy_set_header Host               $host;
+        proxy_set_header X-Real-IP          $remote_addr;
+        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto  $scheme;
+    }
+}

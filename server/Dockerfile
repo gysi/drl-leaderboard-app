@@ -1,10 +1,10 @@
-FROM eclipse-temurin:17.0.5_8-jdk-alpine as backend-builder
+FROM eclipse-temurin:17-jdk-alpine as backend-builder
 WORKDIR /app
 COPY backend/.mvn .mvn
 COPY backend/mvnw backend/pom.xml ./
 RUN ./mvnw dependency:resolve
 COPY backend/src ./src
-RUN ./mvnw install
+RUN ./mvnw install spring-boot:repackage
 
 FROM python:3.11-bullseye as runner
 WORKDIR /
@@ -49,7 +49,7 @@ RUN ssh-keygen -p -P $sshpassword_arg -N '' -f .ssh/id_ed25519
 
 COPY --chown=myuser:mygroup server/ansible ansible
 
-COPY --from=backend-builder --chown=myuser:mygroup /app/target/*.jar /home/myuser/backend/
+COPY --from=backend-builder --chown=myuser:mygroup /app/target/*.jar /home/myuser/backend/app.jar
 
 # COPY ENTRYPOINT
 COPY --chown=myuser:mygroup server/entrypoint.sh entrypoint.sh

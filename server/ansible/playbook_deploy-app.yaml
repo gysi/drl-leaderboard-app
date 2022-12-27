@@ -82,26 +82,52 @@
           - docker-compose==1.29.2
         state: present
 
-    - name: Synchronize Docker Compose project with remote host
+    - name: "Synchronize Docker Compose project with remote host"
       ansible.posix.synchronize:
-        src: composetest/
-        dest: /root/composetest
+        src: app/
+        dest: app
+        archive: false
+        recursive: true
+        delete: true
+
+    - name: "Apply Jinja2 templating to app/nginx_conf/conf.d/template/app.conf.j2"
+      ansible.builtin.template:
+        src: app/nginx_conf/conf.d/template/app.conf.j2
+        dest: app/nginx_conf/conf.d/app.conf
+        mode: '644'
+
+    - name: "Apply Jinja2 templating to app/template/init-letsencrypt.sh.j2"
+      ansible.builtin.template:
+        src: app/template/init-letsencrypt.sh.j2
+        dest: app/init-letsencrypt.sh
+        mode: '744'
+
+    - name: "Check if certificates directory is empty"
+      ansible.builtin.find:
+        paths: app/data/certbot/conf/live
+        file_type: any
+        hidden: true
+      register: certdir
 
     - name: "Tear down existing services"
       community.docker.docker_compose:
-        project_src: /root/composetest
+        project_src: /root/app
         state: absent
+
+    - name: "Create certificates"
+      ansible.builtin.command: app/init-letsencrypt.sh
+      when: certdir.matched == 0
 
     - name: "Create and start services"
       community.docker.docker_compose:
-        project_src: /root/composetest
+        project_src: /root/app
         build: true
         state: present
       register: output
-
-    - name: "Docker-compose debug"
-      ansible.builtin.debug:
-        var: output
+#
+#    - name: "Docker-compose debug"
+#      ansible.builtin.debug:
+#        var: output
 
   handlers:
     - name: "Restart SSHD"
