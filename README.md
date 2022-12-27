@@ -21,7 +21,9 @@ Webapp for displaying DRL Simulator leaderboards.
   * [x] ~~Certbot config~~
     * [x] ~~AWS DNS~~
     * [x] ~~SSL certificate (letsencrypt)~~
-  * [x] ~~Backend docker jre container~~
+  * [x] Backend
+    * [x] ~~Docker JRE Container~~ 
     * [x] ~~Nginx configuration ~~
+    * [ ] Postgres Volume
 * [ ] Frontend (Maybe Quasar framework?)
   * [ ] Nginx configuration
