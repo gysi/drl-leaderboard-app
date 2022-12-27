@@ -1,0 +1,4 @@
+server:
+  hostname: "drl-leaderboards-test.miau.io"
+  certificate:
+    mail: "drl-leaderboards-test.miau.io@i337.de"
