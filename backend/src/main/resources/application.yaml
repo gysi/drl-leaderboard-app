@@ -49,7 +49,7 @@ server:
 logging:
   logback:
     rollingpolicy:
-      file-name-pattern: /var/logs/drl-api-crawler-%d{yyyy-MM-dd}.%i
+      file-name-pattern: /var/log/drl-api-crawler-%d{yyyy-MM-dd}.%i
       max-file-size: 2MB
       total-size-cap: 10MB
       max-history: 10
