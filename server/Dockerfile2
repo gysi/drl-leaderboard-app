@@ -1,0 +1,19 @@
+FROM alpine:3 as native-image-backend-builder
+WORKDIR /app
+RUN wget https://download.bell-sw.com/vm/22.3.0/bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
+RUN wget -P /etc/apk/keys/ https://apk.bell-sw.com/info@bell-sw.com-5fea454e.rsa.pub
+RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
+ENV PATH="/opt/bellsoft/liberica-vm-core-22.3.0-openjdk17/bin:${PATH}"
+RUN apk add build-base zlib-dev fontconfig-dev freetype-dev
+COPY backend/.mvn .mvn
+COPY backend/mvnw backend/pom.xml ./
+RUN ./mvnw dependency:resolve
+COPY backend/src ./src
+RUN ./mvnw -Pnative native:compile
+
+FROM alpine:3 as native-image-runner
+WORKDIR /app
+RUN apk add fontconfig-dev freetype-dev
+COPY --from=native-image-backend-builder /app/target/DRLLeaderboardBackend /app/DRLLeaderboardBackend
+
+ENTRYPOINT ["/app/DRLLeaderboardBackend"]
