@@ -22,7 +22,7 @@ services:
     networks:
       - local_network
   backend:
-    build: ./backend
+    build: ./backend/native
     ports:
       - "8080:8080"
     volumes:

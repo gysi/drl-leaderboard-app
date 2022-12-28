@@ -112,18 +112,10 @@ public class LeaderboardUpdater {
     public void updateLeaderboard() {
         totalContentLength = 0L;
         totalRequestCount = 0L;
-//        List<LeaderboardWithPosition> leaderboardPositionsByTrackId = leaderboardService.getLeaderboardPositionsByTrackId(1L);
-        int limit = 5;
-        int counter = 0;
         List<Track> allTracks = tracksRepository.findAll();
         for (Track track : allTracks) {
             updateLeaderboardForTrack(track);
-//            if(limit == counter){
-//                break;
-//            }
-//            counter++;
         }
-//        updateLeaderboardForTrack(tracksRepository.findById(169L).get());
         LOG.info("Total content length: " + totalContentLength.doubleValue() / 1024 / 1024 + " MB");
         LOG.info("Total request count: " + totalRequestCount);
     }
@@ -193,6 +185,7 @@ public class LeaderboardUpdater {
                     leaderboardEntry.setReplayUrl((String) drlLeaderboardEntry.get("replay-url"));
                     leaderboardEntry.setCreatedAt(LocalDateTime.from(ZonedDateTime.parse((String) drlLeaderboardEntry.get("created-at"))));
                     leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
+                    leaderboardEntry.setInvalidRunReason(null);
                     if (alreadyFoundPlayerIds.containsKey(leaderboardEntry.getPlayerId())) {
                         LOG.warn("Player " + leaderboardEntry.getPlayerId() + " already exists in this leaderboard, DRL BUG!");
                         continue;

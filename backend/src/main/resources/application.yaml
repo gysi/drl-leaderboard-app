@@ -46,6 +46,9 @@ server:
   servlet:
     context-path: /api
 
+springdoc:
+  enable-native-support: true
+
 logging:
   logback:
     rollingpolicy:

@@ -7,6 +7,7 @@ if [[ -e ~/docker_state/terraform.tfstate ]]; then
 fi
 
 mv /home/myuser/backend/app.jar /home/myuser/ansible/app/backend/app.jar
+mv /home/myuser/backend/DRLLeaderboardBackend /home/myuser/ansible/app/backend/native/DRLLeaderboardBackend
 
 while [[ $# -gt 0 ]]
 do
