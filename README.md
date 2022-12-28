@@ -9,13 +9,13 @@ Webapp for displaying DRL Simulator leaderboards.
 # TODOs
 * [ ] Backend
   * [ ] Features
-    * [x] Map listing
-    * [x] Overall rankings
-    * [x] Per map rankins
-    * [x] Per player rankins
-      * [x] Beaten by rankings for each pbs
-    * [x] Removal/exclusion of invalid runs
-    * [x] Score calculation
+    * [x] ~~Map listing~~
+    * [x] ~~Overall rankings~~
+    * [x] ~~Per map rankins~~
+    * [x] ~~Per player rankins~~
+      * [x] ~~Beaten by rankings for each pbs~~
+    * [x] ~~Removal/exclusion of invalid runs~~
+    * [x] ~~Score calculation~~
     * [ ] Latest Player activity
 * [ ] Server
   * [x] ~~Update server~~
@@ -36,11 +36,11 @@ Webapp for displaying DRL Simulator leaderboards.
     * [x] ~~Nginx configuration~~
     * [x] ~~Postgres Volume~~
     * [ ] Caching (Optional)
-  * [x] Frontend
-    * [x] Ansible build + deployment
-    * [x] Nginx configuration
-      * [x] Basic configuration 
-      * [x] Caching
+  * [x] ~~Frontend~~
+    * [x] ~~Ansible build + deployment~~
+    * [x] ~~Nginx configuration~~
+      * [x] ~~Basic configuration~~
+      * [x] ~~Caching~~
 * [ ] Frontend
   * [x] ~~Initial setup~~
   * [ ] Design
