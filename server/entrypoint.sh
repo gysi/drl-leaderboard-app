@@ -6,9 +6,6 @@ if [[ -e ~/docker_state/terraform.tfstate ]]; then
   cp ~/docker_state/terraform.tfstate ~/terraform/terraform.tfstate
 fi
 
-mv /home/myuser/backend/app.jar /home/myuser/ansible/app/backend/app.jar
-mv /home/myuser/backend/DRLLeaderboardBackend /home/myuser/ansible/app/backend/native/DRLLeaderboardBackend
-
 while [[ $# -gt 0 ]]
 do
   case $1 in

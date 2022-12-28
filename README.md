@@ -36,11 +36,11 @@ Webapp for displaying DRL Simulator leaderboards.
     * [x] ~~Nginx configuration~~
     * [x] ~~Postgres Volume~~
     * [ ] Caching (Optional)
-  * [ ] Frontend
-    * [ ] Ansible build + deployment
-    * [ ] Nginx configuration
-      * [ ] Basic configuration 
-      * [ ] Caching
+  * [x] Frontend
+    * [x] Ansible build + deployment
+    * [x] Nginx configuration
+      * [x] Basic configuration 
+      * [x] Caching
 * [ ] Frontend
   * [x] ~~Initial setup~~
   * [ ] Design
