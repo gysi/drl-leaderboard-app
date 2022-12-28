@@ -1,0 +1,11 @@
+/var/log/nginx/*log {
+    size 5M
+    rotate 5
+    missingok
+    notifempty
+    nocompress
+    sharedscripts
+    postrotate
+        docker exec app_nginx_1 nginx -s reopen > /dev/null 2>/dev/null
+    endscript
+}
