@@ -107,6 +107,7 @@
         dest: /etc/fail2ban/
         archive: false
         recursive: true
+        checksum: true
       notify: Restart Fail2Ban
 
     - name: "Synchronize Docker Compose project with remote host"
@@ -116,6 +117,7 @@
         archive: false
         recursive: true
         delete: true
+        checksum: true
 
     - name: "Apply Jinja2 templating to app/nginx_conf/conf.d/template/app.conf.j2"
       ansible.builtin.template:
@@ -156,6 +158,23 @@
       ansible.builtin.debug:
         var: output
 
+    - name: "Adds logrotate configuration"
+      ansible.posix.synchronize:
+        src: logrotate/
+        dest: /etc/logrotate.d/
+        archive: false
+        recursive: true
+        checksum: true
+
+    - name: "Adds cron for logrotate"
+      ansible.posix.synchronize:
+        src: cron/
+        dest: /etc/cron.d/nginx/
+        archive: false
+        recursive: true
+        checksum: true
+      notify: Restart Cron Service
+
   handlers:
     - name: "Restart SSHD"
       ansible.builtin.service:
@@ -165,4 +184,9 @@
     - name: "Restart Fail2Ban"
       ansible.builtin.service:
         name: fail2ban
+        state: restarted
+
+    - name: "Restart Cron Service"
+      ansible.builtin.service:
+        name: cron
         state: restarted
