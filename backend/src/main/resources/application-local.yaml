@@ -1,3 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/drl
+
 app:
   drl-api:
     # To finish within 30 minutes I need at least 1 request every 2.1 seconds = 0.47 requests/s

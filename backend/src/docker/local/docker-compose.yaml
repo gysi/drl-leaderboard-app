@@ -8,3 +8,8 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: drl
+    networks:
+      - local_network
+
+networks:
+  local_network:

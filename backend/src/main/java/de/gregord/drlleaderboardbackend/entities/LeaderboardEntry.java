@@ -30,8 +30,7 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeaderboardEntry implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class LeaderboardEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
