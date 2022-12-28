@@ -7,6 +7,16 @@ Webapp for displaying DRL Simulator leaderboards.
 * server (Infrastructure configuration)
 
 # TODOs
+* [ ] Backend
+  * [ ] Features
+    * [x] Map listing
+    * [x] Overall rankings
+    * [x] Per map rankins
+    * [x] Per player rankins
+      * [x] Beaten by rankings for each pbs
+    * [x] Removal/exclusion of invalid runs
+    * [x] Score calculation
+    * [ ] Latest Player activity
 * [ ] Server
   * [x] ~~Update server~~
   * [x] ~~Modify SSH config~~
@@ -17,22 +27,31 @@ Webapp for displaying DRL Simulator leaderboards.
     * [x] ~~Logrotate~~
     * [x] ~~certbot~~
     * [x] ~~ratelimiting~~
-    * [ ] caching (frontend, maybe backend?)
   * [x] ~~Certbot config~~
     * [x] ~~AWS DNS~~
     * [x] ~~SSL certificate (letsencrypt)~~
-  * [x] Backend
-    * [x] ~~Docker JRE Container~~ 
+  * [x] ~~Backend~~
+    * [x] ~~Docker JRE Container~~
+    * [x] ~~Graal VM Native Image + Container (Optional)~~
     * [x] ~~Nginx configuration~~
     * [x] ~~Postgres Volume~~
+    * [ ] Caching (Optional)
+  * [ ] Frontend
+    * [ ] Ansible build + deployment
+    * [ ] Nginx configuration
+      * [ ] Basic configuration 
+      * [ ] Caching
 * [ ] Frontend
-  * [ ] Ansible build deployment 
-  * [ ] Nginx configuration
+  * [x] ~~Initial setup~~
   * [ ] Design
     * [ ] Something better than the current one
     * [ ] Light/Dark mode
+    * [ ] Mobile friendly (Optional)
+    * [ ] Multi-language support (Optional)
   * [ ] Features
+    * [ ] Map listing
+      * [ ] Map images (Optional)) 
     * [ ] Overall rankings
     * [ ] Per map rankings
     * [ ] Per Player rankings for all maps
-    * [ ] ...
+    * [ ] Latest Player activity
