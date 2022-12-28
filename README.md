@@ -11,8 +11,8 @@ Webapp for displaying DRL Simulator leaderboards.
   * [ ] Features
     * [x] ~~Map listing~~
     * [x] ~~Overall rankings~~
-    * [x] ~~Per map rankins~~
-    * [x] ~~Per player rankins~~
+    * [x] ~~Per map rankings~~
+    * [x] ~~Per player rankings~~
       * [x] ~~Beaten by rankings for each pbs~~
     * [x] ~~Removal/exclusion of invalid runs~~
     * [x] ~~Score calculation~~
