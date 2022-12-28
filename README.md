@@ -22,7 +22,7 @@ Webapp for displaying DRL Simulator leaderboards.
   * [x] ~~Modify SSH config~~
   * [x] ~~Check ports~~
   * [x] ~~Install Docker, Docker Compose~~
-  * [x] Nginx configuration
+  * [x] ~~Nginx configuration~~
     * [x] ~~Fail to ban~~
     * [x] ~~Logrotate~~
     * [x] ~~certbot~~
