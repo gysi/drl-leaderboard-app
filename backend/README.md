@@ -1,4 +1,15 @@
 # DRL leaderboard backend
+**Tech/Framework/Libs:**
+* Java 17
+* Spring Boot
+* Spring Data JPA
+* Spring Web
+* Spring Doc / OpenAPI
+* GraalVM Native Image support
+* Maven
+* PostgreSQL
+* Docker
+* Docker Compose
 
 ## Local Setup
 ### Generate your own api token
