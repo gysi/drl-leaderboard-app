@@ -12,9 +12,9 @@ Webapp for displaying DRL Simulator leaderboards.
   * [x] ~~Modify SSH config~~
   * [x] ~~Check ports~~
   * [x] ~~Install Docker, Docker Compose~~
-  * [ ] Nginx configuration
+  * [x] Nginx configuration
     * [x] ~~Fail to ban~~
-    * [ ] Logrotate
+    * [x] ~~Logrotate~~
     * [x] ~~certbot~~
     * [x] ~~ratelimiting~~
     * [ ] caching (frontend, maybe backend?)
