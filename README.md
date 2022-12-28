@@ -25,5 +25,14 @@ Webapp for displaying DRL Simulator leaderboards.
     * [x] ~~Docker JRE Container~~ 
     * [x] ~~Nginx configuration~~
     * [x] ~~Postgres Volume~~
-* [ ] Frontend (Maybe Quasar framework?)
+* [ ] Frontend
+  * [ ] Ansible build deployment 
   * [ ] Nginx configuration
+  * [ ] Design
+    * [ ] Something better than the current one
+    * [ ] Light/Dark mode
+  * [ ] Features
+    * [ ] Overall rankings
+    * [ ] Per map rankings
+    * [ ] Per Player rankings for all maps
+    * [ ]...
