@@ -26,8 +26,8 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Track implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Track {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
