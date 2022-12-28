@@ -1,6 +1,8 @@
 # DRL Leaderboard Frontend (drl-leaderboard-frontend)
-
-DRL Leaderboard Frontend
+**Tech/Framework/Libs:**
+* Node
+* Quasar (Vue, Vite)
+* Yarn
 
 ## Install the dependencies
 ```bash
