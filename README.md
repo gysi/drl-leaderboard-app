@@ -20,16 +20,16 @@ Webapp for displaying DRL Simulator leaderboards.
 * [ ] Server
   * [x] ~~Update server~~
   * [x] ~~Modify SSH config~~
-  * [x] ~~Check ports~~
+  * [x] ~~Firewall configuration~~
   * [x] ~~Install Docker, Docker Compose~~
   * [x] ~~Nginx configuration~~
     * [x] ~~Fail to ban~~
     * [x] ~~Logrotate~~
-    * [x] ~~certbot~~
-    * [x] ~~ratelimiting~~
+    * [x] ~~Certbot~~
+    * [x] ~~Ratelimiting~~
   * [x] ~~Certbot config~~
-    * [x] ~~AWS DNS~~
-    * [x] ~~SSL certificate (letsencrypt)~~
+    * [x] ~~AWS DNS configuration~~
+    * [x] ~~SSL certificates (letsencrypt)~~
   * [x] ~~Backend~~
     * [x] ~~Docker JRE Container~~
     * [x] ~~Graal VM Native Image + Container (Optional)~~
@@ -50,7 +50,7 @@ Webapp for displaying DRL Simulator leaderboards.
     * [ ] Multi-language support (Optional)
   * [ ] Features
     * [ ] Map listing
-      * [ ] Map images (Optional)) 
+      * [ ] Map images (Optional) 
     * [ ] Overall rankings
     * [ ] Per map rankings
     * [ ] Per Player rankings for all maps
