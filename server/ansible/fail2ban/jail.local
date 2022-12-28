@@ -1,0 +1,39 @@
+[sshd]
+# To use more aggressive sshd modes set filter parameter "mode" in jail.local:
+# normal (default), ddos, extra or aggressive (combines all).
+# See "tests/files/logs/sshd" or "filter.d/sshd.conf" for usage example and details.
+enabled = true
+mode = aggressive
+bantime = 1w
+findtime = 1h
+maxretry = 3
+port = ssh
+logpath = %(sshd_log)s
+backend = %(sshd_backend)s
+
+[nginx-http-auth]
+enabled  = true
+filter   = nginx-http-auth
+port     = http,https
+logpath  = /var/log/nginx/error.log
+chain = DOCKER-USER
+
+[nginx-hex1]
+enabled  = true
+port     = http,https
+logpath  = /var/log/nginx/*access.log
+filter   = nginx-hex1
+bantime  = 1w
+findtime = 1d
+maxretry = 1
+# https://github.com/fail2ban/fail2ban/issues/2292
+chain = DOCKER-USER
+
+[nginx-proxy]
+enabled = true
+port = http, https
+filter = nginx-proxy
+bantime = 1d
+findtime = 10m
+maxretry = 2
+chain = DOCKER-USER
