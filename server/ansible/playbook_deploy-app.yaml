@@ -82,6 +82,33 @@
           - docker-compose==1.29.2
         state: present
 
+    - name: "Gather the package facts"
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: "Install Jail2Ban"
+      ansible.builtin.apt:
+        name: fail2ban
+        state: present
+        update_cache: true
+
+    - name: "Backup original fail2ban config"
+      ansible.builtin.copy:
+        src: /etc/fail2ban/jail.conf
+        dest: /etc/fail2ban/jail.conf.bak
+        remote_src: true
+        backup: true
+        mode: preserve
+      when: "'fail2ban' not in ansible_facts.packages"
+
+    - name: "Synchronize jail2ban folder with remote host"
+      ansible.posix.synchronize:
+        src: fail2ban/
+        dest: /etc/fail2ban/
+        archive: false
+        recursive: true
+      notify: Restart Fail2Ban
+
     - name: "Synchronize Docker Compose project with remote host"
       ansible.posix.synchronize:
         src: app/
@@ -124,13 +151,18 @@
         build: true
         state: present
       register: output
-#
-#    - name: "Docker-compose debug"
-#      ansible.builtin.debug:
-#        var: output
+
+    - name: "Docker-compose debug"
+      ansible.builtin.debug:
+        var: output
 
   handlers:
     - name: "Restart SSHD"
       ansible.builtin.service:
         name: sshd
+        state: restarted
+
+    - name: "Restart Fail2Ban"
+      ansible.builtin.service:
+        name: fail2ban
         state: restarted

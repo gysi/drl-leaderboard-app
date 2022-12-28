@@ -54,3 +54,21 @@ Deploys the leaderboard app:
 ./docker_run.sh deploy-app-prodserver
 ```
 This should be done after creating a new server. Make a snapshot of the server before doing this after you deployed the app so that when this fails you can revert to the snapshot and retest.
+
+
+## Misc
+
+### Logs
+Nginx: /var/log/nginx/*  
+Backend: /var/log/backend/*
+
+### JAIL2BAN
+List Jails:
+```bash
+fail2ban-client status
+```
+
+List banned IPs:
+```bash
+fail2ban-client status [jailname]
+```
