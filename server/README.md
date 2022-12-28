@@ -5,7 +5,14 @@ This module contains the server that runs the DRL Leaderboard backend and fronte
   * Keeping it up to date
   * Configures SSH, SSL (certbot, letsencrypt), Nginx
   * Deploys the frontend & backend.
-  
+
+**Tech/Framework/Libs:**
+* Docker
+* Docker Compose
+* Terraform
+* Ansible
+* Bash
+
 ## Setup
 
 ### Config
