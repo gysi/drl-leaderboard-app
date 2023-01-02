@@ -6,26 +6,44 @@
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+yarn quasar dev
+```
+#### Picking an environment
+```bash
+# local
+yarn quasar dev
+or
+DLAPP_ENV=LOCAL yarn quasar dev
+# staging
+DLAPP_ENV=STAGING yarn quasar dev
+# prod
+DLAPP_ENV=PROD yarn quasar dev
 ```
 
 ### Lint the files
 ```bash
 yarn lint
-# or
-npm run lint
 ```
 
 ### Format the files
 ```bash
 yarn format
-# or
-npm run format
 ```
 
 ### Build the app for production
 ```bash
-quasar build
+yarn quasar build
+```
+#### Picking an environment
+```bash
+# local
+yarn quasar build
+or
+DLAPP_ENV=LOCAL yarn quasar build
+# staging
+DLAPP_ENV=STAGING yarn quasar build
+# prod
+DLAPP_ENV=PROD yarn quasar build
 ```
 
 ### Customize the configuration

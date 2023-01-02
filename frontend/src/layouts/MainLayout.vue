@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh lpR lFf">
     <q-header elevated>
       <q-toolbar>
         <q-btn
@@ -12,10 +12,12 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          <router-link style="text-decoration: none; color: inherit;" to="/">
+            DRL Leaderboards
+          </router-link>
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>by gysi</div>
       </q-toolbar>
     </q-header>
 
@@ -25,14 +27,8 @@
       bordered
     >
       <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
+        <NavigationLinks
+          v-for="link in linksList"
           :key="link.title"
           v-bind="link"
         />
@@ -47,50 +43,45 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import NavigationLinks from 'components/NavigationLinks.vue'
 
 const linksList = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    title: 'Home',
+    icon: 'home',
+    link: '/',
+    external: false
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
+    title: 'Tracks',
+    caption: 'Overview of all tracks',
     icon: 'public',
-    link: 'https://facebook.quasar.dev'
+    link: '/tracks'
   },
   {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
+    title: 'Overall Rankings',
+    caption: 'Overall rankings of all tracks',
+    icon: 'leaderboard', // sports_score as alternative
+    link: '/overallrankings'
+  },
+  {
+    title: 'Track Leaderboard',
+    caption: 'Leaderboard for a specific track',
+    icon: 'timeline',
+    link: '/tracklb'
+  },
+  {
+    title: 'Player Leaderboard',
+    caption: 'Leaderboard for a specific player',
+    icon: 'sports_martial_arts',
+    link: '/playerlb'
+  },
+  {
+    title: 'API',
+    caption: 'API documentation',
+    icon: 'code',
+    link: process.env.DLAPP_API_URL+process.env.DLAPP_SWAGGER_URL_PART,
+    external: true
   }
 ]
 
@@ -98,14 +89,14 @@ export default defineComponent({
   name: 'MainLayout',
 
   components: {
-    EssentialLink
+    NavigationLinks
   },
 
   setup () {
     const leftDrawerOpen = ref(false)
 
     return {
-      essentialLinks: linksList,
+      linksList: linksList,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value

@@ -1,3 +1,4 @@
+env: 'test'
 server:
   hostname: "drl-leaderboards-test.miau.io"
   certificate:
