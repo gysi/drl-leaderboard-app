@@ -6,6 +6,8 @@ import de.gregord.drlleaderboardbackend.domain.LeaderboardByPlayerView;
 import de.gregord.drlleaderboardbackend.domain.OverallRankingView;
 import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
 import de.gregord.drlleaderboardbackend.services.LeaderboardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,9 @@ import java.util.List;
 public class LeaderboardController {
     private final LeaderboardRepository leaderboardRepository;
     private final LeaderboardService leaderboardService;
+
+    @Autowired
+    CacheManager cacheManager;
 
     public LeaderboardController(
             LeaderboardRepository leaderboardRepository,
@@ -36,6 +41,7 @@ public class LeaderboardController {
                 Sort.Order.desc("beatenBy.createdAt")
         );
         List<LeaderboardByPlayerView> byPlayerName = leaderboardRepository.findByPlayerName(playerName, sorting);
+//        CacheInfo cacheInfo = CacheInfo.of(((SpringCache2kCache) cacheManager.getCache("leaderboardbyplayername")).getNativeCache());
         return ResponseEntity.ok(byPlayerName);
     }
 
