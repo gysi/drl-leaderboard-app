@@ -35,7 +35,7 @@ server {
     access_log  /var/log/nginx/https-{{ server.hostname }}.access.log main;
     error_log  /var/log/nginx/https-{{ server.hostname }}.error.log warn;
 
-    root /www;
+    root /www/{{ 'prod' if env == 'prod' else 'staging' }};
 
     location ^~ /api {
         #return 302 https://$host$request_uri;

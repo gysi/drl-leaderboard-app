@@ -2,8 +2,9 @@
   <q-item
     clickable
     tag="a"
-    target="_blank"
-    :href="link"
+    :to="external ? undefined : link"
+    :href="external ? link : undefined"
+    :target="external ? '_blank' : undefined"
   >
     <q-item-section
       v-if="icon"
@@ -23,23 +24,24 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'EssentialLink',
+  name: 'NavigationLinks',
   props: {
     title: {
       type: String,
       required: true
     },
-
     caption: {
       type: String,
       default: ''
     },
-
     link: {
       type: String,
       default: '#'
     },
-
+    external: {
+      type: Boolean,
+      default: false
+    },
     icon: {
       type: String,
       default: ''
