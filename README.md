@@ -17,7 +17,7 @@ Webapp for displaying DRL Simulator leaderboards.
     * [x] ~~Removal/exclusion of invalid runs~~
     * [x] ~~Score calculation~~
     * [ ] Latest Player activity
-    * [x] Caching
+    * [x] ~~Caching~~
 * [ ] Server
   * [x] ~~Update server~~
   * [x] ~~Modify SSH config~~
