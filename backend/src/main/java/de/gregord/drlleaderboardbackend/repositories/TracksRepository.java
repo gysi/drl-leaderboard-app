@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface TracksRepository extends JpaRepository<Track, Long> {
     Optional<Track> findByGuid(String guid);
 
-    @Cacheable(value = "tracks", key = "#type.name")
+    @Cacheable(value = "tracks", key = "#type")
     <T> List<T> findBy(Sort sort, Class<T> type);
 }
