@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -167,6 +168,7 @@ public class TracksDataUpdater {
 
     @Transactional
     @Scheduled(cron = "${app.data-updater.tracks.cron}")
+    @CacheEvict(value = "tracks", allEntries = true)
     public void updateMapsData() {
         LOG.info("Updating maps data");
         RestTemplate restTemplate = new RestTemplate();

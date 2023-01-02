@@ -5,6 +5,7 @@ import de.gregord.drlleaderboardbackend.domain.LeaderboardByPlayerView;
 import de.gregord.drlleaderboardbackend.domain.OverallRankingView;
 import de.gregord.drlleaderboardbackend.entities.LeaderboardEntry;
 import de.gregord.drlleaderboardbackend.entities.TrackMinimal;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,10 +29,12 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
                 JOIN FETCH l.beatenBy beatenBy
             WHERE l.playerName = :playerName
             """)
+    @Cacheable(value = "leaderboardbyplayername", key = "#playerName")
     List<LeaderboardByPlayerView> findByPlayerName(String playerName, Sort sort);
 
     Optional<LeaderboardEntry> findByTrackIdAndPlayerId(Long trackId, String playerId);
 
+    @Cacheable("overallranking")
     @Query(value = """
                 WITH overall_ranking as (SELECT player_name        as playerName,
                                                 round(sum(points)) as totalPoints,
@@ -66,5 +69,6 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
 //        FROM LeaderboardEntry l
 //            JOIN FETCH l.track track
 //        """)
+    @Cacheable(value = "leaderboardbytrack", key = "#guid")
     List<LeaderBoardByTrackView> findByTrackId(Long guid, Pageable pageable);
 }
