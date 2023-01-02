@@ -4,6 +4,8 @@
 * Spring Boot
 * Spring Data JPA
 * Spring Web
+* Hibernate
+* cache2k
 * Spring Doc / OpenAPI
 * GraalVM Native Image support
 * Maven

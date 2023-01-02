@@ -69,7 +69,24 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: (function () {
+        global_vars = {
+          DLAPP_SWAGGER_URL_PART: "/swagger-ui.html"
+        }
+        env_vars = {
+          LOCAL: {
+            DLAPP_API_URL: 'http://localhost:8080/api',
+          },
+          STAGING: {
+            DLAPP_API_URL: 'https://drl-leaderboards-test.miau.io/api'
+          },
+          PROD: {
+            DLAPP_API_URL: 'https://drl-leaderboards.miau.io/api'
+          }
+        };
+        console.log({ ...global_vars, ...env_vars[process.env.DLAPP_ENV ? process.env.DLAPP_ENV : 'LOCAL'] });
+        return { ...global_vars, ...env_vars[process.env.DLAPP_ENV ? process.env.DLAPP_ENV : 'LOCAL'] };
+      })(),
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
