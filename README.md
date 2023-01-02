@@ -17,6 +17,7 @@ Webapp for displaying DRL Simulator leaderboards.
     * [x] ~~Removal/exclusion of invalid runs~~
     * [x] ~~Score calculation~~
     * [ ] Latest Player activity
+    * [x] Caching
 * [ ] Server
   * [x] ~~Update server~~
   * [x] ~~Modify SSH config~~
@@ -35,7 +36,6 @@ Webapp for displaying DRL Simulator leaderboards.
     * [x] ~~Graal VM Native Image + Container (Optional)~~
     * [x] ~~Nginx configuration~~
     * [x] ~~Postgres Volume~~
-    * [ ] Caching (Optional)
   * [x] ~~Frontend~~
     * [x] ~~Ansible build + deployment~~
     * [x] ~~Nginx configuration~~

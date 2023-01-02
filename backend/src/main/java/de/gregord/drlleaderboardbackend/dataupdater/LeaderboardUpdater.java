@@ -13,8 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -78,6 +79,7 @@ public class LeaderboardUpdater {
     private final TracksRepository tracksRepository;
     private final LeaderboardService leaderboardService;
     private final ModelMapper modelMapper;
+    private final CacheManager cacheManager;
 
 
     public LeaderboardUpdater(
@@ -87,7 +89,8 @@ public class LeaderboardUpdater {
             LeaderboardRepository leaderboardRepository,
             TracksRepository tracksRepository,
             LeaderboardService leaderboardService,
-            ModelMapper modelMapper
+            ModelMapper modelMapper,
+            CacheManager cacheManager
     ) {
         this.token = token;
         this.leaderboardEndpoint = leaderboardEndpoint;
@@ -96,25 +99,29 @@ public class LeaderboardUpdater {
         this.tracksRepository = tracksRepository;
         this.leaderboardService = leaderboardService;
         this.modelMapper = modelMapper;
+        this.cacheManager = cacheManager;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     @Order(200)
     public void initialize() {
         long count = leaderboardRepository.count();
-        if(count <= 0) {
+        if (count <= 0) {
             LOG.info("Leaderboard is empty, initializing...");
             updateLeaderboard();
         }
     }
 
     @Scheduled(cron = "${app.data-updater.leaderboards.cron}")
+    @CacheEvict(value = "leaderboardbyplayername", allEntries = true)
     public void updateLeaderboard() {
         totalContentLength = 0L;
         totalRequestCount = 0L;
         List<Track> allTracks = tracksRepository.findAll();
         for (Track track : allTracks) {
             updateLeaderboardForTrack(track);
+            Optional.ofNullable(cacheManager.getCache("leaderboardbytrack"))
+                    .ifPresent(cache -> cache.evictIfPresent(track.getId()));
         }
         LOG.info("Total content length: " + totalContentLength.doubleValue() / 1024 / 1024 + " MB");
         LOG.info("Total request count: " + totalRequestCount);
