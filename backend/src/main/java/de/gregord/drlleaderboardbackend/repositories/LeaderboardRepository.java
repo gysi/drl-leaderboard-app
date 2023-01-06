@@ -53,7 +53,8 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
                                       FROM leaderboards l left join overall_ranking ovr on l.player_name = ovr.playerName
                                       WHERE l.is_invalid_run = true
                                       GROUP BY l.player_name)
-                SELECT playerName,
+                SELECT ROW_NUMBER() OVER (ORDER BY totalPoints DESC) as position,
+                       playerName,
                        totalPoints,
                        (select invalid_runs from invalid_runs ir where ir.player_name = ovr.playerName) as invalidRuns,
                        completedTracks,
