@@ -38,6 +38,7 @@ public class LeaderboardController {
                 Sort.Order.asc("track.mapName"),
                 Sort.Order.asc("track.parentCategory"),
                 Sort.Order.asc("track.name"),
+                Sort.Order.desc("createdAt"),
                 Sort.Order.desc("beatenBy.createdAt")
         );
         List<LeaderboardByPlayerView> byPlayerName = leaderboardRepository.findByPlayerName(playerName, sorting);
