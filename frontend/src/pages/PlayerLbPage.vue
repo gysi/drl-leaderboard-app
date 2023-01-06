@@ -228,25 +228,14 @@ export default {
 }
 </script>
 
-<style lang="sass">
-.my-sticky-header-table
-  /* height or max-height is important */
-  //min-height: inherit
-
-  .q-table__top,
-  thead tr:first-child th
-    /* bg color is important for th; just specify one */
-    background-color: $primary
-    color: white
-
-  thead tr th
-    position: sticky
-    z-index: 1
-    font-size: 18px
-
-  thead tr:first-child th
-    //color: white
-    top: 0
+<style lang="sass" scoped>
+tbody .q-td
+  color: #f6f6f6
+  border-left: 1px solid black
+  border-right: 0
+  font-weight: bold
+  text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black
+  font-size: 16px
 
   td
     font-size: 200px
