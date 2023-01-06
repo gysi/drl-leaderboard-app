@@ -107,6 +107,22 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
+.first-place
+  background-image: url('assets/gold-medal.svg')
+
+.second-place
+  background-image: url('assets/silver-medal.svg')
+
+.third-place
+  background-image: url('assets/bronze-medal.svg')
+
+.first-place, .second-place, .third-place
+  background-position-x: 50.5%
+  background-position-y: -0.5rem
+  background-repeat: no-repeat
+  background-size: 1.7rem
+  background-origin: border-box
+
 .q-field--filled .q-field__control
   background: rgba(0, 0, 0, 0.2)
   color: white
