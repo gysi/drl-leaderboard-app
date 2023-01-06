@@ -72,4 +72,11 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
 //        """)
     @Cacheable(value = "leaderboardbytrack", key = "#guid")
     List<LeaderBoardByTrackView> findByTrackId(Long guid, Pageable pageable);
+
+    @Query("""
+            SELECT DISTINCT l.playerName
+            FROM LeaderboardEntry l
+            WHERE l.playerName like :playerName
+            """)
+    List<String> findDistinctPlayerNames(String playerName, Pageable pageable);
 }
