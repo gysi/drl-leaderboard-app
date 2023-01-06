@@ -8,10 +8,36 @@
       :pagination="pagination"
       row-key="playerName"
       class="col-auto my-sticky-header-table"
-      style="max-height: 80%;"
+      style="max-height: 100%;"
       flat
       bordered
-    />
+    >
+      <template v-slot:body="props">
+        <q-tr>
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+            <q-item v-if="col.name === 'playerName'">
+              <q-item-section>
+                <q-btn
+                  flat
+                  dense
+                  round
+                  icon="person"
+                  @click="() => router.push({ name: 'playerlb', query: { playerName: props.row.playerName } })"
+                />
+              </q-item-section>
+              <q-item-section>
+                {{ props.row.playerName }}
+              </q-item-section>
+            </q-item>
+            <q-item v-else>
+              <q-item-section>
+                {{ props.row[col.name] }}
+              </q-item-section>
+            </q-item>
+          </q-td>
+        </q-tr>
+      </template>
+    </q-table>
   </q-page>
 </template>
 
@@ -22,6 +48,8 @@ export default {
   name: 'OverallPage',
   data() {
     return {
+      log: console.log,
+      router: this.$router,
       pagination: {
         rowsPerPage: 50,
       },
