@@ -1,0 +1,13 @@
+#docker build --tag frontend-test:v1 $(./build_docker_args.sh) -f Dockerfile_frontend_test ..
+#docker run --rm -it frontend-test:v1 sh
+FROM node:18-alpine as frontend-builder
+WORKDIR /app
+COPY frontend/.yarn .yarn/
+COPY frontend/public public/
+COPY frontend/src src/
+COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
+    frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/.yarnrc.yml frontend/index.html frontend/jsconfig.json \
+    frontend/package.json frontend/postcss.config.js frontend/quasar.config.js frontend/yarn.lock ./
+
+
+RUN ls -lah && yarn quasar build
