@@ -1,31 +1,5 @@
 <template>
   <q-page padding style="height: 100%" class="col items-start">
-      <q-select
-        ref="userselect"
-        filled
-        v-model="searchText"
-        use-input
-        hide-dropdown-icon
-        autofocus
-        input-debounce="150"
-        :options="searchResults"
-        @filter="search"
-        @new-value="onEnterPressed"
-        @update:model-value="fetchData"
-        style="width: 250px"
-        use-chips
-        label="Enter player name"
-      >
-        <template v-slot:no-option>
-          <q-item
-            @click="fetchData"
-          >
-            <q-item-section class="text-grey">
-              No results
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
       <q-table
         title="Player's Rankings"
         :columns="columns"
@@ -34,12 +8,43 @@
         row-key="playerName"
         class="my-sticky-header-table"
         table-class="col-auto"
-        style="max-height: 80%;"
+        style="max-height: 100%;"
         :pagination="pagination"
         hide-pagination
         :visible-columns="[]"
-        separator="cell"
       >
+        <template v-slot:top-left>
+          <div class="row">
+            <div class="text-h4">{{ searchText?.toUpperCase() || 'Player' }}'s Rankings</div>
+            <q-select
+              ref="userselect"
+              filled
+              v-model="searchText"
+              use-input
+              hide-dropdown-icon
+              autofocus
+              input-debounce="150"
+              :options="searchResults"
+              @filter="search"
+              @new-value="onEnterPressed"
+              @update:model-value="fetchData"
+              style="width: 250px"
+              class="q-ml-md"
+              use-chips
+              label="Enter player name"
+            >
+              <template v-slot:no-option>
+                <q-item
+                  @click="fetchData"
+                >
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+        </template>
         <template v-slot:header="props">
           <q-tr
           >
@@ -61,7 +66,7 @@
             :key="`m_${props.rowIndex}`"
             :style="{
               boxShadow: props.row.position === 1 ? 'inset 2px 2px 1px 1px red': '',
-              border: props.row.position === 1 ? '4px solid red' : '',
+              border: props.row.position === 1 ? '4px solid red' : null,
             }">
             <q-td
               v-for="col in props.cols"
@@ -70,14 +75,8 @@
               :style="{
                 backgroundColor: props.row.isInvalidRun ?
                   'rgba(187,44,44,0.54)': backGroundColorByPosition(props.row.position),
-                color: '#f6f6f6', // #f6f6f6
-                borderLeft: '1px solid black',
-                borderRight: 0,
-                borderTop: props.row.position === 1 ? rows[props.rowIndex-1].position === 1 ? 0 : '2px solid #FFED02' : '1px solid black',
+                borderTop: props.row.position === 1 ? rows[props.rowIndex-1]?.position === 1 ? 0 : '2px solid #FFED02' : '1px solid black',
                 borderBottom : props.row.position === 1 ? '2px solid #FFED02' : 0,
-                fontWeight: 'bold',
-                textShadow: '1px 0px 0px black, -1px 0px 0px black, 0px 1px 0px black, 0px -1px 0px black', // black
-                fontSize: '16px',
               }"
             >
               <q-icon
@@ -102,6 +101,10 @@ import axios from 'axios';
 
 export default {
   name: 'PlayerLbPage',
+  created(){
+    this.searchText = this.$router.currentRoute.value.query.playerName;
+    this.fetchData(this.searchText);
+  },
   data() {
     return {
       searchText: null,
@@ -237,11 +240,4 @@ tbody .q-td
   text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black
   font-size: 16px
 
-  td
-    font-size: 200px
-
-  /* this is when the loading indicator appears */
-  &.q-table--loading thead tr:last-child th
-    /* height of all previous header rows */
-    top: 48px
 </style>
