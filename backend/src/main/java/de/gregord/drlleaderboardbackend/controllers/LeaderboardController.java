@@ -32,8 +32,8 @@ public class LeaderboardController {
         this.leaderboardService = leaderboardService;
     }
 
-    @GetMapping("/byplayername/{playerName}")
-    public ResponseEntity<List<LeaderboardByPlayerView>> getLeaderboardByPlayerName(@PathVariable String playerName) {
+    @GetMapping("/byplayername")
+    public ResponseEntity<List<LeaderboardByPlayerView>> getLeaderboardByPlayerName(@RequestParam String playerName) {
         Sort sorting = Sort.by(
                 Sort.Order.asc("track.mapName"),
                 Sort.Order.asc("track.parentCategory"),
@@ -66,5 +66,16 @@ public class LeaderboardController {
                         .withSort(Sort.by(Sort.Order.asc("position")))
         );
         return ResponseEntity.ok(byGuid);
+    }
+
+    @GetMapping("/findPlayers")
+    public ResponseEntity<List<String>> findPlayers(@RequestParam String playerName) {
+        List<String> players = leaderboardRepository
+                .findDistinctPlayerNames(
+                        playerName.toLowerCase().trim() + '%',
+                        PageRequest.of(0, 50)
+                                .withSort(Sort.by(Sort.Order.asc("playerName")))
+                );
+        return ResponseEntity.ok(players);
     }
 }
