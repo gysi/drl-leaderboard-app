@@ -26,7 +26,7 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
             SELECT l
             FROM LeaderboardEntry l
                 JOIN FETCH l.track track
-                JOIN FETCH l.beatenBy beatenBy
+                LEFT JOIN FETCH l.beatenBy beatenBy
             WHERE l.playerName = :playerName
             """)
     @Cacheable(value = "leaderboardbyplayername", key = "#playerName")
