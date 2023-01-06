@@ -158,6 +158,7 @@ public class TracksDataUpdater {
     @Transactional
     @EventListener(ApplicationReadyEvent.class)
     @Order(100)
+    @CacheEvict(value = "tracks", allEntries = true)
     public void initialize() {
         long count = tracksRepository.count();
         if(count <= 0) {
