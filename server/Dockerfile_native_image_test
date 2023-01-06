@@ -1,3 +1,6 @@
+#docker build --tag native-test:v1 $(./build_docker_args.sh) -f Dockerfile_native_image ..
+#docker run --rm --network local_local_network -p 8080:8080 native-test:v1
+#docker run --rm -it --network local_local_network -p 8080:8080 native-test:v1 sh
 FROM alpine:3 as native-image-backend-builder
 WORKDIR /app
 RUN wget https://download.bell-sw.com/vm/22.3.0/bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
