@@ -2,8 +2,8 @@
   "name": "drl-leaderboard-frontend",
   "packageManager": "yarn@3.3.1",
   "version": "0.0.1",
-  "description": "Awesome DRL Leaderboard Webapp",
-  "productName": "Gysi's DRL Leaderboard",
+  "description": "\uD83D\uDE80 Awesome \uD83D\uDEE9️ DRL Leaderboard \uD83C\uDFC6 Webapp by gysi \uD83E\uDD47\uD83E\uDD48\uD83E\uDD49",
+  "productName": "\uD83C\uDFC6 DRL Leaderboards \uD83C\uDFC6",
   "author": "Gregor Dieter <github@i337.de>",
   "private": true,
   "scripts": {
