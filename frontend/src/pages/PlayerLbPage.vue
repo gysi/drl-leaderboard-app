@@ -74,15 +74,16 @@
               :props="props"
               :style="{
                 backgroundColor: props.row.isInvalidRun ?
-                  'rgba(187,44,44,0.54)': backGroundColorByPosition(props.row.position),
+                  'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null,
                 borderTop: props.row.position === 1 ? rows[props.rowIndex-1]?.position === 1 ? 0 : '2px solid #FFED02' : '1px solid black',
                 borderBottom : props.row.position === 1 ? '2px solid #FFED02' : 0,
               }"
             >
               <q-icon
-                v-if="props.row.isInvalidRun && col.name === 'track'"
+                v-if="props.row.isInvalidRun && col.name === 'position'"
                 name="warning"
                 size="sm"
+                left
               >
                 <q-tooltip>
                   {{ props.row.invalidRunReason }}
@@ -98,6 +99,7 @@
 
 <script>
 import axios from 'axios';
+import { intervalToDuration, formatDuration } from 'date-fns'
 
 export default {
   name: 'PlayerLbPage',
@@ -111,13 +113,16 @@ export default {
       searchResults: [],
       loadingState: true,
       columns: [
+        { name: 'position', label: '#', field: 'position', align: 'center', required: true },
         { name: 'track', label: 'Track', field: row => row.track.name, align: 'left', required: true },
         { name: 'map', label: 'Map', field: row => row.track.mapName, align: 'left', required: true },
-        { name: 'position', label: '#', field: 'position', required: true },
+        { name: 'score', label: 'Time', field: 'score',
+          format: (val, row) => this.formatMilliSeconds(val),
+          align: 'left', required: true },
         { name: 'crashes', label: 'Crashes', field: 'crashCount', required: true },
-        { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed', required: true },
+        { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed', format: (val, row) => (Math.round(val*10)/10), required: true },
         { name: 'points', label: 'Points', field: 'points', format: (val, row) => row.isInvalidRun ? 0 : Math.round(val), required: true },
-        { name: 'createdAt', label: 'Time Set', field: 'createdAt', required: true },
+        { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val), required: true },
         { name: 'droneName', label: 'Drone Name', field: 'droneName', required: true },
         { name: 'isInvalidRun', label: 'Invalid Run', field: 'isInvalidRun'},
         { name: 'invalidRunReason', label: 'Invalid Run Reason', field: 'invalidRunReason'},
@@ -187,12 +192,17 @@ export default {
       update();
     },
     async fetchData(player) {
-      if(player === ""){
+      if(!player){
         this.rows = [];
         return;
       }
       console.log("fetching!");
       console.log(player);
+      this.$router.replace({
+        query: {
+          playerName: player
+        }
+      });
       this.loading = true;
       try {
         const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/byplayername?playerName='+player);
@@ -226,6 +236,38 @@ export default {
         return '#7cfa58'
       }
       return '#d3c202';
+    },
+    formatMilliSeconds(milliseconds){
+      // Create a new date object to manipulate the time
+      const date = new Date(milliseconds);
+
+      // Get the minutes, seconds, and milliseconds from the date object
+      let minutes = date.getMinutes().toString().padStart(2, '0');
+      let seconds = date.getSeconds().toString().padStart(2, '0');
+      let millis = date.getMilliseconds().toString().padStart(3, '0');
+
+      // Return the formatted string
+      return `${minutes}:${seconds}.${millis}`;
+    },
+    getDateDifference(dateString) {
+      // 2022-08-30T02:14:25.042
+      let duration = intervalToDuration({
+        start: new Date(dateString+'Z'),
+        end: new Date()
+      });
+      let units = [];
+      if(duration.months > 0 ){
+        units.push('months');
+      } else if(duration.days > 0 ){
+        units.push('days');
+      } else if(duration.hours > 0 ){
+        units.push('hours');
+      } else if(duration.minutes > 0 ){
+        units.push('minutes');
+      } else {
+        units.push('seconds');
+      }
+      return formatDuration(duration, { format: units }) + ' ago';
     }
   }
 }
@@ -233,11 +275,14 @@ export default {
 
 <style lang="sass" scoped>
 tbody .q-td
-  color: #f6f6f6
+  color: black
+  background-color: $secondary
   border-left: 1px solid black
   border-right: 0
   font-weight: bold
-  text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black
   font-size: 16px
 
+tbody .q-tr .q-td:first-child
+  color: #f6f6f6
+  text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black
 </style>
