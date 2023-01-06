@@ -33,6 +33,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@quasar/extras", "npm:1.15.9"],\
             ["autoprefixer", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:10.4.13"],\
             ["axios", "npm:0.21.4"],\
+            ["date-fns", "npm:2.29.3"],\
             ["eslint", "npm:8.30.0"],\
             ["eslint-config-prettier", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:8.5.0"],\
             ["eslint-plugin-vue", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:9.8.0"],\
@@ -1654,6 +1655,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["date-fns", [\
+        ["npm:2.29.3", {\
+          "packageLocation": "./.yarn/cache/date-fns-npm-2.29.3-fef7e3c72c-e01cf5b62a.zip/node_modules/date-fns/",\
+          "packageDependencies": [\
+            ["date-fns", "npm:2.29.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["debug", [\
         ["npm:2.6.9", {\
           "packageLocation": "./.yarn/cache/debug-npm-2.6.9-7d4cb597dc-d2f51589ca.zip/node_modules/debug/",\
@@ -1790,6 +1800,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@quasar/extras", "npm:1.15.9"],\
             ["autoprefixer", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:10.4.13"],\
             ["axios", "npm:0.21.4"],\
+            ["date-fns", "npm:2.29.3"],\
             ["eslint", "npm:8.30.0"],\
             ["eslint-config-prettier", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:8.5.0"],\
             ["eslint-plugin-vue", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:9.8.0"],\
