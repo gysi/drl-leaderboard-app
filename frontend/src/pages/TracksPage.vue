@@ -8,7 +8,7 @@
       :pagination="pagination"
       row-key="id"
       class="my-sticky-header-table col-auto"
-      style="max-height: 80%;"
+      style="max-height: 100%;"
       flat
       bordered
     />
