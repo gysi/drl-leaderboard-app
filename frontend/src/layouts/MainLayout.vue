@@ -105,3 +105,42 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="sass">
+.q-field--filled .q-field__control
+  background: rgba(0, 0, 0, 0.2)
+  color: white
+
+.q-field__label
+  color: $secondary
+
+.q-field__native, .q-field__prefix, .q-field__suffix, .q-field__input
+  color: white
+
+.my-sticky-header-table
+  /* height or max-height is important */
+  //min-height: inherit
+
+  .q-table__top,
+  thead tr:first-child th
+    /* bg color is important for th; just specify one */
+    background-color: $primary
+    color: white
+
+  thead tr th
+    position: sticky
+    z-index: 1
+    font-size: 18px
+
+  thead tr:first-child th
+    //color: white
+    top: 0
+
+  td
+    font-size: 200px
+
+  /* this is when the loading indicator appears */
+  &.q-table--loading thead tr:last-child th
+    /* height of all previous header rows */
+    top: 48px
+</style>
