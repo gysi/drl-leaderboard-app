@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -104,6 +105,10 @@ public class LeaderboardUpdater {
 
     @EventListener(ApplicationReadyEvent.class)
     @Order(200)
+    @Caching(evict = {
+            @CacheEvict(value = "leaderboardbyplayername", allEntries = true),
+            @CacheEvict(value = "overallranking", allEntries = true)
+    })
     public void initialize() {
         long count = leaderboardRepository.count();
         if (count <= 0) {
@@ -113,7 +118,10 @@ public class LeaderboardUpdater {
     }
 
     @Scheduled(cron = "${app.data-updater.leaderboards.cron}")
-    @CacheEvict(value = "leaderboardbyplayername", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "leaderboardbyplayername", allEntries = true),
+            @CacheEvict(value = "overallranking", allEntries = true)
+    })
     public void updateLeaderboard() {
         totalContentLength = 0L;
         totalRequestCount = 0L;
@@ -180,6 +188,10 @@ public class LeaderboardUpdater {
                     leaderboardEntry = existingEntry.orElseGet(LeaderboardEntry::new);
                     leaderboardEntry.setTrack(modelMapper.map(track, TrackMinimal.class));
                     leaderboardEntry.setPlayerId((String) drlLeaderboardEntry.get("player-id"));
+                    if (alreadyFoundPlayerIds.containsKey(leaderboardEntry.getPlayerId())) {
+                        LOG.warn("Player " + leaderboardEntry.getPlayerId() + " already exists in this leaderboard, DRL BUG!");
+                        continue;
+                    }
                     leaderboardEntry.setPlayerName((String) drlLeaderboardEntry.get("profile-name"));
                     leaderboardEntry.setCrashCount((Integer) drlLeaderboardEntry.get("crash-count"));
                     leaderboardEntry.setScore(Long.valueOf((Integer) drlLeaderboardEntry.get("score")));
@@ -193,10 +205,6 @@ public class LeaderboardUpdater {
                     leaderboardEntry.setCreatedAt(LocalDateTime.from(ZonedDateTime.parse((String) drlLeaderboardEntry.get("created-at"))));
                     leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
                     leaderboardEntry.setInvalidRunReason(null);
-                    if (alreadyFoundPlayerIds.containsKey(leaderboardEntry.getPlayerId())) {
-                        LOG.warn("Player " + leaderboardEntry.getPlayerId() + " already exists in this leaderboard, DRL BUG!");
-                        continue;
-                    }
                     if (alreadyFoundPlayerNames.containsKey(leaderboardEntry.getPlayerName())) {
                         LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerNames.get(leaderboardEntry.getPlayerName());
                         LOG.warn("Playername " + leaderboardEntry.getPlayerName() + " (" + leaderboardEntry.getPlayerId() + ") already exists in this leaderboard (" + alreadyExistingEntry.getPlayerId() + ")");
