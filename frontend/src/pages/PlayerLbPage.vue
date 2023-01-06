@@ -32,28 +32,53 @@
         :rows="rows"
         :loading="loading"
         row-key="playerName"
-        table-class="col-auto my-sticky-header-table"
+        class="my-sticky-header-table"
+        table-class="col-auto"
         style="max-height: 80%;"
         :pagination="pagination"
         hide-pagination
         :visible-columns="[]"
         separator="cell"
       >
+        <template v-slot:header="props">
+          <q-tr
+          >
+            <q-th
+              v-for="col in props.cols"
+              :key="col.name"
+              :props="props"
+              :style="{
+                border: '1px solid black',
+                borderLeft: '1px solid black',
+                borderRight: 0,
+              }"
+            >{{ col.label }}</q-th>
+          </q-tr>
+        </template>
         <template v-slot:body="props">
           <q-tr
             :props="props"
-            :key="`m_${props.row.index}`"
+            :key="`m_${props.rowIndex}`"
             :style="{
-              backgroundColor: props.row.isInvalidRun ?
-                'rgba(187,44,44,0.54)': backGroundColorByPosition(props.row.position),
-              color: '#f6f6f6',
-              fontWeight: 'bold',
-              textShadow: '0px 0px 1px black, 0px 0px 2px black, 0px 0px 3px black',
+              boxShadow: props.row.position === 1 ? 'inset 2px 2px 1px 1px red': '',
+              border: props.row.position === 1 ? '4px solid red' : '',
             }">
             <q-td
               v-for="col in props.cols"
               :key="col.name"
               :props="props"
+              :style="{
+                backgroundColor: props.row.isInvalidRun ?
+                  'rgba(187,44,44,0.54)': backGroundColorByPosition(props.row.position),
+                color: '#f6f6f6', // #f6f6f6
+                borderLeft: '1px solid black',
+                borderRight: 0,
+                borderTop: props.row.position === 1 ? rows[props.rowIndex-1].position === 1 ? 0 : '2px solid #FFED02' : '1px solid black',
+                borderBottom : props.row.position === 1 ? '2px solid #FFED02' : 0,
+                fontWeight: 'bold',
+                textShadow: '1px 0px 0px black, -1px 0px 0px black, 0px 1px 0px black, 0px -1px 0px black', // black
+                fontSize: '16px',
+              }"
             >
               <q-icon
                 v-if="props.row.isInvalidRun && col.name === 'track'"
@@ -180,24 +205,24 @@ export default {
         return '#4B4B4B'
       }
       if (position > 50) {
-        return '#3B5639'
+        return '#234918'
       }
       if (position > 25) {
-        return '#20651f'
+        return '#326722'
       }
       if (position > 10) {
-        return '#146414'
+        return '#40832d'
       }
       if (position > 5) {
-        return '#14a201'
+        return '#54ab3b'
       }
       if (position > 3) {
-        return '#74d55d'
+        return '#6ad94b'
       }
       if (position > 1) {
-        return '#abbd38'
+        return '#7cfa58'
       }
-      return '#b6a700';
+      return '#d3c202';
     }
   }
 }
@@ -209,7 +234,6 @@ export default {
   //min-height: inherit
 
   .q-table__top,
-  .q-table__bottom,
   thead tr:first-child th
     /* bg color is important for th; just specify one */
     background-color: $primary
@@ -218,6 +242,17 @@ export default {
   thead tr th
     position: sticky
     z-index: 1
+    font-size: 18px
+
   thead tr:first-child th
+    //color: white
     top: 0
+
+  td
+    font-size: 200px
+
+  /* this is when the loading indicator appears */
+  &.q-table--loading thead tr:last-child th
+    /* height of all previous header rows */
+    top: 48px
 </style>
