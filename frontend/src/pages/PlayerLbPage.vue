@@ -64,10 +64,7 @@
           <q-tr
             :props="props"
             :key="`m_${props.rowIndex}`"
-            :style="{
-              boxShadow: props.row.position === 1 ? 'inset 2px 2px 1px 1px red': '',
-              border: props.row.position === 1 ? '4px solid red' : null,
-            }">
+          >
             <q-td
               v-for="col in props.cols"
               :key="col.name"
@@ -75,9 +72,10 @@
               :style="{
                 backgroundColor: props.row.isInvalidRun ?
                   'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null,
-                borderTop: props.row.position === 1 ? rows[props.rowIndex-1]?.position === 1 ? 0 : '2px solid #FFED02' : '1px solid black',
-                borderBottom : props.row.position === 1 ? '2px solid #FFED02' : 0,
+                // borderTop: props.row.position === 1 ? rows[props.rowIndex-1]?.position === 1 ? 0 : '2px solid #FFED02' : '1px solid black',
+                // borderBottom : props.row.position === 1 ? '2px solid #FFED02' : 0,
               }"
+              :class="col.name === 'position' && !props.row.isInvalidRun ? props.row.position === 1 ? 'first-place' : props.row.position === 2 ? 'second-place' : props.row.position === 3 ? 'third-place' : '' : ''"
             >
               <q-icon
                 v-if="props.row.isInvalidRun && col.name === 'position'"
@@ -229,13 +227,13 @@ export default {
       if (position > 5) {
         return '#54ab3b'
       }
-      if (position > 3) {
-        return '#6ad94b'
+      if (position > 2) {
+        return 'rgb(187,107,33)' //rgb(221,127,39)
       }
       if (position > 1) {
-        return '#7cfa58'
+        return 'rgba(106,105,110,0.5)' //rgb(160,158,165)
       }
-      return '#d3c202';
+      return 'rgba(180,135,22,0.95)'; //rgb(236,160,28)
     },
     formatMilliSeconds(milliseconds){
       // Create a new date object to manipulate the time
@@ -279,6 +277,8 @@ tbody .q-td
   background-color: $secondary
   border-left: 1px solid black
   border-right: 0
+  border-top: 1px solid black
+  border-bottom : 0
   font-weight: bold
   font-size: 16px
 
