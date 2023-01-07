@@ -14,13 +14,22 @@
     >
       <template v-slot:body="props">
         <q-tr>
-          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+          <q-td v-for="col in props.cols" :key="col.name" :props="props"
+            :style="{
+              backgroundColor: props.row.isInvalidRun ?
+                'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null
+              }"
+            :class="col.name === 'position' && !props.row.isInvalidRun ?
+              props.row.position === 1 ? 'first-place' :
+              props.row.position === 2 ? 'second-place' :
+              props.row.position === 3 ? 'third-place' : '' : ''"
+          >
             <q-item v-if="col.name === 'playerName'">
-              <q-item-section>
+              <q-item-section avatar v-ripple>
                 <q-btn
-                  flat
+                  outline
                   dense
-                  round
+                  rounded
                   icon="person"
                   @click="() => router.push({ name: 'playerlb', query: { playerName: props.row.playerName } })"
                 />
@@ -29,11 +38,7 @@
                 {{ props.row.playerName }}
               </q-item-section>
             </q-item>
-            <q-item v-else>
-              <q-item-section>
-                {{ props.row[col.name] }}
-              </q-item-section>
-            </q-item>
+            {{ col.name !== 'playerName' ? col.value : '' }}
           </q-td>
         </q-tr>
       </template>
@@ -43,6 +48,8 @@
 
 <script>
 import axios from 'axios';
+import { formatMilliSeconds, backGroundColorByPosition, getDateDifference } from 'src/modules/LeaderboardFunctions'
+
 
 export default {
   name: 'OverallPage',
@@ -55,13 +62,13 @@ export default {
       },
       columns: [
         { name: 'position', label: '#', field: 'position' },
-        { name: 'playerName', label: 'Player', field: 'playerName' },
-        { name: 'totalPoints', label: 'Points', field: 'totalPoints' },
-        { name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns' },
-        { name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks' },
-        { name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount' },
-        { name: 'totalScore', label: 'Total Time', field: 'totalScore' },
-        { name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed' },
+        { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
+        { name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right' },
+        { name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center' },
+        { name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center' },
+        { name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center' },
+        { name: 'totalScore', label: 'Total Time', field: 'totalScore', format: (val, row) => this.formatMilliSeconds(val), align: 'right' },
+        { name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', format: (val, row) => (Math.round(val*10)/10), },
       ],
       rows: [],
       loading: false
@@ -79,7 +86,8 @@ export default {
       } finally {
         this.loading = false;
       }
-    }
+    },
+    formatMilliSeconds, backGroundColorByPosition, getDateDifference
   },
   created() {
     this.fetchData();
@@ -91,6 +99,11 @@ export default {
   },
   beforeUnmount() {
     clearInterval(this.interval);
-  }
+  },
 }
 </script>
+
+<style lang="sass" scoped>
+tbody .q-td
+  font-size: 16px
+</style>

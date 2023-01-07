@@ -97,7 +97,7 @@
 
 <script>
 import axios from 'axios';
-import { intervalToDuration, formatDuration } from 'date-fns'
+import { formatMilliSeconds, backGroundColorByPosition, getDateDifference } from 'src/modules/LeaderboardFunctions'
 
 export default {
   name: 'PlayerLbPage',
@@ -211,78 +211,14 @@ export default {
         this.loading = false;
       }
     },
-    backGroundColorByPosition(position){
-      if (position > 75) {
-        return '#4B4B4B'
-      }
-      if (position > 50) {
-        return '#234918'
-      }
-      if (position > 25) {
-        return '#326722'
-      }
-      if (position > 10) {
-        return '#40832d'
-      }
-      if (position > 5) {
-        return '#54ab3b'
-      }
-      if (position > 2) {
-        return 'rgb(187,107,33)' //rgb(221,127,39)
-      }
-      if (position > 1) {
-        return 'rgba(106,105,110,0.5)' //rgb(160,158,165)
-      }
-      return 'rgba(180,135,22,0.95)'; //rgb(236,160,28)
-    },
-    formatMilliSeconds(milliseconds){
-      // Create a new date object to manipulate the time
-      const date = new Date(milliseconds);
-
-      // Get the minutes, seconds, and milliseconds from the date object
-      let minutes = date.getMinutes().toString().padStart(2, '0');
-      let seconds = date.getSeconds().toString().padStart(2, '0');
-      let millis = date.getMilliseconds().toString().padStart(3, '0');
-
-      // Return the formatted string
-      return `${minutes}:${seconds}.${millis}`;
-    },
-    getDateDifference(dateString) {
-      // 2022-08-30T02:14:25.042
-      let duration = intervalToDuration({
-        start: new Date(dateString+'Z'),
-        end: new Date()
-      });
-      let units = [];
-      if(duration.months > 0 ){
-        units.push('months');
-      } else if(duration.days > 0 ){
-        units.push('days');
-      } else if(duration.hours > 0 ){
-        units.push('hours');
-      } else if(duration.minutes > 0 ){
-        units.push('minutes');
-      } else {
-        units.push('seconds');
-      }
-      return formatDuration(duration, { format: units }) + ' ago';
-    }
+    formatMilliSeconds,
+    backGroundColorByPosition,
+    getDateDifference
   }
 }
 </script>
 
 <style lang="sass" scoped>
 tbody .q-td
-  color: black
-  background-color: $secondary
-  border-left: 1px solid black
-  border-right: 0
-  border-top: 1px solid black
-  border-bottom : 0
-  font-weight: bold
   font-size: 16px
-
-tbody .q-tr .q-td:first-child
-  color: #f6f6f6
-  text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black
 </style>
