@@ -117,10 +117,12 @@ export default defineComponent({
   background-image: url('assets/bronze-medal.svg')
 
 .first-place, .second-place, .third-place
-  background-position-x: 50.5%
-  background-position-y: -0.5rem
+  //background-position-x: 50.5%
+  //background-position-y: -0.5rem
+  background-position-x: 0.3rem
+  background-position-y: -0.1rem
   background-repeat: no-repeat
-  background-size: 1.7rem
+  background-size: 1.5rem
   background-origin: border-box
 
 .q-field--filled .q-field__control
@@ -159,4 +161,21 @@ export default defineComponent({
   &.q-table--loading thead tr:last-child th
     /* height of all previous header rows */
     top: 48px
+
+tbody .q-td
+  color: black
+  background-color: $secondary
+  border-left: 1px solid black
+  border-right: 0
+  border-top: 1px solid black
+  border-bottom : 0
+  font-weight: normal
+  font-size: 16px
+  margin-right: 100px
+
+tbody .q-tr .q-td:first-child
+  min-width: 65px
+  font-weight: bolder
+  color: #f6f6f6
+  text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black
 </style>
