@@ -8,9 +8,10 @@
       :pagination="pagination"
       row-key="playerName"
       class="col-auto my-sticky-header-table"
-      style="max-height: 100%;"
+      style="max-height: 100%; min-width: 1100px"
       flat
       bordered
+      :visible-columns="[]"
     >
       <template v-slot:body="props">
         <q-tr>
@@ -24,18 +25,23 @@
               props.row.position === 2 ? 'second-place' :
               props.row.position === 3 ? 'third-place' : '' : ''"
           >
-            <q-item v-if="col.name === 'playerName'">
-              <q-item-section avatar v-ripple>
-                <q-btn
-                  outline
-                  dense
-                  rounded
-                  icon="person"
-                  @click="() => router.push({ name: 'playerlb', query: { playerName: props.row.playerName } })"
-                />
+            <q-item v-if="col.name === 'playerName'"
+              clickable
+              :to="`/playerlb/?playerName=${props.row.playerName}`"
+              style="background: rgba(0, 0, 0, 0.05);"
+            >
+              <q-item-section avatar side>
+                <q-avatar rounded size="50px">
+                  <img :src="props.row.profileThumb" />
+                </q-avatar>
               </q-item-section>
               <q-item-section>
                 {{ props.row.playerName }}
+                <q-badge floating
+                         :style="{backgroundColor: props.row.profilePlatform === 'Steam' ? 'rgb(25,91,127)' :
+                                  props.row.profilePlatform === 'Epic' ? 'black' :
+                                   props.row.profilePlatform === 'Playstation' ? 'rgb(0,65,151)' : 'rgb(16,120,15)'}"
+                >{{ props.row.profilePlatform }}</q-badge>
               </q-item-section>
             </q-item>
             {{ col.name !== 'playerName' ? col.value : '' }}
@@ -61,14 +67,15 @@ export default {
         rowsPerPage: 50,
       },
       columns: [
-        { name: 'position', label: '#', field: 'position' },
-        { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
-        { name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right' },
-        { name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center' },
-        { name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center' },
-        { name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center' },
-        { name: 'totalScore', label: 'Total Time', field: 'totalScore', format: (val, row) => this.formatMilliSeconds(val), align: 'right' },
-        { name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', format: (val, row) => (Math.round(val*10)/10), },
+        { name: 'position', label: '#', field: 'position', required: true },
+        { name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true },
+        { name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true },
+        { name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true },
+        { name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true },
+        { name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true },
+        { name: 'totalScore', label: 'Total Time', field: 'totalScore', format: (val, row) => this.formatMilliSeconds(val), align: 'right', required: true },
+        { name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', format: (val, row) => (Math.round(val*10)/10), required: true},
+        { name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb'}
       ],
       rows: [],
       loading: false
@@ -79,7 +86,7 @@ export default {
     async fetchData() {
       this.loading = true;
       try {
-        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overallranking?page=1&limit=50');
+        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overallranking?page=1&limit=1000');
         this.rows = response.data;
       } catch (error) {
         console.error(error);
@@ -106,4 +113,8 @@ export default {
 <style lang="sass" scoped>
 tbody .q-td
   font-size: 16px
+
+tbody .q-item
+  padding: 0
+  padding-right: 10px
 </style>
