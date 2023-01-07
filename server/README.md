@@ -16,7 +16,8 @@ This module contains the server that runs the DRL Leaderboard backend and fronte
 ## Setup
 
 ### Config
-- Copy .dockerenv-example to .dockerenv and fill in the ssh password
+- Create a SSH key (read the Reamde in .ssh).
+- Copy .dockerenv-example to .dockerenv and fill in the ssh password (for the key you just created).
 - Copy terraform/config.tfvars.example and fill in the hetznercloudtoken
 
 ### Build Dockerimage
