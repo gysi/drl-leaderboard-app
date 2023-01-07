@@ -205,6 +205,7 @@ public class LeaderboardUpdater {
                     leaderboardEntry.setCreatedAt(LocalDateTime.from(ZonedDateTime.parse((String) drlLeaderboardEntry.get("created-at"))));
                     leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
                     leaderboardEntry.setInvalidRunReason(null);
+                    leaderboardEntry.setIsInvalidRun(false);
                     if (alreadyFoundPlayerNames.containsKey(leaderboardEntry.getPlayerName())) {
                         LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerNames.get(leaderboardEntry.getPlayerName());
                         LOG.warn("Playername " + leaderboardEntry.getPlayerName() + " (" + leaderboardEntry.getPlayerId() + ") already exists in this leaderboard (" + alreadyExistingEntry.getPlayerId() + ")");
