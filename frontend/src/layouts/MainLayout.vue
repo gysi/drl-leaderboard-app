@@ -132,9 +132,6 @@ export default defineComponent({
 .q-field__label
   color: $secondary
 
-.q-field__native, .q-field__prefix, .q-field__suffix, .q-field__input
-  color: white
-
 .my-sticky-header-table
   /* height or max-height is important */
   //min-height: inherit
@@ -174,7 +171,7 @@ tbody .q-td
   margin-right: 100px
 
 tbody .q-tr .q-td:first-child
-  min-width: 65px
+  min-width: 70px
   font-weight: bolder
   color: #f6f6f6
   text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black

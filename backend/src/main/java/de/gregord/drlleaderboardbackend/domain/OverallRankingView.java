@@ -9,4 +9,7 @@ public interface OverallRankingView {
     Integer getTotalCrashCount();
     Long getTotalScore();
     Double getMaxTopSpeed();
+    String getFlagUrl();
+    String getProfilePlatform();
+    String getProfileThumb();
 }
