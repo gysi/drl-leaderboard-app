@@ -17,7 +17,7 @@
           </router-link>
         </q-toolbar-title>
 
-        <div>by gysi</div>
+        <div>by gysi (v.{{ version }})</div>
       </q-toolbar>
     </q-header>
 
@@ -44,6 +44,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import NavigationLinks from 'components/NavigationLinks.vue'
+import {version} from '../../package.json'
 
 const linksList = [
   {
@@ -84,14 +85,17 @@ const linksList = [
     external: true
   }
 ]
-
 export default defineComponent({
   name: 'MainLayout',
 
   components: {
     NavigationLinks
   },
-
+  data() {
+    return {
+      version: version
+    }
+  },
   setup () {
     const leftDrawerOpen = ref(false)
 
