@@ -37,6 +37,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", "npm:8.30.0"],\
             ["eslint-config-prettier", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:8.5.0"],\
             ["eslint-plugin-vue", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:9.8.0"],\
+            ["flag-icons", "npm:6.6.6"],\
             ["pinia", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:2.0.28"],\
             ["postcss", "npm:8.4.20"],\
             ["prettier", "npm:2.8.1"],\
@@ -1804,6 +1805,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", "npm:8.30.0"],\
             ["eslint-config-prettier", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:8.5.0"],\
             ["eslint-plugin-vue", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:9.8.0"],\
+            ["flag-icons", "npm:6.6.6"],\
             ["pinia", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:2.0.28"],\
             ["postcss", "npm:8.4.20"],\
             ["prettier", "npm:2.8.1"],\
@@ -2741,6 +2743,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["find-up", "npm:5.0.0"],\
             ["locate-path", "npm:6.0.0"],\
             ["path-exists", "npm:4.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["flag-icons", [\
+        ["npm:6.6.6", {\
+          "packageLocation": "./.yarn/cache/flag-icons-npm-6.6.6-1d5e135a19-50b60ac6e4.zip/node_modules/flag-icons/",\
+          "packageDependencies": [\
+            ["flag-icons", "npm:6.6.6"]\
           ],\
           "linkType": "HARD"\
         }]\
