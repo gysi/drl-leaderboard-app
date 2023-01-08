@@ -1430,6 +1430,7 @@ __metadata:
     eslint: ^8.10.0
     eslint-config-prettier: ^8.1.0
     eslint-plugin-vue: ^9.0.0
+    flag-icons: ^6.6.6
     pinia: ^2.0.11
     postcss: ^8.4.14
     prettier: ^2.5.1
@@ -2334,6 +2335,13 @@ __metadata:
     locate-path: ^6.0.0
     path-exists: ^4.0.0
   checksum: 07955e357348f34660bde7920783204ff5a26ac2cafcaa28bace494027158a97b9f56faaf2d89a6106211a8174db650dd9f503f9c0d526b1202d5554a00b9095
+  languageName: node
+  linkType: hard
+
+"flag-icons@npm:^6.6.6":
+  version: 6.6.6
+  resolution: "flag-icons@npm:6.6.6"
+  checksum: 50b60ac6e4cd945092f57718ebaf024888212c968bea03d8cf9cca533b8b151edc9a6cd4566b50c4af844f18e0ec7ab92b6c64bff96e2d5b86ceb19e622dfe0a
   languageName: node
   linkType: hard
 

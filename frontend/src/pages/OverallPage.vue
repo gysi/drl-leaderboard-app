@@ -12,6 +12,7 @@
       flat
       bordered
       :visible-columns="[]"
+      :rows-per-page-options="[50]"
     >
       <template v-slot:body="props">
         <q-tr>
@@ -28,20 +29,22 @@
             <q-item v-if="col.name === 'playerName'"
               clickable
               :to="`/playerlb/?playerName=${props.row.playerName}`"
-              style="background: rgba(0, 0, 0, 0.05);"
+              class="q-item-player-region"
             >
               <q-item-section avatar side>
                 <q-avatar rounded size="50px">
-                  <img :src="props.row.profileThumb" />
+                  <img :src="props.row.profileThumb" loading="lazy" alt="Avatar"/>
                 </q-avatar>
               </q-item-section>
               <q-item-section>
-                {{ props.row.playerName }}
-                <q-badge floating
-                         :style="{backgroundColor: props.row.profilePlatform === 'Steam' ? 'rgb(25,91,127)' :
-                                  props.row.profilePlatform === 'Epic' ? 'black' :
-                                   props.row.profilePlatform === 'Playstation' ? 'rgb(0,65,151)' : 'rgb(16,120,15)'}"
-                >{{ props.row.profilePlatform }}</q-badge>
+                <q-item-label class="player-item-label">{{ props.row.playerName }}</q-item-label>
+                <q-item-label caption>
+                  <span :class="`fi fi-${props.row.flagUrl}`"></span>
+<!--                    <q-img loading="lazy" :src="props.row.flagUrl" class="player-avatar-img"/>-->
+                  <q-badge
+                    :class="`badge-platform q-batch-${props.row.profilePlatform}`"
+                  >{{ props.row.profilePlatform }}</q-badge>
+                </q-item-label>
               </q-item-section>
             </q-item>
             {{ col.name !== 'playerName' ? col.value : '' }}
@@ -86,7 +89,7 @@ export default {
     async fetchData() {
       this.loading = true;
       try {
-        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overallranking?page=1&limit=1000');
+        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overallranking?page=1&limit=500');
         this.rows = response.data;
       } catch (error) {
         console.error(error);
@@ -117,4 +120,37 @@ tbody .q-td
 tbody .q-item
   padding: 0
   padding-right: 10px
+
+.player-item-label
+  font-size: 20px
+
+.player-avatar-img
+  width: 25px
+  height: 13px
+
+.q-item-player-region
+  background: rgba(0, 0, 0, 0.05)
+
+.fi
+  height: 14px
+  width: 19px
+
+.badge-platform
+  margin-left: 5px
+  font-size: 10px
+  line-height: 10px
+  padding-right: 2px
+  padding-left: 2px
+
+.q-batch-Steam
+  background-color: rgb(25,91,127)
+
+.q-batch-Epic
+  background-color: black
+
+.q-batch-Playstation
+  background-color: rgb(0,65,151)
+
+.q-batch-Xbox
+  background-color: rgb(16,120,15)
 </style>

@@ -64,7 +64,7 @@ SELECT ROW_NUMBER() OVER (ORDER BY totalPoints DESC)                            
        totalCrashCount,
        totalScore,
        maxTopSpeed,
-       flagUrl,
+       substring(flagUrl from position('.png' in flagUrl) - 2 for 2) as flagUrl,
        profilePlatform,
        profileThumb
 from overall_ranking ovr;

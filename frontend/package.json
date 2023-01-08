@@ -2,8 +2,8 @@
   "name": "drl-leaderboard-frontend",
   "packageManager": "yarn@3.3.1",
   "version": "0.0.1",
-  "description": "\uD83D\uDE80 Awesome \uD83D\uDEE9️ DRL Leaderboard \uD83C\uDFC6 Webapp by gysi \uD83E\uDD47\uD83E\uDD48\uD83E\uDD49",
-  "productName": "\uD83C\uDFC6 DRL Leaderboards \uD83C\uDFC6",
+  "description": "🚀 Awesome 🛩️ DRL Leaderboard 🏆 Webapp by gysi 🥇🥈🥉",
+  "productName": "🏆 DRL Leaderboards 🏆",
   "author": "Gregor Dieter <github@i337.de>",
   "private": true,
   "scripts": {
@@ -15,6 +15,7 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
     "date-fns": "^2.29.3",
+    "flag-icons": "^6.6.6",
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
