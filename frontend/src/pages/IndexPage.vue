@@ -15,6 +15,13 @@
           hide-bottom
           dense
         >
+          <template v-slot:body-cell-trackName="props">
+            <td>
+              <q-chip dense color="grey-4">{{ props.row.trackName }}</q-chip>
+              <q-chip dense color="grey-6">{{ props.row.mapName }}</q-chip>
+              <q-chip dense color="grey-8" dark>{{ props.row.parentCategory }}</q-chip>
+            </td>
+          </template>
         </q-table>
         <q-table
           title="Latest Top10 Activity"
@@ -28,6 +35,13 @@
           hide-bottom
           dense
         >
+          <template v-slot:body-cell-trackName="props">
+            <td>
+              <q-chip dense color="grey-4">{{ props.row.trackName }}</q-chip>
+              <q-chip dense color="grey-6">{{ props.row.mapName }}</q-chip>
+              <q-chip dense color="grey-8" dark>{{ props.row.parentCategory }}</q-chip>
+            </td>
+          </template>
         </q-table>
       </div>
       <div class="row col-12 justify-start items-start q-gutter-md">
@@ -76,7 +90,7 @@ export default defineComponent({
           { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
           { name: 'position', label: '#', field: 'position', align: 'right' },
           { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val), align: 'right' },
-          { name: 'trackName', label: 'Track / Map / Category', field: (row) => `${row.trackName} / ${row.mapName} / ${row.parentCategory}`, align: 'left'},
+          { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
         ],
         rows: [],
         pagination: {
