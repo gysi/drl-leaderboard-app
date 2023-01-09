@@ -32,7 +32,7 @@
       </div>
       <div class="row col-12 justify-start items-start q-gutter-md">
         <q-table
-          title="Most Pbs Last 7 Days"
+          title="Most entries last 7 days"
           :columns="mostPbsLast7Days.columns"
           :rows="mostPbsLast7Days.rows"
           :loading="mostPbsLast7Days.loading"
@@ -45,7 +45,7 @@
         >
         </q-table>
         <q-table
-          title="Most Pbs Last Month"
+          title="Most entries last month"
           :columns="mostPbsLast7Days.columns"
           :rows="mostPbsLastMonth.rows"
           :loading="mostPbsLastMonth.loading"
@@ -74,7 +74,7 @@ export default defineComponent({
       latestActivity: {
         columns: [
           { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
-          { name: 'position', label: '#', field: 'position', align: 'left' },
+          { name: 'position', label: '#', field: 'position', align: 'right' },
           { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val), align: 'right' },
           { name: 'trackName', label: 'Track / Map / Category', field: (row) => `${row.trackName} / ${row.mapName} / ${row.parentCategory}`, align: 'left'},
         ],
@@ -147,9 +147,13 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
-.home-tables
-  font-size: 20px !important
+:deep(.q-table tbody td)
+  font-size: 16px
 
-.q-table tbody td
-  font-size: 20px !important
+:deep(.q-table thead th)
+  font-size: 18px
+
+:deep(.q-table__top)
+  background-color: $primary
+  color: white
 </style>

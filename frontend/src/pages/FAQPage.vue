@@ -1,6 +1,5 @@
 <template>
-  <q-page class="q-ma-sm">
-    <h3 class="q-ma-none q-mb-sm">FAQ</h3>
+  <q-page class="q-pa-md">
     <q-card bordered class="bg-grey-9 text-white" style="max-width: 50%">
       <q-card-section>
         <div class="text-h6">How does the point system work?</div>
@@ -11,7 +10,7 @@
       <q-card-section class="bg-white text-black" style="font-size: 16px">
         <div>The number of points a player receives is calculated based on their position on the leaderboard, with the formula</div>
         <b><span>points = 101 - position</span></b>
-        <div>The player is awarded bonus points below certain positions</div>
+        <div>Additionally the player is awarded bonus points below certain positions</div>
         <div>
           <q-markup-table class="q-ma-sm">
             <thead>
@@ -46,7 +45,7 @@
               <td>+2</td>
             </tr>
             <tr>
-              <td>&lt;= 1</td>
+              <td>= 1</td>
               <td>+2</td>
             </tr>
             </tbody>
