@@ -1,8 +1,6 @@
 package de.gregord.drlleaderboardbackend.repositories;
 
-import de.gregord.drlleaderboardbackend.domain.LeaderBoardByTrackView;
-import de.gregord.drlleaderboardbackend.domain.LeaderboardByPlayerView;
-import de.gregord.drlleaderboardbackend.domain.OverallRankingView;
+import de.gregord.drlleaderboardbackend.domain.*;
 import de.gregord.drlleaderboardbackend.entities.LeaderboardEntry;
 import de.gregord.drlleaderboardbackend.entities.TrackMinimal;
 import org.springframework.cache.annotation.Cacheable;
@@ -85,4 +83,66 @@ from overall_ranking ovr;
             WHERE l.playerName like :playerName
             """)
     List<String> findDistinctPlayerNames(String playerName, Pageable pageable);
+
+    @Query(value = """
+            SELECT
+                l.player_name as playerName,
+                l.position,
+                l.created_at as createdAt,
+                t.name as trackName,
+                t.map_name as mapName,
+                t.parent_category as parentCategory
+            FROM leaderboards l
+                     LEFT JOIN tracks t ON t.id = l.track_id
+            WHERE l.is_invalid_run = false
+            ORDER BY l.created_at DESC
+            LIMIT 10
+            """, nativeQuery = true)
+    List<LeaderboardActivityView> latestLeaderboardActivity();
+
+    @Query(value = """
+            SELECT
+                l.player_name as playerName,
+                l.position,
+                l.created_at as createdAt,
+                t.name as trackName,
+                t.map_name as mapName,
+                t.parent_category as parentCategory
+            FROM leaderboards l
+                     LEFT JOIN tracks t ON t.id = l.track_id
+            WHERE l.position <= 10 and l.is_invalid_run = false
+            ORDER BY l.created_at DESC
+            LIMIT 10
+            """, nativeQuery = true)
+    List<LeaderboardActivityView> latestLeaderboardActivityTop10();
+
+    @Query(value = """
+            SELECT
+                l.player_name as playerName,
+                count(*) as entries,
+                min(position) as bestPosition,
+                round(avg(position)) as avgPosition
+            FROM leaderboards l
+                     LEFT JOIN tracks t ON t.id = l.track_id
+            WHERE l.created_at > (now() - INTERVAL '7' DAY)
+              AND l.is_invalid_run = false
+            GROUP BY player_name
+            ORDER BY count(*) DESC;
+            """, nativeQuery = true)
+    List<LeaderboardMostPbsView> mostPbsLast7Days();
+
+    @Query(value = """
+            SELECT
+                l.player_name as playerName,
+                count(*) as entries,
+                min(position) as bestPosition,
+                round(avg(position)) as avgPosition
+            FROM leaderboards l
+                     LEFT JOIN tracks t ON t.id = l.track_id
+            WHERE l.created_at > (now() - INTERVAL '1' MONTH)
+              AND l.is_invalid_run = false
+            GROUP BY player_name
+            ORDER BY count(*) DESC;
+            """, nativeQuery = true)
+    List<LeaderboardMostPbsView> mostPbsLastMonth();
 }

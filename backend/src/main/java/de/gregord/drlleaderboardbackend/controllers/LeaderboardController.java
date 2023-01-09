@@ -1,9 +1,7 @@
 package de.gregord.drlleaderboardbackend.controllers;
 
 
-import de.gregord.drlleaderboardbackend.domain.LeaderBoardByTrackView;
-import de.gregord.drlleaderboardbackend.domain.LeaderboardByPlayerView;
-import de.gregord.drlleaderboardbackend.domain.OverallRankingView;
+import de.gregord.drlleaderboardbackend.domain.*;
 import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
 import de.gregord.drlleaderboardbackend.services.LeaderboardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +75,30 @@ public class LeaderboardController {
                         PageRequest.of(0, 50)
                                 .withSort(Sort.by(Sort.Order.asc("playerName")))
                 );
+        return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/latestActivity")
+    public ResponseEntity<List<LeaderboardActivityView>> latestActivity() {
+        List<LeaderboardActivityView> players = leaderboardRepository.latestLeaderboardActivity();
+        return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/latestActivityTop10")
+    public ResponseEntity<List<LeaderboardActivityView>> latestActivityTop10() {
+        List<LeaderboardActivityView> players = leaderboardRepository.latestLeaderboardActivityTop10();
+        return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/mostPbsLast7Days")
+    public ResponseEntity<List<LeaderboardMostPbsView>> mostPbsLast7Days() {
+        List<LeaderboardMostPbsView> players = leaderboardRepository.mostPbsLast7Days();
+        return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/mostPbsLastMonth")
+    public ResponseEntity<List<LeaderboardMostPbsView>> mostPbsLastMonth() {
+        List<LeaderboardMostPbsView> players = leaderboardRepository.mostPbsLastMonth();
         return ResponseEntity.ok(players);
     }
 }
