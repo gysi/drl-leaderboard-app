@@ -29,5 +29,19 @@ public class MyCustomRuntimeHints implements RuntimeHintsRegistrar {
                 org.springframework.aop.SpringProxy.class,
                 org.springframework.core.DecoratingProxy.class
         );
+
+        hints.proxies().registerJdkProxy(
+                de.gregord.drlleaderboardbackend.domain.LeaderboardActivityView.class,
+                org.springframework.data.projection.TargetAware.class,
+                org.springframework.aop.SpringProxy.class,
+                org.springframework.core.DecoratingProxy.class
+        );
+
+        hints.proxies().registerJdkProxy(
+                de.gregord.drlleaderboardbackend.domain.LeaderboardMostPbsView.class,
+                org.springframework.data.projection.TargetAware.class,
+                org.springframework.aop.SpringProxy.class,
+                org.springframework.core.DecoratingProxy.class
+        );
     }
 }
