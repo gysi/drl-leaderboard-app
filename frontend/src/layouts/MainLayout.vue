@@ -78,6 +78,12 @@ const linksList = [
     link: '/playerlb'
   },
   {
+    title: 'FAQ',
+    caption: 'Frequently asked questions',
+    icon: 'help',
+    link: '/faq'
+  },
+  {
     title: 'API',
     caption: 'API documentation',
     icon: 'code',
