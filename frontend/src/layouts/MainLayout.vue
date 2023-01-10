@@ -181,7 +181,7 @@ tbody .q-td
   margin-right: 100px
 
 tbody .q-tr .q-td:first-child
-  min-width: 70px
+  width: 70px
   font-weight: bolder
   color: #f6f6f6
   text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black

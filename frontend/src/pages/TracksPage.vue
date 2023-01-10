@@ -16,9 +16,10 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
 import axios from 'axios';
 
-export default {
+export default defineComponent({
   name: 'TracksPage',
   data() {
     return {
@@ -56,5 +57,5 @@ export default {
   beforeUnmount() {
     clearInterval(this.interval);
   }
-}
+})
 </script>
