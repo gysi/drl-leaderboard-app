@@ -6,7 +6,7 @@
       :rows="rows"
       :loading="loading"
       :pagination="pagination"
-      row-key="playerName"
+      row-key="position"
       class="col-auto my-sticky-header-table"
       style="max-height: 100%; min-width: 1100px"
       flat
@@ -33,7 +33,8 @@
             >
               <q-item-section avatar side>
                 <q-avatar rounded size="50px">
-                  <img :src="props.row.profileThumb" loading="lazy" alt="Avatar"/>
+<!--                  <img :src="props.row.profileThumb" loading="eager" alt="Avatar"/>-->
+                  <q-img :src="props.row.profileThumb" />
                 </q-avatar>
               </q-item-section>
               <q-item-section>
@@ -56,11 +57,12 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
 import axios from 'axios';
 import { formatMilliSeconds, backGroundColorByPosition, getDateDifference } from 'src/modules/LeaderboardFunctions'
 
 
-export default {
+export default defineComponent({
   name: 'OverallPage',
   data() {
     return {
@@ -110,7 +112,7 @@ export default {
   beforeUnmount() {
     clearInterval(this.interval);
   },
-}
+})
 </script>
 
 <style lang="sass" scoped>
