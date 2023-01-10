@@ -32,6 +32,7 @@
               class="q-ml-md"
               use-chips
               label="Enter player name"
+              dark
             >
               <template v-slot:no-option>
                 <q-item
@@ -96,10 +97,11 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
 import axios from 'axios';
 import { formatMilliSeconds, backGroundColorByPosition, getDateDifference } from 'src/modules/LeaderboardFunctions'
 
-export default {
+export default defineComponent({
   name: 'PlayerLbPage',
   created(){
     this.searchText = this.$router.currentRoute.value.query.playerName;
@@ -215,10 +217,13 @@ export default {
     backGroundColorByPosition,
     getDateDifference
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>
-tbody .q-td
+:deep(tbody .q-td)
   font-size: 16px
+
+:deep(.q-field__input)
+  color: white
 </style>
