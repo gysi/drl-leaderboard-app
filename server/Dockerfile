@@ -87,7 +87,7 @@ COPY --chown=myuser:mygroup server/ansible ansible
 COPY --from=backend-builder --chown=myuser:mygroup /app/target/*.jar /home/myuser/ansible/app/backend/app.jar
 COPY --from=native-image-backend-builder --chown=myuser:mygroup /app/target/DRLLeaderboardBackend /home/myuser/ansible/app/backend/native/DRLLeaderboardBackend
 COPY --from=frontend-builder-staging --chown=myuser:mygroup /app/dist/spa /home/myuser/ansible/app/frontend/staging
-COPY --from=frontend-builder-staging --chown=myuser:mygroup /app/dist/spa /home/myuser/ansible/app/frontend/prod
+COPY --from=frontend-builder-prod --chown=myuser:mygroup /app/dist/spa /home/myuser/ansible/app/frontend/prod
 
 # COPY ENTRYPOINT
 COPY --chown=myuser:mygroup server/entrypoint.sh entrypoint.sh
