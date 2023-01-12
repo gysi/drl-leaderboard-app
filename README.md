@@ -66,7 +66,9 @@ Webapp for displaying DRL Simulator leaderboards.
       * [ ] Link to track leaderboard
       * [ ] Top 3 players?
       * [ ] Search/Filter
-    * [x] Overall rankings
+    * [ ] Overall rankings
+      * [ ] Adds a "?" icon to the invalid runs column header which links to the FAQ Section
+      * [ ] Adds a "?" icon to the points column header which links to the FAQ Section
     * [ ] Track rankings
       * [x] ~~Basic map rankings~~
       * [ ] Search should also search in parent categories
@@ -77,6 +79,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [ ] Sortable columns
       * [ ] More readable invalid runs onhover overlay #**HIGH PRIO**
       * [ ] "Beaten By" integration for each PB that got beaten since the submission #**HIGH PRIO**
+      * [ ] Adds a "?" icon to the points column header which links to the FAQ Section
       * [ ] General statistics on the top of the page/table-header
       * [ ] Sortable columns
     * [ ] FAQ 
