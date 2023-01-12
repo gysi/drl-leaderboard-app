@@ -68,18 +68,18 @@ Webapp for displaying DRL Simulator leaderboards.
       * [ ] Search/Filter
     * [x] Overall rankings
     * [ ] Track rankings
-      * [x] ~~Basic map rankings~~ 
-      * [ ] List not finished tracks
+      * [x] ~~Basic map rankings~~
       * [ ] Search should also search in parent categories
     * [ ] Player rankings
       * [x] ~~Basic player rankings~~
-      * [ ] Link to track leaderboard
+      * [ ] List not finished tracks #**HIGH PRIO**
+      * [ ] Link to track leaderboard #**HIGH PRIO**
       * [ ] Sortable columns
-      * [ ] More readable invalid runs onhover overlay
-      * [ ] "Beaten By" integration for each PB that got beaten since the submission
+      * [ ] More readable invalid runs onhover overlay #**HIGH PRIO**
+      * [ ] "Beaten By" integration for each PB that got beaten since the submission #**HIGH PRIO**
       * [ ] General statistics on the top of the page/table-header
       * [ ] Sortable columns
     * [ ] FAQ 
       * [x] ~~Point system explanation~~
-      * [ ] Invalid runs explanation
+      * [ ] Invalid runs explanation #**HIGH PRIO**
 
