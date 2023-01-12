@@ -75,7 +75,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [ ] Search should also search in parent categories
     * [ ] Player rankings
       * [x] ~~Basic player rankings~~
-      * [ ] List not finished tracks #**HIGH PRIO**
+      * [x] ~~List not finished tracks~~
       * [ ] Link to track leaderboard #**HIGH PRIO**
       * [ ] Sortable columns
       * [ ] More readable invalid runs onhover overlay #**HIGH PRIO**
