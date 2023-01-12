@@ -5,7 +5,7 @@
         :columns="columns"
         :rows="rows"
         :loading="loading"
-        row-key="playerName"
+        row-key="track.id"
         class="my-sticky-header-table"
         table-class="col-auto"
         style="max-height: 100%;"
@@ -64,17 +64,18 @@
         <template v-slot:body="props">
           <q-tr
             :props="props"
-            :key="`m_${props.rowIndex}`"
+            :key="props.row.track.id"
           >
             <q-td
               v-for="col in props.cols"
               :key="col.name"
               :props="props"
               :style="{
-                backgroundColor: props.row.isInvalidRun ?
-                  'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null,
-                // borderTop: props.row.position === 1 ? rows[props.rowIndex-1]?.position === 1 ? 0 : '2px solid #FFED02' : '1px solid black',
-                // borderBottom : props.row.position === 1 ? '2px solid #FFED02' : 0,
+                backgroundColor:
+                  props.row.isMissing ? 'rgb(204,204,204)' :
+                  props.row.isInvalidRun ? 'rgba(187,44,44,0.54)' :
+                    col.name === 'position' ? backGroundColorByPosition(props.row.position) :
+                      null,
               }"
               :class="col.name === 'position' && !props.row.isInvalidRun ? props.row.position === 1 ? 'first-place' : props.row.position === 2 ? 'second-place' : props.row.position === 3 ? 'third-place' : '' : ''"
             >
@@ -117,11 +118,12 @@ export default defineComponent({
         { name: 'track', label: 'Track', field: row => row.track.name, align: 'left', required: true },
         { name: 'map', label: 'Map', field: row => row.track.mapName, align: 'left', required: true },
         { name: 'score', label: 'Time', field: 'score',
-          format: (val, row) => this.formatMilliSeconds(val),
-          align: 'left', required: true },
+          format: (val, row) => { if(val) return this.formatMilliSeconds(val) }, align: 'left', required: true },
         { name: 'crashes', label: 'Crashes', field: 'crashCount', required: true },
-        { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed', format: (val, row) => (Math.round(val*10)/10), required: true },
-        { name: 'points', label: 'Points', field: 'points', format: (val, row) => row.isInvalidRun ? 0 : Math.round(val), required: true },
+        { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed',
+          format: (val, row) => { if(val) return Math.round(val*10)/10 }, required: true },
+        { name: 'points', label: 'Points', field: 'points',
+          format: (val, row) => { if (val) row.isInvalidRun ? 0 : Math.round(val) }, required: true },
         { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val), required: true },
         { name: 'droneName', label: 'Drone Name', field: 'droneName', required: true },
         { name: 'isInvalidRun', label: 'Invalid Run', field: 'isInvalidRun'},
@@ -205,8 +207,31 @@ export default defineComponent({
       });
       this.loading = true;
       try {
-        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/byplayername?playerName='+player);
-        this.rows = response.data;
+        const [ responseFinishedTracks, responseMissingTracks] =
+          await Promise.all([
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/byplayername?playerName='+player),
+            axios.get(process.env.DLAPP_API_URL+'/tracks/missingtracksbyplayername?playerName='+player)
+          ]);
+        const finishedTracks = responseFinishedTracks.data;
+        const missingTracks = responseMissingTracks.data;
+        let newArray = [];
+        let i = 0;
+        let j = 0;
+
+        while (i < finishedTracks.length && j < missingTracks.length) {
+          if (finishedTracks[i].track.mapName < missingTracks[j].mapName
+            ||
+            finishedTracks[i].track.parentCategory < missingTracks[j].parentCategory ||
+            finishedTracks[i].track.name < missingTracks[j].name
+          ) {
+            newArray.push(finishedTracks[i]);
+            i++;
+          } else {
+            newArray.push({ isMissing: true, track: missingTracks[j] });
+            j++;
+          }
+        }
+        this.rows = newArray.concat(finishedTracks.slice(i), missingTracks.slice(j));
       } catch (error) {
         console.error(error);
       } finally {
