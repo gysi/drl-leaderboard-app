@@ -45,14 +45,41 @@ Webapp for displaying DRL Simulator leaderboards.
   * [x] ~~Initial setup~~
   * [ ] Design
     * [ ] Something better than the current one
-    * [ ] Light/Dark mode
+    * [ ] Dark mode
     * [ ] Mobile friendly (Optional)
+      * Zoom is disabled on mobile without using desktop mode on android
+      * And desktop mode does not enable zoom on ios for safari and chrome
+      * Using rem units for font sizes
     * [ ] Multi-language support (Optional)
+    * [ ] Custom scrollbars
+      * https://binaryify.github.io/vue-custom-scrollbar/en/#why-use-vue-custom-scrollbar (all browsers)
+      * https://codepen.io/Hawkeye64/pen/bGRXBOY?editors=1100 (only webkit)
   * [ ] Features
-    * [ ] Map listing
-      * [ ] Map images (Optional) 
-    * [ ] Overall rankings
-    * [ ] Per map rankings
-    * [ ] Per Player rankings for all maps
-    * [ ] Latest Player activity
+    * Home
+      * [x] ~~Latest Player activity~~
+      * [x] ~~Most active players (last 7/30 days)~~
+      * [ ] Link from track / map / parent category "chips" to track rankings / tracks section
+      * [ ] ??? More stuff 
+    * [ ] Track section
+      * [x] ~~Basic track/map listing~~
+      * [ ] Track/Map images (Optional) 
+      * [ ] Link to track leaderboard
+      * [ ] Top 3 players?
+      * [ ] Search/Filter
+    * [x] Overall rankings
+    * [ ] Track rankings
+      * [x] ~~Basic map rankings~~ 
+      * [ ] List not finished tracks
+      * [ ] Search should also search in parent categories
+    * [ ] Player rankings
+      * [x] ~~Basic player rankings~~
+      * [ ] Link to track leaderboard
+      * [ ] Sortable columns
+      * [ ] More readable invalid runs onhover overlay
+      * [ ] "Beaten By" integration for each PB that got beaten since the submission
+      * [ ] General statistics on the top of the page/table-header
+      * [ ] Sortable columns
+    * [ ] FAQ 
+      * [x] ~~Point system explanation~~
+      * [ ] Invalid runs explanation
 
