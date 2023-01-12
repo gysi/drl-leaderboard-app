@@ -67,6 +67,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [ ] Top 3 players?
       * [ ] Search/Filter
     * [ ] Overall rankings
+      * [x] ~~Basic overall rankings~~
       * [ ] Adds a "?" icon to the invalid runs column header which links to the FAQ Section
       * [ ] Adds a "?" icon to the points column header which links to the FAQ Section
     * [ ] Track rankings
