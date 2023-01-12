@@ -35,7 +35,7 @@ function formatMilliSeconds(milliseconds){
 }
 
 function getDateDifference(dateString) {
-  // 2022-08-30T02:14:25.042
+  if(!dateString) return '';
   let duration = intervalToDuration({
     start: new Date(dateString+'Z'),
     end: new Date()
