@@ -16,7 +16,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Beaten by rankings for each pbs~~
     * [x] ~~Removal/exclusion of invalid runs~~
     * [x] ~~Score calculation~~
-    * [ ] Latest Player activity
+    * [x] ~~Latest Player activity~~
     * [x] ~~Caching~~
 * [ ] Server
   * [x] ~~Update server~~
