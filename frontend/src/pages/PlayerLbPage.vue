@@ -123,7 +123,7 @@ export default defineComponent({
         { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed',
           format: (val, row) => { if(val) return Math.round(val*10)/10 }, required: true },
         { name: 'points', label: 'Points', field: 'points',
-          format: (val, row) => { if (val) row.isInvalidRun ? 0 : Math.round(val) }, required: true },
+          format: (val, row) => { if (val) return row.isInvalidRun ? 0 : Math.round(val) }, required: true },
         { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val), required: true },
         { name: 'droneName', label: 'Drone Name', field: 'droneName', required: true },
         { name: 'isInvalidRun', label: 'Invalid Run', field: 'isInvalidRun'},
