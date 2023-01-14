@@ -79,6 +79,7 @@
               }"
               :class="col.name === 'position' && !props.row.isInvalidRun ? props.row.position === 1 ? 'first-place' : props.row.position === 2 ? 'second-place' : props.row.position === 3 ? 'third-place' : '' : ''"
             >
+<!-- Position row-->
               <q-icon
                 v-if="props.row.isInvalidRun && col.name === 'position'"
                 name="warning"
@@ -89,7 +90,21 @@
                   {{ props.row.invalidRunReason }}
                 </q-tooltip>
               </q-icon>
-              {{ col.value }}
+<!-- Position row end-->
+<!-- Track row -->
+              <q-item clickable v-if="col.name === 'track'" class="playerlb-track-td"
+                      :to="`/tracklb/?trackId=${props.row.track.id}`"
+              >
+                <q-item-section>
+                  <q-item-label>{{ props.row.track.name }}</q-item-label>
+                  <q-item-label caption>
+                    <q-chip dense color="grey-6">{{ props.row.track.mapName }}</q-chip>
+                    <q-chip dense color="grey-8" dark>{{ props.row.track.parentCategory }}</q-chip>
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+<!-- Track row end -->
+              {{ col.name !== 'track' ? col.value : '' }}
             </q-td>
           </q-tr>
         </template>
@@ -116,7 +131,7 @@ export default defineComponent({
       columns: [
         { name: 'position', label: '#', field: 'position', align: 'center', required: true },
         { name: 'track', label: 'Track', field: row => row.track.name, align: 'left', required: true },
-        { name: 'map', label: 'Map', field: row => row.track.mapName, align: 'left', required: true },
+        // { name: 'map', label: 'Map', field: row => row.track.mapName, align: 'left', required: true },
         { name: 'score', label: 'Time', field: 'score',
           format: (val, row) => { if(val) return this.formatMilliSeconds(val) }, align: 'left', required: true },
         { name: 'crashes', label: 'Crashes', field: 'crashCount', required: true },
@@ -128,7 +143,7 @@ export default defineComponent({
         { name: 'droneName', label: 'Drone Name', field: 'droneName', required: true },
         { name: 'isInvalidRun', label: 'Invalid Run', field: 'isInvalidRun'},
         { name: 'invalidRunReason', label: 'Invalid Run Reason', field: 'invalidRunReason'},
-        { name: 'mapCatetory', label: 'Map Category', field: row => row.track.parentCategory, required: true },
+        // { name: 'mapCatetory', label: 'Map Category', field: row => row.track.parentCategory, required: true },
       ],
       rows: [],
       loading: false,
@@ -251,4 +266,13 @@ export default defineComponent({
 
 :deep(.q-field__input)
   color: white
+
+.playerlb-track-td
+  padding: 0
+  background: rgba(0, 0, 0, 0.05)
+
+.playerlb-track-td .q-chip
+  margin-left: 0
+  margin-top: 0
+  margin-bottom: 0
 </style>
