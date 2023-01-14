@@ -117,6 +117,16 @@ import { defineComponent } from 'vue'
 import axios from 'axios';
 import { formatMilliSeconds, backGroundColorByPosition, getDateDifference } from 'src/modules/LeaderboardFunctions'
 
+function compareTracks(track1, track2) {
+  if (track1.mapName !== track2.mapName) {
+    return track1.mapName < track2.mapName;
+  }
+  if (track1.parentCategory !== track2.parentCategory) {
+    return track1.parentCategory < track2.parentCategory;
+  }
+  return track1.name < track2.name;
+}
+
 export default defineComponent({
   name: 'PlayerLbPage',
   created(){
@@ -232,13 +242,8 @@ export default defineComponent({
         let newArray = [];
         let i = 0;
         let j = 0;
-
         while (i < finishedTracks.length && j < missingTracks.length) {
-          if (finishedTracks[i].track.mapName < missingTracks[j].mapName
-            ||
-            finishedTracks[i].track.parentCategory < missingTracks[j].parentCategory ||
-            finishedTracks[i].track.name < missingTracks[j].name
-          ) {
+          if (compareTracks(finishedTracks[i].track, missingTracks[j])){
             newArray.push(finishedTracks[i]);
             i++;
           } else {
@@ -246,7 +251,7 @@ export default defineComponent({
             j++;
           }
         }
-        this.rows = newArray.concat(finishedTracks.slice(i), missingTracks.slice(j));
+        this.rows = newArray.concat(finishedTracks.slice(i), missingTracks.slice(j).map(x => { return { isMissing: true, track: x } }));
       } catch (error) {
         console.error(error);
       } finally {
