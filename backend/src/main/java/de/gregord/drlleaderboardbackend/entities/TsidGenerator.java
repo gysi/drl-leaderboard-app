@@ -1,0 +1,21 @@
+package de.gregord.drlleaderboardbackend.entities;
+
+import de.gregord.drlleaderboardbackend.util.TsidUtil;
+import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.id.IdentifierGenerator;
+
+public class TsidGenerator implements IdentifierGenerator {
+    static final String STRATEGY_NAME = "de.gregord.drlleaderboardbackend.entities.TsidGenerator";
+    static final String GENERATOR_NAME = "TSID";
+
+    @Override
+    public Object generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
+        return TsidUtil.TSID_FACTORY.create().toLong();
+    }
+
+    @Override
+    public boolean supportsJdbcBatchInserts() {
+        return true;
+    }
+}

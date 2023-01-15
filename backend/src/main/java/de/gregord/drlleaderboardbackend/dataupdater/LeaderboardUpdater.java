@@ -29,6 +29,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class LeaderboardUpdater {
@@ -182,9 +184,14 @@ public class LeaderboardUpdater {
                     LOG.warn("No leaderboard entries found for track " + track.getName() + " with map id " + track.getMapId() + " and track id " + track.getDrlTrackId() + " on page " + page);
                 }
 
+                // Collect by trackid and playerids as HashMap for faster lookup
+                List<String> playerIdsFromApiPage = leaderboard.stream().map(entry -> (String) entry.get("player-id")).toList();
+                Collection<LeaderboardEntry> byTrackIdAndPlayerIdIn = leaderboardRepository.findByTrackIdAndPlayerIdIn(track.getId(), playerIdsFromApiPage);
+                Map<String, LeaderboardEntry> existingLeaderboardEntriesForTrack = byTrackIdAndPlayerIdIn.stream().collect(Collectors.toMap(LeaderboardEntry::getPlayerId, Function.identity()));
+
                 for (Map<String, Object> drlLeaderboardEntry : leaderboard) {
                     LeaderboardEntry leaderboardEntry;
-                    Optional<LeaderboardEntry> existingEntry = leaderboardRepository.findByTrackIdAndPlayerId(track.getId(), (String) drlLeaderboardEntry.get("player-id"));
+                    Optional<LeaderboardEntry> existingEntry = Optional.ofNullable(existingLeaderboardEntriesForTrack.get((String) drlLeaderboardEntry.get("player-id")));
                     leaderboardEntry = existingEntry.orElseGet(LeaderboardEntry::new);
                     leaderboardEntry.setTrack(modelMapper.map(track, TrackMinimal.class));
                     leaderboardEntry.setPlayerId((String) drlLeaderboardEntry.get("player-id"));

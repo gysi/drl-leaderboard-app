@@ -15,8 +15,6 @@ services:
       - "5432:5432"
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
-    env_file:
-      - docker_compose.env
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
@@ -25,6 +23,8 @@ services:
       - local_network
   backend:
     build: ./backend/native
+    env_file:
+      - docker_compose.env
     ports:
       - "8080:8080"
     volumes:

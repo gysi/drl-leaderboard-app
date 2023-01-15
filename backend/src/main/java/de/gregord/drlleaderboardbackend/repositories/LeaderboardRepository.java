@@ -32,6 +32,8 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
 
     Optional<LeaderboardEntry> findByTrackIdAndPlayerId(Long trackId, String playerId);
 
+    Collection<LeaderboardEntry> findByTrackIdAndPlayerIdIn(Long trackId, Collection<String> playerIds);
+
     @Cacheable("overallranking")
     @Query(value = """
 WITH overall_ranking as (SELECT player_name              as playerName,

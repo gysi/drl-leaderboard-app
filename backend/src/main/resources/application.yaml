@@ -5,7 +5,7 @@ spring:
 #      write_dates_as_timestamps: false
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgres:5432/drl
+    url: jdbc:postgresql://postgres:5432/drl?reWriteBatchedInserts=true
     username: admin
     password: admin
   jpa:
@@ -16,6 +16,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 100
+        order_updates: true
+        order_inserts: true
     generate-ddl: true
     database: postgresql
 

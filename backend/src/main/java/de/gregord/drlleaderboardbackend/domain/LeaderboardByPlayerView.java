@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LeaderboardByPlayerView {
-    Long getId();
+    String getId();
     String getPlayerName();
     Long getPosition();
     Long getScore();
@@ -19,14 +19,14 @@ public interface LeaderboardByPlayerView {
     List<LeaderboardByPlayerView_LeaderboardEntryMinimal> getBeatenBy();
 
     interface LeaderboardByPlayerView_Track {
-        Long getId();
+        String getId();
         String getName();
         String getMapName();
         String getParentCategory();
     }
 
     interface LeaderboardByPlayerView_LeaderboardEntryMinimal {
-        Long getId();
+        String getId();
         String getPlayerName();
         Long getPosition();
         Long getScore();

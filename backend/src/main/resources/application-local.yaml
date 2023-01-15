@@ -1,6 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/drl
+    url: jdbc:postgresql://localhost:5432/drl?reWriteBatchedInserts=true
+  jpa:
+    properties:
+      hibernate:
+        generate_statistics: true
 
 app:
   drl-api:
