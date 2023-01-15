@@ -66,6 +66,13 @@ This should be done after creating a new server. Make a snapshot of the server b
 
 ## Misc
 
+### Connect to Postgres on the server
+Just port forward a local port to the postgres port on the server:
+```bash
+ssh -N -L 5433:localhost:5432 root@drl-leaderboards-test.miau.io
+ssh -N -L 5434:localhost:5432 root@drl-leaderboards.miau.io
+```
+Then just connect to localhost:5433/localhost:5434 with your favorite postgres client.
 ### Logs
 Nginx: /var/log/nginx/*  
 Backend: /var/log/backend/*
