@@ -1,4 +1,4 @@
-#docker build --tag native-test:v1 $(./build_docker_args.sh) -f Dockerfile_native_image ..
+#docker build --tag native-test:v1 $(./build_docker_args.sh) -f Dockerfile_native_image_test ..
 #docker run --rm --network local_local_network -p 8080:8080 native-test:v1
 #docker run --rm -it --network local_local_network -p 8080:8080 native-test:v1 sh
 FROM alpine:3 as native-image-backend-builder
@@ -19,4 +19,5 @@ WORKDIR /app
 RUN apk add fontconfig-dev freetype-dev
 COPY --from=native-image-backend-builder /app/target/DRLLeaderboardBackend /app/DRLLeaderboardBackend
 
+ENV SPRING_DATASOURCE_URL="jdbc:postgresql://postgres:5432/drl?reWriteBatchedInserts=true"
 ENTRYPOINT ["/app/DRLLeaderboardBackend"]
