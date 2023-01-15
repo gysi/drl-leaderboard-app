@@ -5,11 +5,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,9 +31,11 @@ import java.util.List;
 public class Track {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
+    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, strategy = TsidGenerator.STRATEGY_NAME)
     @EqualsAndHashCode.Include
     private Long id;
+    @EqualsAndHashCode.Include
     private String guid;
     private String mapId;
     // custom
@@ -60,6 +64,7 @@ public class Track {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "track", fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private List<LeaderboardEntry> leaderboardEntryEntries;
 

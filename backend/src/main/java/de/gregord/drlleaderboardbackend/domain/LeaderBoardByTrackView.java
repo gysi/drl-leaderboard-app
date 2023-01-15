@@ -3,7 +3,7 @@ package de.gregord.drlleaderboardbackend.domain;
 import java.time.LocalDateTime;
 
 public interface LeaderBoardByTrackView {
-    Long getId();
+    String getId();
     String getPlayerName();
     Long getPosition();
     Long getScore();

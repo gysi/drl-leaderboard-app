@@ -130,7 +130,6 @@ export default defineComponent({
     let trackId = this.$router.currentRoute.value.query.trackId;
     await this.fetchTracks();
     if(!!trackId) {
-      trackId = parseInt(trackId);
       let track = this.tracks.filter(track => track.id === trackId)[0];
       if(!!track) {
         this.searchText = track;
@@ -175,6 +174,9 @@ export default defineComponent({
       }
     },
     search(val, update, abort) {
+      if(!val){
+        this.searchResults = this.tracks;
+      }
       this.loadingState = true;
       this.searchResults = [];
       val = val.toLowerCase().split(' ');
@@ -182,10 +184,13 @@ export default defineComponent({
         let foundCount = 0;
         for (let i = 0; i < val.length; i++) {
           let foundInPart = 0;
-          if(track.name.toLowerCase().indexOf(val[i]) > -1){
+          if(!!track.name && track.name.toLowerCase().indexOf(val[i]) > -1){
             foundInPart = 1;
           }
-          if(track.mapName.toLowerCase().indexOf(val[i]) > -1){
+          if(!!track.mapName && track.mapName.toLowerCase().indexOf(val[i]) > -1){
+            foundInPart = 1;
+          }
+          if(!!track.parentCategory && track.parentCategory.toLowerCase().indexOf(val[i]) > -1){
             foundInPart = 1;
           }
           foundCount += foundInPart;

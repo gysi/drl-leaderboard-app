@@ -2,10 +2,12 @@ package de.gregord.drlleaderboardbackend.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,8 @@ import java.util.List;
 @NoArgsConstructor
 public class LeaderboardEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
+    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, strategy = TsidGenerator.STRATEGY_NAME)
     @EqualsAndHashCode.Include
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -62,5 +65,6 @@ public class LeaderboardEntry {
     @JoinTable(name = "leaderboards_beaten_by",
             joinColumns = {@JoinColumn(name = "leaderboard_id")},
             inverseJoinColumns = {@JoinColumn(name = "beaten_by_leaderboard_id", referencedColumnName = "id")})
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<LeaderboardEntryMinimal> beatenBy = new ArrayList<>();
 }

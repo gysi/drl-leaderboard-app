@@ -8,12 +8,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface TracksRepository extends JpaRepository<Track, Long> {
     Optional<Track> findByGuid(String guid);
+
+    Collection<Track> findByGuidIn(Collection<String> guids);
 
     @Cacheable(value = "tracks", key = "#type")
     <T> List<T> findBy(Sort sort, Class<T> type);
@@ -30,4 +33,6 @@ public interface TracksRepository extends JpaRepository<Track, Long> {
             ORDER BY t.map_name, t.parent_category, t.name
             """, nativeQuery = true)
     List<LeaderboardByPlayerView.LeaderboardByPlayerView_Track> findMissingTracksByPlayerName(String playerName);
+
+    Collection<Track> findByIdNotIn(Collection<Long> ids);
 }

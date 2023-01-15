@@ -21,6 +21,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @EnableScheduling
 @Component
@@ -172,6 +174,8 @@ public class TracksDataUpdater {
     @CacheEvict(value = "tracks", allEntries = true)
     public void updateMapsData() {
         LOG.info("Updating maps data");
+        List<Track> tracksToBeSaved = new ArrayList<>();
+        boolean preventDeletion = false;
         RestTemplate restTemplate = new RestTemplate();
         int pageCount = 1;
         String nextPageUrl = null;
@@ -195,12 +199,17 @@ public class TracksDataUpdater {
                         Map<String, Object> paging = (Map<String, Object>) data.get("pagging");
                         List<Map<String, Object>> mapsData = (List<Map<String, Object>>) data.get("data");
 
+                        // Collect byGuidIn as HashMap for faster lookup
+                        List<String> guidsFromApiPage = mapsData.stream().map(track -> (String) track.get("guid")).toList();
+                        Collection<Track> byGuidIn = tracksRepository.findByGuidIn(guidsFromApiPage);
+                        Map<String, Track> existingTracksByGuid = byGuidIn.stream().collect(Collectors.toMap(Track::getGuid, Function.identity()));
+
                         // Loop through the data and create a MapDto for each entry
                         for (Map<String, Object> entry : mapsData) {
                             if (excludedMapsByName.contains(((String) entry.get("map-title")).trim().toUpperCase())) {
                                 continue;
                             }
-                            Optional<Track> existingTrack = tracksRepository.findByGuid((String) entry.get("guid"));
+                            Optional<Track> existingTrack = Optional.ofNullable(existingTracksByGuid.get((String) entry.get("guid")));
                             if (existingTrack.isPresent()) {
                                 LOG.info("Track already exists: " + existingTrack.get().getGuid());
                             } else {
@@ -233,8 +242,7 @@ public class TracksDataUpdater {
                             if (categories.size() > 0) {
                                 track.setCategories(categories.get(0));
                             }
-
-                            tracksRepository.save(track);
+                            tracksToBeSaved.add(track);
                         }
                         nextPageUrl = (String) paging.get("next-page-url");
                     }
@@ -242,6 +250,7 @@ public class TracksDataUpdater {
                     LOG.error("Error while requesting page " + pageCount + ": " + e.getMessage());
                     LOG.error("requestUrl: " + requestUrl);
                     e.printStackTrace();
+                    preventDeletion = true;
                 }
                 pageCount++;
                 Thread.sleep(durationBetweenRequests.toMillis());
@@ -249,17 +258,27 @@ public class TracksDataUpdater {
 
             for (Track track : manualTracksToBeAdded) {
                 Optional<Track> existingTrack = tracksRepository.findByGuid(track.getGuid());
-                if (existingTrack.isPresent()) {
-                    track.setId(existingTrack.get().getId());
-                    LOG.info("Manual track already exists, overwriting: " + track.getName() + " old id: + " + existingTrack.get().getId() + " new id: " + track.getId());
-                    LOG.info(track.toString());
-                    tracksRepository.save(track);
-                }
-                if (mapIdToParentCategory.containsKey(track.getMapId())) {
-                    track.setParentCategory(mapIdToParentCategory.get(track.getMapId()));
-                }
-                track.setMapName(mapIdToMapName.get(track.getMapId()));
-                tracksRepository.save(track);
+                Track manualTrack = existingTrack.orElse(track);
+                manualTrack.setDrlTrackId(track.getDrlTrackId());
+                manualTrack.setGuid(track.getGuid());
+                manualTrack.setName(track.getName());
+                manualTrack.setMapId(track.getMapId());
+                manualTrack.setMapName(mapIdToMapName.get(track.getMapId()));
+                manualTrack.setParentCategory(mapIdToParentCategory.get(track.getMapId()));
+                tracksToBeSaved.add(manualTrack);
+            }
+
+            // Could be optimized by applying distinct only on the guid field because the API returns a specific track two times.
+            // And distinct executes the equals/hashCode method and it includes the id field as well.
+            // But for new tracks its null and for existing its then on both objects the id from the database
+            List<Track> tracks = tracksRepository.saveAll(tracksToBeSaved.stream().distinct().collect(Collectors.toList()));
+
+            // Only run deletion if no error occurred, otherwise we might delete tracks that are still active
+            if(!preventDeletion) {
+                Collection<Track> byTrackNotIn = tracksRepository.findByIdNotIn(tracks.stream().map(Track::getId).collect(Collectors.toList()));
+                LOG.info("Deleting " + byTrackNotIn.size() + " tracks");
+                LOG.info(byTrackNotIn.stream().map(Track::getName).collect(Collectors.joining(", ")));
+                tracksRepository.deleteAll(byTrackNotIn);
             }
         } catch (Exception e) {
             LOG.error("Error updating maps data", e);

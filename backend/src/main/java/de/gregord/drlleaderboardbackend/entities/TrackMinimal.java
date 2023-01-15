@@ -2,9 +2,8 @@ package de.gregord.drlleaderboardbackend.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.io.Serializable;
 
 @Entity
 @Table(name = "tracks")
@@ -17,7 +16,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class TrackMinimal {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
+    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, strategy = TsidGenerator.STRATEGY_NAME)
     @EqualsAndHashCode.Include
     private Long id;
     private String mapName;
