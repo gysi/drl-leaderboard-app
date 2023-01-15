@@ -9,6 +9,7 @@ public class MyCustomRuntimeHints implements RuntimeHintsRegistrar {
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
         hints.reflection().registerType(org.hibernate.dialect.PostgreSQLDialect.class, MemberCategory.values());
         hints.reflection().registerType(org.postgresql.util.PGobject.class, MemberCategory.values());
+        hints.reflection().registerType(de.gregord.drlleaderboardbackend.entities.TsidGenerator.class,MemberCategory.values());
         hints.proxies().registerJdkProxy(
                 de.gregord.drlleaderboardbackend.domain.TrackView.class,
                 org.springframework.data.projection.TargetAware.class,
