@@ -45,11 +45,10 @@ public class LeaderboardService {
             List<LeaderboardEntryMinimal> beatenByEntries = leaderboardEntries.stream()
                     .filter(lbe -> lbe.getScore() < leaderboardEntry.getScore())
                     .filter(lbe -> lbe.getCreatedAt().isAfter(leaderboardEntry.getCreatedAt()))
+                    .filter(lbe -> lbe.getIsInvalidRun() == null || !lbe.getIsInvalidRun())
                     .limit(5)
                     .sorted((o1, o2) -> o1.getCreatedAt().compareTo(o2.getCreatedAt()) * -1)
-                    .map(lbe -> {
-                        return modelMapper.map(lbe, LeaderboardEntryMinimal.class);
-                    })
+                    .map(lbe -> modelMapper.map(lbe, LeaderboardEntryMinimal.class))
                     .toList();
             leaderboardEntry.setBeatenBy(beatenByEntries);
 //            beatenByEntries.forEach(lbe -> lbe.getBeats().add(leaderboardEntry));

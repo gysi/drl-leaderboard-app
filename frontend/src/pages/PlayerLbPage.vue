@@ -58,7 +58,12 @@
                 borderLeft: '1px solid black',
                 borderRight: 0,
               }"
-            >{{ col.label }}</q-th>
+            >
+              <q-icon
+                v-if="col.name === 'beatenBy'"
+                name="query_stats" color="white" size="sm" />
+              {{ col.name !== 'beatenBy' ? col.label : ''}}
+            </q-th>
           </q-tr>
         </template>
         <template v-slot:body="props">
@@ -104,7 +109,36 @@
                 </q-item-section>
               </q-item>
 <!-- Track row end -->
-              {{ col.name !== 'track' ? col.value : '' }}
+<!-- Beaten By row -->
+              <q-icon
+                v-if="!props.row.isMissing && col.name === 'beatenBy'"
+                :name="beatenByIcon(props.row.beatenBy, props.row.createdAt)[0]"
+                :color="beatenByIcon(props.row.beatenBy, props.row.createdAt)[1]"
+                size="md"
+                style="background: rgb(0,0,0,0.07); border-radius: 50%; padding: 2px;"
+              >
+                <q-tooltip v-if="props.row.beatenBy.length === 0">
+                  <div style="font-size: 1rem">
+                    {{ beatenByIcon(props.row.beatenBy, props.row.createdAt)[2] }}
+                  </div>
+                </q-tooltip>
+                <q-tooltip v-if="props.row.beatenBy.length > 0">
+                  <div style="font-size: 1rem">
+                    Your PB got beaten by
+                    {{ props.row.beatenBy.length >= 5 ? '5 or more' : props.row.beatenBy.length }}
+                    player{{ props.row.beatenBy.length > 1 ? 's' : ''}} since submission
+                  </div>
+                  <q-table
+                    :columns="beatenByTable.columns"
+                    :rows="props.row.beatenBy"
+                    dense
+                    hide-bottom
+                    dark
+                  />
+                </q-tooltip>
+              </q-icon>
+<!-- Beaten By row end -->
+              {{ col.name !== 'track' && col.name !== 'beatenBy' ? col.value : '' }}
             </q-td>
           </q-tr>
         </template>
@@ -116,6 +150,7 @@
 import { defineComponent } from 'vue'
 import axios from 'axios';
 import { formatMilliSeconds, backGroundColorByPosition, getDateDifference } from 'src/modules/LeaderboardFunctions'
+import { differenceInDays } from "date-fns";
 
 function compareTracks(track1, track2) {
   if (track1.mapName !== track2.mapName) {
@@ -140,6 +175,7 @@ export default defineComponent({
       loadingState: true,
       columns: [
         { name: 'position', label: '#', field: 'position', align: 'center', required: true },
+        { name: 'beatenBy', label: 'Beaten by', field: 'beatenBy', align: 'center', required: true},
         { name: 'track', label: 'Track', field: row => row.track.name, align: 'left', required: true },
         // { name: 'map', label: 'Map', field: row => row.track.mapName, align: 'left', required: true },
         { name: 'score', label: 'Time', field: 'score',
@@ -160,6 +196,13 @@ export default defineComponent({
       pagination: {
         rowsPerPage: 300,
       },
+      beatenByTable: {
+        columns: [
+          { name: "playerName", label: 'Player', field: 'playerName', align: 'left', required: true },
+          { name: "position",  label: 'Position', field: 'position', align: 'left', required: true },
+          { name: "createdAt", label: 'Time Set', field: 'createdAt', align: 'left', format: (val, row) => this.getDateDifference(val), required: true },
+        ],
+      }
     }
   },
   // {
@@ -257,6 +300,22 @@ export default defineComponent({
       } finally {
         this.loading = false;
       }
+    },
+    beatenByIcon(beatenBy, timeSet){
+      if(!timeSet) return '';
+      if(beatenBy.length >= 5) return ['arrow_downward', 'red', 'Your PB is beaten by 5 or more players'];
+      if(beatenBy.length > 0) return ['trending_down', 'red', `Your PB is already beaten by ${beatenBy.length} players`];
+      let days = differenceInDays(new Date(), new Date(timeSet+'Z'));
+      if(days <= 7){
+        return ['check', 'green', `Your PB is not beaten by anyone yet for ${days} days`];
+      }
+      if(days <= 14 ){
+        return ['auto_graph', 'green', `Your PB is not beaten by anyone yet for ${days} days`];
+      }
+      if(days <= 30){
+        return ['surfing', 'green-6', `Your PB is not beaten by anyone yet for ${days} days`];
+      }
+      return ['military_tech', 'yellow-9', `Your PB is not beaten by anyone yet for ${days} days`];
     },
     formatMilliSeconds,
     backGroundColorByPosition,
