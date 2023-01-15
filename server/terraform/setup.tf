@@ -14,9 +14,9 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
-resource "hcloud_server" "prod" {
-  name = "${var.hcloud_name}"
-  server_type = "cx21"
+resource "hcloud_server" "prod2" {
+  name = "${var.hcloud_name}2"
+  server_type = "cx11"
   image = "debian-11"
   location = "nbg1"
   ssh_keys = ["ssh_key_drl_leaderboard_app"]
