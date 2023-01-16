@@ -85,5 +85,5 @@ Webapp for displaying DRL Simulator leaderboards.
       * [ ] Sortable columns
     * [ ] FAQ 
       * [x] ~~Point system explanation~~
-      * [ ] Invalid runs explanation #**HIGH PRIO**
+      * [x] ~~Invalid runs explanation~~
 
