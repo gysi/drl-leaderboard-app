@@ -115,7 +115,7 @@
                 :name="beatenByIcon(props.row.beatenBy, props.row.createdAt)[0]"
                 :color="beatenByIcon(props.row.beatenBy, props.row.createdAt)[1]"
                 size="md"
-                style="background: rgb(0,0,0,0.07); border-radius: 50%; padding: 2px;"
+                style="background: rgba(0,0,0,0.07); border-radius: 50%; padding: 2px;"
               >
                 <q-tooltip v-if="props.row.beatenBy.length === 0">
                   <div style="font-size: 1rem">
@@ -134,7 +134,13 @@
                     dense
                     hide-bottom
                     dark
-                  />
+                  >
+                    <template v-slot:body-cell-scoreDiff="props2">
+                      <td v-bind="props" class="text-right">
+                        {{ this.substractAndformatMilliSeconds(props.row.score, props2.row.score) }}
+                      </td>
+                    </template>
+                  </q-table>
                 </q-tooltip>
               </q-icon>
 <!-- Beaten By row end -->
@@ -149,7 +155,7 @@
 <script>
 import { defineComponent } from 'vue'
 import axios from 'axios';
-import { formatMilliSeconds, backGroundColorByPosition, getDateDifference } from 'src/modules/LeaderboardFunctions'
+import { formatMilliSeconds, backGroundColorByPosition, getDateDifference, substractAndformatMilliSeconds } from 'src/modules/LeaderboardFunctions'
 import { differenceInDays } from "date-fns";
 
 function compareTracks(track1, track2) {
@@ -199,49 +205,15 @@ export default defineComponent({
       beatenByTable: {
         columns: [
           { name: "playerName", label: 'Player', field: 'playerName', align: 'left', required: true },
-          { name: "position",  label: 'Position', field: 'position', align: 'left', required: true },
-          { name: "createdAt", label: 'Time Set', field: 'createdAt', align: 'left', format: (val, row) => this.getDateDifference(val), required: true },
+          { name: "position",  label: 'Position', field: 'position', align: 'right', required: true },
+          { name: 'score', label: 'Time', field: 'score',
+            format: (val, row) => { if(val) return this.formatMilliSeconds(val) }, align: 'right', required: true },
+          { name: 'scoreDiff', label: 'Time Diff', field: 'score', required: true },
+          { name: "createdAt", label: 'Time Set', field: 'createdAt', align: 'right', format: (val, row) => this.getDateDifference(val), required: true },
         ],
       }
     }
   },
-  // {
-//   "id": 11008,
-//   "position": 9,
-//   "createdAt": "2022-11-12T20:21:12.137",
-//   "score": 62209,
-//   "playerName": "gysi",
-//   "invalidRunReason": null,
-//   "topSpeed": 99.1491547,
-//   "isInvalidRun": false,
-//   "track": {
-//   "name": "LONDON EXPO",
-//     "id": 111,
-//     "mapName": "2017 WORLD CHAMPIONSHIP",
-//     "parentCategory": "DRL MAPS"
-// },
-//   "crashCount": 0,
-//   "points": 179.53115501748678,
-//   "droneName": "DRL Racer4",
-//   "beatenBy": [
-//   {
-//     "id": 17708,
-//     "position": 7,
-//     "createdAt": "2023-01-04T19:50:08.689",
-//     "score": 62122,
-//     "playerName": "chrism",
-//     "points": 183.06079178697712
-//   },
-//   {
-//     "id": 11006,
-//     "position": 6,
-//     "createdAt": "2022-11-19T19:57:56.912",
-//     "score": 61911,
-//     "playerName": "sebafpv",
-//     "points": 184.8279405441204
-//   }
-// ]
-// }
   methods: {
     onEnterPressed(val) {
       this.$refs.userselect.toggleOption(val);
@@ -319,7 +291,8 @@ export default defineComponent({
     },
     formatMilliSeconds,
     backGroundColorByPosition,
-    getDateDifference
+    getDateDifference,
+    substractAndformatMilliSeconds
   }
 })
 </script>

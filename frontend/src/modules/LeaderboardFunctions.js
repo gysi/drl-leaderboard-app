@@ -34,6 +34,10 @@ function formatMilliSeconds(milliseconds){
   return `${hours > 0 ? hours + ':' : ''}${minutes}:${seconds}.${millis}`;
 }
 
+function substractAndformatMilliSeconds(millisecondsHigher, millisecondsLower){
+  return formatMilliSeconds(millisecondsHigher - millisecondsLower);
+}
+
 function getDateDifference(dateString) {
   if(!dateString) return '';
   let duration = intervalToDuration({
@@ -55,4 +59,4 @@ function getDateDifference(dateString) {
   return formatDuration(duration, { format: units }) + ' ago';
 }
 
-export { backGroundColorByPosition, formatMilliSeconds, getDateDifference }
+export { backGroundColorByPosition, formatMilliSeconds, getDateDifference, substractAndformatMilliSeconds }
