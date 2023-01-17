@@ -5,6 +5,7 @@
     :to="external ? undefined : link"
     :href="external ? link : undefined"
     :target="external ? '_blank' : undefined"
+    exact
   >
     <q-item-section
       v-if="icon"

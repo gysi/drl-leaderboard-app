@@ -15,7 +15,7 @@
       >
         <template v-slot:top-left>
           <div class="row">
-            <div class="text-h4">{{ searchText?.toUpperCase() || 'Player' }}'s Rankings</div>
+            <div class="q-table__title">{{ searchText?.toUpperCase() || 'Player' }}'s Rankings</div>
             <q-select
               ref="userselect"
               filled
@@ -103,8 +103,8 @@
                 <q-item-section>
                   <q-item-label>{{ props.row.track.name }}</q-item-label>
                   <q-item-label caption>
-                    <q-chip dense color="grey-6">{{ props.row.track.mapName }}</q-chip>
-                    <q-chip dense color="grey-8" dark>{{ props.row.track.parentCategory }}</q-chip>
+                    <q-chip dense class="track-chip-map">{{ props.row.track.mapName }}</q-chip>
+                    <q-chip dense class="track-chip-parentcategory">{{ props.row.track.parentCategory }}</q-chip>
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -301,12 +301,8 @@ export default defineComponent({
 :deep(tbody .q-td)
   font-size: 16px
 
-:deep(.q-field__input)
-  color: white
-
 .playerlb-track-td
   padding: 0
-  background: rgba(0, 0, 0, 0.05)
 
 .playerlb-track-td .q-chip
   margin-left: 0

@@ -17,6 +17,14 @@
           </router-link>
         </q-toolbar-title>
 
+<!--        <q-toggle-->
+<!--          label="Dark Mode"-->
+<!--          :model-value="darkMode"-->
+<!--          @update:model-value="this.toggleDarkMode"-->
+<!--          dark-->
+<!--          left-label-->
+<!--          color="accent"-->
+<!--          />-->
         <div>by gysi (v.{{ version }})</div>
       </q-toolbar>
     </q-header>
@@ -45,6 +53,7 @@
 import { defineComponent, ref } from 'vue'
 import NavigationLinks from 'components/NavigationLinks.vue'
 import {version} from '../../package.json'
+import { useQuasar } from "quasar"
 
 const linksList = [
   {
@@ -97,22 +106,31 @@ export default defineComponent({
   components: {
     NavigationLinks
   },
-  data() {
-    return {
-      version: version
-    }
-  },
   setup () {
+    const $q = useQuasar()
     const leftDrawerOpen = ref(false)
-
     return {
       linksList: linksList,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+      quasar: $q
     }
-  }
+  },
+  data() {
+    return {
+      version: version,
+      darkMode: this.quasar.dark.isActive
+    }
+  },
+  methods: {
+    toggleDarkMode(){
+      this.$q.dark.toggle()
+      this.darkMode = !this.darkMode;
+      this.$q.localStorage.set('darkMode', this.darkMode);
+    }
+  },
 })
 </script>
 
@@ -146,12 +164,6 @@ export default defineComponent({
   /* height or max-height is important */
   //min-height: inherit
 
-  .q-table__top,
-  thead tr:first-child th
-    /* bg color is important for th; just specify one */
-    background-color: $primary
-    color: white
-
   thead tr th
     position: sticky
     z-index: 1
@@ -170,8 +182,7 @@ export default defineComponent({
     top: 48px
 
 tbody .q-td
-  color: black
-  background-color: $secondary
+  //color: black
   border-left: 1px solid black
   border-right: 0
   border-top: 1px solid black

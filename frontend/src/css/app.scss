@@ -1,1 +1,130 @@
 // app global css in SCSS form
+//https://huemint.com/
+body {
+  --q-primary: #491d5d;
+  --q-secondary: #ae3d83;
+  --q-accent: #50346e;
+  --q-positive: #2d9c67;
+  --q-negative: #e43319;
+  --q-info: #d26cb7;
+  --q-warning: #dacb2f;
+  --q-dark: #010803;
+  --q-dark-page: #010803;
+
+  --q-white: #ffffff;
+  --q-light: #d9e5ed;
+  --q-accent2: #725f92;
+  --q-accent3: #b0a2ad;
+
+  background: var(--q-accent3);
+
+  // navbar
+  .q-drawer {
+    background: var(--q-light);
+  }
+
+  tbody {
+    background: var(--q-light);
+  }
+
+  .q-table__container {
+    .q-table__title, thead,
+    .q-table__bottom,
+    .q-table__bottom .q-icon,
+    .q-field_native
+    {
+      color: var(--q-white) !important;
+    }
+
+    .q-table__top {
+      /* bg color is important for th; just specify one */
+      background-color: var(--q-secondary) !important;
+    }
+
+    .q-table__bottom {
+      background-color: var(--q-secondary) !important;
+    }
+
+    thead tr:first-child th {
+      background-color: var(--q-accent2) !important;
+    }
+
+    .q-select {
+      color: var(--q-white) !important;
+
+      .q-chip {
+        background-color: var(--q-light) !important;
+        color: var(--q-dark) !important;
+      }
+    }
+
+    .track-chip {
+      background-color: var(--q-accent2);
+      color: var(--q-white);
+    }
+
+    .track-chip-map {
+      background-color: var(--q-secondary) !important;
+      color: var(--q-white) !important;
+    }
+
+    .track-chip-parentcategory {
+      background-color: var(--q-primary) !important;
+      color: var(--q-white) !important;
+    }
+  }
+
+  .q-card {
+    background-color: var(--q-secondary) !important;
+  }
+}
+
+// Dark mode
+@mixin dark-mode-colors {
+// Main theme colors
+  --q-primary: #742294;
+  --q-secondary: #8c3069;
+  --q-accent: #50346e;
+  --q-positive: #2d9c67;
+  --q-negative: #e43319;
+  --q-info: #d26cb7;
+  --q-warning: #dacb2f;
+  --q-dark: #010803;
+  --q-dark-page: #010803;
+
+  --q-white: #d9cdcd;
+  --q-light: #54738c;
+  --q-accent2: #2e1557;
+  --q-accent3: #bd2727;
+
+//  --q-color-primary-light: $example-color-dark;
+//  --q-color-primary-lighter: $example-color-darker;
+//  --q-color-primary-dark: $example-color-light;
+//  --q-color-primary-darker: $example-color-lighter;
+//
+//// Background colors
+//  --color-background-primary: $grey-10;
+//  --color-background-secondary: $grey-8;
+//  --color-background-tertiary: $grey-6;
+//
+//// Text colors
+//  --color-text-primary: $grey-4;
+//  --color-text-secondary: $grey-6;
+//  --color-text-tertiary: $grey-7;
+//  --color-text-inverted: $black;
+//  --color-text-selected: rgba( $red, .2 );
+}
+
+// Dark mode (OS native)
+// Browser support: https://caniuse.com/#search=prefers-color-scheme
+//@media (prefers-color-scheme: dark) {
+//  body {
+//    @include dark-mode-colors;
+//  }
+//}
+//
+//
+//// Dark mode (Quasar global dark mode)
+//.body--dark {
+//  @include dark-mode-colors;
+//}
