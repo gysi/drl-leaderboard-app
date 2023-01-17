@@ -14,7 +14,7 @@
       <template v-slot:top-left>
         <div class="row">
 <!--          <div class="text-h4">{{ searchText?.name?.toUpperCase() || 'Track' }} Rankings</div>-->
-          <div class="text-h4">Track Rankings</div>
+          <div class="q-table__title">Track Rankings</div>
           <q-select
             ref="trackselect"
             filled
@@ -30,7 +30,6 @@
             class="q-ml-md"
             use-chips
             label="Enter track name"
-            color="white"
             dark
           >
             <template v-slot:selected-item="props">

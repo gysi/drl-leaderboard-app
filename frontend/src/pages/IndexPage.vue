@@ -17,9 +17,9 @@
         >
           <template v-slot:body-cell-trackName="props">
             <td>
-              <q-chip dense color="grey-4">{{ props.row.trackName }}</q-chip>
-              <q-chip dense color="grey-6">{{ props.row.mapName }}</q-chip>
-              <q-chip dense color="grey-8" dark>{{ props.row.parentCategory }}</q-chip>
+              <q-chip dense class="track-chip">{{ props.row.trackName }}</q-chip>
+              <q-chip dense class="track-chip-map">{{ props.row.mapName }}</q-chip>
+              <q-chip dense class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-chip>
             </td>
           </template>
         </q-table>
@@ -37,9 +37,9 @@
         >
           <template v-slot:body-cell-trackName="props">
             <td>
-              <q-chip dense color="grey-4">{{ props.row.trackName }}</q-chip>
-              <q-chip dense color="grey-6">{{ props.row.mapName }}</q-chip>
-              <q-chip dense color="grey-8" dark>{{ props.row.parentCategory }}</q-chip>
+              <q-chip dense class="track-chip">{{ props.row.trackName }}</q-chip>
+              <q-chip dense class="track-chip-map">{{ props.row.mapName }}</q-chip>
+              <q-chip dense class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-chip>
             </td>
           </template>
         </q-table>
@@ -166,8 +166,4 @@ export default defineComponent({
 
 :deep(.q-table thead th)
   font-size: 18px
-
-:deep(.q-table__top)
-  background-color: $primary
-  color: white
 </style>
