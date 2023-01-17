@@ -49,7 +49,15 @@ services:
     logging:
       options:
         max-size: 5m
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    command: >-2
+      /bin/sh -c '
+      mkdir -p /etc/nginx/ssl;
+      openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt -batch;
+      while :;
+      do
+        sleep 6h & wait $${!};
+        nginx -s reload;
+      done & nginx -g "daemon off;"'
     networks:
       - local_network
   certbot:
