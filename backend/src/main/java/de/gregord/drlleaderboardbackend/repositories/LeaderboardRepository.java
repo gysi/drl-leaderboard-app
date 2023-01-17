@@ -125,13 +125,13 @@ from overall_ranking ovr;
             SELECT
                 l.player_name as playerName,
                 count(*) as entries,
-                min(position) as bestPosition,
-                round(avg(position)) as avgPosition
+                min(l.position) as bestPosition,
+                round(avg(l.position)) as avgPosition
             FROM leaderboards l
                      LEFT JOIN tracks t ON t.id = l.track_id
             WHERE l.created_at > (now() - INTERVAL '7' DAY)
               AND l.is_invalid_run = false
-            GROUP BY player_name
+            GROUP BY l.player_name
             ORDER BY count(*) DESC
             LIMIT 10
             """, nativeQuery = true)
@@ -142,13 +142,13 @@ from overall_ranking ovr;
             SELECT
                 l.player_name as playerName,
                 count(*) as entries,
-                min(position) as bestPosition,
-                round(avg(position)) as avgPosition
+                min(l.position) as bestPosition,
+                round(avg(l.position)) as avgPosition
             FROM leaderboards l
                      LEFT JOIN tracks t ON t.id = l.track_id
             WHERE l.created_at > (now() - INTERVAL '1' MONTH)
               AND l.is_invalid_run = false
-            GROUP BY player_name
+            GROUP BY l.player_name
             ORDER BY count(*) DESC
             LIMIT 10
             """, nativeQuery = true)
