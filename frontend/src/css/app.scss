@@ -77,6 +77,24 @@ body {
   .q-card {
     background-color: var(--q-secondary) !important;
   }
+
+  .q-menu {
+    background-color: var(--q-primary) !important;
+    color: var(--q-light);
+
+    .q-item__label{
+      color: var(--q-light) !important;
+    }
+    .q-item__label--caption {
+      color: var(--q-accent3) !important;
+    }
+    .q-item--active .q-item__label {
+      color: var(--q-accent) !important;
+    }
+    .q-item--active .q-item__label--caption {
+      color: var(--q-primary) !important;
+    }
+  }
 }
 
 // Dark mode

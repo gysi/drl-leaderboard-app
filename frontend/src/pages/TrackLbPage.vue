@@ -30,7 +30,6 @@
             class="q-ml-md"
             use-chips
             label="Enter track name"
-            dark
           >
             <template v-slot:selected-item="props">
               <q-chip
