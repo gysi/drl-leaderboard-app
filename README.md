@@ -80,7 +80,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Basic player rankings~~
       * [x] ~~List not finished tracks~~
       * [x] ~~Link to track leaderboard~~
-      * [ ] Sortable columns
+      * [x] ~~Sortable columns~~
       * [ ] More readable invalid runs onhover overlay #**HIGH PRIO**
       * [x] ~~"Beaten By" integration for each PB that got beaten since the submission~~
       * [ ] Adds a "?" icon to the points column header which links to the FAQ Section
