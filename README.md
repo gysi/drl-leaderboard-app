@@ -60,6 +60,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Most active players (last 7/30 days)~~
       * [ ] Link from track / map / parent category "chips" to track rankings / tracks section
       * [ ] ??? More stuff 
+        * Most played tracks (7 days / month)
     * [ ] Track section
       * [x] ~~Basic track/map listing~~
       * [ ] Track/Map images (Optional) 
@@ -70,9 +71,11 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Basic overall rankings~~
       * [ ] Adds a "?" icon to the invalid runs column header which links to the FAQ Section
       * [ ] Adds a "?" icon to the points column header which links to the FAQ Section
+      * [ ] Avg Position
     * [ ] Track rankings
       * [x] ~~Basic map rankings~~
-      * [ ] Search should also search in parent categories
+      * [x] ~~Search should also search in parent categories~~
+      * ??? More stuff
     * [ ] Player rankings
       * [x] ~~Basic player rankings~~
       * [x] ~~List not finished tracks~~
@@ -86,4 +89,5 @@ Webapp for displaying DRL Simulator leaderboards.
     * [ ] FAQ 
       * [x] ~~Point system explanation~~
       * [x] ~~Invalid runs explanation~~
+      * ??? More stuff
 
