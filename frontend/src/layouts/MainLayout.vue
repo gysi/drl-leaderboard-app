@@ -25,7 +25,7 @@
 <!--          left-label-->
 <!--          color="accent"-->
 <!--          />-->
-        <div>by gysi (v.{{ version }})</div>
+        <div>by gysi (v.{{ version }}-PINK-IS-THE-DEVIL)</div>
       </q-toolbar>
     </q-header>
 

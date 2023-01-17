@@ -32,7 +32,6 @@
               class="q-ml-md"
               use-chips
               label="Enter player name"
-              dark
             >
               <template v-slot:no-option>
                 <q-item
@@ -133,7 +132,6 @@
                     :rows="props.row.beatenBy"
                     dense
                     hide-bottom
-                    dark
                   >
                     <template v-slot:body-cell-scoreDiff="props2">
                       <td v-bind="props" class="text-right">
