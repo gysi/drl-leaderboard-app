@@ -157,9 +157,6 @@ export default defineComponent({
   background: rgba(0, 0, 0, 0.2)
   color: white
 
-.q-field__label
-  color: $secondary
-
 .my-sticky-header-table
   /* height or max-height is important */
   //min-height: inherit

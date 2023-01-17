@@ -74,8 +74,9 @@ body {
     }
   }
 
-  .q-card {
-    background-color: var(--q-secondary) !important;
+  // Table selection input text
+  .q-field__label {
+    color: var(--q-light) !important;
   }
 
   .q-menu {
@@ -93,6 +94,19 @@ body {
     }
     .q-item--active .q-item__label--caption {
       color: var(--q-primary) !important;
+    }
+  }
+
+  .faq-card {
+    .faq-card-header {
+      background-color: var(--q-secondary) !important;
+    }
+    .faq-card-content {
+      background-color: var(--q-light) !important;
+    }
+
+    .truncated::after {
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, var(--q-light) 90%)
     }
   }
 }
