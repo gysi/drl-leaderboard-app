@@ -56,6 +56,22 @@ public class AppConfig {
                 .addCache(c -> c.name("leaderboardbytrack")
                         .eternal(true)
                         .entryCapacity(200)
+                        .permitNullValues(true))
+                .addCache(c -> c.name("latestLeaderboardActivity")
+                        .eternal(true)
+                        .entryCapacity(10)
+                        .permitNullValues(true))
+                .addCache(c -> c.name("latestLeaderboardActivityTop10")
+                        .eternal(true)
+                        .entryCapacity(10)
+                        .permitNullValues(true))
+                .addCache(c -> c.name("mostPbsLast7Days")
+                        .eternal(true)
+                        .entryCapacity(10)
+                        .permitNullValues(true))
+                .addCache(c -> c.name("mostPbsLastMonth")
+                        .eternal(true)
+                        .entryCapacity(10)
                         .permitNullValues(true));
     }
 

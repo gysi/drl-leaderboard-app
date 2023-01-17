@@ -109,7 +109,11 @@ public class LeaderboardUpdater {
     @Order(200)
     @Caching(evict = {
             @CacheEvict(value = "leaderboardbyplayername", allEntries = true),
-            @CacheEvict(value = "overallranking", allEntries = true)
+            @CacheEvict(value = "overallranking", allEntries = true),
+            @CacheEvict(value = "latestLeaderboardActivity", allEntries = true),
+            @CacheEvict(value = "latestLeaderboardActivityTop10", allEntries = true),
+            @CacheEvict(value = "mostPbsLast7Days", allEntries = true),
+            @CacheEvict(value = "mostPbsLastMonth", allEntries = true),
     })
     public void initialize() {
         long count = leaderboardRepository.count();
@@ -122,7 +126,11 @@ public class LeaderboardUpdater {
     @Scheduled(cron = "${app.data-updater.leaderboards.cron}")
     @Caching(evict = {
             @CacheEvict(value = "leaderboardbyplayername", allEntries = true),
-            @CacheEvict(value = "overallranking", allEntries = true)
+            @CacheEvict(value = "overallranking", allEntries = true),
+            @CacheEvict(value = "latestLeaderboardActivity", allEntries = true),
+            @CacheEvict(value = "latestLeaderboardActivityTop10", allEntries = true),
+            @CacheEvict(value = "mostPbsLast7Days", allEntries = true),
+            @CacheEvict(value = "mostPbsLastMonth", allEntries = true),
     })
     public void updateLeaderboard() {
         totalContentLength = 0L;
