@@ -132,7 +132,8 @@ from overall_ranking ovr;
             WHERE l.created_at > (now() - INTERVAL '7' DAY)
               AND l.is_invalid_run = false
             GROUP BY player_name
-            ORDER BY count(*) DESC;
+            ORDER BY count(*) DESC
+            LIMIT 10
             """, nativeQuery = true)
     List<LeaderboardMostPbsView> mostPbsLast7Days();
 
@@ -148,7 +149,8 @@ from overall_ranking ovr;
             WHERE l.created_at > (now() - INTERVAL '1' MONTH)
               AND l.is_invalid_run = false
             GROUP BY player_name
-            ORDER BY count(*) DESC;
+            ORDER BY count(*) DESC
+            LIMIT 10
             """, nativeQuery = true)
     List<LeaderboardMostPbsView> mostPbsLastMonth();
 }
