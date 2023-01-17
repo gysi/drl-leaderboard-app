@@ -86,6 +86,7 @@ from overall_ranking ovr;
             """)
     List<String> findDistinctPlayerNames(String playerName, Pageable pageable);
 
+    @Cacheable("latestLeaderboardActivity")
     @Query(value = """
             SELECT
                 l.player_name as playerName,
@@ -102,6 +103,7 @@ from overall_ranking ovr;
             """, nativeQuery = true)
     List<LeaderboardActivityView> latestLeaderboardActivity();
 
+    @Cacheable("latestLeaderboardActivityTop10")
     @Query(value = """
             SELECT
                 l.player_name as playerName,
@@ -118,6 +120,7 @@ from overall_ranking ovr;
             """, nativeQuery = true)
     List<LeaderboardActivityView> latestLeaderboardActivityTop10();
 
+    @Cacheable("mostPbsLast7Days")
     @Query(value = """
             SELECT
                 l.player_name as playerName,
@@ -133,6 +136,7 @@ from overall_ranking ovr;
             """, nativeQuery = true)
     List<LeaderboardMostPbsView> mostPbsLast7Days();
 
+    @Cacheable("mostPbsLastMonth")
     @Query(value = """
             SELECT
                 l.player_name as playerName,
