@@ -48,9 +48,9 @@
                 @update:model-value="props.toggleOption(props.opt)"
               >
                 <q-item-section>
-                  <q-item-label>{{ props.opt.name }}</q-item-label>
-                  <q-item-label caption>{{ props.opt.mapName }}</q-item-label>
-                  <q-item-label caption>{{ props.opt.parentCategory }}</q-item-label>
+                  <q-item-label><span v-html="this.highlightBySubstrings(this.currentSearchPartsForHighlight, props.opt.name)"></span></q-item-label>
+                  <q-item-label caption><span v-html="this.highlightBySubstrings(this.currentSearchPartsForHighlight, props.opt.mapName)"></span></q-item-label>
+                  <q-item-label caption ><span v-html="this.highlightBySubstrings(this.currentSearchPartsForHighlight, props.opt.parentCategory)"></span></q-item-label>
                 </q-item-section>
               </q-item>
             </template>
@@ -139,6 +139,7 @@ export default defineComponent({
     return {
       tracks: [],
       searchText: null,
+      currentSearchPartsForHighlight: [],
       searchResults: [],
       loadingState: true,
       columns: [
@@ -178,6 +179,7 @@ export default defineComponent({
       this.loadingState = true;
       this.searchResults = [];
       val = val.toLowerCase().split(' ');
+      this.currentSearchPartsForHighlight = val;
       this.tracks.filter((track) => {
         let foundCount = 0;
         for (let i = 0; i < val.length; i++) {
@@ -222,6 +224,20 @@ export default defineComponent({
     },
     formatFlagUrl(flagUrl){
       return flagUrl.substring(flagUrl.length-6, flagUrl.length-4);
+    },
+    highlightBySubstrings(searchParts, stringToHighlight){
+      if(!searchParts || searchParts.length === 0 || !stringToHighlight){
+        return stringToHighlight;
+      }
+      let searchPartsRegex = searchParts.filter(part => !!part).join(')|(');
+      if(!searchPartsRegex){
+        return stringToHighlight;
+      }
+      let reg = new RegExp('('+searchPartsRegex+')', 'gi');
+      stringToHighlight = stringToHighlight.replace(reg, function(str) {
+        return '<b class="search-highlight">'+str+'</b>'
+      });
+      return stringToHighlight;
     },
     formatMilliSeconds,
     backGroundColorByPosition,
@@ -270,4 +286,9 @@ tbody .q-item
 
 .q-batch-Xbox
   background-color: rgb(16,120,15)
+
+:deep(.search-highlight)
+  background-color: rgba(255,255,255,0.1)
+  font-weight: 900
+  color: rgba(255,255,255,1)
 </style>
