@@ -136,13 +136,16 @@ export default defineComponent({
       this.mostPbsLast7Days.loading = true;
       this.mostPbsLastMonth.loading = true;
       try {
-        const responseLatest = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/latestActivity');
+        const [ responseLatest, responseLatestTop10, responseMostPbsLast7Days, responseMostPbsLastMonth] =
+          await Promise.all([
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/latestActivity'),
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/latestActivityTop10'),
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/mostPbsLast7Days'),
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/mostPbsLastMonth')
+          ]);
         this.latestActivity.rows = responseLatest.data;
-        const responseLatestTop10 = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/latestActivityTop10');
         this.latestActivityTop10.rows = responseLatestTop10.data;
-        const responseMostPbsLast7Days = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/mostPbsLast7Days');
         this.mostPbsLast7Days.rows = responseMostPbsLast7Days.data;
-        const responseMostPbsLastMonth = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/mostPbsLastMonth');
         this.mostPbsLastMonth.rows = responseMostPbsLastMonth.data;
       } catch (error) {
         console.error(error);
