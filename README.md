@@ -90,4 +90,5 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Point system explanation~~
       * [x] ~~Invalid runs explanation~~
       * ??? More stuff
+    * [ ] A good way to remove invalid times (wrong drone bug) which aren't exceeding the topspeed. Maybe a kinda voting system? Or something like a player analyis (median / comparision to other track runs / count of total tracks / comparision to overall rankin player position, etc..)
 
