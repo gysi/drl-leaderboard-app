@@ -62,7 +62,7 @@ public class LeaderboardController {
         List<LeaderBoardByTrackView> byGuid = leaderboardRepository.findByTrackId(
                 trackId,
                 PageRequest.of(page - 1, limit)
-                        .withSort(Sort.by(Sort.Order.asc("score")))
+                        .withSort(Sort.by(Sort.Order.asc("position"), Sort.Order.asc("score")))
         );
         return ResponseEntity.ok(byGuid);
     }
