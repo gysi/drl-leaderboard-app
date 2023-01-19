@@ -9,6 +9,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
@@ -18,6 +19,7 @@ import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
 @Component
 @Profile("local")
+@ConditionalOnProperty(name = "app.show-sql", havingValue = "true", matchIfMissing = false)
 public class DatasourceProxyBeanPostProcessor implements BeanPostProcessor {
 
     @Override

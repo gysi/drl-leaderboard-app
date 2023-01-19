@@ -4,9 +4,10 @@ spring:
   jpa:
     properties:
       hibernate:
-        generate_statistics: true
+        generate_statistics: false
 
 app:
+  show-sql: false
   drl-api:
     # To finish within 30 minutes I need at least 1 request every 2.1 seconds = 0.47 requests/s
     duration-between-requests: 2000ms # ~0.5 requests/s
