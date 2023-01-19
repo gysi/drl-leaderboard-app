@@ -157,9 +157,14 @@ public class LeaderboardUpdater {
 
             UriComponentsBuilder mapsEndpointBuilder = UriComponentsBuilder.fromUriString(leaderboardEndpoint);
             if (track.getGuid().startsWith("CMP")) {
-                mapsEndpointBuilder.queryParam("custom-map", track.getGuid());
+                mapsEndpointBuilder
+                        .queryParam("custom-map", track.getGuid())
+                        .queryParam("is-custom-map", "true");
             } else {
-                mapsEndpointBuilder.queryParam("track", track.getGuid()).queryParam("map", track.getMapId());
+                mapsEndpointBuilder
+                        .queryParam("track", track.getGuid())
+                        .queryParam("map", track.getMapId())
+                        .queryParam("is-custom-map", "false");
 
             }
             int page = 1;
@@ -173,6 +178,7 @@ public class LeaderboardUpdater {
             Map<String, LeaderboardEntry> alreadyFoundPlayerNames = new HashMap<>();
             do {
                 String requestUrl = mapsEndpointBuilder.buildAndExpand(Map.of("token", token, "page", page)).toUriString();
+                LOG.info("requestUrl: {}", requestUrl);
                 ResponseEntity<Map> exchange = (new RestTemplate()).exchange(requestUrl, HttpMethod.GET, null, Map.class);
                 String content_length = exchange.getHeaders().get("Content-Length").get(0);
                 totalContentLength += Long.parseLong(content_length.trim());
@@ -183,7 +189,6 @@ public class LeaderboardUpdater {
                     LOG.error("Error while fetching leaderboard for track " + track.getName() + " with map id " + track.getMapId() + " and track id " + track.getDrlTrackId() + " on page " + page);
                     throw new Exception();
                 }
-
                 Map<String, Object> data = (Map<String, Object>) response.get("data");
                 Map<String, Object> paging = (Map<String, Object>) data.get("pagging");
                 List<Map<String, Object>> leaderboard = (List<Map<String, Object>>) data.get("leaderboard");
