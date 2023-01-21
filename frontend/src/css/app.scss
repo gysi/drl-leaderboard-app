@@ -1,151 +1,219 @@
 // app global css in SCSS form
 //https://huemint.com/
+
+$dark-primary: #3a3c45;
+$dark-secondary: #63686d;
+$dark-accent: #551b5d;
+$dark-positive: #009756;
+$dark-negative: #ec1600;
+$dark-info: #e95f5a;
+$dark-warning: #dec700;
+$dark-dark: #252627;
+$dark-white: #f1f1f1;
+$dark-light: #6d4e7c;
+$dark-accent2: #a93d93;
+$dark-accent3: #a55f8d;
+$dark-accent4: #d9cdcd;
+
+// Dark mode
+@mixin dark-mode-colors {
+  --app-text-color: #{$dark-dark};
+  --app-background-color: #{$dark-accent3};
+  --app-toolbar-background-color: #{$dark-primary};
+  --app-nav-background-color: #{$dark-primary};
+  --app-nav-active-text-color: #{$dark-accent3};
+  --app-nav-caption-text-color: rgba(255, 255, 255, 0.54);
+  --app-table-body-background-color: #{$dark-dark};
+  --app-table-top-bottom-text-color: #{$dark-white};
+  --app-table-top-bottom-background-color: #{$dark-primary};
+  --app-table-column-header-background-color: #{$dark-secondary};
+  --app-table-content-text-color: #{$dark-white};
+  --app-select-text-color: #{$dark-white};
+  --app-select-chip-background-color: #{$dark-accent2};
+  --app-select-chip-text-color: #{$dark-dark};
+  --app-select-dropdown-background-color: #{$dark-primary};
+  --app-select-dropdown-text-color: #{$dark-white};
+  --app-select-dropdown-label-text-color: #{$dark-white};
+  --app-select-dropdown-label-caption-text-color: #{$dark-accent4};
+  --app-select-dropdown-label-text-active-color: #{$dark-accent};
+  --app-select-dropdown-label-caption-active-text-color: #{$dark-primary};
+  --app-chip-track-background-color: #{$dark-accent2};
+  --app-chip-track-text-color: #{$dark-white};
+  --app-chip-map-background-color: #{$dark-accent3};
+  --app-chip-map-text-color: #{$dark-white};
+  --app-chip-parentcategory-background-color: #{$dark-accent4};
+  --app-chip-parentcategory-text-color: #{$dark-dark};
+  --app-faq-card-header-background-color: #{$dark-secondary};
+  --app-faq-card-content-background-color: #{$dark-primary};
+  --app-faq-card-content-text-color: #{$dark-white};
+  --app-faq-card-transparent-effect-color: #{$dark-light};
+  --app-player-lb-missing-run-background-color: #{$dark-secondary};
+}
+
+$light-primary: #491d5d;
+$light-secondary: #ae3d83;
+$light-accent: #50346e;
+$light-positive: #2d9c67;
+$light-negative: #e43319;
+$light-info: #d26cb7;
+$light-warning: #dacb2f;
+$light-dark: #010803;
+$light-white: #ffffff;
+$light-light: #d9e5ed;
+$light-accent2: #725f92;
+$light-accent3: #b0a2ad;
+
 body {
-  --q-primary: #491d5d;
-  --q-secondary: #ae3d83;
-  --q-accent: #50346e;
-  --q-positive: #2d9c67;
-  --q-negative: #e43319;
-  --q-info: #d26cb7;
-  --q-warning: #dacb2f;
-  --q-dark: #010803;
-  --q-dark-page: #010803;
+  --app-text-color: #{$light-dark};
+  --app-background-color: #{$light-accent3};
+  --app-toolbar-background-color: #{$light-primary};
+  --app-nav-background-color: #{$light-light};
+  --app-nav-active-text-color: #{$light-secondary};
+  --app-nav-caption-text-color: rgba(0, 0, 0, 0.54);
+  --app-table-body-background-color: #{$light-light};
+  --app-table-top-bottom-text-color: #{$light-white};
+  --app-table-top-bottom-background-color: #{$light-secondary};
+  --app-table-column-header-background-color: #{$light-accent2};
+  --app-table-content-text-color: #{$light-dark};
+  --app-select-text-color: #{$light-white};
+  --app-select-chip-background-color: #{$light-light};
+  --app-select-chip-text-color: #{$light-dark};
+  --app-select-dropdown-background-color: #{$light-primary};
+  --app-select-dropdown-text-color: #{$light-light};
+  --app-select-dropdown-label-text-color: #{$light-light};
+  --app-select-dropdown-label-caption-text-color: #{$light-accent3};
+  --app-select-dropdown-label-text-active-color: #{$light-accent};
+  --app-select-dropdown-label-caption-active-text-color: #{$light-primary};
+  --app-chip-track-background-color: #{$light-accent2};
+  --app-chip-track-text-color: #{$light-white};
+  --app-chip-map-background-color: #{$light-secondary};
+  --app-chip-map-text-color: #{$light-white};
+  --app-chip-parentcategory-background-color: #{$light-primary};
+  --app-chip-parentcategory-text-color: #{$light-white};
+  --app-faq-card-header-background-color: #{$light-secondary};
+  --app-faq-card-content-background-color: #{$light-light};
+  --app-faq-card-content-text-color: #{$light-dark};
+  --app-faq-card-transparent-effect-color: #{$light-light};
+  --app-player-lb-missing-run-background-color: #{$grey-5};
 
-  --q-white: #ffffff;
-  --q-light: #d9e5ed;
-  --q-accent2: #725f92;
-  --q-accent3: #b0a2ad;
+  background: var(--app-background-color);
+  color: var(--app-text-color);
 
-  background: var(--q-accent3);
+  .q-toolbar {
+    background: var(--app-toolbar-background-color);
+  }
 
   // navbar
   .q-drawer {
-    background: var(--q-light);
+    background: var(--app-nav-background-color);
+    //color:
+
+    .q-router-link--active {
+      color: var(--app-nav-active-text-color)
+    }
+
+    .q-item__label--caption {
+      color: var(--app-nav-caption-text-color);
+    }
   }
 
   tbody {
-    background: var(--q-light);
+    background: var(--app-table-body-background-color);
+    color: var(--app-table-content-text-color);
   }
 
   .q-table__container {
     .q-table__title, thead,
     .q-table__bottom,
     .q-table__bottom .q-icon,
-    .q-field_native
+    .q-field__native
     {
-      color: var(--q-white) !important;
+      color: var(--app-table-top-bottom-text-color) !important;
     }
 
     .q-table__top {
       /* bg color is important for th; just specify one */
-      background-color: var(--q-secondary) !important;
+      background-color: var(--app-table-top-bottom-background-color) !important;
     }
 
     .q-table__bottom {
-      background-color: var(--q-secondary) !important;
+      background-color: var(--app-table-top-bottom-background-color) !important;
     }
 
     thead tr:first-child th {
-      background-color: var(--q-accent2) !important;
+      background-color: var(--app-table-column-header-background-color) !important;
     }
 
     .q-select {
-      color: var(--q-white) !important;
+      color: var(--app-select-text-color) !important;
 
       .q-chip {
-        background-color: var(--q-light) !important;
-        color: var(--q-dark) !important;
+        background-color: var(--app-select-chip-background-color) !important;
+        color: var(--app-select-chip-text-color) !important;
+      }
+
+      // Table selection input text
+      // TODO put within .q-select? (above)
+      .q-field__label {
+        color: var(--app-select-text-color) !important;
+      }
+
+      .q-field__input {
+        color: var(--app-select-text-color) !important;
       }
     }
 
     .track-chip {
-      background-color: var(--q-accent2);
-      color: var(--q-white);
+      background-color: var(--app-chip-track-background-color);
+      color: var(--app-chip-track-text-color);
     }
 
     .track-chip-map {
-      background-color: var(--q-secondary) !important;
-      color: var(--q-white) !important;
+      background-color: var(--app-chip-map-background-color) !important;
+      color: var(--app-chip-map-text-color) !important;
     }
 
     .track-chip-parentcategory {
-      background-color: var(--q-primary) !important;
-      color: var(--q-white) !important;
+      background-color: var(--app-chip-parentcategory-background-color) !important;
+      color: var(--app-chip-parentcategory-text-color) !important;
     }
   }
 
-  // Table selection input text
-  .q-field__label {
-    color: var(--q-light) !important;
-  }
-
+  // selection dropdown
   .q-menu {
-    background-color: var(--q-primary) !important;
-    color: var(--q-light);
+    background-color: var(--app-select-dropdown-background-color) !important;
+    color: var(--app-select-dropdown-text-color);
 
     .q-item__label{
-      color: var(--q-light) !important;
+      color: var(--app-select-dropdown-label-text-color) !important;
     }
     .q-item__label--caption {
-      color: var(--q-accent3) !important;
+      color: var(--app-select-dropdown-label-caption-text-color) !important;
     }
     .q-item--active .q-item__label {
-      color: var(--q-accent) !important;
+      color: var(--app-select-dropdown-label-text-active-color) !important;
     }
     .q-item--active .q-item__label--caption {
-      color: var(--q-primary) !important;
+      color: var(--app-select-dropdown-label-caption-active-text-color) !important;
     }
   }
 
   .faq-card {
     .faq-card-header {
-      background-color: var(--q-secondary) !important;
+      background-color: var(--app-faq-card-header-background-color) !important;
     }
     .faq-card-content {
-      background-color: var(--q-light) !important;
+      background-color: var(--app-faq-card-content-background-color) !important;
+      color: var(--app-faq-card-content-text-color) !important;
     }
 
     .truncated::after {
-      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, var(--q-light) 90%)
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, var(--app-faq-card-transparent-effect-color) 90%)
     }
   }
 }
 
-// Dark mode
-@mixin dark-mode-colors {
-// Main theme colors
-  --q-primary: #742294;
-  --q-secondary: #8c3069;
-  --q-accent: #50346e;
-  --q-positive: #2d9c67;
-  --q-negative: #e43319;
-  --q-info: #d26cb7;
-  --q-warning: #dacb2f;
-  --q-dark: #010803;
-  --q-dark-page: #010803;
 
-  --q-white: #d9cdcd;
-  --q-light: #54738c;
-  --q-accent2: #2e1557;
-  --q-accent3: #bd2727;
-
-//  --q-color-primary-light: $example-color-dark;
-//  --q-color-primary-lighter: $example-color-darker;
-//  --q-color-primary-dark: $example-color-light;
-//  --q-color-primary-darker: $example-color-lighter;
-//
-//// Background colors
-//  --color-background-primary: $grey-10;
-//  --color-background-secondary: $grey-8;
-//  --color-background-tertiary: $grey-6;
-//
-//// Text colors
-//  --color-text-primary: $grey-4;
-//  --color-text-secondary: $grey-6;
-//  --color-text-tertiary: $grey-7;
-//  --color-text-inverted: $black;
-//  --color-text-selected: rgba( $red, .2 );
-}
 
 // Dark mode (OS native)
 // Browser support: https://caniuse.com/#search=prefers-color-scheme
@@ -156,7 +224,7 @@ body {
 //}
 //
 //
-//// Dark mode (Quasar global dark mode)
-//.body--dark {
-//  @include dark-mode-colors;
-//}
+// Dark mode (Quasar global dark mode)
+.body--dark {
+  @include dark-mode-colors;
+}

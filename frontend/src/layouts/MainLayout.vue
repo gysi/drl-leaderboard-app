@@ -17,14 +17,13 @@
           </router-link>
         </q-toolbar-title>
 
-<!--        <q-toggle-->
-<!--          label="Dark Mode"-->
-<!--          :model-value="darkMode"-->
-<!--          @update:model-value="this.toggleDarkMode"-->
-<!--          dark-->
-<!--          left-label-->
-<!--          color="accent"-->
-<!--          />-->
+        <q-toggle
+          label="Dark Mode"
+          :model-value="darkMode"
+          @update:model-value="this.toggleDarkMode"
+          left-label
+          color="accent"
+          />
         <div>by gysi (v.{{ version }}-PINK-IS-THE-DEVIL)</div>
       </q-toolbar>
     </q-header>
@@ -109,26 +108,40 @@ export default defineComponent({
   setup () {
     const $q = useQuasar()
     const leftDrawerOpen = ref(false)
+    const darkModeInStorage = $q.localStorage.getItem('darkMode');
+    const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+    let useDarkMode = ref(false);
+    if(darkModeInStorage){
+      useDarkMode = ref(true);
+    } else if(darkModeInStorage === false){
+
+    } else if (prefersDarkScheme.matches) {
+      useDarkMode = ref(true);
+    }
     return {
       linksList: linksList,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
-      quasar: $q
+      quasar: $q,
+      darkMode: useDarkMode
     }
   },
   data() {
     return {
       version: version,
-      darkMode: this.quasar.dark.isActive
     }
   },
   methods: {
     toggleDarkMode(){
-      this.$q.dark.toggle()
       this.darkMode = !this.darkMode;
       this.$q.localStorage.set('darkMode', this.darkMode);
+      if(this.darkMode){
+        document.body.classList.add("body--dark")
+      } else {
+        document.body.classList.remove("body--dark");
+      }
     }
   },
 })
