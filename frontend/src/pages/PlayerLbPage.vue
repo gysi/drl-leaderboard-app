@@ -76,7 +76,7 @@
               :props="props"
               :style="{
                 backgroundColor:
-                  props.row.isMissing ? 'rgb(204,204,204)' :
+                  props.row.isMissing ? 'var(--app-player-lb-missing-run-background-color)' :
                   props.row.isInvalidRun ? 'rgba(187,44,44,0.54)' :
                     col.name === 'position' ? backGroundColorByPosition(props.row.position) :
                       null,

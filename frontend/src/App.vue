@@ -11,8 +11,14 @@ export default defineComponent({
   setup() {
     const $q = useQuasar()
     let darkModeInStorage = $q.localStorage.getItem('darkMode');
-    if(darkModeInStorage !== null) {
-      $q.dark.set(darkModeInStorage);
+    const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+    if(darkModeInStorage){
+      document.body.classList.add("body--dark")
+    } else if(darkModeInStorage === false){
+
+    } else if (prefersDarkScheme.matches) {
+      document.body.classList.add("body--dark")
     }
   }
 })
