@@ -11,7 +11,6 @@
         style="max-height: 100%;"
         :pagination="pagination"
         hide-pagination
-        :visible-columns="[]"
         bordered
         flat
       >
@@ -47,25 +46,20 @@
             </q-select>
           </div>
         </template>
-        <template v-slot:header="props">
-          <q-tr
-          >
-            <q-th
-              v-for="col in props.cols"
-              :key="col.name"
-              :props="props"
-              :style="{
-                border: '1px solid black',
-                borderLeft: '1px solid black',
-                borderRight: 0,
-              }"
-            >
+        <template v-slot:header-cell-beatenBy="props">
+            <q-th :props="props">
               <q-icon
-                v-if="col.name === 'beatenBy'"
                 name="query_stats" color="white" size="sm" />
-              {{ col.name !== 'beatenBy' ? col.label : ''}}
             </q-th>
-          </q-tr>
+        </template>
+        <template v-slot:header-cell-points="props">
+          <q-th :props="props">
+            {{ props.col.label }}
+            <q-btn type="a" icon="help" size="1.3rem"
+                   fab flat padding="5px"
+                   :to="{ name: 'faq', query: { card: 'pointSystem' } }"
+            />
+          </q-th>
         </template>
         <template v-slot:body="props">
           <q-tr
@@ -82,6 +76,7 @@
                   props.row.isInvalidRun ? 'rgba(187,44,44,0.54)' :
                     col.name === 'position' ? backGroundColorByPosition(props.row.position) :
                       null,
+                paddingLeft: props.row.isInvalidRun && col.name === 'position' ? '5px' : null,
               }"
               :class="[col.name === 'position' && !props.row.isInvalidRun ?
                 props.row.position === 1 ? 'first-place' :
@@ -89,16 +84,17 @@
                     props.row.position === 3 ? 'third-place' : '' : '', col.name === 'position' ? 'leaderboard-position-column' : '']"
             >
 <!-- Position row-->
-              <q-icon
+              <q-btn
                 v-if="props.row.isInvalidRun && col.name === 'position'"
-                name="warning"
-                size="sm"
-                left
+                type="button" icon="warning" size="sm"
+                fab padding="5px"
+                :to="{ name: 'faq', query: { card: 'invalidRuns' } }"
+                ripple
               >
                 <q-tooltip>
-                  {{ props.row.invalidRunReason }}
+                  <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>
                 </q-tooltip>
-              </q-icon>
+              </q-btn>
 <!-- Position row end-->
 <!-- Track row -->
               <q-item clickable v-if="col.name === 'track'" class="playerlb-track-td"
@@ -183,22 +179,18 @@ export default defineComponent({
       searchResults: [],
       loadingState: true,
       columns: [
-        { name: 'position', label: '#', field: 'position', align: 'center', sortable: true, required: true },
-        { name: 'beatenBy', label: 'Beaten by', field: 'beatenBy', align: 'center', required: true},
-        { name: 'track', label: 'Track', field: row => row.track.name, sortable: true, align: 'left', required: true },
-        // { name: 'map', label: 'Map', field: row => row.track.mapName, align: 'left', required: true },
+        { name: 'position', label: '#', field: 'position', align: 'right', sortable: true},
+        { name: 'beatenBy', label: 'Beaten by', field: 'beatenBy', align: 'center'},
+        { name: 'track', label: 'Track', field: row => row.track.name, sortable: true, align: 'left'},
         { name: 'score', label: 'Time', field: 'score',
-          format: (val, row) => { if(val) return this.formatMilliSeconds(val) }, align: 'left', sortable: true, required: true },
+          format: (val, row) => { if(val) return this.formatMilliSeconds(val) }, align: 'left', sortable: true },
         { name: 'crashes', label: 'Crashes', field: 'crashCount', sortable: true, required: true },
         { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed',
           format: (val, row) => { if(val) return Math.round(val*10)/10 }, sortable: true, required: true },
         { name: 'points', label: 'Points', field: 'points',
-          format: (val, row) => { if (val) return row.isInvalidRun ? 0 : Math.round(val) }, sortable: true, required: true },
-        { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val), sortable: true, required: true },
-        { name: 'droneName', label: 'Drone Name', field: 'droneName', required: true },
-        { name: 'isInvalidRun', label: 'Invalid Run', field: 'isInvalidRun'},
-        { name: 'invalidRunReason', label: 'Invalid Run Reason', field: 'invalidRunReason'},
-        // { name: 'mapCatetory', label: 'Map Category', field: row => row.track.parentCategory, required: true },
+          format: (val, row) => { if (val) return row.isInvalidRun ? 0 : Math.round(val) }, sortable: true },
+        { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val), sortable: true },
+        { name: 'droneName', label: 'Drone Name', field: 'droneName' },
       ],
       rows: [],
       loading: false,

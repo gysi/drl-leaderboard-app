@@ -199,10 +199,10 @@ tbody .q-td
   border-bottom : 0
   font-weight: normal
   font-size: 16px
-  margin-right: 100px
 
 .leaderboard-position-column
-  width: 70px
+  max-width: 65px
+  width: 65px
   font-weight: bolder
   color: #f6f6f6
   text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black
