@@ -71,7 +71,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Basic overall rankings~~
       * [ ] Adds a "?" icon to the invalid runs column header which links to the FAQ Section
       * [ ] Adds a "?" icon to the points column header which links to the FAQ Section
-      * [ ] Avg Position
+      * [x] ~~Avg Position~~
     * [ ] Track rankings
       * [x] ~~Basic map rankings~~
       * [x] ~~Search should also search in parent categories~~
