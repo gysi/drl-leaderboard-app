@@ -45,7 +45,7 @@ Webapp for displaying DRL Simulator leaderboards.
   * [x] ~~Initial setup~~
   * [ ] Design
     * [ ] Something better than the current one
-    * [ ] Dark mode
+    * [x] ~~Dark mode~~
     * [ ] Mobile friendly (Optional)
       * Zoom is disabled on mobile without using desktop mode on android
       * And desktop mode does not enable zoom on ios for safari and chrome
