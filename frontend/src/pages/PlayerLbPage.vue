@@ -270,19 +270,19 @@ export default defineComponent({
     },
     beatenByIcon(beatenBy, timeSet){
       if(!timeSet) return '';
-      if(beatenBy.length >= 5) return ['arrow_downward', 'red', 'Your PB is beaten by 5 or more players'];
-      if(beatenBy.length > 0) return ['trending_down', 'red', `Your PB is already beaten by ${beatenBy.length} players`];
+      if(beatenBy.length >= 5) return ['arrow_downward', 'red', 'Beaten by 5 or more players'];
+      if(beatenBy.length > 0) return ['trending_down', 'red', `Beaten by ${beatenBy.length} players`];
       let days = differenceInDays(new Date(), new Date(timeSet+'Z'));
       if(days <= 7){
-        return ['check', 'green', `Your PB is not beaten by anyone yet for ${days} days`];
+        return ['check', 'green', `Not beaten by anyone yet for ${days} days`];
       }
       if(days <= 14 ){
-        return ['auto_graph', 'green', `Your PB is not beaten by anyone yet for ${days} days`];
+        return ['auto_graph', 'green', `Not beaten by anyone yet for ${days} days`];
       }
       if(days <= 30){
-        return ['surfing', 'green-6', `Your PB is not beaten by anyone yet for ${days} days`];
+        return ['surfing', 'green-6', `Not beaten by anyone yet for ${days} days`];
       }
-      return ['military_tech', 'yellow-9', `Your PB is not beaten by anyone yet for ${days} days`];
+      return ['military_tech', 'yellow-9', `Not beaten by anyone yet for ${days} days`];
     },
     formatMilliSeconds,
     backGroundColorByPosition,
