@@ -75,6 +75,7 @@ Webapp for displaying DRL Simulator leaderboards.
     * [ ] Track rankings
       * [x] ~~Basic map rankings~~
       * [x] ~~Search should also search in parent categories~~
+      * [ ] Display map image to the left of the input when something is selected (+ text overlay name, map, category)
       * ??? More stuff
     * [ ] Player rankings
       * [x] ~~Basic player rankings~~
