@@ -4,6 +4,7 @@ public interface OverallRankingView {
     Long getPosition();
     String getPlayerName();
     Long getTotalPoints();
+    Double getAvgPosition();
     Long getInvalidRuns();
     Long getCompletedTracks();
     Integer getTotalCrashCount();

@@ -75,6 +75,7 @@ export default defineComponent({
         { name: 'position', label: '#', field: 'position', required: true },
         { name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true },
         { name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true },
+        { name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'right', format: (val, row) => (Math.round(val*100)/100), required: true },
         { name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true },
         { name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true },
         { name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true },
