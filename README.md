@@ -86,13 +86,14 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~"Beaten By" integration for each PB that got beaten since the submission~~
       * [x] ~~Adds a "?" icon to the points column header which links to the FAQ Section~~
       * [ ] General statistics on the top of the page/table-header
-      * [ ] Make the "beaten by" column also sortable. ascend = newest beaten by entry, descend = oldest beaten by entry or none
+      * [x] ~~Make the "beaten by" column also sortable.~~
     * [ ] SLOTMACHINE!!! #**HIGH PRIO**
       * Maybe take 10 lastest improved tracks, 10 highest position, 10 of most by beaten entries etc. and then take a random one. Display it like a slotmachine.
       * Could be a new entry within the navbar which then renders an overlay with a playersearch bar and a slotmachine
     * [ ] FAQ 
       * [x] ~~Point system explanation~~
       * [x] ~~Invalid runs explanation~~
+      * [x] ~~"Beaten by" column explanation~~
       * ??? More stuff
     * [ ] A good way to remove invalid times (wrong drone bug) which aren't exceeding the topspeed. Maybe a kinda voting system? Or something like a player analyis (median / comparision to other track runs / count of total tracks / comparision to overall rankin player position, etc..)
 

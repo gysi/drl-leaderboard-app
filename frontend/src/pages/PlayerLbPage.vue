@@ -48,6 +48,10 @@
         </template>
         <template v-slot:header-cell-beatenBy="props">
             <q-th :props="props">
+              <q-btn type="a" icon="help" size="1.3rem"
+                     fab flat padding="5px"
+                     :to="{ name: 'faq', query: { card: 'beatenBy' } }"
+              />
               <q-icon
                 name="query_stats" color="white" size="sm" />
             </q-th>
@@ -124,7 +128,7 @@
                 </q-tooltip>
                 <q-tooltip v-if="props.row.beatenBy.length > 0">
                   <div style="font-size: 1rem">
-                    Your PB got beaten by
+                    Got beaten by
                     {{ props.row.beatenBy.length >= 5 ? '5 or more' : props.row.beatenBy.length }}
                     player{{ props.row.beatenBy.length > 1 ? 's' : ''}} since submission
                   </div>
@@ -180,7 +184,45 @@ export default defineComponent({
       loadingState: true,
       columns: [
         { name: 'position', label: '#', field: 'position', align: 'right', sortable: true},
-        { name: 'beatenBy', label: 'Beaten by', field: 'beatenBy', align: 'center'},
+        { name: 'beatenBy', label: 'Beaten by', field: 'beatenBy', align: 'center', sortable: true,
+          sort: (a, b, rowa, rowb) => {
+            // shouldn't happen, but just to make sure its not null
+            if(a == null && b == null){
+              return 0;
+            } else if(a == null){
+              return -1;
+            } else if(!b == null){
+              return 1;
+            }
+            if (a.length === 0 && b.length === 0) {
+              const aDate = new Date(rowa.createdAt+'Z');
+              const bDate = new Date(rowb.createdAt+'Z');
+              if(aDate < bDate) {
+                return -1;
+              } else {
+                return 1;
+              }
+            } else if (a.length === 0){
+              return -1;
+            } else if (b.length === 0){
+              return 1;
+            }
+
+            if (a.length === b.length){
+              const aDate = new Date(a[0].createdAt+'Z');
+              const bDate = new Date(b[0].createdAt+'Z');
+              if(aDate < bDate) {
+                return 1;
+              } else {
+                return -1;
+              }
+            } else if (a.length < b.length){
+              return -1;
+            } else {
+              return 1;
+            }
+          }
+        },
         { name: 'track', label: 'Track', field: row => row.track.name, sortable: true, align: 'left'},
         { name: 'score', label: 'Time', field: 'score',
           format: (val, row) => { if(val) return this.formatMilliSeconds(val) }, align: 'left', sortable: true },

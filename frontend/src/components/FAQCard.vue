@@ -1,7 +1,9 @@
 <template>
   <q-card bordered class="faq-card bg-grey-9 text-white grid-item" style="max-width: 40rem">
     <q-card-section class="faq-card-header">
-      <div class="text-h6">{{ title }}</div>
+      <slot name="title">
+        <div class="text-h6">{{ title }}</div>
+      </slot>
     </q-card-section>
 
     <q-separator inset />

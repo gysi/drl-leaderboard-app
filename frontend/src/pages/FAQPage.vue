@@ -161,6 +161,105 @@
           game enough time to upload the replay.
         </p>
       </FAQCard>
+      <FAQCard
+        :msnry="msnry"
+        :initially-expanded="this.$router.currentRoute.value.query.card === 'beatenBy'"
+      >
+        <template v-slot:title>
+          <div class="text-h6">
+            "Beaten by" column
+            (<q-icon name="query_stats" color="white" size="md" />)
+            on player leaderboard
+          </div>
+        </template>
+        <p>
+          The "Beaten by" column in the player leaderboard shows how many players have beaten the time of the respective line since this time was set.
+        </p>
+        <p>
+          On mouseover, if the time has been beaten, a table of players who have beaten that time is displayed. The table is limited to 5 entries and is sorted by the date of creation. Players who have recently beaten the time are displayed first.
+        </p>
+        <p>
+          If no one has beaten the time since it was created, then the number of days since the time was created is shown.
+        </p>
+        Here is a table explaining the different icons:
+        <q-markup-table class="q-ma-sm">
+          <thead>
+          <tr>
+            <th class="text-center">Icon</th>
+            <th class="text-center">Meaning</th>
+          </tr>
+          </thead>
+          <tbody class="text-center">
+          <tr>
+            <td>
+              <q-icon
+              name="arrow_downward"
+              color="red"
+              size="md"
+              style="background: rgba(0,0,0,0.07); border-radius: 50%; padding: 2px;"
+              />
+            </td>
+            <td>Beaten by 5 or more players</td>
+          </tr>
+          <tr>
+            <td>
+              <q-icon
+                name="trending_down"
+                color="red"
+                size="md"
+                style="background: rgba(0,0,0,0.07); border-radius: 50%; padding: 2px;"
+              />
+            </td>
+            <td>Beaten by x players (0 &lt; x &lt; 5)</td>
+          </tr>
+          <tr>
+            <td>
+              <q-icon
+                name="check"
+                color="green"
+                size="md"
+                style="background: rgba(0,0,0,0.07); border-radius: 50%; padding: 2px;"
+              />
+            </td>
+            <td>Not beaten by anyone yet for x days (x &lt;= 7)</td>
+          </tr>
+          <tr>
+            <td>
+              <q-icon
+                name="auto_graph"
+                color="green"
+                size="md"
+                style="background: rgba(0,0,0,0.07); border-radius: 50%; padding: 2px;"
+              />
+            </td>
+            <td>Not beaten by anyone yet for x days (7 &lt; x &lt;= 14)</td>
+          </tr>
+          <tr>
+            <td>
+              <q-icon
+                name="surfing"
+                color="green-6"
+                size="md"
+                style="background: rgba(0,0,0,0.07); border-radius: 50%; padding: 2px;"
+              />
+            </td>
+            <td>Not beaten by anyone yet for x days (14 &lt; x &lt;= 30)</td>
+          </tr>
+          <tr>
+            <td>
+              <q-icon
+                name="military_tech"
+                color="yellow-9"
+                size="md"
+                style="background: rgba(0,0,0,0.07); border-radius: 50%; padding: 2px;"
+              />
+            </td>
+            <td>Not beaten by anyone yet for x days (x &gt; 30)</td>
+          </tr>
+          </tbody>
+        </q-markup-table>
+
+      </FAQCard>
     </div>
   </q-page>
 </template>
