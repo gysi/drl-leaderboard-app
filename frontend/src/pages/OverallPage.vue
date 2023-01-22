@@ -14,6 +14,24 @@
       :visible-columns="[]"
       :rows-per-page-options="[50]"
     >
+      <template v-slot:header-cell-invalidRuns="props">
+          <th :class="props.col.__thclass">
+            {{ props.col.label }}
+            <q-btn type="a" icon="help" size="1.3rem"
+              fab flat padding="5px"
+              :to="{ name: 'faq', query: { card: 'invalidRuns' } }"
+            />
+          </th>
+      </template>
+      <template v-slot:header-cell-totalPoints="props">
+        <th :class="props.col.__thClass">
+          {{ props.col.label }}
+          <q-btn type="a" icon="help" size="1.3rem"
+                 fab flat padding="5px"
+                 :to="{ name: 'faq', query: { card: 'pointSystem' } }"
+          />
+        </th>
+      </template>
       <template v-slot:body="props">
         <q-tr>
           <q-td v-for="col in props.cols" :key="col.name" :props="props"

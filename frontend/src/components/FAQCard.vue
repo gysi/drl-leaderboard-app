@@ -38,15 +38,18 @@ export default {
     },
     msnry: {
       type: Object
+    },
+    initiallyExpanded: {
+      type: Boolean,
+      default: false
     }
   },
   setup () {
-    return {}
   },
   data () {
     return {
-      isExpanded: false,
-      console: console
+      console: console,
+      isExpanded: this.initiallyExpanded
     }
   },
   watch: {

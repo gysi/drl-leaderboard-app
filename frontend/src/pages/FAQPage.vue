@@ -5,10 +5,11 @@
       <FAQCard
           title="How does the point system work?"
           :msnry="msnry"
+          :initially-expanded="this.$router.currentRoute.value.query.card === 'pointSystem'"
         >
-          <div>The number of points a player receives is calculated based on their position on the leaderboard, with the formula</div>
+          <div>The number of points a player receives is calculated based on their position on the leaderboard using the formula</div>
           <b><span>points = 101 - position</span></b>
-          <div>Additionally the player is awarded bonus points below certain positions</div>
+          <div>In addition, bonus points will be awarded to the player below certain positions.</div>
           <div>
             <q-markup-table class="q-ma-sm">
               <thead>
@@ -49,8 +50,8 @@
               </tbody>
             </q-markup-table>
           </div>
-          <span>The final number of points a player earns is then raised to the power of <b>1.1</b> .</span>
-          <span>Here are some expamles:</span>
+          <span>The final score is then raised to the power of <b>1.1</b></span>
+          <div>Here are some expamles:</div>
           <div>
             <q-markup-table class="q-ma-sm">
               <thead>
@@ -103,11 +104,12 @@
               </tbody>
             </q-markup-table>
           </div>
-          <span>For the display, the points are rounded to a whole number. However, the total points in the overall ranking is accurate to 14 digits and is only then rounded.</span>
+          <span>Points are rounded to a whole number for display purposes. However, the total points in the overall ranking is accurate to 14 digits and is only then rounded.</span>
         </FAQCard>
       <FAQCard
         title="Invalid Runs"
         :msnry="msnry"
+        :initially-expanded="this.$router.currentRoute.value.query.card === 'invalidRuns'"
       >
         <p>
           Invalid runs refer to attempts by a player that do not earn any points and are not considered
@@ -189,8 +191,6 @@ export default defineComponent({
       // fitWidth: true
     });
     this.msnry = msnry;
-    console.log(this.msnry);
-    console.dir(this.msnry);
   }
 })
 </script>

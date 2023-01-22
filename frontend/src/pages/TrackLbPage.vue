@@ -68,12 +68,22 @@
           </q-select>
         </div>
       </template>
+      <template v-slot:header-cell-points="props">
+        <th :class="props.col.__thClass">
+          {{ props.col.label }}
+          <q-btn type="a" icon="help" size="1.3rem"
+                 fab flat padding="5px"
+                 :to="{ name: 'faq', query: { card: 'pointSystem' } }"
+          />
+        </th>
+      </template>
       <template v-slot:body="props">
         <q-tr>
           <q-td v-for="col in props.cols" :key="col.name" :props="props"
                 :style="{
                   backgroundColor: props.row.isInvalidRun ?
-                    'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null
+                    'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null,
+                  paddingLeft: props.row.isInvalidRun && col.name === 'position' ? '5px' : null,
                   }"
                 :class="[col.name === 'position' && !props.row.isInvalidRun ?
                           props.row.position === 1 ? 'first-place' :
@@ -87,7 +97,6 @@
             >
               <q-item-section avatar side>
                 <q-avatar rounded size="50px">
-<!--                  <img :src="props.row.profileThumb" loading="eager" alt="Avatar"/>-->
                   <q-img :src="props.row.profileThumb" />
                 </q-avatar>
               </q-item-section>
@@ -101,16 +110,17 @@
                 </q-item-label>
               </q-item-section>
             </q-item>
-            <q-icon
+            <q-btn
               v-if="props.row.isInvalidRun && col.name === 'position'"
-              name="warning"
-              size="sm"
-              left
+              type="button" icon="warning" size="sm"
+              fab padding="5px"
+              :to="{ name: 'faq', query: { card: 'invalidRuns' } }"
+              ripple
             >
               <q-tooltip>
-                {{ props.row.invalidRunReason }}
+                <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>
               </q-tooltip>
-            </q-icon>
+            </q-btn>
             {{ col.name !== 'playerName' ? col.value : '' }}
           </q-td>
         </q-tr>
