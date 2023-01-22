@@ -24,7 +24,7 @@
           left-label
           color="accent"
           />
-        <div>by gysi (v.{{ version }}-PINK-IS-THE-DEVIL)</div>
+        <div style="margin-left: 15px">by gysi (v{{ version }})</div>
       </q-toolbar>
     </q-header>
 
@@ -201,7 +201,7 @@ tbody .q-td
   font-size: 16px
   margin-right: 100px
 
-tbody .q-tr .q-td:first-child
+.leaderboard-position-column
   width: 70px
   font-weight: bolder
   color: #f6f6f6

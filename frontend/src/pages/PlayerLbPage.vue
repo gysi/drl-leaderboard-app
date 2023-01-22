@@ -1,5 +1,5 @@
 <template>
-  <q-page padding style="height: 100%" class="col items-start">
+  <q-page padding style="height: 100%" class="q-pa-md col items-start">
       <q-table
         title="Player's Rankings"
         :columns="columns"
@@ -12,6 +12,8 @@
         :pagination="pagination"
         hide-pagination
         :visible-columns="[]"
+        bordered
+        flat
       >
         <template v-slot:top-left>
           <div class="row">
@@ -81,7 +83,10 @@
                     col.name === 'position' ? backGroundColorByPosition(props.row.position) :
                       null,
               }"
-              :class="col.name === 'position' && !props.row.isInvalidRun ? props.row.position === 1 ? 'first-place' : props.row.position === 2 ? 'second-place' : props.row.position === 3 ? 'third-place' : '' : ''"
+              :class="[col.name === 'position' && !props.row.isInvalidRun ?
+                props.row.position === 1 ? 'first-place' :
+                  props.row.position === 2 ? 'second-place' :
+                    props.row.position === 3 ? 'third-place' : '' : '', col.name === 'position' ? 'leaderboard-position-column' : '']"
             >
 <!-- Position row-->
               <q-icon
