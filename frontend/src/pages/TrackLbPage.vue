@@ -1,5 +1,5 @@
 <template>
-  <q-page padding style="height: 100%" class="col items-start">
+  <q-page padding style="height: 100%" class="q-pa-md col items-start">
     <q-table
       :columns="columns"
       :rows="rows"
@@ -10,6 +10,8 @@
       style="max-height: 100%;"
       :pagination="pagination"
       hide-pagination
+      flat
+      bordered
     >
       <template v-slot:top-left>
         <div class="row">
@@ -73,10 +75,10 @@
                   backgroundColor: props.row.isInvalidRun ?
                     'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null
                   }"
-                :class="col.name === 'position' && !props.row.isInvalidRun ?
+                :class="[col.name === 'position' && !props.row.isInvalidRun ?
                           props.row.position === 1 ? 'first-place' :
                           props.row.position === 2 ? 'second-place' :
-                          props.row.position === 3 ? 'third-place' : '' : ''"
+                          props.row.position === 3 ? 'third-place' : '' : '', col.name === 'position' ? 'leaderboard-position-column' : '']"
           >
             <q-item v-if="col.name === 'playerName'"
                     clickable
