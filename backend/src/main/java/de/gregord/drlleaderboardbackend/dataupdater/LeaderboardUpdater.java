@@ -289,6 +289,11 @@ public class LeaderboardUpdater {
             leaderboardService.saveAndDeleteLeaderboardEntries(leaderboardEntryEntriesToBeSaved, currentLeaderboardEntries.values());
         } catch (Exception e) {
             LOG.error("Error while updating leaderboard entry", e);
+            try {
+                Thread.sleep(durationBetweenRequests.toMillis());
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 }
