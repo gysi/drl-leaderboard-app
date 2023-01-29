@@ -176,18 +176,24 @@ from overall_ranking ovr;
                trackMapName,
                trackParentCategory,
                json_agg(reason ORDER BY reason) as reasons FROM (
-        -- 10 last maps you didn't improve upon
+        """+
+// 10 last maps you didn't improve upon lately
+        """
+        
               (SELECT m.track_id               as trackId,
                       m.track_name             as trackName,
                       m.track_map_name         as trackMapName,
                       m.track_parent_category  as trackParentCategory,
                       'IMPROVEMENT_IS_LONG_AGO' as reason
                FROM main m
-               WHERE m.player_is_invalid_run = false AND m.player_id is not null
+               WHERE m.player_is_invalid_run = false AND m.player_id is not null AND :includeImprovementIsLongAgo
                ORDER BY m.player_created_at
                LIMIT 10)
               UNION
-        -- 10 maps with the worst position compared to your other tracks
+        """+
+//  10 maps with the worst position compared to your other tracks
+        """
+        
               (SELECT m.track_id              as trackId,
                       m.track_name            as trackName,
                       m.track_map_name        as trackMapName,
@@ -196,11 +202,13 @@ from overall_ranking ovr;
                FROM main m
                WHERE m.player_position > 1
                  AND m.player_is_invalid_run = false
-                 AND m.player_id is not null
+                 AND m.player_id is not null AND :includeWorstPosition
                ORDER BY m.player_position DESC
                LIMIT 10)
               UNION
-        -- 10 tracks with most beaten by entries and then order by oldest beaten by entry (because 5 is max)
+        """+
+//  10 tracks with most beaten by entries and then order by oldest beaten by entry (because 5 is max)
+        """
               (SELECT min(m.track_id)              as trackId,
                       min(m.track_name)            as trackName,
                       min(m.track_map_name)        as trackMapName,
@@ -209,12 +217,14 @@ from overall_ranking ovr;
                FROM main m
                  INNER JOIN leaderboards_beaten_by b ON b.leaderboard_id = m.player_id
                  INNER JOIN leaderboards l ON l.id = b.beaten_by_leaderboard_id
-               WHERE m.player_is_invalid_run = false and m.player_id is not null
+               WHERE m.player_is_invalid_run = false and m.player_id is not null AND :includeMostBeatenByEntries
                GROUP BY m.player_id
                ORDER BY count(l.player_id) desc, min(l.created_at)
                limit 10)
               UNION
-        -- 10 tracks where you are the farest behind the top position
+        """+
+//  10 tracks where you are the farest behind the top position
+        """
               (SELECT m.track_id               as trackId,
                       m.track_name             as trackName,
                       m.track_map_name         as trackMapName,
@@ -225,12 +235,14 @@ from overall_ranking ovr;
                             FROM leaderboards l
                             WHERE l.position = 1
                               AND l.is_invalid_run = false) l ON l.track_id = m.track_id
-               WHERE m.player_id is not null
+               WHERE m.player_id is not null AND :includeFarthestBehindLeader
                ORDER BY m.player_score - l.score DESC
                LIMIT 10)
               UNION
-        -- 10 tracks where it is potentially easy to improve (scorediff / position = how many seconds you need to advance a position,
-        -- a higher value is an indicator for easier improvement)
+        """+
+// 10 tracks where it is potentially easy to improve (scorediff / position = how many seconds you need to advance a position,
+// a higher value is an indicator for easier improvement)
+        """
               (select m.track_id                    as trackId,
                       m.track_name                  as trackName,
                       m.track_map_name              as trackMapName,
@@ -242,33 +254,46 @@ from overall_ranking ovr;
                             FROM leaderboards l
                             WHERE l.position = 1
                               AND l.is_invalid_run = false) l ON l.track_id = m.track_id
-               WHERE m.player_id is not null
+               WHERE m.player_id is not null AND :includePotentiallyEasyToAdvance
                ORDER BY (m.player_score - l.score) / m.player_position DESC
                LIMIT 10)
               UNION
-        -- 10 tracks where your time is invalid
+        """+
+// 10 tracks where your time is invalid
+        """
               (SELECT m.track_id              as trackId,
                       m.track_name            as trackName,
                       m.track_map_name        as trackMapName,
                       m.track_parent_category as trackParentCategory,
                       'INVALID_RUN'           as reason
                FROM main m
-               WHERE m.player_is_invalid_run = true AND m.player_id is not null
+               WHERE m.player_is_invalid_run = true AND m.player_id is not null AND :includeInvalidRuns
                ORDER BY m.player_position DESC
                LIMIT 10)
               UNION
-        -- 10 tracks you didn't complete
+        """+
+// 10 tracks you didn't complete
+        """
               (SELECT m.track_id              as trackId,
                       m.track_name            as trackName,
                       m.track_map_name        as trackMapName,
                       m.track_parent_category as trackParentCategory,
                       'NOT_COMPLETED'           as reason
                FROM main m
-               WHERE m.player_id IS NULL
+               WHERE m.player_id IS NULL AND :includeNotCompleted
                LIMIT 10)
         ) unioned
         GROUP BY trackId, trackName, trackMapName, trackParentCategory
         ORDER BY count(reason) DESC;
 """, nativeQuery = true)
-    List<WorstTracksView> worstTracksByPlayer(String playerName, List<Long> excludedTrackIds);
+    List<WorstTracksView> worstTracksByPlayer(
+            String playerName,
+            Boolean includeImprovementIsLongAgo,
+            Boolean includeWorstPosition,
+            Boolean includeMostBeatenByEntries,
+            Boolean includeFarthestBehindLeader,
+            Boolean includePotentiallyEasyToAdvance,
+            Boolean includeInvalidRuns,
+            Boolean includeNotCompleted,
+            List<Long> excludedTrackIds);
 }
