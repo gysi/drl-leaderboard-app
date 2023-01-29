@@ -46,7 +46,7 @@
           >
             <q-item v-if="col.name === 'playerName'"
               clickable
-              :to="`/playerlb/?playerName=${props.row.playerName}`"
+              :to="`/player-lb/?playerName=${props.row.playerName}`"
               class="q-item-player-region"
             >
               <q-item-section avatar side>
@@ -110,7 +110,7 @@ export default defineComponent({
     async fetchData() {
       this.loading = true;
       try {
-        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overallranking?page=1&limit=500');
+        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overall-ranking?page=1&limit=500');
         this.rows = response.data;
       } catch (error) {
         console.error(error);

@@ -155,4 +155,120 @@ from overall_ranking ovr;
             LIMIT 10
             """, nativeQuery = true)
     List<LeaderboardMostPbsView> mostPbsLastMonth();
+
+//    @Cacheable("worstTrackByPlayer")
+    @Query(value = """
+        WITH main as (SELECT t.id as track_id,
+                             t.name as track_name,
+                             t.map_name as track_map_name,
+                             t.parent_category as track_parent_category,
+                             l.id as player_id,
+                             l.player_name as player_name,
+                             l.position as player_position,
+                             l.score as player_score,
+                             l.created_at as player_created_at,
+                             l.is_invalid_run as player_is_invalid_run
+                      FROM tracks t
+                        LEFT JOIN leaderboards l ON t.id = l.track_id AND l.player_name = :playerName
+                      WHERE (:excludedTrackIds is null or t.id not in (:excludedTrackIds)))
+        SELECT trackId,
+               trackName,
+               trackMapName,
+               trackParentCategory,
+               json_agg(reason ORDER BY reason) as reasons FROM (
+        -- 10 last maps you didn't improve upon
+              (SELECT m.track_id               as trackId,
+                      m.track_name             as trackName,
+                      m.track_map_name         as trackMapName,
+                      m.track_parent_category  as trackParentCategory,
+                      'IMPROVEMENT_IS_LONG_AGO' as reason
+               FROM main m
+               WHERE m.player_is_invalid_run = false AND m.player_id is not null
+               ORDER BY m.player_created_at
+               LIMIT 10)
+              UNION
+        -- 10 maps with the worst position compared to your other tracks
+              (SELECT m.track_id              as trackId,
+                      m.track_name            as trackName,
+                      m.track_map_name        as trackMapName,
+                      m.track_parent_category as trackParentCategory,
+                      'WORST_POSITION'       as reason
+               FROM main m
+               WHERE m.player_position > 1
+                 AND m.player_is_invalid_run = false
+                 AND m.player_id is not null
+               ORDER BY m.player_position DESC
+               LIMIT 10)
+              UNION
+        -- 10 tracks with most beaten by entries and then order by oldest beaten by entry (because 5 is max)
+              (SELECT min(m.track_id)              as trackId,
+                      min(m.track_name)            as trackName,
+                      min(m.track_map_name)        as trackMapName,
+                      min(m.track_parent_category) as trackParentCategory,
+                      'MOST_BEATEN_BY_ENTRIES'     as reason
+               FROM main m
+                 INNER JOIN leaderboards_beaten_by b ON b.leaderboard_id = m.player_id
+                 INNER JOIN leaderboards l ON l.id = b.beaten_by_leaderboard_id
+               WHERE m.player_is_invalid_run = false and m.player_id is not null
+               GROUP BY m.player_id
+               ORDER BY count(l.player_id) desc, min(l.created_at)
+               limit 10)
+              UNION
+        -- 10 tracks where you are the farest behind the top position
+              (SELECT m.track_id               as trackId,
+                      m.track_name             as trackName,
+                      m.track_map_name         as trackMapName,
+                      m.track_parent_category  as trackParentCategory,
+                      'FARTHEST_BEHIND_LEADER' as reason
+               FROM main m
+                INNER JOIN (SELECT track_id, score
+                            FROM leaderboards l
+                            WHERE l.position = 1
+                              AND l.is_invalid_run = false) l ON l.track_id = m.track_id
+               WHERE m.player_id is not null
+               ORDER BY m.player_score - l.score DESC
+               LIMIT 10)
+              UNION
+        -- 10 tracks where it is potentially easy to improve (scorediff / position = how many seconds you need to advance a position,
+        -- a higher value is an indicator for easier improvement)
+              (select m.track_id                    as trackId,
+                      m.track_name                  as trackName,
+                      m.track_map_name              as trackMapName,
+                      m.track_parent_category       as trackParentCategory,
+                      'POTENTIALLY_EASY_TO_ADVANCE' as reason
+               FROM main m
+                INNER JOIN (SELECT track_id,
+                                   score
+                            FROM leaderboards l
+                            WHERE l.position = 1
+                              AND l.is_invalid_run = false) l ON l.track_id = m.track_id
+               WHERE m.player_id is not null
+               ORDER BY (m.player_score - l.score) / m.player_position DESC
+               LIMIT 10)
+              UNION
+        -- 10 tracks where your time is invalid
+              (SELECT m.track_id              as trackId,
+                      m.track_name            as trackName,
+                      m.track_map_name        as trackMapName,
+                      m.track_parent_category as trackParentCategory,
+                      'INVALID_RUN'           as reason
+               FROM main m
+               WHERE m.player_is_invalid_run = true AND m.player_id is not null
+               ORDER BY m.player_position DESC
+               LIMIT 10)
+              UNION
+        -- 10 tracks you didn't complete
+              (SELECT m.track_id              as trackId,
+                      m.track_name            as trackName,
+                      m.track_map_name        as trackMapName,
+                      m.track_parent_category as trackParentCategory,
+                      'NOT_COMPLETED'           as reason
+               FROM main m
+               WHERE m.player_id IS NULL
+               LIMIT 10)
+        ) unioned
+        GROUP BY trackId, trackName, trackMapName, trackParentCategory
+        ORDER BY count(reason) DESC;
+""", nativeQuery = true)
+    List<WorstTracksView> worstTracksByPlayer(String playerName, List<Long> excludedTrackIds);
 }

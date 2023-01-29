@@ -2,18 +2,31 @@
 //https://huemint.com/
 
 $dark-primary: #3a3c45;
+$dark-primary-color: 58, 60, 69;
 $dark-secondary: #63686d;
+$dark-secondary-color: 99, 104, 109;
 $dark-accent: #551b5d;
+$dark-accent-color: 85, 27, 93;
 $dark-positive: #009756;
+$dark-positive-color: 0, 151, 86;
 $dark-negative: #ec1600;
+$dark-negative-color: 236, 22, 0;
 $dark-info: #e95f5a;
+$dark-info-color: 233, 95, 90;
 $dark-warning: #dec700;
+$dark-warning-color: 222, 199, 0;
 $dark-dark: #252627;
+$dark-dark-color: 37, 38, 39;
 $dark-white: #f1f1f1;
+$dark-white-color: 241, 241, 241;
 $dark-light: #6d4e7c;
+$dark-light-color: 109, 78, 124;
 $dark-accent2: #a93d93;
+$dark-accent2-color: 169, 61, 147;
 $dark-accent3: #a55f8d;
+$dark-accent3-color: 165, 95, 141;
 $dark-accent4: #d9cdcd;
+$dark-accent4-color: 217, 205, 205;
 
 // Dark mode
 @mixin dark-mode-colors {
@@ -48,20 +61,60 @@ $dark-accent4: #d9cdcd;
   --app-faq-card-content-text-color: #{$dark-white};
   --app-faq-card-transparent-effect-color: #{$dark-light};
   --app-player-lb-missing-run-background-color: #{$dark-secondary};
+
+  --app-slotmachine-main-box-background-color: #{$dark-primary};
+  --app-slotmachine-button-text-color: #{$light-white};
+  --app-slotmachine-excluded-tracks-counter-badge-background-color: #{$dark-accent2};
+  --app-slotmachine-excluded-tracks-counter-badge-text-color: #{$dark-white};
+  --app-slotmachine-track-pool-counter-badge-background-color: #{$dark-accent2};
+  --app-slotmachine-track-pool-counter-badge-text-color: #{$dark-white};
+  --app-slotmachine-result-background-color: #{$dark-secondary};
+  --app-slotmachine-result-screen-background-color: #{$dark-accent};
+  --app-slotmachine-result-screen-text-color: #{$dark-white};
+  --app-slotmachine-gameboard-background-color: #{$dark-secondary};
+  --app-slotmachine-keyframes-alert: #{$dark-warning-color};
+  --app-slotmachine-keyframes-lightsOff-color: #{$dark-accent};
+  --app-slotmachine-keyframes-lightsOn-color: #{$dark-accent2};
+  --app-slotmachine-keyframes-lightsOn-shadow-color: #{$dark-accent2};
+  --app-slotmachine-keyframes-lightsOff-shadow-color: #{$dark-accent3};
+  --app-slotmachine-cards-container-background-color: #{$dark-secondary};
+  --app-slotmachine-cards-container-inset-color: #{$dark-primary};
+  --app-slotmachine-grab-background-color: #{$dark-accent2};
+  --app-slotmachine-grab-shadow-color: rgba(0,0,0, 0.5);
+  --app-slotmachine-grab-inset-color: rgba(255,255,255, 1);
+  --app-slotmachine-grab-shadow-hover-color: rgba(59, 0, 50, 0.5);
+  --app-slotmachine-grab-inset-hover-color: rgba(255,0,255, 1);
+  --app-slotmachine-arm-base-gradient-top-color: #{$dark-primary};
+  --app-slotmachine-arm-base-gradient-middle-color: #{$dark-secondary};
+  --app-slotmachine-arm-base-gradient-bottom-color: #{$dark-primary};
+  --app-slotmachine-card-border-color: #{$dark-accent2};
+  --app-slotmachine-table-td-text-color: #{$dark-white};
 }
 
 $light-primary: #491d5d;
+$light-primary-color: 73, 29, 93;
 $light-secondary: #ae3d83;
+$light-secondary-color: 174, 61, 131;
 $light-accent: #50346e;
+$light-accent-color: 80, 52, 110;
 $light-positive: #2d9c67;
+$light-positive-color: 45, 156, 103;
 $light-negative: #e43319;
+$light-negative-color: 228, 51, 25;
 $light-info: #d26cb7;
+$light-info-color: 210, 108, 183;
 $light-warning: #dacb2f;
+$light-warning-color: 218, 203, 47;
 $light-dark: #010803;
+$light-dark-color: 1, 8, 3;
 $light-white: #ffffff;
+$light-white-color: 255, 255, 255;
 $light-light: #d9e5ed;
+$light-light-color: 217, 229, 237;
 $light-accent2: #725f92;
+$light-accent2-color: 114, 95, 146;
 $light-accent3: #b0a2ad;
+$light-accent3-color: 176, 162, 173;
 
 body {
   --app-text-color: #{$light-dark};
@@ -95,6 +148,34 @@ body {
   --app-faq-card-content-text-color: #{$light-dark};
   --app-faq-card-transparent-effect-color: #{$light-light};
   --app-player-lb-missing-run-background-color: #{$grey-5};
+
+  --app-slotmachine-main-box-background-color: #{$light-primary};
+  --app-slotmachine-button-text-color: #{$light-white};
+  --app-slotmachine-excluded-tracks-counter-badge-background-color: #{$light-accent2};
+  --app-slotmachine-excluded-tracks-counter-badge-text-color: #{$light-white};
+  --app-slotmachine-track-pool-counter-badge-background-color: #{$light-accent2};
+  --app-slotmachine-track-pool-counter-badge-text-color: #{$light-white};
+  --app-slotmachine-result-background-color: #{$light-secondary};
+  --app-slotmachine-result-screen-background-color: #{$light-accent};
+  --app-slotmachine-result-screen-text-color: #{$light-white};
+  --app-slotmachine-gameboard-background-color: #{$light-secondary};
+  --app-slotmachine-keyframes-alert: #{$light-warning-color};
+  --app-slotmachine-keyframes-lightsOff-color: #{$light-accent};
+  --app-slotmachine-keyframes-lightsOn-color: #{$light-accent2};
+  --app-slotmachine-keyframes-lightsOn-shadow-color: #{$light-accent2};
+  --app-slotmachine-keyframes-lightsOff-shadow-color: #{$light-accent3};
+  --app-slotmachine-cards-container-background-color: #{$light-secondary};
+  --app-slotmachine-cards-container-inset-color: #{$light-primary};
+  --app-slotmachine-grab-background-color: #{$light-accent2};
+  --app-slotmachine-grab-shadow-color: rgba(0,0,0, 0.5);
+  --app-slotmachine-grab-inset-color: rgba(255,255,255, 1);
+  --app-slotmachine-grab-shadow-hover-color: rgba(59, 0, 50, 0.5);
+  --app-slotmachine-grab-inset-hover-color: rgba(255,0,255, 1);
+  --app-slotmachine-arm-base-gradient-top-color: #{$light-primary};
+  --app-slotmachine-arm-base-gradient-middle-color: #{$light-secondary};
+  --app-slotmachine-arm-base-gradient-bottom-color: #{$light-primary};
+  --app-slotmachine-card-border-color: #{$light-accent2};
+  --app-slotmachine-table-td-text-color: #{$light-dark};
 
   background: var(--app-background-color);
   color: var(--app-text-color);
@@ -144,6 +225,7 @@ body {
       background-color: var(--app-table-column-header-background-color) !important;
     }
 
+    // Select within table
     .q-select {
       color: var(--app-select-text-color) !important;
 
@@ -210,6 +292,72 @@ body {
     .truncated::after {
       background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, var(--app-faq-card-transparent-effect-color) 90%)
     }
+  }
+
+  // select not in table for example worst tracks page
+  .q-select {
+    color: var(--app-select-text-color) !important;
+
+    .q-chip {
+      background-color: var(--app-select-chip-background-color) !important;
+      color: var(--app-select-chip-text-color) !important;
+    }
+
+    // Table selection input text
+    // TODO put within .q-select? (above)
+    .q-field__label {
+      color: var(--app-select-text-color) !important;
+    }
+
+    .q-field__input {
+      color: var(--app-select-text-color) !important;
+    }
+  }
+
+  .slotmachine-page {
+    .main-box {
+      background-color: var(--app-slotmachine-main-box-background-color) !important;
+    }
+
+    .q-badge-excluded-tracks {
+      background-color: var(--app-slotmachine-excluded-tracks-counter-badge-background-color) !important;
+      color: var(--app-slotmachine-excluded-tracks-counter-badge-text-color) !important;
+    }
+
+    .q-badge-track-pool{
+      background-color: var(--app-slotmachine-track-pool-counter-badge-background-color) !important;
+      color: var(--app-slotmachine-track-pool-counter-badge-text-color) !important;
+    }
+
+    .q-btn {
+      color: var(--app-slotmachine-button-text-color) !important;
+    }
+
+    .slotmachine {
+      --result-background: var(--app-slotmachine-result-background-color) !important;
+      --result-screen-background: var(--app-slotmachine-result-screen-background-color) !important;
+      --result-screen-text-color: var(--app-slotmachine-result-screen-text-color) !important;
+      --gameboard-background: var(--app-slotmachine-gameboard-background-color) !important;
+      --keyframes-alert: var(--app-slotmachine-keyframes-alert) !important;
+      --keyframes-lightsOn: var(--app-slotmachine-keyframes-lightsOn-color) !important;
+      --keyframes-lightsOn-shadow: var(--app-slotmachine-keyframes-lightsOn-shadow-color) !important;
+      --keyframes-lightsOff: var(--app-slotmachine-keyframes-lightsOff-color) !important;
+      --keyframes-lightsOff-shadow: var(--app-slotmachine-keyframes-lightsOff-shadow-color) !important;
+      --cards-container-brackground: var(--app-slotmachine-cards-container-background-color) !important;
+      --cards-container-inset: var(--app-slotmachine-cards-container-inset-color) !important;
+      --card-border-color: var(--app-slotmachine-card-border-color) !important;
+      --grab-background-color: var(--app-slotmachine-grab-background-color) !important;
+      --grab-shadow-color: var(--app-slotmachine-grab-shadow-color) !important;
+      --grab-inset-color: var(--app-slotmachine-grab-inset-color) !important;
+      --grab-shadow-hover-color: var(--app-slotmachine-grab-shadow-hover-color) !important;
+      --grab-shadow-inset-color: var(--app-slotmachine-grab-inset-hover-color) !important;
+      --arm-base-gradient-top: var(--app-slotmachine-arm-base-gradient-top-color) !important;
+      --arm-base-gradient-middle: var(--app-slotmachine-arm-base-gradient-middle-color) !important;
+      --arm-base-gradient-bottom: var(--app-slotmachine-arm-base-gradient-bottom-color) !important;
+    }
+  }
+  .worstTracksTable-track-td .q-item__label {
+    color: var(--app-slotmachine-table-td-text-color) !important;
   }
 }
 

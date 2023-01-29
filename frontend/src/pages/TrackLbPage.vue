@@ -78,7 +78,7 @@
         </th>
       </template>
       <template v-slot:body="props">
-        <q-tr>
+        <q-tr :props="props">
           <q-td v-for="col in props.cols" :key="col.name" :props="props"
                 :style="{
                   backgroundColor: props.row.isInvalidRun ?
@@ -92,7 +92,7 @@
           >
             <q-item v-if="col.name === 'playerName'"
                     clickable
-                    :to="`/playerlb/?playerName=${props.row.playerName}`"
+                    :to="`/player-lb/?playerName=${props.row.playerName}`"
                     class="q-item-player-region"
             >
               <q-item-section avatar side>
@@ -215,6 +215,7 @@ export default defineComponent({
       update();
     },
     async fetchData(track) {
+      console.log("start", new Date().getTime());
       if(!track || !track.id) {
         this.rows = [];
         return;
@@ -233,6 +234,7 @@ export default defineComponent({
       } finally {
         this.loading = false;
       }
+      console.log("end", new Date().getTime());
     },
     formatFlagUrl(flagUrl){
       return flagUrl.substring(flagUrl.length-6, flagUrl.length-4);
