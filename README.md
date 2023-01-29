@@ -74,11 +74,13 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Adds a "?" icon to the points column header which links to the FAQ Section~~
       * [x] ~~Avg Position~~
       * [ ] Latest Activty (track)
+      * [ ] Ability to scroll to a player (perhaps also from an external link)
     * [ ] Track rankings
       * [x] ~~Basic map rankings~~
       * [x] ~~Search should also search in parent categories~~
       * [ ] Display map image to the left of the input when something is selected (+ text overlay name, map, category)
       * ??? More stuff
+      * [ ] Ability to scroll to a player (perhaps also from an external link)
     * [ ] Player rankings
       * [x] ~~Basic player rankings~~
       * [x] ~~List not finished tracks~~
@@ -89,9 +91,9 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Adds a "?" icon to the points column header which links to the FAQ Section~~
       * [ ] General statistics on the top of the page/table-header
       * [x] ~~Make the "beaten by" column also sortable.~~
-    * [ ] SLOTMACHINE!!! #**HIGH PRIO**
-      * Maybe take 10 lastest improved tracks, 10 highest position, 10 of most by beaten entries etc. and then take a random one. Display it like a slotmachine.
-      * Could be a new entry within the navbar which then renders an overlay with a playersearch bar and a slotmachine
+    * [x] ~~SLOTMACHINE!!!~~
+      * ~~Maybe take 10 lastest improved tracks, 10 highest position, 10 of most by beaten entries etc. and then take a random one. Display it like a slotmachine.~~
+      * ~~Could be a new entry within the navbar which then renders an overlay with a playersearch bar and a slotmachine~~
     * [ ] FAQ 
       * [x] ~~Point system explanation~~
       * [x] ~~Invalid runs explanation~~
