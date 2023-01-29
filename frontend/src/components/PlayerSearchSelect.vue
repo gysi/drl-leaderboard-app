@@ -42,7 +42,7 @@ export default {
   emits: ['onPlayerSelected'],
   data(){
     return {
-      searchText: this.initialSelection != null ? [this.initialSelection] : null,
+      searchText: this.initialSelection !== "null" && this.initialSelection != null ? [this.initialSelection] : null,
       searchResults: [],
       loadingState: false,
     }
