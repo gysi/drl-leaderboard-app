@@ -5,11 +5,12 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { name: 'home', path: '', component: () => import('pages/IndexPage.vue') },
-      { name: 'overallrankings', path: 'overallrankings', component: () => import('pages/OverallPage.vue') },
+      { name: 'overallrankings', path: 'overall-rankings', component: () => import('pages/OverallPage.vue') },
       { name: 'tracks', path: 'tracks', component: () => import('pages/TracksPage.vue') },
-      { name: 'tracklb', path: 'tracklb', component: () => import('pages/TrackLbPage.vue'), props: route => ({ q: route.query.q }) },
-      { name: 'playerlb', path: 'playerlb', component: () => import('pages/PlayerLbPage.vue'), props: route => ({ q: route.query.q }) },
-      { name: 'faq', path: 'faq', component: () => import('pages/FAQPage.vue') }
+      { name: 'tracklb', path: 'track-lb', component: () => import('pages/TrackLbPage.vue'), props: route => ({ q: route.query.q }) },
+      { name: 'playerlb', path: 'player-lb', component: () => import('pages/PlayerLbPage.vue'), props: route => ({ q: route.query.q }) },
+      { name: 'faq', path: 'faq', component: () => import('pages/FAQPage.vue') },
+      { name: 'worstTracksPicker', path: 'worst-tracks-picker', component: () => import('pages/WorstTracksPickerPage.vue') }
     ]
   },
 

@@ -102,7 +102,7 @@
 <!-- Position row end-->
 <!-- Track row -->
               <q-item clickable v-if="col.name === 'track'" class="playerlb-track-td"
-                      :to="`/tracklb/?trackId=${props.row.track.id}`"
+                      :to="`/track-lb/?trackId=${props.row.track.id}`"
               >
                 <q-item-section>
                   <q-item-label>{{ props.row.track.name }}</q-item-label>
@@ -265,7 +265,7 @@ export default defineComponent({
         return;
       }
       this.loadingState = true;
-      const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/findPlayers?playerName='+val);
+      const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/find-players?playerName='+val);
       this.searchResults = response.data;
       this.loadingState = false;
       update();
@@ -287,7 +287,7 @@ export default defineComponent({
         const [ responseFinishedTracks, responseMissingTracks] =
           await Promise.all([
             axios.get(process.env.DLAPP_API_URL+'/leaderboards/byplayername?playerName='+player),
-            axios.get(process.env.DLAPP_API_URL+'/tracks/missingtracksbyplayername?playerName='+player)
+            axios.get(process.env.DLAPP_API_URL+'/tracks/missing-tracks-by-playername?playerName='+player)
           ]);
         const finishedTracks = responseFinishedTracks.data;
         const missingTracks = responseMissingTracks.data;

@@ -37,7 +37,7 @@ public class TrackController {
         return ResponseEntity.ok(all);
     }
 
-    @GetMapping("/missingtracksbyplayername")
+    @GetMapping("/missing-tracks-by-playername")
     public ResponseEntity<List<LeaderboardByPlayerView.LeaderboardByPlayerView_Track>> missingTracksByPlayerName(@RequestParam String playerName) {
         List<LeaderboardByPlayerView.LeaderboardByPlayerView_Track> players = tracksRepository.findMissingTracksByPlayerName(playerName);
         return ResponseEntity.ok(players);

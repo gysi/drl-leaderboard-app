@@ -138,10 +138,10 @@ export default defineComponent({
       try {
         const [ responseLatest, responseLatestTop10, responseMostPbsLast7Days, responseMostPbsLastMonth] =
           await Promise.all([
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/latestActivity'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/latestActivityTop10'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/mostPbsLast7Days'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/mostPbsLastMonth')
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/latest-activity'),
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/latest-activity-top-10'),
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-pbs-last-7-days'),
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-pbs-last-month')
           ]);
         this.latestActivity.rows = responseLatest.data;
         this.latestActivityTop10.rows = responseLatestTop10.data;

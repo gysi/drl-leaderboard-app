@@ -4,6 +4,7 @@ package de.gregord.drlleaderboardbackend.controllers;
 import de.gregord.drlleaderboardbackend.domain.*;
 import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
 import de.gregord.drlleaderboardbackend.services.LeaderboardService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/leaderboards")
@@ -44,7 +46,7 @@ public class LeaderboardController {
         return ResponseEntity.ok(byPlayerName);
     }
 
-    @GetMapping("/overallranking")
+    @GetMapping("/overall-ranking")
     public ResponseEntity<List<OverallRankingView>> getOverallRanking(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "50") int limit
@@ -67,7 +69,7 @@ public class LeaderboardController {
         return ResponseEntity.ok(byGuid);
     }
 
-    @GetMapping("/findPlayers")
+    @GetMapping("/find-players")
     public ResponseEntity<List<String>> findPlayers(@RequestParam String playerName) {
         List<String> players = leaderboardRepository
                 .findDistinctPlayerNames(
@@ -78,27 +80,40 @@ public class LeaderboardController {
         return ResponseEntity.ok(players);
     }
 
-    @GetMapping("/latestActivity")
+    @GetMapping("/latest-activity")
     public ResponseEntity<List<LeaderboardActivityView>> latestActivity() {
         List<LeaderboardActivityView> players = leaderboardRepository.latestLeaderboardActivity();
         return ResponseEntity.ok(players);
     }
 
-    @GetMapping("/latestActivityTop10")
+    @GetMapping("/latest-activity-top-10")
     public ResponseEntity<List<LeaderboardActivityView>> latestActivityTop10() {
         List<LeaderboardActivityView> players = leaderboardRepository.latestLeaderboardActivityTop10();
         return ResponseEntity.ok(players);
     }
 
-    @GetMapping("/mostPbsLast7Days")
+    @GetMapping("/most-pbs-last-7-days")
     public ResponseEntity<List<LeaderboardMostPbsView>> mostPbsLast7Days() {
         List<LeaderboardMostPbsView> players = leaderboardRepository.mostPbsLast7Days();
         return ResponseEntity.ok(players);
     }
 
-    @GetMapping("/mostPbsLastMonth")
+    @GetMapping("/most-pbs-last-month")
     public ResponseEntity<List<LeaderboardMostPbsView>> mostPbsLastMonth() {
         List<LeaderboardMostPbsView> players = leaderboardRepository.mostPbsLastMonth();
         return ResponseEntity.ok(players);
+    }
+
+    @PostMapping("/worst-tracks")
+    public ResponseEntity<List<WorstTracksView>> worstTracks(
+        @RequestBody @Valid RequestBodyWorstTracks requestBodyWorstTracks
+    ) {
+        List<WorstTracksView> worstTracksByPlayer = leaderboardRepository.worstTracksByPlayer(
+                requestBodyWorstTracks.getPlayerName(),
+                Optional.ofNullable(requestBodyWorstTracks.getExcludedTracks()).orElse(List.of()).stream()
+                        .filter(s -> s.chars().allMatch(Character::isDigit))
+                        .map(Long::parseLong).toList()
+        );
+        return ResponseEntity.ok(worstTracksByPlayer);
     }
 }

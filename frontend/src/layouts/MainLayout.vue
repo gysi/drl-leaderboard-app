@@ -71,19 +71,25 @@ const linksList = [
     title: 'Overall Rankings',
     caption: 'Overall rankings of all tracks',
     icon: 'leaderboard', // sports_score as alternative
-    link: '/overallrankings'
+    link: '/overall-rankings'
   },
   {
     title: 'Track Leaderboard',
     caption: 'Leaderboard for a specific track',
     icon: 'timeline',
-    link: '/tracklb'
+    link: '/track-lb'
   },
   {
     title: 'Player Leaderboard',
     caption: 'Leaderboard for a specific player',
     icon: 'sports_martial_arts',
-    link: '/playerlb'
+    link: '/player-lb'
+  },
+  {
+    title: 'Gimme a random track!',
+    caption: 'Gives you random worst tracks',
+    icon: 'casino',
+    link: '/worst-tracks-picker'
   },
   {
     title: 'FAQ',

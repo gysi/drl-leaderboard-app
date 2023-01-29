@@ -92,6 +92,8 @@
         state: present
         update_cache: true
 
+#    TODO install GoAccess and configure it correctly to work with the nginx logs
+
     - name: "Backup original fail2ban config"
       ansible.builtin.copy:
         src: /etc/fail2ban/jail.conf
