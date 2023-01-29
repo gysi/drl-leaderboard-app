@@ -46,6 +46,11 @@ app:
       cron: "0 0 0 * * *" # every day at 0:00
 
 server:
+  error:
+    include-message: always
+    include-exception: false
+    include-stacktrace: never
+    include-binding-errors: always
   forward-headers-strategy: framework
   servlet:
     context-path: /api
