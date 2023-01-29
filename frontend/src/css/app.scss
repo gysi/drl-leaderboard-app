@@ -244,21 +244,21 @@ body {
         color: var(--app-select-text-color) !important;
       }
     }
+  }
 
-    .track-chip {
-      background-color: var(--app-chip-track-background-color);
-      color: var(--app-chip-track-text-color);
-    }
+  .track-chip {
+    background-color: var(--app-chip-track-background-color);
+    color: var(--app-chip-track-text-color);
+  }
 
-    .track-chip-map {
-      background-color: var(--app-chip-map-background-color) !important;
-      color: var(--app-chip-map-text-color) !important;
-    }
+  .track-chip-map {
+    background-color: var(--app-chip-map-background-color) !important;
+    color: var(--app-chip-map-text-color) !important;
+  }
 
-    .track-chip-parentcategory {
-      background-color: var(--app-chip-parentcategory-background-color) !important;
-      color: var(--app-chip-parentcategory-text-color) !important;
-    }
+  .track-chip-parentcategory {
+    background-color: var(--app-chip-parentcategory-background-color) !important;
+    color: var(--app-chip-parentcategory-text-color) !important;
   }
 
   // selection dropdown

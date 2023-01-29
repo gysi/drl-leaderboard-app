@@ -19,6 +19,31 @@
         </div>
         <div ref="cardsDiv" class="card" id="card-1">
           <ul ref="cardUl">
+            <li class="slotMachineCardItem" style="padding-left: 30px; padding-right: 30px;"
+                v-for="(card, idx) in displayedCards"
+                :key="card.trackId"
+                :data-index="idx"
+            >
+              <q-item style="padding:0;"
+                      clickable
+                      :to="`/track-lb/?trackId=${card.trackId}`"
+              >
+                <q-item-section thumbnail style="padding-right: 5px; margin: 0;">
+                  <img src="~assets/maps/maps-120x68.png"
+                       :class="'map-'+card.trackMapName.replaceAll(/\.| /g, '-').toLocaleLowerCase()"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label >{{ card.trackName }}</q-item-label>
+                  <q-item-label caption>
+                    <q-badge class="track-chip" style="padding: 1px">{{ card.trackMapName }}</q-badge>
+                  </q-item-label>
+                  <q-item-label caption>
+                    <q-badge class="track-chip-map" style="margin-top: 2px; padding: 1px">{{ card.trackParentCategory }}</q-badge>
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </li>
           </ul>
         </div>
       </div>
@@ -38,6 +63,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 export default {
   name: 'SlotMachine',
   props: {
@@ -54,6 +81,10 @@ export default {
         this.cardsHaveChanged = true;
       }else if(this.isMachineWorks === false && this.isGateClosed === false){
         this.rollGateUp();
+      }
+
+      if(this.displayedCards === null && this.cards.length >= 3){
+        this.displayedCards = this.cards.slice(0, 3);
       }
     },
   },
@@ -84,6 +115,7 @@ export default {
       isTriggerOn: false,
       firstGame: true,
       loadedCards: [],
+      displayedCards: null,
       cardsHaveChanged: false,
       isGateClosed: true,
     }
@@ -110,29 +142,24 @@ export default {
 
       const cardUl = this.$refs.cardUl;
       cardUl.style.transition = "none";
-      cardUl.innerHTML = "";
-      for (let i = 0; i < 3; i++) {
-        const li = document.createElement("li");
-        li.className = "slotMachineCardItem";
-        li.textContent = this.loadedCards[i];
-        li.dataset.index = i;
-        cardUl.append(li);
-      }
-      const cardsDivHeight = Number(getComputedStyle(this.$refs.cardsDiv).height.slice(0,-2));
-      const liHeight = Number(getComputedStyle(this.$refs.cardUl.children[0]).height.slice(0,-2));
-      cardUl.style.bottom = ((cardsDivHeight * -0.25) + liHeight) + "px";
-      setTimeout(() => {
-        cardUl.style.transition = "bottom 6s cubic-bezier(0.5, 0, 0, 1) 0s";
-      }, 100);
+      this.displayedCards = this.loadedCards.slice(0, 3);
+      nextTick(() => {
+        const cardsDivHeight = Number(getComputedStyle(this.$refs.cardsDiv).height.slice(0, -2));
+        const liHeight = Number(getComputedStyle(this.$refs.cardUl.children[0]).height.slice(0, -2));
+        cardUl.style.bottom = ((cardsDivHeight * -0.35) + liHeight) + "px";
+        setTimeout(() => {
+          cardUl.style.transition = "bottom 6s cubic-bezier(0.5, 0, 0, 1) 0s";
+        }, 100);
 
-      this.handleTips(1);
-      this.screenAlert("Grab the arm!");
-      this.$refs.gate.style.transform = "translateY(100%)";
-      this.isGateClosed = false;
+        this.handleTips(1);
+        this.screenAlert("Grab the arm!");
+        this.$refs.gate.style.transform = "translateY(100%)";
+        this.isGateClosed = false;
 
-      setTimeout(() => {
-        this.isMachineWorks = false;
-      }, this.timeGameOverScreen);
+        setTimeout(() => {
+          this.isMachineWorks = false;
+        }, this.timeGameOverScreen);
+      });
     },
     myTriggerTopMouseDown(e) {
       if (this.isMachineWorks || this.isGateClosed) {
@@ -211,16 +238,16 @@ export default {
     },
     liCreator() {
       const cardUl = this.$refs.cardUl;
-      const liElements = [...cardUl.children].slice(-3);
       cardUl.style.transition = "none";
-      cardUl.innerHTML = "";
-      cardUl.append(...liElements);
-      const cardsDivHeight = Number(getComputedStyle(this.$refs.cardsDiv).height.slice(0,-2));
-      const liHeight = Number(getComputedStyle(liElements[0]).height.slice(0,-2));
-      cardUl.style.bottom = ((cardsDivHeight * -0.25) + liHeight) + "px";
-      setTimeout(() => {
-        cardUl.style.transition = "bottom 6s cubic-bezier(0.5, 0, 0, 1) 0s";
-      }, 100);
+      this.displayedCards = this.displayedCards.slice(-3);
+      nextTick(() => {
+        const cardsDivHeight = Number(getComputedStyle(this.$refs.cardsDiv).height.slice(0, -2));
+        const liHeight = Number(getComputedStyle(cardUl.children[0]).height.slice(0, -2));
+        cardUl.style.bottom = ((cardsDivHeight * -0.35) + liHeight) + "px";
+        setTimeout(() => {
+          cardUl.style.transition = "bottom 6s cubic-bezier(0.5, 0, 0, 1) 0s";
+        }, 100);
+      });
     },
     animationFinish() {
       // this.$refs.coinsReward.parentNode.style.filter = "brightness(135%)";
@@ -246,30 +273,28 @@ export default {
       const cardUl = this.$refs.cardUl;
       const randomNumberDraw = Math.floor(Math.random() * 9 + 80);
       let indexDraw = Math.floor(Math.random() * this.loadedCards.length);
-      let liArray = [];
+      let randomArray = [];
       for (let i = 0; i < randomNumberDraw; i++) {
         if (indexDraw === this.loadedCards.length) indexDraw = 0;
-        const li = document.createElement("li");
-        li.className = "slotMachineCardItem";
-        li.textContent = this.loadedCards[indexDraw];
-        li.dataset.index = indexDraw;
-        liArray.push(li);
+        randomArray.push(this.loadedCards[indexDraw]);
         indexDraw++;
       }
-      cardUl.append(...liArray);
-      const cardsDivHeight = Number(getComputedStyle(this.$refs.cardsDiv).height.slice(0,-2));
-      const height = Number(getComputedStyle(cardUl.children[0]).height.slice(0,-2));
-      cardUl.style.bottom = (height * (cardUl.children.length-2))-(cardsDivHeight*0.25) + "px";
-      setTimeout(this.animationFinish, this.timeUntilAnimationStarts);
-      setTimeout(() => {
-        this.liCreator();
-        this.isMachineWorks = false;
-        this.screenAlert("Here is your track!");
-        if(this.cardsHaveChanged){
-          this.rollGateUp();
-          this.cardsHaveChanged = false;
-        }
-      }, this.timeFinishAnim);
+      this.displayedCards.push(...randomArray);
+      nextTick(() => {
+        const cardsDivHeight = Number(getComputedStyle(this.$refs.cardsDiv).height.slice(0,-2));
+        const height = Number(getComputedStyle(cardUl.children[0]).height.slice(0,-2));
+        cardUl.style.bottom = (height * (cardUl.children.length-2))-(cardsDivHeight*0.35) + "px";
+        setTimeout(this.animationFinish, this.timeUntilAnimationStarts);
+        setTimeout(() => {
+          this.liCreator();
+          this.isMachineWorks = false;
+          this.screenAlert("Here is your track!");
+          if(this.cardsHaveChanged){
+            this.rollGateUp();
+            this.cardsHaveChanged = false;
+          }
+        }, this.timeFinishAnim);
+      });
     }
   }
 }
@@ -562,6 +587,7 @@ export default {
     &:after {
       content: '';
       position: absolute;
+      z-index: -1;
       width: 100%;
       height: 100%;
       background: rgba(155, 155, 155, 0.1);
@@ -592,7 +618,7 @@ export default {
         inset 0 0 20px 0 rgba(0, 0, 0, 0.75);
       position: relative;
       overflow: hidden;
-      font-size: 2.8vmin;
+      font-size: 1.8vmin;
       color: black;
 
       ul {
@@ -759,7 +785,7 @@ export default {
     width: 100%;
     height: 1px;
     left: 0;
-    top: 0;
+    top: 2vmin;
     bottom: 0;
     background: linear-gradient(to right,
       //rgba(0, 0, 0, 0.6) 0%,

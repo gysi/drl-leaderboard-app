@@ -11,10 +11,14 @@
       }"
     >
       <div class="row q-gutter-sm">
-        <PlayerSearchSelect @onPlayerSelected="onPlayerSelected" />
+        <PlayerSearchSelect :initialSelection="playerSelect.initialPlayerSelection" @onPlayerSelected="onPlayerSelected" />
         <q-btn
           label="Categories"
         >
+          <q-badge class="q-badge-excluded-tracks" v-if="toggles.categoryToggles.filter(toggle => toggle.isIncluded).length > 0"
+                   :label="toggles.categoryToggles.filter(toggle => toggle.isIncluded).length"
+                   rounded floating
+          />
           <q-menu
             anchor="bottom middle"
             self="top middle"
@@ -40,7 +44,7 @@
         <q-btn
         label="Excluded Tracks"
         @click="(e) => {
-          this.menuModelValue = true;
+            this.menuModelValue = true;
             this.showMenu = !this.showMenu;
             e.stopPropagation();
             e.stopImmediatePropagation();
@@ -60,9 +64,11 @@
           <div :ref="(ref) => menuRef = ref" v-show="showMenu" class="row no-wrap q-pa-md">
             <div class="column">
               <WorstTracksSearchSelect
+                :initialSelection="excludedTracksSelect.initialTrackSelection"
                 :hard-select-filters="toggles.hardSelectFilters"
                 @onTrackSelected="onTrackSelected"
                 @onSelectionChanged="onWorstTracksSelectionChanged"
+                @onSelectionChangedWithoutHardSelects="onWorstTracksSelectionChangedWithoutHardSelects"
               />
             </div>
 <!--            <q-separator vertical inset class="q-mx-lg" />-->
@@ -129,7 +135,7 @@
       </q-btn>
       </div>
       <q-separator spaced size="2px" style="width: 95%"/>
-      <SlotMachine :cards="this.worstTracksTable.rows.map((r) => r.trackName)"/>
+      <SlotMachine :cards="this.worstTracksTable.rows"/>
     </div>
   </q-page>
 </template>
@@ -150,7 +156,9 @@ export default defineComponent({
     },
     'toggles.categoryToggles': {
       handler(val) {
-        console.log('category toggles changed', val);
+        for (let categoryToggle of val) {
+          this.$q.localStorage.set(`worstTracksPickerPage.${categoryToggle.name}`, categoryToggle.isIncluded);
+        }
         this.fetchWorstTracks();
       },
       deep: true
@@ -160,80 +168,99 @@ export default defineComponent({
     window.removeEventListener('click', this.onClickToggleIfOutsideOfMenu);
   },
   created() {
+    if(this.toggles.isMultiGpExcluded){
+      this.onToggleMultiGp(this.toggles.isMultiGpExcluded)
+    }
+    if(this.toggles.isMicroExcluded){
+      this.onToggleMicro(this.toggles.isMultiGpExcluded)
+    }
+    if(this.toggles.isVeryLongExcluded){
+      this.onToggleLongTracks(this.toggles.isMultiGpExcluded)
+    }
+    this.fetchWorstTracks();
   },
   data() {
+    let categoryToggles = [
+      {
+        name: 'includeImprovementIsLongAgo',
+        label: 'Improvent is long ago',
+        description: 'Includes 10 tracks where no new best time has been submitted for the longest time.',
+        color: 'green',
+        isIncluded: true,
+      },
+      {
+        name: 'includeWorstPosition',
+        label: 'Worst positions',
+        description: 'Includes 10 tracks where the player has the worst position.',
+        color: 'red',
+        isIncluded: true,
+      },
+      {
+        name: 'includeMostBeatenByEntries',
+        label: 'Most beaten by entries',
+        description: 'Includes 10 tracks where the player has the most beaten by entries.',
+        color: 'blue',
+        isIncluded: true,
+      },
+      {
+        name: 'includeFarthestBehindLeader',
+        label: 'Farthest behind leader',
+        description: 'Includes 10 tracks where the player is the farthest behind the leader (1st position of a track).',
+        color: 'orange',
+        isIncluded: true,
+      },
+      {
+        name: 'includePotentiallyEasyToAdvance',
+        label: 'Potentially easy to advance',
+        description: 'Includes the first 10 tracks sorted by the formula (player_score - leader_score) / player_position in descending order.',
+        color: 'purple',
+        isIncluded: true,
+      },
+      {
+        name: 'includeInvalidRuns',
+        label: 'Invalid runs',
+        description: 'Includes 10 tracks where the player has invalid runs. (See FAQ for more information on what an invalid run is)',
+        color: 'yellow',
+        isIncluded: true,
+      },
+      {
+        name: 'includeNotCompleted',
+        label: 'Not completed',
+        description: 'Includes 10 tracks where the player has not completed the track.',
+        color: 'grey',
+        isIncluded: true,
+      },
+    ];
+    for (let categoryToggle of categoryToggles) {
+      let fromStorage = this.$q.localStorage.getItem(`worstTracksPickerPage.${categoryToggle.name}`);
+      categoryToggle.isIncluded = fromStorage != null ? fromStorage : categoryToggle.isIncluded
+    }
+    const isMultiGpExcludedFromStorage = this.$q.localStorage.getItem(`worstTracksPickerPage.isMultiGpExcluded`);
+    const isMicroExcludedFromStorage = this.$q.localStorage.getItem(`worstTracksPickerPage.isMicroExcluded`);
+    const isVeryLongExcludedFromStorage = this.$q.localStorage.getItem(`worstTracksPickerPage.isVeryLongExcluded`);
     return {
       console: console,
       menuModelValue: false,
       showMenu: false,
       menuRef: null,
       toggles: {
-        isMultiGpExcluded: false,
-        isMicroExcluded: false,
-        isVeryLongExcluded: false,
+        isMultiGpExcluded: isMultiGpExcludedFromStorage != null ? isMultiGpExcludedFromStorage : false,
+        isMicroExcluded: isMicroExcludedFromStorage != null ? isMicroExcludedFromStorage : false,
+        isVeryLongExcluded: isVeryLongExcludedFromStorage != null ? isVeryLongExcludedFromStorage : false,
         hardSelectFilters: [],
-        categoryToggles: [
-          {
-            name: 'includeImprovementIsLongAgo',
-            label: 'Improvent is long ago',
-            description: 'Includes 10 tracks where no new best time has been submitted for the longest time.',
-            color: 'green',
-            isIncluded: true,
-          },
-          {
-            name: 'includeWorstPosition',
-            label: 'Worst positions',
-            description: 'Includes 10 tracks where the player has the worst position.',
-            color: 'red',
-            isIncluded: true,
-          },
-          {
-            name: 'includeMostBeatenByEntries',
-            label: 'Most beaten by entries',
-            description: 'Includes 10 tracks where the player has the most beaten by entries.',
-            color: 'blue',
-            isIncluded: true,
-          },
-          {
-            name: 'includeFarthestBehindLeader',
-            label: 'Farthest behind leader',
-            description: 'Includes 10 tracks where the player is the farthest behind the leader (1st position of a track).',
-            color: 'orange',
-            isIncluded: true,
-          },
-          {
-            name: 'includePotentiallyEasyToAdvance',
-            label: 'Potentially easy to advance',
-            description: 'Includes the first 10 tracks sorted by the formula (player_score - leader_score) / player_position in descending order.',
-            color: 'purple',
-            isIncluded: true,
-          },
-          {
-            name: 'includeInvalidRuns',
-            label: 'Invalid runs',
-            description: 'Includes 10 tracks where the player has invalid runs. (See FAQ for more information on what an invalid run is)',
-            color: 'yellow',
-            isIncluded: true,
-          },
-          {
-            name: 'includeNotCompleted',
-            label: 'Not completed',
-            description: 'Includes 10 tracks where the player has not completed the track.',
-            color: 'grey',
-            isIncluded: true,
-          },
-        ]
+        categoryToggles: categoryToggles
       },
       playerSelect: {
-        playerName: null,
+        playerName: this.$q.localStorage.getItem(`worstTracksPickerPage.initialPlayerSelection`),
+        initialPlayerSelection: this.$q.localStorage.getItem(`worstTracksPickerPage.initialPlayerSelection`),
       },
       excludedTracksSelect: {
-        tracks: [],
+        tracks: this.$q.localStorage.getItem(`worstTracksPickerPage.selectedTracks`) || [],
+        initialTrackSelection: this.$q.localStorage.getItem(`worstTracksPickerPage.selectedTracksWithoutChips`)
       },
       worstTracksTable: {
         columns: [
           { name: 'track', label: 'Track', field: row => row.trackName, align: 'left'},
-
         ],
         rows: [],
         loading: false,
@@ -256,6 +283,7 @@ export default defineComponent({
       }
     },
     onToggleMultiGp(state){
+      this.$q.localStorage.set(`worstTracksPickerPage.isMultiGpExcluded`, state);
       this.genericToggle(state, this.multiGpFilter);
     },
     multiGpFilter(tracks){
@@ -263,6 +291,7 @@ export default defineComponent({
         track => track.mapName === "MULTIGP", tracks);
     },
     onToggleMicro(state){
+      this.$q.localStorage.set(`worstTracksPickerPage.isMicroExcluded`, state);
       this.genericToggle(state, this.microFilter);
     },
     microFilter(tracks){
@@ -272,6 +301,7 @@ export default defineComponent({
       }, tracks)
     },
     onToggleLongTracks(state){
+      this.$q.localStorage.set(`worstTracksPickerPage.isVeryLongExcluded`, state);
       this.genericToggle(state, this.longTrackFilter);
     },
     longTrackFilter(tracks){
@@ -306,13 +336,19 @@ export default defineComponent({
 
     onPlayerSelected(player){
       this.playerSelect.playerName = player;
+      this.$q.localStorage.set(`worstTracksPickerPage.initialPlayerSelection`, player);
       this.fetchWorstTracks();
     },
     onTrackSelected(track){
     },
     onWorstTracksSelectionChanged(selectedTracks){
       this.excludedTracksSelect.tracks = selectedTracks;
+      this.$q.localStorage.set(`worstTracksPickerPage.selectedTracks`, selectedTracks);
+      console.log('onWorstTRacksSelectionChanged', selectedTracks);
       this.fetchWorstTracks();
+    },
+    onWorstTracksSelectionChangedWithoutHardSelects(selectedTracks){
+      this.$q.localStorage.set(`worstTracksPickerPage.selectedTracksWithoutChips`, selectedTracks);
     },
     async fetchWorstTracks(){
       if(!this.playerSelect.playerName){

@@ -9,7 +9,7 @@
     :options="searchResults"
     @filter="searchTracks"
     @update:model-value="onTrackSelected"
-    style="max-width: 50vw;"
+    style="max-width: 600px;"
     class="q-ml-md"
     use-chips
     label="Enter track name"
@@ -74,16 +74,19 @@ import axios from 'axios';
 export default {
   name: 'WorstTracksSearchSelect',
   props: {
+    initialSelection: {
+      type: Array,
+      required: false,
+    },
     hardSelectFilters: {
       type: Array,
       required: false,
     },
   },
-  emits: ['onTrackSelected', 'onSelectionChanged'],
+  emits: ['onTrackSelected', 'onSelectionChanged', 'onSelectionChangedWithoutHardSelects'],
   beforeCreate() {
   },
   created() {
-    this.fetchTracks();
   },
   beforeMount() {
   },
@@ -94,7 +97,7 @@ export default {
       trackSelect: null,
       showTooltip: false,
       tracks: [],
-      searchText: [],
+      searchText: this.initialSelection != null ? this.initialSelection : [],
       searchResults: [],
       loadingState: false,
       currentSearchPartsForHighlight: [],
@@ -103,15 +106,19 @@ export default {
   },
   watch: {
     hardSelectFilters: {
-      handler(filters){
+      async handler(newVal, prevVal){
+        await this.fetchTracks();
         this.searchResults = this.getFilteredTracks(this.tracks);
-        this.$emit('onSelectionChanged', [...(this.hardSelectChips.flatMap((o) => o.filteredOut)), ...this.searchText]);
+        if(prevVal != null) {
+          this.$emit('onSelectionChanged', [...(this.hardSelectChips.flatMap((o) => o.filteredOut)), ...this.searchText]);
+        }
       },
       immediate: true
     },
     searchText: {
       handler() {
         this.$emit('onSelectionChanged', [...(this.hardSelectChips.flatMap((o) => o.filteredOut)), ...this.searchText]);
+        this.$emit('onSelectionChangedWithoutHardSelects', this.searchText);
       },
       deep: true,
     },
@@ -126,6 +133,7 @@ export default {
       this.searchText.splice(chipIndex, 1);
     },
     async fetchTracks(){
+      if(this.tracks.length > 0) return;
       this.loadingState = true;
       try {
         const response = await axios.get(process.env.DLAPP_API_URL+'/tracks');

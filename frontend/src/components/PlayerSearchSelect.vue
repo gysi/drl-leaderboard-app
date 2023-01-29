@@ -33,10 +33,16 @@ import axios from 'axios';
 
 export default {
   name: 'PlayerSearchSelect',
+  props: {
+    initialSelection: {
+      type: String,
+      default: null
+    }
+  },
   emits: ['onPlayerSelected'],
   data(){
     return {
-      searchText: null,
+      searchText: this.initialSelection != null ? [this.initialSelection] : null,
       searchResults: [],
       loadingState: false,
     }

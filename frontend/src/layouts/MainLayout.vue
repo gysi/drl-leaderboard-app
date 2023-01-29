@@ -153,63 +153,279 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass">
-.first-place
-  background-image: url('assets/gold-medal.svg')
+<style lang="scss">
+.first-place {
+  background-image: url('assets/gold-medal.svg');
+}
 
-.second-place
-  background-image: url('assets/silver-medal.svg')
+.second-place {
+  background-image: url('assets/silver-medal.svg');
+}
 
-.third-place
-  background-image: url('assets/bronze-medal.svg')
+.third-place {
+  background-image: url('assets/bronze-medal.svg');
+}
 
-.first-place, .second-place, .third-place
+.first-place, .second-place, .third-place {
   //background-position-x: 50.5%
   //background-position-y: -0.5rem
-  background-position-x: 0.3rem
-  background-position-y: -0.1rem
-  background-repeat: no-repeat
-  background-size: 1.5rem
-  background-origin: border-box
+  background-position-x: 0.3rem;
+  background-position-y: -0.1rem;
+  background-repeat: no-repeat;
+  background-size: 1.5rem;
+  background-origin: border-box;
+}
 
-.q-field--filled .q-field__control
-  background: rgba(0, 0, 0, 0.2)
-  color: white
+.q-field--filled .q-field__control {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+}
 
-.my-sticky-header-table
+.my-sticky-header-table {
   /* height or max-height is important */
   //min-height: inherit
 
-  thead tr th
-    position: sticky
-    z-index: 1
-    font-size: 18px
+  thead tr th {
+  position: sticky;
+  z-index: 1;
+  font-size: 18px;
+  }
 
-  thead tr:first-child th
+  thead tr:first-child th {
     //color: white
-    top: 0
+    top: 0;
+  }
 
-  td
-    font-size: 200px
-
+  td {
+    font-size: 200px;
+  }
   /* this is when the loading indicator appears */
-  &.q-table--loading thead tr:last-child th
+  &.q-table--loading thead tr:last-child th {
     /* height of all previous header rows */
     top: 48px
+  }
+}
 
-tbody .q-td
+tbody .q-td {
   //color: black
-  border-left: 1px solid black
-  border-right: 0
-  border-top: 1px solid black
-  border-bottom : 0
-  font-weight: normal
-  font-size: 16px
+  border-left: 1px solid black;
+  border-right: 0;
+  border-top: 1px solid black;
+  border-bottom: 0;
+  font-weight: normal;
+  font-size: 16px;
+}
 
-.leaderboard-position-column
-  max-width: 65px
-  width: 65px
-  font-weight: bolder
-  color: #f6f6f6
-  text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black
+.leaderboard-position-column {
+  max-width: 65px;
+  width: 65px;
+  font-weight: bolder;
+  color: #f6f6f6;
+  text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black;
+}
+
+// montage -resize 120 map-* -auto-orient -geometry +1+1 -background none -format png maps.png
+// http://www.spritecow.com/
+.map-2017-world-championship {
+  object-fit: none;
+  object-position: -1px -1px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-adventuredome {
+  object-fit: none;
+  object-position: -123px -1px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-allianz-riviera {
+  object-fit: none;
+  object-position: -245px -1px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-atlanta-aftermath {
+  object-fit: none;
+  object-position: -367px -1px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-biosphere-2 {
+  object-fit: none;
+  object-position: -489px -1px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-bmw-welt {
+  object-fit: none;
+  object-position: -611px -1px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-boston-foundry {
+  object-fit: none;
+  object-position: -1px -71px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+:deep(.map-bridge) {
+  object-fit: none;
+  object-position: -123px -71px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-california-nights {
+  object-fit: none;
+  object-position: -245px -71px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-campground {
+  object-fit: none;
+  object-position: -367px -71px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-championship-kingdom {
+  object-fit: none;
+  object-position: -367px -71px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-detroit {
+  object-fit: none;
+  object-position: -611px -71px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-drl-sandbox {
+  object-fit: none;
+  object-position: -1px -141px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-drone-park {
+  object-fit: none;
+  object-position: -123px -141px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-gates-of-new-york {
+  object-fit: none;
+  object-position: -245px -141px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-hard-rock-stadium {
+  object-fit: none;
+  object-position: -367px -141px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-l-a-pocalypse {
+  object-fit: none;
+  object-position: -367px -141px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-mardi-gras-world {
+  object-fit: none;
+  object-position: -611px -141px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-mega-city {
+  object-fit: none;
+  object-position: -1px -211px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-miami-lights {
+  object-fit: none;
+  object-position: -1px -211px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-multigp {
+  object-fit: none;
+  object-position: -245px -211px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-munich-playoffs {
+  object-fit: none;
+  object-position: -367px -211px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-ohio-crashsite {
+  object-fit: none;
+  object-position: -489px -211px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-out-of-service {
+  object-fit: none;
+  object-position: -611px -211px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-project-manhattan {
+  object-fit: none;
+  object-position: -1px -281px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-skatepark-la {
+  object-fit: none;
+  object-position: -123px -281px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-the-house {
+  object-fit: none;
+  object-position: -245px -281px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-u-s--air-force-boneyard {
+  object-fit: none;
+  object-position: -367px -281px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-u-s--air-force-night-mode {
+  object-fit: none;
+  object-position: -489px -281px;
+  width: 120px !important;
+  height: 68px !important;
+}
 </style>
