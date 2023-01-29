@@ -13,6 +13,31 @@
       <div class="row q-gutter-sm">
         <PlayerSearchSelect @onPlayerSelected="onPlayerSelected" />
         <q-btn
+          label="Categories"
+        >
+          <q-menu
+            anchor="bottom middle"
+            self="top middle"
+          >
+            <div class="column items-start" style="max-width: 400px">
+              <q-list separator bordered>
+                <q-item tag="label" v-ripple v-for="toggle in toggles.categoryToggles" :key="toggle.name">
+                  <q-item-section avatar>
+                    <q-toggle
+                      v-model="toggle.isIncluded"
+                      :color="toggle.color"
+                    />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{ toggle.label }}</q-item-label>
+                    <q-item-label caption>{{ toggle.description }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
+          </q-menu>
+        </q-btn>
+        <q-btn
         label="Excluded Tracks"
         @click="(e) => {
           this.menuModelValue = true;
@@ -65,8 +90,8 @@
         </q-menu>
       </q-btn>
         <q-btn
-        label="Show Trackpool"
-      >
+          label="Show Trackpool"
+        >
         <q-badge class="q-badge-track-pool" v-if="this.worstTracksTable.rows.length > 0"
                  :label="this.worstTracksTable.rows.length"
                  rounded floating
@@ -122,6 +147,13 @@ export default defineComponent({
   watch: {
     menuRef: function (val) {
       window.addEventListener('click', this.onClickToggleIfOutsideOfMenu);
+    },
+    'toggles.categoryToggles': {
+      handler(val) {
+        console.log('category toggles changed', val);
+        this.fetchWorstTracks();
+      },
+      deep: true
     }
   },
   unmounted() {
@@ -139,7 +171,58 @@ export default defineComponent({
         isMultiGpExcluded: false,
         isMicroExcluded: false,
         isVeryLongExcluded: false,
-        hardSelectFilters: []
+        hardSelectFilters: [],
+        categoryToggles: [
+          {
+            name: 'includeImprovementIsLongAgo',
+            label: 'Improvent is long ago',
+            description: 'Includes 10 tracks where no new best time has been submitted for the longest time.',
+            color: 'green',
+            isIncluded: true,
+          },
+          {
+            name: 'includeWorstPosition',
+            label: 'Worst positions',
+            description: 'Includes 10 tracks where the player has the worst position.',
+            color: 'red',
+            isIncluded: true,
+          },
+          {
+            name: 'includeMostBeatenByEntries',
+            label: 'Most beaten by entries',
+            description: 'Includes 10 tracks where the player has the most beaten by entries.',
+            color: 'blue',
+            isIncluded: true,
+          },
+          {
+            name: 'includeFarthestBehindLeader',
+            label: 'Farthest behind leader',
+            description: 'Includes 10 tracks where the player is the farthest behind the leader (1st position of a track).',
+            color: 'orange',
+            isIncluded: true,
+          },
+          {
+            name: 'includePotentiallyEasyToAdvance',
+            label: 'Potentially easy to advance',
+            description: 'Includes the first 10 tracks sorted by the formula (player_score - leader_score) / player_position in descending order.',
+            color: 'purple',
+            isIncluded: true,
+          },
+          {
+            name: 'includeInvalidRuns',
+            label: 'Invalid runs',
+            description: 'Includes 10 tracks where the player has invalid runs. (See FAQ for more information on what an invalid run is)',
+            color: 'yellow',
+            isIncluded: true,
+          },
+          {
+            name: 'includeNotCompleted',
+            label: 'Not completed',
+            description: 'Includes 10 tracks where the player has not completed the track.',
+            color: 'grey',
+            isIncluded: true,
+          },
+        ]
       },
       playerSelect: {
         playerName: null,
@@ -239,10 +322,14 @@ export default defineComponent({
       this.worstTracksTable.loading = true;
       try {
         const response = await axios.post(process.env.DLAPP_API_URL+'/leaderboards/worst-tracks',
-          {
+          this.toggles.categoryToggles.reduce((obj, toggle) => {
+            obj[toggle.name] = toggle.isIncluded;
+            return obj;
+          }, {
             playerName: this.playerSelect.playerName,
             excludedTracks: this.excludedTracksSelect.tracks.map(track => track.id)
-          });
+          })
+        );
         this.worstTracksTable.rows = response.data;
       } finally {
         this.worstTracksTable.loading = false;

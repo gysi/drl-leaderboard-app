@@ -110,6 +110,13 @@ public class LeaderboardController {
     ) {
         List<WorstTracksView> worstTracksByPlayer = leaderboardRepository.worstTracksByPlayer(
                 requestBodyWorstTracks.getPlayerName(),
+                requestBodyWorstTracks.getIncludeImprovementIsLongAgo(),
+                requestBodyWorstTracks.getIncludeWorstPosition(),
+                requestBodyWorstTracks.getIncludeMostBeatenByEntries(),
+                requestBodyWorstTracks.getIncludeFarthestBehindLeader(),
+                requestBodyWorstTracks.getIncludePotentiallyEasyToAdvance(),
+                requestBodyWorstTracks.getIncludeInvalidRuns(),
+                requestBodyWorstTracks.getIncludeNotCompleted(),
                 Optional.ofNullable(requestBodyWorstTracks.getExcludedTracks()).orElse(List.of()).stream()
                         .filter(s -> s.chars().allMatch(Character::isDigit))
                         .map(Long::parseLong).toList()

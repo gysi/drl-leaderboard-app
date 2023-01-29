@@ -14,15 +14,11 @@
         <div ref="gate" class="gate">
           <q-icon ref="tip1" name="arrow_right" class="fas fa-tip-1" />
           <button ref="reset" class="reset" v-on:click="resetGame">
-            LOAD MAPS
+            LOAD TRACKS
           </button>
         </div>
         <div ref="cardsDiv" class="card" id="card-1">
           <ul ref="cardUl">
-<!--            <li-->
-<!--              ref="cards1Li" v-for="(card, idx) in this.loadedCards" :key="idx"-->
-<!--              :data-index="idx" class="slotMachineCardItem"-->
-<!--            >{{ card }}</li>-->
           </ul>
         </div>
       </div>
@@ -56,6 +52,8 @@ export default {
       if(this.isMachineWorks === true){
         console.log("machine is working set to true");
         this.cardsHaveChanged = true;
+      }else if(this.isMachineWorks === false && this.isGateClosed === false){
+        this.rollGateUp();
       }
     },
   },
@@ -87,6 +85,7 @@ export default {
       firstGame: true,
       loadedCards: [],
       cardsHaveChanged: false,
+      isGateClosed: true,
     }
   },
   methods: {
@@ -100,8 +99,13 @@ export default {
     },
     rollGateUp() {
       this.$refs.gate.style.transform = "translateY(0%)";
+      this.isGateClosed = true;
     },
     resetGame() {
+      if(this.cards.length === 0){
+        this.screenAlert("No tracks to load!");
+        return;
+      }
       this.loadedCards = this.cards;
 
       const cardUl = this.$refs.cardUl;
@@ -124,13 +128,14 @@ export default {
       this.handleTips(1);
       this.screenAlert("Grab the arm!");
       this.$refs.gate.style.transform = "translateY(100%)";
+      this.isGateClosed = false;
 
-      // setTimeout(() => {
-      //   this.isMachineWorks = true;
-      // }, this.timeGameOverScreen);
+      setTimeout(() => {
+        this.isMachineWorks = false;
+      }, this.timeGameOverScreen);
     },
     myTriggerTopMouseDown(e) {
-      if (this.isMachineWorks) {
+      if (this.isMachineWorks || this.isGateClosed) {
         return;
       } else {
         this.isTriggerOn = true;
@@ -746,5 +751,26 @@ export default {
   height: 50%;
   line-height: 9vmin;
   text-align: center;
+
+  &::after {
+    content: '';
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 1px;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(to right,
+      //rgba(0, 0, 0, 0.6) 0%,
+      //rgba(255, 255, 255, 0) 30%,
+      //rgba(255, 255, 255, 0) 70%,
+      //rgba(0, 0, 0, 0.6) 100%
+      rgba(255, 255, 255, 0) 0%,
+      rgba(0, 0, 0, 0.6) 5%,
+      rgba(0, 0, 0, 0.6) 95%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
 }
 </style>
