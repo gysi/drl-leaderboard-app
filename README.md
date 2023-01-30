@@ -74,7 +74,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Adds a "?" icon to the points column header which links to the FAQ Section~~
       * [x] ~~Avg Position~~
       * [ ] Latest Activty (track)
-      * [ ] Ability to scroll to a player (perhaps also from an external link)
+      * [x] ~~Ability to scroll to a player (perhaps also from an external link)~~
     * [ ] Track rankings
       * [x] ~~Basic map rankings~~
       * [x] ~~Search should also search in parent categories~~

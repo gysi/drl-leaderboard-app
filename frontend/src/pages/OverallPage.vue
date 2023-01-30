@@ -1,19 +1,29 @@
 <template>
-  <q-page padding style="height: 100%" class="q-pa-md row items-start">
+  <q-page padding style="height: 100%" class="q-pa-md  items-start">
     <q-table
+      ref="overallTable"
       title="Overall Rankings"
       :columns="columns"
       :rows="rows"
       :loading="loading"
-      :pagination="pagination"
       row-key="position"
-      class="col-auto my-sticky-header-table"
-      style="max-height: 100%; min-width: 1100px"
+      class="my-sticky-header-table"
+      table-class="col-auto"
+      style="max-height: 100%;"
       flat
       bordered
+      virtual-scroll
       :visible-columns="[]"
-      :rows-per-page-options="[50]"
+      :rows-per-page-options="[0]"
+      hide-bottom
+      virtual-scroll-item-size="65"
     >
+      <template v-slot:top-left>
+        <div class="row">
+          <div class="q-table__title">Overall Rankings</div>
+          <PlayerSearchSelect @onPlayerSelected="onPlayerSelected"/>
+        </div>
+      </template>
       <template v-slot:header-cell-invalidRuns="props">
           <th :class="props.col.__thclass">
             {{ props.col.label }}
@@ -33,11 +43,10 @@
         </th>
       </template>
       <template v-slot:body="props">
-        <q-tr>
+        <q-tr :props="props" :class="this.selectedPlayer === props.row.playerName ? 'highlight-td' : ''">
           <q-td v-for="col in props.cols" :key="col.name" :props="props"
             :style="{
-              backgroundColor: props.row.isInvalidRun ?
-                'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null
+              backgroundColor: col.name === 'position' ? backGroundColorByPosition(props.row.position) : null
               }"
             :class="[col.name === 'position' && !props.row.isInvalidRun ?
               props.row.position === 1 ? 'first-place' :
@@ -51,8 +60,8 @@
             >
               <q-item-section avatar side>
                 <q-avatar rounded size="50px">
-<!--                  <img :src="props.row.profileThumb" loading="eager" alt="Avatar"/>-->
-                  <q-img :src="props.row.profileThumb" />
+                  <img :src="props.row.profileThumb" loading="eager" alt="Avatar"/>
+<!--                  <q-img loading="lazy" :src="props.row.profileThumb" />-->
                 </q-avatar>
               </q-item-section>
               <q-item-section>
@@ -78,17 +87,16 @@
 import { defineComponent } from 'vue'
 import axios from 'axios';
 import { formatMilliSeconds, backGroundColorByPosition, getDateDifference } from 'src/modules/LeaderboardFunctions'
-
+import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
+import placeholder from 'src/assets/placeholder.png'
 
 export default defineComponent({
   name: 'OverallPage',
+  components: { PlayerSearchSelect },
   data() {
     return {
       log: console.log,
       router: this.$router,
-      pagination: {
-        rowsPerPage: 50,
-      },
       columns: [
         { name: 'position', label: '#', field: 'position', required: true },
         { name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true },
@@ -102,7 +110,8 @@ export default defineComponent({
         { name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb'}
       ],
       rows: [],
-      loading: false
+      loading: false,
+      selectedPlayer: null
     }
   },
 
@@ -111,20 +120,28 @@ export default defineComponent({
       this.loading = true;
       try {
         const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overall-ranking?page=1&limit=500');
-        this.rows = response.data;
+        this.rows = response.data.map((row) => {
+          if(row['profileThumb'].includes('placeholder.png')){
+            row['profileThumb'] = placeholder;
+          }
+          return row;
+        });
       } catch (error) {
         console.error(error);
       } finally {
         this.loading = false;
       }
     },
+    onPlayerSelected(playerName){
+      console.log("Player selected", playerName);
+      this.selectedPlayer = playerName;
+      const row = this.rows.find(row => row['playerName'] === playerName);
+      this.$refs.overallTable.scrollTo(row['position'], 'center-force');
+    },
     formatMilliSeconds, backGroundColorByPosition, getDateDifference
   },
   created() {
     this.fetchData();
-    // this.interval = setInterval(() => {
-    //   this.fetchData();
-    // }, 10000); // refresh data every 10 seconds
   },
   mounted() {
   },
@@ -151,6 +168,7 @@ tbody .q-item
 
 .q-item-player-region
   background: rgba(0, 0, 0, 0.05)
+  min-width: 200px
 
 .fi
   height: 14px
@@ -174,4 +192,8 @@ tbody .q-item
 
 .q-batch-Xbox
   background-color: rgb(16,120,15)
+
+.highlight-td td::after
+  content: ''
+  background: rgba(34, 1, 133, 0.2)
 </style>
