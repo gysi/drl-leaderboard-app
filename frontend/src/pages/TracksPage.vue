@@ -5,12 +5,15 @@
       :columns="columns"
       :rows="rows"
       :loading="loading"
-      :pagination="pagination"
       row-key="id"
       class="my-sticky-header-table"
       style="max-height: 100%; overflow: auto;"
       flat
       bordered
+      hide-bottom
+      virtual-scroll
+      virtual-scroll-item-size="79"
+      :rows-per-page-options="[0]"
     >
       <template v-slot:body="props">
         <q-tr>
@@ -53,9 +56,6 @@ export default defineComponent({
   name: 'TracksPage',
   data() {
     return {
-      pagination: {
-        rowsPerPage: 50,
-      },
       columns: [
         { name: 'name', label: 'Name', field: 'name', align: 'left' }
       ],
