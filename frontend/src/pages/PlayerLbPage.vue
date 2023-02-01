@@ -61,7 +61,7 @@
               class="q-ml-md"
               use-chips
               multiple
-              label="Compare Against Players"
+              label="Compare against players"
             >
               <template v-slot:no-option>
                 <q-item>
