@@ -206,11 +206,11 @@ export default defineComponent({
   }
 }
 
-tbody .q-td {
+tbody .td-borders-font-size16 {
   //color: black
-  border-left: 1px solid black;
+  border-left: 1px solid rgb(0,0,0,0.4);
   border-right: 0;
-  border-top: 1px solid black;
+  border-top: 1px solid rgb(0,0,0,0.4);
   border-bottom: 0;
   font-weight: normal;
   font-size: 16px;
@@ -222,6 +222,10 @@ tbody .q-td {
   font-weight: bolder;
   color: #f6f6f6;
   text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black;
+}
+
+.button-fills-whole-td {
+  top: 0; left: 0; width: 100%; height: 100%; position: absolute;
 }
 
 // montage -resize 120 map-* -auto-orient -geometry +1+1 -background none -format png maps.png

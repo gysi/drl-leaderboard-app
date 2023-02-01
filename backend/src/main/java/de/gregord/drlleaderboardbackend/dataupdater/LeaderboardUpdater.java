@@ -114,6 +114,8 @@ public class LeaderboardUpdater {
             @CacheEvict(value = "latestLeaderboardActivityTop10", allEntries = true),
             @CacheEvict(value = "mostPbsLast7Days", allEntries = true),
             @CacheEvict(value = "mostPbsLastMonth", allEntries = true),
+            @CacheEvict(value = "mostEntriesByTrackLast14Days", allEntries = true),
+            @CacheEvict(value = "mostEntriesByTrackLastMonth", allEntries = true),
     })
     public void initialize() {
         long count = leaderboardRepository.count();
@@ -131,6 +133,8 @@ public class LeaderboardUpdater {
             @CacheEvict(value = "latestLeaderboardActivityTop10", allEntries = true),
             @CacheEvict(value = "mostPbsLast7Days", allEntries = true),
             @CacheEvict(value = "mostPbsLastMonth", allEntries = true),
+            @CacheEvict(value = "mostEntriesByTrackLast14Days", allEntries = true),
+            @CacheEvict(value = "mostEntriesByTrackLastMonth", allEntries = true),
     })
     public void updateLeaderboard() {
         totalContentLength = 0L;

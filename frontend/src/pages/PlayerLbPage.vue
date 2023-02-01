@@ -109,7 +109,7 @@
                       null,
                 paddingLeft: props.row.isInvalidRun && col.name === 'position' ? '5px' : null,
               }"
-              :class="[col.name === 'position' && !props.row.isInvalidRun ?
+              :class="['td-borders-font-size16', col.name === 'position' && !props.row.isInvalidRun ?
                 props.row.position === 1 ? 'first-place' :
                   props.row.position === 2 ? 'second-place' :
                     props.row.position === 3 ? 'third-place' : '' : '', col.name === 'position' ? 'leaderboard-position-column' : '']"

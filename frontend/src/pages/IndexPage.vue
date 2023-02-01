@@ -20,6 +20,17 @@
               <q-chip dense class="track-chip">{{ props.row.trackName }}</q-chip>
               <q-chip dense class="track-chip-map">{{ props.row.mapName }}</q-chip>
               <q-chip dense class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-chip>
+              <q-btn type="a" :to="{ name: 'tracklb', query: { trackId: props.row.trackId } }"
+                     rounded padding="0" dense class="button-fills-whole-td">
+              </q-btn>
+            </td>
+          </template>
+          <template v-slot:body-cell-playerName="props">
+            <td>
+              {{ props.row.playerName }}
+              <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
+                     rounded padding="0" dense class="button-fills-whole-td">
+              </q-btn>
             </td>
           </template>
         </q-table>
@@ -40,13 +51,24 @@
               <q-chip dense class="track-chip">{{ props.row.trackName }}</q-chip>
               <q-chip dense class="track-chip-map">{{ props.row.mapName }}</q-chip>
               <q-chip dense class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-chip>
+              <q-btn type="a" :to="{ name: 'tracklb', query: { trackId: props.row.trackId } }"
+                     rounded padding="0" dense class="button-fills-whole-td">
+              </q-btn>
+            </td>
+          </template>
+          <template v-slot:body-cell-playerName="props">
+            <td>
+              {{ props.row.playerName }}
+              <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
+                     rounded padding="0" dense class="button-fills-whole-td">
+              </q-btn>
             </td>
           </template>
         </q-table>
       </div>
       <div class="row col-12 justify-start items-start q-gutter-md">
         <q-table
-          title="Most entries last 7 days"
+          title="Most entries by player last 7 days"
           :columns="mostPbsLast7Days.columns"
           :rows="mostPbsLast7Days.rows"
           :loading="mostPbsLast7Days.loading"
@@ -57,9 +79,19 @@
           hide-bottom
           dense
         >
+          <template v-slot:body="props">
+            <q-tr :props="props" style="position:relative;">
+              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ props.row[col.name] }}
+              </q-td>
+              <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
+                     rounded padding="0" dense class="button-fills-whole-td">
+              </q-btn>
+            </q-tr>
+          </template>
         </q-table>
         <q-table
-          title="Most entries last month"
+          title="Most entries by player last month"
           :columns="mostPbsLast7Days.columns"
           :rows="mostPbsLastMonth.rows"
           :loading="mostPbsLastMonth.loading"
@@ -70,6 +102,72 @@
           hide-bottom
           dense
         >
+          <template v-slot:body="props">
+            <q-tr :props="props" style="position:relative;">
+              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                {{ props.row[col.name] }}
+              </q-td>
+              <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
+                     rounded padding="0" dense class="button-fills-whole-td">
+              </q-btn>
+            </q-tr>
+          </template>
+        </q-table>
+        <q-table
+          title="Most entries by track last 14 days"
+          :columns="mostTrackEntriesLast14Days.columns"
+          :rows="mostTrackEntriesLast14Days.rows"
+          :loading="mostTrackEntriesLast14Days.loading"
+          :pagination="mostTrackEntriesLast14Days.pagination"
+          row-key="id"
+          flat
+          bordered
+          hide-bottom
+          dense
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props" style="position:relative;">
+              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                <div v-if="col.name === 'trackName'">
+                  <q-chip dense class="track-chip">{{ props.row.name }}</q-chip>
+                  <q-chip dense class="track-chip-map">{{ props.row.mapName }}</q-chip>
+                  <q-chip dense class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-chip>
+                </div>
+                {{ col.name !== 'trackName' ? props.row[col.name] : '' }}
+              </q-td>
+              <q-btn type="a" :to="{ name: 'tracklb', query: { trackId: props.row.id } }"
+                     rounded padding="0" dense class="button-fills-whole-td">
+              </q-btn>
+            </q-tr>
+          </template>
+        </q-table>
+        <q-table
+          title="Most entries by track last month"
+          :columns="mostTrackEntriesLastMonth.columns"
+          :rows="mostTrackEntriesLastMonth.rows"
+          :loading="mostTrackEntriesLastMonth.loading"
+          :pagination="mostTrackEntriesLastMonth.pagination"
+          row-key="id"
+          flat
+          bordered
+          hide-bottom
+          dense
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props" style="position:relative;">
+              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                <div v-if="col.name === 'trackName'">
+                  <q-chip dense class="track-chip">{{ props.row.name }}</q-chip>
+                  <q-chip dense class="track-chip-map">{{ props.row.mapName }}</q-chip>
+                  <q-chip dense class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-chip>
+                </div>
+                {{ col.name !== 'trackName' ? props.row[col.name] : '' }}
+              </q-td>
+              <q-btn type="a" :to="{ name: 'tracklb', query: { trackId: props.row.id } }"
+                     rounded padding="0" dense class="button-fills-whole-td">
+              </q-btn>
+            </q-tr>
+          </template>
         </q-table>
       </div>
     </div>
@@ -125,28 +223,50 @@ export default defineComponent({
           rowsPerPage: 10
         },
         loading: false,
-      }
-
+      },
+      mostTrackEntriesLast14Days: {
+        columns: [
+          { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
+          { name: 'entries', label: 'Entries', field: 'entries', align: 'center' },
+        ],
+        rows: [],
+        pagination: {
+          rowsPerPage: 10
+        },
+        loading: false,
+      },
+      mostTrackEntriesLastMonth: {
+        columns: [
+          { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
+          { name: 'entries', label: 'Entries', field: 'entries', align: 'center' },
+        ],
+        rows: [],
+        pagination: {
+          rowsPerPage: 10
+        },
+        loading: false,
+      },
     }
   },
   methods: {
     async fetchData() {
-      this.latestActivity.loading = true;
-      this.latestActivityTop10.loading = true;
-      this.mostPbsLast7Days.loading = true;
-      this.mostPbsLastMonth.loading = true;
       try {
-        const [ responseLatest, responseLatestTop10, responseMostPbsLast7Days, responseMostPbsLastMonth] =
+        const [ responseLatest, responseLatestTop10, responseMostPbsLast7Days, responseMostPbsLastMonth,
+          responseMostTrackEntriesLast14Days, responseMostTrackEntriesLastMonth] =
           await Promise.all([
             axios.get(process.env.DLAPP_API_URL+'/leaderboards/latest-activity'),
             axios.get(process.env.DLAPP_API_URL+'/leaderboards/latest-activity-top-10'),
             axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-pbs-last-7-days'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-pbs-last-month')
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-pbs-last-month'),
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-track-entries-last-14-days'),
+            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-track-entries-last-month'),
           ]);
         this.latestActivity.rows = responseLatest.data;
         this.latestActivityTop10.rows = responseLatestTop10.data;
         this.mostPbsLast7Days.rows = responseMostPbsLast7Days.data;
         this.mostPbsLastMonth.rows = responseMostPbsLastMonth.data;
+        this.mostTrackEntriesLast14Days.rows = responseMostTrackEntriesLast14Days.data;
+        this.mostTrackEntriesLastMonth.rows = responseMostTrackEntriesLastMonth.data;
       } catch (error) {
         console.error(error);
       } finally {
@@ -154,10 +274,18 @@ export default defineComponent({
         this.latestActivityTop10.loading = false;
         this.mostPbsLast7Days.loading = false;
         this.mostPbsLastMonth.loading = false;
+        this.mostTrackEntriesLast14Days.loading = false;
+        this.mostTrackEntriesLastMonth.loading = false;
       }
     }, getDateDifference
   },
   created() {
+    this.latestActivity.loading = true;
+    this.latestActivityTop10.loading = true;
+    this.mostPbsLast7Days.loading = true;
+    this.mostPbsLastMonth.loading = true;
+    this.mostTrackEntriesLast14Days.loading = true;
+    this.mostTrackEntriesLastMonth.loading = true;
     this.fetchData()
   }
 })

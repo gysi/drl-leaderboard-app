@@ -18,7 +18,7 @@
       <template v-slot:body="props">
         <q-tr>
           <q-td v-for="col in props.cols" :key="col.name" :props="props"
-            style="padding: 5px 5px 5px 5px;"
+            style="padding: 5px 5px 5px 5px;" class="td-borders-font-size16"
           >
             <q-item style="padding:0" v-if="col.name === 'name'"
                     clickable

@@ -56,12 +56,12 @@ public class LeaderboardController {
     }
 
     @GetMapping("/bytrack/{trackId}")
-    public ResponseEntity<List<LeaderBoardByTrackView>> getLeaderboardByPlayerName(
+    public ResponseEntity<List<LeaderboardByTrackView>> getLeaderboardByPlayerName(
             @PathVariable Long trackId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "50") int limit
     ) {
-        List<LeaderBoardByTrackView> byGuid = leaderboardRepository.findByTrackId(
+        List<LeaderboardByTrackView> byGuid = leaderboardRepository.findByTrackId(
                 trackId,
                 PageRequest.of(page - 1, limit)
                         .withSort(Sort.by(Sort.Order.asc("position"), Sort.Order.asc("score")))
@@ -102,6 +102,18 @@ public class LeaderboardController {
     public ResponseEntity<List<LeaderboardMostPbsView>> mostPbsLastMonth() {
         List<LeaderboardMostPbsView> players = leaderboardRepository.mostPbsLastMonth();
         return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/most-track-entries-last-month")
+    public ResponseEntity<List<LeaderboardMostTrackEntriesView>> mostEntriesByTrackLastMonth() {
+        List<LeaderboardMostTrackEntriesView> tracks = leaderboardRepository.mostEntriesByTrackLastMonth();
+        return ResponseEntity.ok(tracks);
+    }
+
+    @GetMapping("/most-track-entries-last-14-days")
+    public ResponseEntity<List<LeaderboardMostTrackEntriesView>> mostEntriesByTrackLast14Days() {
+        List<LeaderboardMostTrackEntriesView> tracks = leaderboardRepository.mostEntriesByTrackLast14Days();
+        return ResponseEntity.ok(tracks);
     }
 
     @PostMapping("/worst-tracks")
