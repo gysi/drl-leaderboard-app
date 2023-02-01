@@ -303,6 +303,7 @@ export default defineComponent({
         return;
       }
       this.rows = rows;
+      this.mergeComparePlayers(this.compareSelect.currentSelectedPlayers);
     },
     async fetchData(player) {
       if(!player){
