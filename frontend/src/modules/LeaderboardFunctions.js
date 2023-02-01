@@ -35,7 +35,7 @@ function formatMilliSeconds(milliseconds){
   let hours = (date.getHours()-1).toString().padStart(2, '0');
   let minutes = date.getMinutes().toString().padStart(2, '0');
   let seconds = date.getSeconds().toString().padStart(2, '0');
-  if(hours <= 0 && minutes <= 0 && seconds < 10 && isNegative){
+  if(hours <= 0 && minutes <= 0 && seconds < 10){
     seconds = seconds.substring(1);
   }
   let millis = date.getMilliseconds().toString().padStart(3, '0');
