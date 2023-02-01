@@ -79,7 +79,7 @@ from overall_ranking ovr;
 //            JOIN FETCH l.track track
 //        """)
     @Cacheable(value = "leaderboardbytrack", key = "#guid")
-    List<LeaderBoardByTrackView> findByTrackId(Long guid, Pageable pageable);
+    List<LeaderboardByTrackView> findByTrackId(Long guid, Pageable pageable);
 
     @Query("""
             SELECT DISTINCT l.playerName
@@ -94,6 +94,7 @@ from overall_ranking ovr;
                 l.player_name as playerName,
                 l.position,
                 l.created_at as createdAt,
+                t.id as trackId,
                 t.name as trackName,
                 t.map_name as mapName,
                 t.parent_category as parentCategory
@@ -111,6 +112,7 @@ from overall_ranking ovr;
                 l.player_name as playerName,
                 l.position,
                 l.created_at as createdAt,
+                t.id as trackId,
                 t.name as trackName,
                 t.map_name as mapName,
                 t.parent_category as parentCategory
@@ -155,6 +157,42 @@ from overall_ranking ovr;
             LIMIT 10
             """, nativeQuery = true)
     List<LeaderboardMostPbsView> mostPbsLastMonth();
+
+    @Cacheable("mostEntriesByTrackLastMonth")
+    @Query(value = """
+        SELECT
+            t.id as id,
+            t.name as name,
+            t.map_name as mapName,
+            t.parent_category as parentCategory,
+            count(*) as entries
+        FROM leaderboards l
+                 LEFT JOIN tracks t ON t.id = l.track_id
+        WHERE l.created_at > (now() - INTERVAL '1' MONTH)
+          AND l.is_invalid_run = false
+        GROUP BY t.id
+        ORDER BY count(*) DESC
+        LIMIT 10
+            """, nativeQuery = true)
+    List<LeaderboardMostTrackEntriesView> mostEntriesByTrackLastMonth();
+
+    @Cacheable("mostEntriesByTrackLast14Days")
+    @Query(value = """
+        SELECT
+            t.id as id,
+            t.name as name,
+            t.map_name as mapName,
+            t.parent_category as parentCategory,
+            count(*) as entries
+        FROM leaderboards l
+                 LEFT JOIN tracks t ON t.id = l.track_id
+        WHERE l.created_at > (now() - INTERVAL '14' DAY)
+          AND l.is_invalid_run = false
+        GROUP BY t.id
+        ORDER BY count(*) DESC
+        LIMIT 10
+            """, nativeQuery = true)
+    List<LeaderboardMostTrackEntriesView> mostEntriesByTrackLast14Days();
 
 //    @Cacheable("worstTrackByPlayer")
     @Query(value = """
