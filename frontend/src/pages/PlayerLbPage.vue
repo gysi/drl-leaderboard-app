@@ -16,28 +16,55 @@
       >
         <template v-slot:top-left>
           <div class="row">
-            <div class="q-table__title">{{ searchText?.toUpperCase() || 'Player' }}'s Rankings</div>
+            <div class="q-table__title">{{ playerSelect.searchText?.toUpperCase() || 'Player' }}'s Rankings</div>
             <q-select
               ref="userselect"
               filled
-              v-model="searchText"
+              v-model="playerSelect.searchText"
               use-input
               hide-dropdown-icon
               autofocus
               input-debounce="150"
-              :options="searchResults"
-              @filter="search"
-              @new-value="onEnterPressed"
-              @update:model-value="fetchData"
-              style="width: 250px"
+              :options="playerSelect.searchResults"
+              @filter="searchSelectPlayer"
+              @new-value="onEnterPressedPlayerSelect"
+              @update:model-value="onSelectPlayer"
+              style="width: 175px"
               class="q-ml-md"
               use-chips
               label="Enter player name"
             >
               <template v-slot:no-option>
-                <q-item
-                  @click="fetchData"
-                >
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+            <q-select
+              ref="compareSelect"
+              filled
+              v-model="compareSelect.searchText"
+              use-input
+              hide-dropdown-icon
+              :autofocus="false"
+              input-debounce="150"
+              max-values="5"
+              :options="compareSelect.searchResults"
+              @filter="searchSelectComparePlayer"
+              @new-value="onEnterPressedCompareSelect"
+              @update:model-value="onCompareSelect"
+              :style="{
+                minWidth: '220px'
+              }"
+              class="q-ml-md"
+              use-chips
+              multiple
+              label="Compare Against Players"
+            >
+              <template v-slot:no-option>
+                <q-item>
                   <q-item-section class="text-grey">
                     No results
                   </q-item-section>
@@ -147,7 +174,15 @@
                 </q-tooltip>
               </q-icon>
 <!-- Beaten By row end -->
-              {{ col.name !== 'track' && col.name !== 'beatenBy' ? col.value : '' }}
+<!-- compare -->
+              <div v-if="col.name.startsWith('compare')">
+                <div>{{ col.value }}</div>
+                <div :style="{color: props.row.score < props.row.compare[col.label] ? 'green' : 'red'}">
+                  {{ props.row.compare[col.label] != null && props.row.score != null ? this.substractAndformatMilliSeconds(props.row.compare[col.label],props.row.score) : '' }}
+                </div>
+              </div>
+<!-- compare end this.substractAndformatMilliSeconds(props.row.score, props.row[col.name]) : ''-->
+              {{ col.name !== 'track' && col.name !== 'beatenBy' && !col.name.startsWith('compare') ? col.value : '' }}
             </q-td>
           </q-tr>
         </template>
@@ -156,7 +191,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import axios from 'axios';
 import { formatMilliSeconds, backGroundColorByPosition, getDateDifference, substractAndformatMilliSeconds } from 'src/modules/LeaderboardFunctions'
 import { differenceInDays } from "date-fns";
@@ -173,59 +208,30 @@ function compareTracks(track1, track2) {
 
 export default defineComponent({
   name: 'PlayerLbPage',
-  created(){
-    this.searchText = this.$router.currentRoute.value.query.playerName;
-    this.fetchData(this.searchText);
+  async created(){
+    this.playerSelect.searchText = this.$router.currentRoute.value.query.playerName;
+    if(!!this.playerSelect.searchText) {
+      this.rows = ref(await this.fetchData(this.playerSelect.searchText));
+    }
   },
   data() {
     return {
-      searchText: null,
-      searchResults: [],
-      loadingState: true,
+      playerSelect: {
+        searchText: null,
+        searchResults: [],
+      },
+      compareSelect: {
+        searchText: null,
+        searchResults: [],
+        currentSelectedPlayers: [],
+        rowsByPlayer: {}
+      },
       columns: [
         { name: 'position', label: '#', field: 'position', align: 'right', sortable: true},
-        { name: 'beatenBy', label: 'Beaten by', field: 'beatenBy', align: 'center', sortable: true,
-          sort: (a, b, rowa, rowb) => {
-            // shouldn't happen, but just to make sure its not null
-            if(a == null && b == null){
-              return 0;
-            } else if(a == null){
-              return -1;
-            } else if(!b == null){
-              return 1;
-            }
-            if (a.length === 0 && b.length === 0) {
-              const aDate = new Date(rowa.createdAt+'Z');
-              const bDate = new Date(rowb.createdAt+'Z');
-              if(aDate < bDate) {
-                return -1;
-              } else {
-                return 1;
-              }
-            } else if (a.length === 0){
-              return -1;
-            } else if (b.length === 0){
-              return 1;
-            }
-
-            if (a.length === b.length){
-              const aDate = new Date(a[0].createdAt+'Z');
-              const bDate = new Date(b[0].createdAt+'Z');
-              if(aDate < bDate) {
-                return 1;
-              } else {
-                return -1;
-              }
-            } else if (a.length < b.length){
-              return -1;
-            } else {
-              return 1;
-            }
-          }
-        },
+        { name: 'beatenBy', label: 'Beaten by', field: 'beatenBy', align: 'center', sortable: true, sort: this.sortByBeatenBy},
         { name: 'track', label: 'Track', field: row => row.track.name, sortable: true, align: 'left'},
         { name: 'score', label: 'Time', field: 'score',
-          format: (val, row) => { if(val) return this.formatMilliSeconds(val) }, align: 'left', sortable: true },
+          format: (val, row) => { if(val) return this.formatMilliSeconds(val) }, align: 'right', sortable: true },
         { name: 'crashes', label: 'Crashes', field: 'crashCount', sortable: true, required: true },
         { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed',
           format: (val, row) => { if(val) return Math.round(val*10)/10 }, sortable: true, required: true },
@@ -252,37 +258,58 @@ export default defineComponent({
     }
   },
   methods: {
-    onEnterPressed(val) {
+    onEnterPressedPlayerSelect(val) {
       this.$refs.userselect.toggleOption(val);
     },
-    async search(val, update, abort) {
-      console.log("search triggerd");
-      console.log(val);
+    onEnterPressedCompareSelect(val) {
+      this.$refs.compareSelect.toggleOption(val);
+    },
+    async searchSelectPlayer(val, update, abort){
       if(val === ""){
-        console.log("empty search");
-        this.searchResults = [];
+        this.playerSelect.searchResults = [];
         abort();
         return;
       }
-      this.loadingState = true;
-      const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/find-players?playerName='+val);
-      this.searchResults = response.data;
-      this.loadingState = false;
+      const response = await this.searchPlayer(val, update, abort);
+      this.playerSelect.searchResults = response.data;
       update();
     },
-    async fetchData(player) {
+    async searchSelectComparePlayer(val, update, abort){
+      if(val === ""){
+        this.compareSelect.searchResults = [];
+        abort();
+        return;
+      }
+      const response = await this.searchPlayer(val, update, abort);
+      this.compareSelect.searchResults = response.data;
+      update();
+    },
+    async searchPlayer(val, update, abort) {
+      return axios.get(process.env.DLAPP_API_URL+'/leaderboards/find-players?playerName='+val);
+    },
+    async onSelectPlayer(player) {
       if(!player){
         this.rows = [];
         return;
       }
-      console.log("fetching!");
-      console.log(player);
       this.$router.replace({
         query: {
           playerName: player
         }
       });
+      const rows = await this.fetchData(player);
+      if(!rows){
+        this.rows = [];
+        return;
+      }
+      this.rows = rows;
+    },
+    async fetchData(player) {
+      if(!player){
+        return [];
+      }
       this.loading = true;
+      let newArray = [];
       try {
         const [ responseFinishedTracks, responseMissingTracks] =
           await Promise.all([
@@ -291,7 +318,6 @@ export default defineComponent({
           ]);
         const finishedTracks = responseFinishedTracks.data;
         const missingTracks = responseMissingTracks.data;
-        let newArray = [];
         let i = 0;
         let j = 0;
         while (i < finishedTracks.length && j < missingTracks.length) {
@@ -303,11 +329,69 @@ export default defineComponent({
             j++;
           }
         }
-        this.rows = newArray.concat(finishedTracks.slice(i), missingTracks.slice(j).map(x => { return { isMissing: true, track: x } }));
+        newArray = newArray.concat(finishedTracks.slice(i), missingTracks.slice(j).map(x => { return { isMissing: true, track: x } }));
       } catch (error) {
         console.error(error);
       } finally {
         this.loading = false;
+      }
+      return newArray;
+    },
+    async onCompareSelect(players){
+      const alreadyExistent = players.filter(p => this.compareSelect.currentSelectedPlayers.includes(p));
+      const newPlayers = players.filter(p => !this.compareSelect.currentSelectedPlayers.includes(p));
+      const removedPlayers = this.compareSelect.currentSelectedPlayers.filter(p => !players.includes(p));
+      // console.log(`Already existent: ${alreadyExistent}`);
+      // console.log(`New players: ${newPlayers}`);
+      // console.log(`Removed players: ${removedPlayers}`);
+      this.compareSelect.currentSelectedPlayers = [...alreadyExistent, ...newPlayers];
+      // foreach removedPlayers, remove from compareRows
+      // rowsByPlayer: {}
+      if(removedPlayers.length > 0) {
+        removedPlayers.forEach(p => {
+          for (let i = 0; i < this.rows.length; i++) {
+            delete this.rows[i]['compare'][p];
+          }
+          const index = this.columns.findIndex(c => c.name === `compare${p}`);
+          if (index !== -1) {
+            this.columns.splice(index, 1);
+          }
+        });
+      }
+      if(newPlayers.length > 0) {
+        let promises = [];
+        newPlayers.forEach(p => {
+          promises.push(this.fetchData(p).then(rows => {
+            this.compareSelect.rowsByPlayer[p] = rows;
+          }))
+        });
+        await Promise.all(promises);
+        this.mergeComparePlayers(newPlayers);
+        // add columns
+        const columnCrashesIdx = this.columns.findIndex(c => c.name === 'crashes');
+        newPlayers.forEach(p => {
+          const newColumn = {
+            name: `compare${p}`,
+            label: p,
+            field: row => row.compare[p],
+            format: (val, row) => { if(val) return this.formatMilliSeconds(val) },
+            align: 'right',
+          };
+          this.columns.splice(columnCrashesIdx, 0, newColumn);
+        });
+
+      }
+    },
+    mergeComparePlayers(comparePlayers){
+      if(!comparePlayers) return;
+      for (let rowI = 0; rowI < this.rows.length; rowI++) {
+        if(!this.rows[rowI]['compare']){
+          this.rows[rowI]['compare'] = {};
+        }
+        for (let compareI = 0; compareI < comparePlayers.length; compareI++) {
+          this.rows[rowI]['compare'][comparePlayers[compareI]] =
+            this.compareSelect.rowsByPlayer[comparePlayers[compareI]][rowI].score
+        }
       }
     },
     beatenByIcon(beatenBy, timeSet){
@@ -325,6 +409,43 @@ export default defineComponent({
         return ['surfing', 'green-6', `Not beaten by anyone yet for ${days} days`];
       }
       return ['military_tech', 'yellow-9', `Not beaten by anyone yet for ${days} days`];
+    },
+    sortByBeatenBy(a, b, rowa, rowb){
+      // shouldn't happen, but just to make sure its not null
+      if(a == null && b == null){
+        return 0;
+      } else if(a == null){
+        return -1;
+      } else if(!b == null){
+        return 1;
+      }
+      if (a.length === 0 && b.length === 0) {
+        const aDate = new Date(rowa.createdAt+'Z');
+        const bDate = new Date(rowb.createdAt+'Z');
+        if(aDate < bDate) {
+          return -1;
+        } else {
+          return 1;
+        }
+      } else if (a.length === 0){
+        return -1;
+      } else if (b.length === 0){
+        return 1;
+      }
+
+      if (a.length === b.length){
+        const aDate = new Date(a[0].createdAt+'Z');
+        const bDate = new Date(b[0].createdAt+'Z');
+        if(aDate < bDate) {
+          return 1;
+        } else {
+          return -1;
+        }
+      } else if (a.length < b.length){
+        return -1;
+      } else {
+        return 1;
+      }
     },
     formatMilliSeconds,
     backGroundColorByPosition,

@@ -26,12 +26,20 @@ function backGroundColorByPosition(position){
 }
 
 function formatMilliSeconds(milliseconds){
+  let isNegative = false;
+  if(milliseconds < 0 ) {
+    isNegative = true;
+    milliseconds = milliseconds * -1;
+  }
   const date = new Date(milliseconds);
   let hours = (date.getHours()-1).toString().padStart(2, '0');
   let minutes = date.getMinutes().toString().padStart(2, '0');
   let seconds = date.getSeconds().toString().padStart(2, '0');
+  if(hours <= 0 && minutes <= 0 && seconds < 10 && isNegative){
+    seconds = seconds.substring(1);
+  }
   let millis = date.getMilliseconds().toString().padStart(3, '0');
-  return `${hours > 0 ? hours + ':' : ''}${minutes}:${seconds}.${millis}`;
+  return `${isNegative ? '-' : ''}${hours > 0 ? hours + ':' : ''}${minutes > 0 || hours > 0 ? minutes + ':' : ''}${seconds > 0 || minutes > 0 || hours > 0 ? seconds : '0'}.${millis}`;
 }
 
 function substractAndformatMilliSeconds(millisecondsHigher, millisecondsLower){
