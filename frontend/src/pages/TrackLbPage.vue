@@ -17,7 +17,7 @@
         <img v-if="searchText?.mapName != null"
              loading="lazy"
              class="animated-background-image"
-             :src="`./public/maps/map-${searchText.mapName.toLowerCase().replaceAll(' ', '-')}-fs8.png`" />
+             :src="`/maps/map-${searchText.mapName.toLowerCase().replaceAll(' ', '-')}-fs8.png`" />
         <div class="row" style="overflow: hidden; position: relative; padding: 12px 16px;">
 
           <div class="q-table__title">Track Rankings</div>
