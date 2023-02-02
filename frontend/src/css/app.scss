@@ -36,11 +36,13 @@ $dark-accent4-color: 217, 205, 205;
   --app-nav-background-color: #{$dark-primary};
   --app-nav-active-text-color: #{$dark-accent3};
   --app-nav-caption-text-color: rgba(255, 255, 255, 0.54);
+
   --app-table-body-background-color: #{$dark-dark};
   --app-table-top-bottom-text-color: #{$dark-white};
   --app-table-top-bottom-background-color: #{$dark-primary};
   --app-table-column-header-background-color: #{$dark-secondary};
   --app-table-content-text-color: #{$dark-white};
+  --app-table-loadingbar-color: #{$light-info};
   --app-select-text-color: #{$dark-white};
   --app-select-chip-background-color: #{$dark-accent2};
   --app-select-chip-text-color: #{$dark-dark};
@@ -123,11 +125,14 @@ body {
   --app-nav-background-color: #{$light-light};
   --app-nav-active-text-color: #{$light-secondary};
   --app-nav-caption-text-color: rgba(0, 0, 0, 0.54);
+
   --app-table-body-background-color: #{$light-light};
   --app-table-top-bottom-text-color: #{$light-white};
   --app-table-top-bottom-background-color: #{$light-secondary};
   --app-table-column-header-background-color: #{$light-accent2};
   --app-table-content-text-color: #{$light-dark};
+  --app-table-loadingbar-color: #{$light-info};
+
   --app-select-text-color: #{$light-white};
   --app-select-chip-background-color: #{$light-light};
   --app-select-chip-text-color: #{$light-dark};
@@ -359,6 +364,10 @@ body {
   .worstTracksTable-track-td .q-item__label {
     color: var(--app-slotmachine-table-td-text-color) !important;
   }
+
+  .q-table__linear-progress {
+    color: var(--app-table-loadingbar-color) !important;
+  }
 }
 
 // Dark mode (OS native)
@@ -373,4 +382,9 @@ body {
 // Dark mode (Quasar global dark mode)
 .body--dark {
   @include dark-mode-colors;
+}
+
+// General Styles
+.q-table__linear-progress {
+  height: 3px;
 }

@@ -4,40 +4,40 @@
       title="Tracks"
       :columns="columns"
       :rows="rows"
-      :loading="loading"
       row-key="id"
       class="my-sticky-header-table"
-      style="max-height: 100%; overflow: auto;"
+      style="max-height: 100%;"
+      :loading="loading"
+      loading-label="Loading tracks..."
+      no-data-label="Tracks couldn't be loaded, please try again"
       flat
       bordered
-      hide-bottom
-      virtual-scroll
-      virtual-scroll-item-size="79"
-      :rows-per-page-options="[0]"
+      hide-pagination
+      :pagination="{rowsPerPage: 0}"
     >
       <template v-slot:body="props">
-        <q-tr>
+        <q-tr :props="props">
           <q-td v-for="col in props.cols" :key="col.name" :props="props"
-            style="padding: 5px 5px 5px 5px;" class="td-borders-font-size16"
+            class="td-borders-font-size16 trackspage-td-padding"
           >
             <q-item style="padding:0" v-if="col.name === 'name'"
                     clickable
                     :to="`/track-lb/?trackId=${props.row.id}`"
                     class="q-item-player-region"
             >
-              <q-item-section thumbnail style="padding-right: 5px; margin: 0;">
+              <q-item-section thumbnail style="padding-right: 10px; margin: 0;">
                   <img src="~assets/maps/maps-120x68.png"
                        :class="'map-'+props.row.mapName.replaceAll(/[. ]/g, '-').toLocaleLowerCase()"
                        width="120" height="68"
                   />
               </q-item-section>
-              <q-item-section>
+              <q-item-section >
                 <q-item-label class="track-item-label">{{ props.row.name }}</q-item-label>
                 <q-item-label caption>
                   <q-badge class="track-chip-map">{{ props.row.mapName }}</q-badge>
                 </q-item-label>
                 <q-item-label caption>
-                  <q-badge class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-badge>
+                  <q-badge class="track-chip-parentcategory">{{ props.row.parentCategory }}{{consoleRef.log("test")}}</q-badge>
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -48,69 +48,45 @@
   </q-page>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
-import axios from 'axios';
+<script setup>
+  import axios from 'axios';
+  import { ref, shallowRef } from 'vue';
 
-export default defineComponent({
-  name: 'TracksPage',
-  data() {
+  const columns = [
+    { name: 'name', label: 'Name', field: 'name', align: 'left' }
+  ]
+  const rows = shallowRef([]);
+  const loading = ref(true);
+  const consoleRef = console;
+
+  function qpageStyleFn(offset, height) {
     return {
-      columns: [
-        { name: 'name', label: 'Name', field: 'name', align: 'left' }
-      ],
-      rows: [],
-      loading: false
+      minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh',
+      maxHeight: offset ? `calc(100vh - ${offset}px)` : '100vh',
+      height: offset ? `calc(100vh - ${offset}px)` : '100vh',
     }
-  },
-  methods: {
-    qpageStyleFn(offset, height) {
-      return {
-        minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh',
-        maxHeight: offset ? `calc(100vh - ${offset}px)` : '100vh',
-        height: offset ? `calc(100vh - ${offset}px)` : '100vh',
-      }
-    },
-    async fetchData() {
-      this.loading = true;
-      try {
-        const response = await axios.get(process.env.DLAPP_API_URL+'/tracks');
-        this.rows = response.data;
-      } catch (error) {
-        console.error(error);
-      } finally {
-        this.loading = false;
-      }
-    }
-  },
-  created() {
-    this.fetchData();
-  },
-  mounted() {
-
-  },
-  beforeUnmount() {
-    clearInterval(this.interval);
   }
-})
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(process.env.DLAPP_API_URL+'/tracks');
+      rows.value = response.data;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      loading.value = false;
+    }
+  };
+  fetchData();
 </script>
+
+<style lang="scss">
+  .trackspage-td-padding {
+    padding: 5px 5px 5px 5px;
+  }
+</style>
 
 <style lang="scss" scoped>
 :deep(.track-item-label) {
   font-size: 19px;
 }
-
-// For GRID view
-//.my-sticky-grid-table {
-//  :deep(.q-table__top) {
-//    position: sticky;
-//    top: 0;
-//    z-index: 1;
-//  }
-//  :deep(.q-table__bottom) {
-//    position: sticky;
-//    bottom: 0;
-//    z-index: 1;
-//  }
-//}
 </style>
