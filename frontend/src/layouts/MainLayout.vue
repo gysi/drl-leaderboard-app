@@ -456,7 +456,7 @@ tbody .td-borders-font-size16 {
     box-sizing: content-box;
     width: 100%;
     //animation: move-track-background 60s ease-in-out 2s infinite;
-    animation: move-track-background 65s steps(calc(30 * 65), end) 2s infinite;
+    animation: move-track-background 90s steps(calc(25 * 90), end) 2s infinite;
     transform: translateY(-3%);
     will-change: transform;
   }
