@@ -279,7 +279,7 @@ tbody .td-borders-font-size16 {
   height: 68px !important;
 }
 
-:deep(.map-bridge) {
+.map-bridge {
   object-fit: none;
   object-position: -123px -71px;
   width: 120px !important;
