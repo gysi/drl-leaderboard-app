@@ -101,7 +101,7 @@
             >
               <q-item-section avatar side>
                 <q-avatar rounded size="50px">
-                  <q-img :src="props.row.profileThumb" />
+                  <img loading="lazy" :src="props.row.profileThumb" />
                 </q-avatar>
               </q-item-section>
               <q-item-section>
