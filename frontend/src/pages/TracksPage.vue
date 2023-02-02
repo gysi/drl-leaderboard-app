@@ -27,7 +27,7 @@
             >
               <q-item-section thumbnail style="padding-right: 5px; margin: 0;">
                   <img src="~assets/maps/maps-120x68.png"
-                       :class="'map-'+props.row.mapName.replaceAll(/\.| /g, '-').toLocaleLowerCase()"
+                       :class="'map-'+props.row.mapName.replaceAll(/[. ]/g, '-').toLocaleLowerCase()"
                        width="120" height="68"
                   />
               </q-item-section>
