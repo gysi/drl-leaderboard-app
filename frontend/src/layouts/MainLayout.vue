@@ -457,6 +457,7 @@ tbody .td-borders-font-size16 {
     width: 100%;
     animation: move-track-background 60s ease-in-out 2s infinite;
     transform: translateY(-3%);
+    will-change: transform;
   }
 }
 @keyframes move-track-background {
