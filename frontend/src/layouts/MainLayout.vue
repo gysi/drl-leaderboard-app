@@ -455,7 +455,7 @@ tbody .td-borders-font-size16 {
     object-fit: contain;
     box-sizing: content-box;
     width: 100%;
-    animation: move-track-background 50s ease-in-out 2s infinite;
+    animation: move-track-background 60s ease-in-out 2s infinite;
     transform: translateY(-3%);
   }
 }
