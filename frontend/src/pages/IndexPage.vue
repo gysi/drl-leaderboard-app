@@ -21,7 +21,7 @@
               <q-chip dense class="track-chip-map">{{ props.row.mapName }}</q-chip>
               <q-chip dense class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-chip>
               <q-btn type="a" :to="{ name: 'tracklb', query: { trackId: props.row.trackId } }"
-                     rounded padding="0" dense class="button-fills-whole-td">
+                     rounded flat padding="0" dense class="button-fills-whole-td">
               </q-btn>
             </td>
           </template>
@@ -29,7 +29,7 @@
             <td>
               {{ props.row.playerName }}
               <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
-                     rounded padding="0" dense class="button-fills-whole-td">
+                     rounded flat padding="0" dense class="button-fills-whole-td">
               </q-btn>
             </td>
           </template>
@@ -52,7 +52,7 @@
               <q-chip dense class="track-chip-map">{{ props.row.mapName }}</q-chip>
               <q-chip dense class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-chip>
               <q-btn type="a" :to="{ name: 'tracklb', query: { trackId: props.row.trackId } }"
-                     rounded padding="0" dense class="button-fills-whole-td">
+                     rounded flat padding="0" dense class="button-fills-whole-td">
               </q-btn>
             </td>
           </template>
@@ -60,7 +60,7 @@
             <td>
               {{ props.row.playerName }}
               <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
-                     rounded padding="0" dense class="button-fills-whole-td">
+                     rounded flat padding="0" dense class="button-fills-whole-td">
               </q-btn>
             </td>
           </template>
@@ -85,7 +85,7 @@
                   {{ props.row[col.name] }}
               </q-td>
               <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
-                     rounded padding="0" dense class="button-fills-whole-td">
+                     rounded flat padding="0" dense class="button-fills-whole-td">
               </q-btn>
             </q-tr>
           </template>
@@ -108,7 +108,7 @@
                 {{ props.row[col.name] }}
               </q-td>
               <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
-                     rounded padding="0" dense class="button-fills-whole-td">
+                     rounded flat padding="0" dense class="button-fills-whole-td">
               </q-btn>
             </q-tr>
           </template>
@@ -136,7 +136,7 @@
                 {{ col.name !== 'trackName' ? props.row[col.name] : '' }}
               </q-td>
               <q-btn type="a" :to="{ name: 'tracklb', query: { trackId: props.row.id } }"
-                     rounded padding="0" dense class="button-fills-whole-td">
+                     rounded flat padding="0" dense class="button-fills-whole-td">
               </q-btn>
             </q-tr>
           </template>
@@ -164,7 +164,7 @@
                 {{ col.name !== 'trackName' ? props.row[col.name] : '' }}
               </q-td>
               <q-btn type="a" :to="{ name: 'tracklb', query: { trackId: props.row.id } }"
-                     rounded padding="0" dense class="button-fills-whole-td">
+                     rounded flat padding="0" dense class="button-fills-whole-td">
               </q-btn>
             </q-tr>
           </template>
