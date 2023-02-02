@@ -432,4 +432,36 @@ tbody .td-borders-font-size16 {
   width: 120px !important;
   height: 68px !important;
 }
+
+.table-with-brackground-image {
+  .q-table__container .q-table__top .q-table-control {
+    width: 100%;
+    position: relative;
+  }
+
+  .q-table__top {
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .q-field--filled .q-field__control {
+    background-color: rgb(0,0,0,0.7);
+  }
+
+  // for f in map-*.png; do convert "$f" -gaussian-blur 5x5 -quality 100 "${f%.*}-blurred.png"; done
+  // pngquant --speed 1 --force --strip map-*-blurred.png
+  .animated-background-image {
+    position: absolute;
+    object-fit: contain;
+    box-sizing: content-box;
+    width: 100%;
+    animation: move-track-background 50s ease-in-out 2s infinite;
+    transform: translateY(-3%);
+  }
+}
+@keyframes move-track-background {
+  0% { transform: translateY(-3%); }
+  50% { transform: translateY(calc(-97% + 92px)); }
+  100% { transform: translateY(-3%); }
+}
 </style>

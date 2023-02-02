@@ -5,7 +5,7 @@
       :rows="rows"
       :loading="loading"
       row-key="id"
-      class="my-sticky-header-table"
+      class="my-sticky-header-table table-with-brackground-image"
       table-class="col-auto"
       style="max-height: 100%;"
       :pagination="pagination"
@@ -14,8 +14,12 @@
       bordered
     >
       <template v-slot:top-left>
-        <div class="row">
-<!--          <div class="text-h4">{{ searchText?.name?.toUpperCase() || 'Track' }} Rankings</div>-->
+        <img v-if="searchText?.mapName != null"
+             loading="lazy"
+             class="animated-background-image"
+             :src="`./public/maps/map-${searchText.mapName.toLowerCase().replaceAll(' ', '-')}-fs8.png`" />
+        <div class="row" style="overflow: hidden; position: relative; padding: 12px 16px;">
+
           <div class="q-table__title">Track Rankings</div>
           <q-select
             ref="trackselect"
