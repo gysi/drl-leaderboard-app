@@ -1,5 +1,6 @@
 package de.gregord.drlleaderboardbackend.config;
 
+import org.cache2k.expiry.ExpiryPolicy;
 import org.cache2k.extra.spring.SpringCache2kCacheManager;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.CacheManager;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
@@ -35,7 +37,7 @@ public class AppConfig {
     public CacheManager cacheManager() {
         return new SpringCache2kCacheManager()
                 .addCache(c -> c.name("overallranking")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(1)
                         .permitNullValues(true)
                         .weigher((k, v) -> {
@@ -50,35 +52,35 @@ public class AppConfig {
                         .entryCapacity(1)
                         .permitNullValues(true))
                 .addCache(c -> c.name("leaderboardbyplayername")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(200)
                         .permitNullValues(true))
                 .addCache(c -> c.name("leaderboardbytrack")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(200)
                         .permitNullValues(true))
                 .addCache(c -> c.name("latestLeaderboardActivity")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(1)
                         .permitNullValues(true))
                 .addCache(c -> c.name("latestLeaderboardActivityTop10")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(1)
                         .permitNullValues(true))
                 .addCache(c -> c.name("mostPbsLast7Days")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(1)
                         .permitNullValues(true))
                 .addCache(c -> c.name("mostPbsLastMonth")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(1)
                         .permitNullValues(true))
                 .addCache(c -> c.name("mostEntriesByTrackLast14Days")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(1)
                         .permitNullValues(true))
                 .addCache(c -> c.name("mostEntriesByTrackLastMonth")
-                        .eternal(true)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(1)
                         .permitNullValues(true))
                 ;
