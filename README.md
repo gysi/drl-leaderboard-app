@@ -58,9 +58,9 @@ Webapp for displaying DRL Simulator leaderboards.
     * Home
       * [x] ~~Latest Player activity~~
       * [x] ~~Most active players (last 7/30 days)~~
-      * [ ] Link from track / map / parent category "chips" to track rankings / tracks section
+      * [x] ~~Link from track / map / parent category "chips" to track rankings / tracks section~~
       * [ ] ??? More stuff 
-      * [ ] Most played tracks (7 days / month)
+      * [x] ~~Most played tracks (7 days / month)~~
     * [ ] Track section
       * [x] ~~Basic track/map listing~~
       * [x] ~~Track/Map images (Optional)~~
