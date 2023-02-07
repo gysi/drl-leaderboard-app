@@ -32,13 +32,13 @@ function formatMilliSeconds(milliseconds){
     milliseconds = milliseconds * -1;
   }
   const date = new Date(milliseconds);
-  let hours = (date.getHours()-1).toString().padStart(2, '0');
-  let minutes = date.getMinutes().toString().padStart(2, '0');
-  let seconds = date.getSeconds().toString().padStart(2, '0');
+  let hours = (date.getUTCHours()).toString().padStart(2, '0');
+  let minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  let seconds = date.getUTCSeconds().toString().padStart(2, '0');
   if(hours <= 0 && minutes <= 0 && seconds < 10){
     seconds = seconds.substring(1);
   }
-  let millis = date.getMilliseconds().toString().padStart(3, '0');
+  let millis = date.getUTCMilliseconds().toString().padStart(3, '0');
   return `${isNegative ? '-' : ''}${hours > 0 ? hours + ':' : ''}${minutes > 0 || hours > 0 ? minutes + ':' : ''}${seconds > 0 || minutes > 0 || hours > 0 ? seconds : '0'}.${millis}`;
 }
 
