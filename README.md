@@ -61,6 +61,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Link from track / map / parent category "chips" to track rankings / tracks section~~
       * [ ] ??? More stuff 
       * [x] ~~Most played tracks (7 days / month)~~
+      * [x] Overlay which shows releases, upcoming features and a red info box explaining why positions don't match the ingame leaderboard because people won't read the FAQ
     * [ ] Track section
       * [x] ~~Basic track/map listing~~
       * [x] ~~Track/Map images (Optional)~~
@@ -75,6 +76,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Avg Position~~
       * [ ] Latest Activty (track)
       * [x] ~~Ability to scroll to a player (perhaps also from an external link)~~
+      * [ ] Additional leaderboards for parent categories
     * [ ] Track rankings
       * [x] ~~Basic map rankings~~
       * [x] ~~Search should also search in parent categories~~
@@ -99,5 +101,5 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Invalid runs explanation~~
       * [x] ~~"Beaten by" column explanation~~
       * ??? More stuff
-    * [ ] A good way to remove invalid times (wrong drone bug) which aren't exceeding the topspeed. Maybe a kinda voting system? Or something like a player analyis (median / comparision to other track runs / count of total tracks / comparision to overall rankin player position, etc..)
+    * [ ] A feature that would fetch the replay from DRL and display the raceline in 3D and compare it to other players for a track 
 

@@ -1,7 +1,7 @@
 {
   "name": "drl-leaderboard-frontend",
   "packageManager": "yarn@3.3.1",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "🚀 Awesome 🛩️ DRL Leaderboard 🏆 Webapp by gysi 🥇🥈🥉",
   "productName": "🏆 DRL Leaderboards 🏆",
   "author": "Gregor Dieter <github@i337.de>",
@@ -15,6 +15,7 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
     "date-fns": "^2.29.3",
+    "date-fns-tz": "^2.0.0",
     "flag-icons": "^6.6.6",
     "masonry-layout": "^4.2.2",
     "pinia": "^2.0.11",
