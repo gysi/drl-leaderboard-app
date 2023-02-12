@@ -31,11 +31,13 @@ server {
     server_name {{ server.hostname }};
     ssl_certificate /etc/letsencrypt/live/{{ server.hostname }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ server.hostname }}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
     access_log  /var/log/nginx/https-{{ server.hostname }}.access.log main;
     error_log  /var/log/nginx/https-{{ server.hostname }}.error.log warn;
 
-    root /www/{{ 'prod' if env == 'prod' else 'staging' }};
+    root /www/{{ 'prod' if env == 'prod' else 'staging' }}/leaderboard;
 
     location ^~ /api {
         #return 302 https://$host$request_uri;

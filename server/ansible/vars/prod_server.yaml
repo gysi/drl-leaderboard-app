@@ -1,5 +1,6 @@
 env: 'prod'
 server:
   hostname: "drl-leaderboards.miau.io"
+  hostname_transmitters: "transmitters.miau.io"
   certificate:
     mail: "drl-leaderboards.miau.io@i337.de"
