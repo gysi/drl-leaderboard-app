@@ -39,12 +39,29 @@
           :key="link.title"
           v-bind="link"
         />
+        <q-item
+          clickable
+          @click="showNews = true"
+          exact
+        >
+          <q-item-section
+            avatar
+          >
+            <q-icon name="feed" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>News</q-item-label>
+            <q-item-label caption>Releases and stuff</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
     <q-page-container style="height: 100vh">
       <router-view />
     </q-page-container>
+    <NewsDialog v-model:show-dialog="showNews" class="dialog-news"/>
   </q-layout>
 </template>
 
@@ -53,6 +70,7 @@ import { defineComponent, ref } from 'vue'
 import NavigationLinks from 'components/NavigationLinks.vue'
 import {version} from '../../package.json'
 import { useQuasar } from "quasar"
+import NewsDialog from "components/NewsDialog.vue";
 
 const linksList = [
   {
@@ -109,6 +127,7 @@ export default defineComponent({
   name: 'MainLayout',
 
   components: {
+    NewsDialog,
     NavigationLinks
   },
   setup () {
@@ -124,6 +143,14 @@ export default defineComponent({
     } else if (prefersDarkScheme.matches) {
       useDarkMode = ref(true);
     }
+
+    let showNewsDialog = false;
+    let newsDialogVersion = $q.localStorage.getItem('newsDialogSeen');
+    if(newsDialogVersion !== version){
+      $q.localStorage.set('newsDialogSeen', version);
+      showNewsDialog = true;
+    }
+
     return {
       linksList: linksList,
       leftDrawerOpen,
@@ -131,7 +158,8 @@ export default defineComponent({
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
       quasar: $q,
-      darkMode: useDarkMode
+      darkMode: useDarkMode,
+      showNews: ref(showNewsDialog)
     }
   },
   data() {
@@ -465,5 +493,11 @@ tbody .td-borders-font-size16 {
   0% { transform: translateY(-3%); }
   50% { transform: translateY(calc(-97% + 92px)); }
   100% { transform: translateY(-3%); }
+}
+
+@media (min-width: 600px) {
+  .q-dialog__inner--minimized > div {
+    max-width: 700px !important;
+  }
 }
 </style>

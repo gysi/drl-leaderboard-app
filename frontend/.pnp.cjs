@@ -34,6 +34,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["autoprefixer", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:10.4.13"],\
             ["axios", "npm:0.21.4"],\
             ["date-fns", "npm:2.29.3"],\
+            ["date-fns-tz", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:2.0.0"],\
             ["eslint", "npm:8.30.0"],\
             ["eslint-config-prettier", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:8.5.0"],\
             ["eslint-plugin-vue", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:9.8.0"],\
@@ -1666,6 +1667,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["date-fns-tz", [\
+        ["npm:2.0.0", {\
+          "packageLocation": "./.yarn/cache/date-fns-tz-npm-2.0.0-9b7996f292-a6553603a9.zip/node_modules/date-fns-tz/",\
+          "packageDependencies": [\
+            ["date-fns-tz", "npm:2.0.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:2.0.0", {\
+          "packageLocation": "./.yarn/__virtual__/date-fns-tz-virtual-46f299e212/0/cache/date-fns-tz-npm-2.0.0-9b7996f292-a6553603a9.zip/node_modules/date-fns-tz/",\
+          "packageDependencies": [\
+            ["date-fns-tz", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:2.0.0"],\
+            ["@types/date-fns", null],\
+            ["date-fns", "npm:2.29.3"]\
+          ],\
+          "packagePeers": [\
+            "@types/date-fns",\
+            "date-fns"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["debug", [\
         ["npm:2.6.9", {\
           "packageLocation": "./.yarn/cache/debug-npm-2.6.9-7d4cb597dc-d2f51589ca.zip/node_modules/debug/",\
@@ -1812,6 +1835,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["autoprefixer", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:10.4.13"],\
             ["axios", "npm:0.21.4"],\
             ["date-fns", "npm:2.29.3"],\
+            ["date-fns-tz", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:2.0.0"],\
             ["eslint", "npm:8.30.0"],\
             ["eslint-config-prettier", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:8.5.0"],\
             ["eslint-plugin-vue", "virtual:7e38da2a340bd2f7767b83288df245ef62247b4aa40370d73bdce4049b4c365dcd164d9085e3e2b0b55090a5829760d815578934991f69b4197587100f2e660f#npm:9.8.0"],\

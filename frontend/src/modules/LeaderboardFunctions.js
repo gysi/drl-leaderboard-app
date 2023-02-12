@@ -1,4 +1,5 @@
 import {formatDuration, intervalToDuration} from "date-fns";
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 function backGroundColorByPosition(position){
   if (position > 75) {
@@ -67,4 +68,26 @@ function getDateDifference(dateString) {
   return formatDuration(duration, { format: units }) + ' ago';
 }
 
-export { backGroundColorByPosition, formatMilliSeconds, getDateDifference, substractAndformatMilliSeconds }
+function getDateDifferenceToNowByGermanTimezone(dateString) {
+  if(!dateString) return '';
+  let germanToUtcDate = zonedTimeToUtc(dateString, 'Europe/Berlin');
+  let duration = intervalToDuration({
+    start: germanToUtcDate,
+    end: new Date()
+  });
+  let units = [];
+  if(duration.months > 0 ){
+    units.push('months');
+  } else if(duration.days > 0 ){
+    units.push('days');
+  } else if(duration.hours > 0 ){
+    units.push('hours');
+  } else if(duration.minutes > 0 ){
+    units.push('minutes');
+  } else {
+    units.push('seconds');
+  }
+  return formatDuration(duration, { format: units }) + ' ago';
+}
+
+export { backGroundColorByPosition, formatMilliSeconds, getDateDifference, substractAndformatMilliSeconds, getDateDifferenceToNowByGermanTimezone }

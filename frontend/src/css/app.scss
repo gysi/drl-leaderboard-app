@@ -91,6 +91,11 @@ $dark-accent4-color: 217, 205, 205;
   --app-slotmachine-arm-base-gradient-bottom-color: #{$dark-primary};
   --app-slotmachine-card-border-color: #{$dark-accent2};
   --app-slotmachine-table-td-text-color: #{$dark-white};
+
+  --app-dialog-news-content-header-background-color: #{$dark-primary};
+  --app-dialog-news-content-header-text-color: #{$dark-white};
+  --app-dialog-news-content-background-color: #{$dark-secondary};
+  --app-dialog-news-content-text-color: #{$dark-white};
 }
 
 $light-primary: #491d5d;
@@ -181,6 +186,11 @@ body {
   --app-slotmachine-arm-base-gradient-bottom-color: #{$light-primary};
   --app-slotmachine-card-border-color: #{$light-accent2};
   --app-slotmachine-table-td-text-color: #{$light-dark};
+
+  --app-dialog-news-content-header-background-color: #{$light-secondary};
+  --app-dialog-news-content-header-text-color: #{$light-white};
+  --app-dialog-news-content-background-color: #{$light-light};
+  --app-dialog-news-content-text-color: #{$light-dark};
 
   background: var(--app-background-color);
   color: var(--app-text-color);
@@ -367,6 +377,20 @@ body {
 
   .q-table__linear-progress {
     color: var(--app-table-loadingbar-color) !important;
+  }
+
+  .dialog-news {
+    .q-dialog__backdrop {
+      background-color: rgba(0, 0, 0, 0.7) !important;
+    }
+    .dialog-news-content-header {
+      background-color: var(--app-dialog-news-content-header-background-color) !important;
+      color: var(--app-dialog-news-content-header-text-color) !important;
+    }
+    .dialog-news-content {
+      background-color: var(--app-dialog-news-content-background-color) !important;
+      color: var(--app-dialog-news-content-text-color) !important;
+    }
   }
 }
 
