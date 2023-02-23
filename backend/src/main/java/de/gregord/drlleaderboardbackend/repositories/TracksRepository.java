@@ -21,6 +21,15 @@ public interface TracksRepository extends JpaRepository<Track, Long> {
     @Cacheable(value = "tracks", key = "#type")
     <T> List<T> findBy(Sort sort, Class<T> type);
 
+    @Cacheable(value = "parentCategories")
+    @Query(value = """
+            SELECT
+                DISTINCT t.parent_category as parentCategory
+            FROM tracks t
+            ORDER BY t.parent_category
+            """, nativeQuery = true)
+    List<String> findDistinctByParentCategory();
+
     @Query(value = """
             SELECT
                 t.id as id,

@@ -20,7 +20,9 @@
     >
       <template v-slot:top-left>
         <div class="row">
-          <div class="q-table__title">Overall Rankings</div>
+          <div class="q-table__title">Rankings</div>
+          <q-select v-model="selectedParentCategory" :options="parentCategories"
+                    filled label="Category" class="q-ml-md" style="width: 250px"></q-select>
           <PlayerSearchSelect @onPlayerSelected="onPlayerSelected"/>
         </div>
       </template>
@@ -110,15 +112,23 @@ export default defineComponent({
       ],
       rows: [],
       loading: false,
-      selectedPlayer: null
+      selectedPlayer: null,
+      parentCategories: [],
+      selectedParentCategory: 'Overall',
     }
   },
-
+  watch: {
+    selectedParentCategory(newCategory) {
+      this.fetchData(newCategory);
+    }
+  },
   methods: {
-    async fetchData() {
+    async fetchData(parentCategory) {
       this.loading = true;
       try {
-        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overall-ranking?page=1&limit=500');
+        const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/overall-ranking?page=1&limit=500'
+          + (parentCategory !== 'Overall' && parentCategory != null ? `&parentCategory=${parentCategory.toUpperCase()}` : '')
+        );
         this.rows = response.data.map((row) => {
           if(row['profileThumb'].includes('placeholder.png')){
             row['profileThumb'] = placeholder;
@@ -137,10 +147,26 @@ export default defineComponent({
       const row = this.rows.find(row => row['playerName'] === playerName);
       this.$refs.overallTable.scrollTo(row['position'], 'center-force');
     },
+    async fetchParentCategories() {
+      const response = await axios.get(process.env.DLAPP_API_URL+'/tracks/parent-categories')
+      this.parentCategories = ['Overall', ...response.data.map((category) => {
+        return this.convertParentCategoryString(category);
+      })];
+    },
+    convertParentCategoryString(str) {
+      let words = str.toLowerCase().split(' ');
+
+      for (let i = 0; i < words.length; i++) {
+        words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+      }
+
+      return words.join(' ');
+    },
     formatMilliSeconds, backGroundColorByPosition, getDateDifference
   },
   created() {
     this.fetchData();
+    this.fetchParentCategories();
   },
   mounted() {
   },
