@@ -86,8 +86,8 @@ const linksList = [
     link: '/tracks'
   },
   {
-    title: 'Overall Rankings',
-    caption: 'Overall rankings of all tracks',
+    title: 'Rankings',
+    caption: 'Player rankings by category',
     icon: 'leaderboard', // sports_score as alternative
     link: '/overall-rankings'
   },
@@ -202,11 +202,6 @@ export default defineComponent({
   background-repeat: no-repeat;
   background-size: 1.5rem;
   background-origin: border-box;
-}
-
-.q-field--filled .q-field__control {
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
 }
 
 .my-sticky-header-table {

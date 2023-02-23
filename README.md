@@ -54,6 +54,7 @@ Webapp for displaying DRL Simulator leaderboards.
     * [ ] Custom scrollbars
       * https://binaryify.github.io/vue-custom-scrollbar/en/#why-use-vue-custom-scrollbar (all browsers)
       * https://codepen.io/Hawkeye64/pen/bGRXBOY?editors=1100 (only webkit)
+    * [ ] Customize Styling / Theme 
   * [ ] Features
     * Home
       * [x] ~~Latest Player activity~~
@@ -76,13 +77,14 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Avg Position~~
       * [ ] Latest Activty (track)
       * [x] ~~Ability to scroll to a player (perhaps also from an external link)~~
-      * [ ] Additional leaderboards for parent categories
+      * [x] ~~Additional leaderboards for parent categories~~
     * [ ] Track rankings
       * [x] ~~Basic map rankings~~
       * [x] ~~Search should also search in parent categories~~
       * [ ] Display map image to the left of the input when something is selected (+ text overlay name, map, category)
       * ??? More stuff
       * [ ] Ability to scroll to a player (perhaps also from an external link)
+      * [ ] Remember last state (filter)
     * [ ] Player rankings
       * [x] ~~Basic player rankings~~
       * [x] ~~List not finished tracks~~
@@ -93,6 +95,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Adds a "?" icon to the points column header which links to the FAQ Section~~
       * [ ] General statistics on the top of the page/table-header
       * [x] ~~Make the "beaten by" column also sortable.~~
+      * [ ] Remember last state (filter, compare filter)
     * [x] ~~SLOTMACHINE!!!~~
       * ~~Maybe take 10 lastest improved tracks, 10 highest position, 10 of most by beaten entries etc. and then take a random one. Display it like a slotmachine.~~
       * ~~Could be a new entry within the navbar which then renders an overlay with a playersearch bar and a slotmachine~~

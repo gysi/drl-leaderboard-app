@@ -37,6 +37,12 @@ public class TrackController {
         return ResponseEntity.ok(all);
     }
 
+    @GetMapping("/parent-categories")
+    public ResponseEntity<List<String>> parentCategories() {
+        List<String> parentCategories = tracksRepository.findDistinctByParentCategory();
+        return ResponseEntity.ok(parentCategories);
+    }
+
     @GetMapping("/missing-tracks-by-playername")
     public ResponseEntity<List<LeaderboardByPlayerView.LeaderboardByPlayerView_Track>> missingTracksByPlayerName(@RequestParam String playerName) {
         List<LeaderboardByPlayerView.LeaderboardByPlayerView_Track> players = tracksRepository.findMissingTracksByPlayerName(playerName);

@@ -48,10 +48,11 @@ public class LeaderboardController {
 
     @GetMapping("/overall-ranking")
     public ResponseEntity<List<OverallRankingView>> getOverallRanking(
+            @RequestParam(required = false) Optional<String> parentCategory,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "50") int limit
     ) throws Exception {
-        List<OverallRankingView> overallRanking = leaderboardService.getOverallRanking(page, limit);
+        List<OverallRankingView> overallRanking = leaderboardService.getOverallRanking(parentCategory, page, limit);
         return ResponseEntity.ok(overallRanking);
     }
 

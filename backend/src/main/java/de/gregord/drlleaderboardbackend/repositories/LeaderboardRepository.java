@@ -46,16 +46,19 @@ WITH overall_ranking as (SELECT player_name              as playerName,
                                 min(flag_url)            as flagUrl,
                                 min(profile_platform) as profilePlatform,
                                 min(profile_thumb)       as profileThumb
-                         FROM leaderboards l
-                         where is_invalid_run = false
+                         FROM leaderboards l left join tracks t on t.id = l.track_id
+                         where is_invalid_run = false and
+                            (:parentcategory is null or t.parent_category = :parentcategory)
                          group by player_name
                          order by sum(points) desc
                          limit :limit OFFSET :offset),
      invalid_runs AS (SELECT l.player_name,
-                             COALESCE(count(*), 0) as invalid_runs
-                      FROM leaderboards l
-                               left join overall_ranking ovr on l.player_name = ovr.playerName
-                      WHERE l.is_invalid_run = true
+                        COALESCE(count(*), 0) as invalid_runs
+                      FROM leaderboards l 
+                        left join tracks t on t.id = l.track_id
+                        left join overall_ranking ovr on l.player_name = ovr.playerName
+                      WHERE l.is_invalid_run = true and
+                        (:parentcategory is null or t.parent_category = :parentcategory)
                       GROUP BY l.player_name)
 SELECT ROW_NUMBER() OVER (ORDER BY totalPoints DESC)                                                 as position,
        playerName,
@@ -71,7 +74,7 @@ SELECT ROW_NUMBER() OVER (ORDER BY totalPoints DESC)                            
        profileThumb
 from overall_ranking ovr;
             """, nativeQuery = true)
-    List<OverallRankingView> getOverallRanking(@Param("limit") int limit, @Param("offset") int offset);
+    List<OverallRankingView> getOverallRanking(@Param("parentcategory") Optional<String> parentCategory, @Param("limit") int limit, @Param("offset") int offset);
 
     //    @Query("""
 //        SELECT l

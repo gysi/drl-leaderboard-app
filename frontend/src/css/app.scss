@@ -258,6 +258,10 @@ body {
       .q-field__input {
         color: var(--app-select-text-color) !important;
       }
+
+      .q-field__control {
+        color: var(--app-select-text-color) !important;
+      }
     }
   }
 
@@ -286,6 +290,10 @@ body {
     }
     .q-item__label--caption {
       color: var(--app-select-dropdown-label-caption-text-color) !important;
+    }
+    .q-item--active {
+      color: var(--app-select-dropdown-label-text-active-color) !important;
+      background: rgb(224, 224, 224);
     }
     .q-item--active .q-item__label {
       color: var(--app-select-dropdown-label-text-active-color) !important;
@@ -327,6 +335,16 @@ body {
     .q-field__input {
       color: var(--app-select-text-color) !important;
     }
+  }
+
+  .q-field__control {
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+  }
+
+  .q-field--filled .q-field__control {
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
   }
 
   .slotmachine-page {

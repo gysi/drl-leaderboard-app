@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LeaderboardService {
@@ -60,10 +61,10 @@ public class LeaderboardService {
         leaderboardRepository.deleteAll(leaderboardEntries);
     }
 
-    public List<OverallRankingView> getOverallRanking(int page, int limit) throws Exception {
+    public List<OverallRankingView> getOverallRanking(Optional<String> parentCategory, int page, int limit) throws Exception {
         if (page < 1) throw new Exception("Page must be greater than 0");
         if (limit < 1) throw new Exception("Limit must be greater than 0");
         int offset = (page - 1) * limit;
-        return leaderboardRepository.getOverallRanking(limit, offset);
+        return leaderboardRepository.getOverallRanking(parentCategory, limit, offset);
     }
 }
