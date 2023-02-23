@@ -103,6 +103,10 @@ Webapp for displaying DRL Simulator leaderboards.
       * [x] ~~Point system explanation~~
       * [x] ~~Invalid runs explanation~~
       * [x] ~~"Beaten by" column explanation~~
+      * [ ] My time is not on the leaderboard but I just put up a time
+      * [ ] My placement doesn't match with the leadeboard
       * ??? More stuff
+    * [ ] Tournaments
+      * [ ] Point system like Grim is doing
     * [ ] A feature that would fetch the replay from DRL and display the raceline in 3D and compare it to other players for a track 
 
