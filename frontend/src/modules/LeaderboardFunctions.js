@@ -26,7 +26,7 @@ function backGroundColorByPosition(position){
   return 'rgba(180,135,22)'; //rgb(236,160,28)
 }
 
-function formatMilliSeconds(milliseconds){
+function formatMilliSeconds(milliseconds, addPlusSign = false) {
   let isNegative = false;
   if(milliseconds < 0 ) {
     isNegative = true;
@@ -40,11 +40,11 @@ function formatMilliSeconds(milliseconds){
     seconds = seconds.substring(1);
   }
   let millis = date.getUTCMilliseconds().toString().padStart(3, '0');
-  return `${isNegative ? '-' : ''}${hours > 0 ? hours + ':' : ''}${minutes > 0 || hours > 0 ? minutes + ':' : ''}${seconds > 0 || minutes > 0 || hours > 0 ? seconds : '0'}.${millis}`;
+  return `${isNegative ? '- ' : addPlusSign ? '+ ' : ''}${hours > 0 ? hours + ':' : ''}${minutes > 0 || hours > 0 ? minutes + ':' : ''}${seconds > 0 || minutes > 0 || hours > 0 ? seconds : '0'}.${millis}`;
 }
 
 function substractAndformatMilliSeconds(millisecondsHigher, millisecondsLower){
-  return formatMilliSeconds(millisecondsHigher - millisecondsLower);
+  return formatMilliSeconds(millisecondsHigher - millisecondsLower, true);
 }
 
 function getDateDifference(dateString) {

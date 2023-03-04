@@ -51,7 +51,7 @@
             </q-markup-table>
           </div>
           <span>The final score is then raised to the power of <b>1.1</b></span>
-          <div>Here are some expamles:</div>
+          <div>Here are some examples:</div>
           <div>
             <q-markup-table class="q-ma-sm">
               <thead>
