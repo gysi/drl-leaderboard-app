@@ -398,13 +398,18 @@ export default defineComponent({
     },
     mergeComparePlayers(comparePlayers){
       if(!comparePlayers) return;
+      let offset = 0;
       for (let rowI = 0; rowI < this.rows.length; rowI++) {
         if(!this.rows[rowI]['compare']){
           this.rows[rowI]['compare'] = {};
         }
+        if(rowI > 0 && this.rows[rowI].track.id === this.rows[rowI-1].track.id){
+          offset++;
+        }
+        if(this.rows[rowI].isInvalidRun) continue;
         for (let compareI = 0; compareI < comparePlayers.length; compareI++) {
           this.rows[rowI]['compare'][comparePlayers[compareI]] =
-            this.compareSelect.rowsByPlayer[comparePlayers[compareI]][rowI].score
+            this.compareSelect.rowsByPlayer[comparePlayers[compareI]][rowI-offset].score
         }
       }
     },
