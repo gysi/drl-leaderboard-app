@@ -236,13 +236,15 @@ public class LeaderboardUpdater {
                     leaderboardEntry.setIsInvalidRun(false);
                     if (alreadyFoundPlayerNames.containsKey(leaderboardEntry.getPlayerName())) {
                         LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerNames.get(leaderboardEntry.getPlayerName());
-                        LOG.warn("Playername " + leaderboardEntry.getPlayerName() + " (" + leaderboardEntry.getPlayerId() + ") already exists in this leaderboard (" + alreadyExistingEntry.getPlayerId() + ")");
-                        leaderboardEntry.setIsInvalidRun(true);
-                        leaderboardEntry.setInvalidRunReason(
-                                (leaderboardEntry.getInvalidRunReason() == null) ?
-                                        InvalidRunReasons.BETTER_ENTRY_WITH_SAME_NAME.toString() :
-                                        leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.BETTER_ENTRY_WITH_SAME_NAME
-                        );
+                        if(!alreadyExistingEntry.getIsInvalidRun()) {
+                            LOG.warn("Playername " + leaderboardEntry.getPlayerName() + " (" + leaderboardEntry.getPlayerId() + ") already exists in this leaderboard (" + alreadyExistingEntry.getPlayerId() + ")");
+                            leaderboardEntry.setIsInvalidRun(true);
+                            leaderboardEntry.setInvalidRunReason(
+                                    (leaderboardEntry.getInvalidRunReason() == null) ?
+                                            InvalidRunReasons.BETTER_ENTRY_WITH_SAME_NAME.toString() :
+                                            leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.BETTER_ENTRY_WITH_SAME_NAME
+                            );
+                        }
                     }
                     if (leaderboardEntry.getTopSpeed() > 104) {
                         Double customTopSpeed = customTopSpeeds.get(track.getGuid());
@@ -267,13 +269,16 @@ public class LeaderboardUpdater {
                     }
                     if (doubleAccountMatchingMap.containsKey(leaderboardEntry.getPlayerId())) {
                         if (alreadyFoundPlayerIds.containsKey(doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId()))) {
-                            LOG.warn("Player " + leaderboardEntry.getPlayerId() + " is a double account of " + doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId()) + " and already exists in this leaderboard");
-                            leaderboardEntry.setIsInvalidRun(true);
-                            leaderboardEntry.setInvalidRunReason(
-                                    (leaderboardEntry.getInvalidRunReason() == null) ?
-                                            InvalidRunReasons.BETTER_ENTRY_WITH_KNOWN_DOUBLE_ACCOUNT.toString() :
-                                            leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.BETTER_ENTRY_WITH_KNOWN_DOUBLE_ACCOUNT
-                            );
+                            LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerIds.get(doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId()));
+                            if(!alreadyExistingEntry.getIsInvalidRun()) {
+                                LOG.warn("Player " + leaderboardEntry.getPlayerId() + " is a double account of " + doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId()) + " and already exists in this leaderboard");
+                                leaderboardEntry.setIsInvalidRun(true);
+                                leaderboardEntry.setInvalidRunReason(
+                                        (leaderboardEntry.getInvalidRunReason() == null) ?
+                                                InvalidRunReasons.BETTER_ENTRY_WITH_KNOWN_DOUBLE_ACCOUNT.toString() :
+                                                leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.BETTER_ENTRY_WITH_KNOWN_DOUBLE_ACCOUNT
+                                );
+                            }
                         }
                     }
 
