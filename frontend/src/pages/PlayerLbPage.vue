@@ -167,7 +167,7 @@
                   >
                     <template v-slot:body-cell-scoreDiff="props2">
                       <td v-bind="props" class="text-right">
-                        {{ this.substractAndformatMilliSeconds(props.row.score, props2.row.score) }}
+                        {{ this.substractAndformatMilliSeconds(props2.row.score, props.row.score) }}
                       </td>
                     </template>
                   </q-table>
@@ -181,7 +181,7 @@
                   {{ props.row.compare[col.label] != null && props.row.score != null ? this.substractAndformatMilliSeconds(props.row.compare[col.label],props.row.score) : '' }}
                 </div>
               </div>
-<!-- compare end this.substractAndformatMilliSeconds(props.row.score, props.row[col.name]) : ''-->
+<!-- compare end -->
               {{ col.name !== 'track' && col.name !== 'beatenBy' && !col.name.startsWith('compare') ? col.value : '' }}
             </q-td>
           </q-tr>
@@ -305,7 +305,7 @@ export default defineComponent({
       this.rows = rows;
       this.mergeComparePlayers(this.compareSelect.currentSelectedPlayers);
     },
-    async fetchData(player) {
+    async fetchData(player, ignoreDoubleTrackEntries = false) {
       if(!player){
         return [];
       }
@@ -323,6 +323,19 @@ export default defineComponent({
         let j = 0;
         while (i < finishedTracks.length && j < missingTracks.length) {
           if (compareTracks(finishedTracks[i].track, missingTracks[j])){
+            if(ignoreDoubleTrackEntries && i < finishedTracks.length - 1) {
+              let after = finishedTracks[i + 1];
+              if(after.track.id === finishedTracks[i].track.id){
+                if(finishedTracks[i].isInvalidRun){
+                  i++;
+                  continue;
+                } else {
+                  newArray.push(finishedTracks[i]);
+                  i = i + 2;
+                  continue;
+                }
+              }
+            }
             newArray.push(finishedTracks[i]);
             i++;
           } else {
@@ -362,7 +375,7 @@ export default defineComponent({
       if(newPlayers.length > 0) {
         let promises = [];
         newPlayers.forEach(p => {
-          promises.push(this.fetchData(p).then(rows => {
+          promises.push(this.fetchData(p, true).then(rows => {
             this.compareSelect.rowsByPlayer[p] = rows;
           }))
         });
