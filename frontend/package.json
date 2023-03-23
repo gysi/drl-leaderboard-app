@@ -1,7 +1,7 @@
 {
   "name": "drl-leaderboard-frontend",
   "packageManager": "yarn@3.3.1",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "🚀 Awesome 🛩️ DRL Leaderboard 🏆 Webapp by gysi 🥇🥈🥉",
   "productName": "🏆 DRL Leaderboards 🏆",
   "author": "Gregor Dieter <github@i337.de>",
