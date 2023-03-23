@@ -160,6 +160,14 @@
           upload, wait for about 5-10 seconds on the first screen after your run. This will give the
           game enough time to upload the replay.
         </p>
+        <div>
+          <b>EPIC_BUG</b>
+        </div>
+        <p>
+          There is currently a bug on the epic platform that can mark a run as completed when the player
+          has not completed the course, resulting in a 1st place ranking and a huge time difference to the
+          2nd place ranking.
+        </p>
       </FAQCard>
       <FAQCard
         :msnry="msnry"

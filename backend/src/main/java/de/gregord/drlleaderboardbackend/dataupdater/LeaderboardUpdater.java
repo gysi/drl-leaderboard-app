@@ -231,7 +231,6 @@ public class LeaderboardUpdater {
                     leaderboardEntry.setTopSpeed((Double) drlLeaderboardEntry.get("top-speed"));
                     leaderboardEntry.setReplayUrl((String) drlLeaderboardEntry.get("replay-url"));
                     leaderboardEntry.setCreatedAt(LocalDateTime.from(ZonedDateTime.parse((String) drlLeaderboardEntry.get("created-at"))));
-                    leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
                     leaderboardEntry.setInvalidRunReason(null);
                     leaderboardEntry.setIsInvalidRun(false);
                     if (alreadyFoundPlayerNames.containsKey(leaderboardEntry.getPlayerName())) {
@@ -282,6 +281,27 @@ public class LeaderboardUpdater {
                         }
                     }
 
+                    // Epic bug
+                    if(leaderboardPosition == 2){
+                        Optional<LeaderboardEntry> invalidEntryOpt = leaderboardEntryEntriesToBeSaved.stream()
+                                .filter(lbe -> lbe.getPosition() == 1)
+                                .filter(lbe -> !lbe.getIsInvalidRun())
+                                .filter(lbe -> leaderboardEntry.getScore() - lbe.getScore() >= 2000).findAny();
+                        if(invalidEntryOpt.isPresent()) {
+                            LeaderboardEntry invalidEntry = invalidEntryOpt.get();
+                            LOG.warn("Player " + invalidEntry.getPlayerName()
+                                + " has the strange epic bug (position 1 and very low time compared to position 2");
+                            invalidEntry.setIsInvalidRun(true);
+                            invalidEntry.setInvalidRunReason(
+                                        (invalidEntry.getInvalidRunReason() == null) ?
+                                                InvalidRunReasons.EPIC_BUG.toString() :
+                                                invalidEntry.getInvalidRunReason() + "," + InvalidRunReasons.EPIC_BUG
+                            );
+                            leaderboardPosition--;
+                        }
+                    }
+
+                    leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
                     leaderboardEntry.setPosition(leaderboardPosition);
                     if (!leaderboardEntry.getIsInvalidRun()) {
                         leaderboardPosition++;
