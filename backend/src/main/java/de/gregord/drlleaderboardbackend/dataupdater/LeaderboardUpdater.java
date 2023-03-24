@@ -284,9 +284,10 @@ public class LeaderboardUpdater {
                     // Epic bug
                     if(leaderboardPosition == 2){
                         Optional<LeaderboardEntry> invalidEntryOpt = leaderboardEntryEntriesToBeSaved.stream()
+                                .filter(lbe -> lbe.getProfilePlatform().equals("Epic"))
                                 .filter(lbe -> lbe.getPosition() == 1)
                                 .filter(lbe -> !lbe.getIsInvalidRun())
-                                .filter(lbe -> leaderboardEntry.getScore() - lbe.getScore() >= 2000).findAny();
+                                .filter(lbe -> leaderboardEntry.getScore() - lbe.getScore() >= 3000).findAny();
                         if(invalidEntryOpt.isPresent()) {
                             LeaderboardEntry invalidEntry = invalidEntryOpt.get();
                             LOG.warn("Player " + invalidEntry.getPlayerName()
