@@ -37,7 +37,7 @@
                   <q-badge class="track-chip-map">{{ props.row.mapName }}</q-badge>
                 </q-item-label>
                 <q-item-label caption>
-                  <q-badge class="track-chip-parentcategory">{{ props.row.parentCategory }}{{consoleRef.log("test")}}</q-badge>
+                  <q-badge class="track-chip-parentcategory">{{ props.row.parentCategory }}</q-badge>
                 </q-item-label>
               </q-item-section>
             </q-item>
