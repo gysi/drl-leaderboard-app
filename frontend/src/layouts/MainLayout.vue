@@ -182,6 +182,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.q-drawer {
+  .q-item__section--side {
+    padding-right: 16px;
+  }
+  .q-item__section--avatar {
+    min-width: unset;
+  }
+}
 .first-place {
   background-image: url('assets/gold-medal.svg');
 }
