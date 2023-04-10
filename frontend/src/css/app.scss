@@ -43,9 +43,11 @@ $dark-accent4-color: 217, 205, 205;
   --app-table-column-header-background-color: #{$dark-secondary};
   --app-table-content-text-color: #{$dark-white};
   --app-table-loadingbar-color: #{$light-info};
+
   --app-select-text-color: #{$dark-white};
   --app-select-chip-background-color: #{$dark-accent2};
   --app-select-chip-text-color: #{$dark-dark};
+  --app-select-marginal-color: rgba(255, 255, 255, 0.54);
   --app-select-dropdown-background-color: #{$dark-primary};
   --app-select-dropdown-text-color: #{$dark-white};
   --app-select-dropdown-label-text-color: #{$dark-white};
@@ -141,6 +143,7 @@ body {
   --app-select-text-color: #{$light-white};
   --app-select-chip-background-color: #{$light-light};
   --app-select-chip-text-color: #{$light-dark};
+  --app-select-marginal-color: rgba(255, 255, 255, 0.54);
   --app-select-dropdown-background-color: #{$light-primary};
   --app-select-dropdown-text-color: #{$light-light};
   --app-select-dropdown-label-text-color: #{$light-light};
@@ -334,6 +337,10 @@ body {
 
     .q-field__input {
       color: var(--app-select-text-color) !important;
+    }
+
+    .q-field__marginal {
+      color: var(--app-select-marginal-color) !important;
     }
   }
 
