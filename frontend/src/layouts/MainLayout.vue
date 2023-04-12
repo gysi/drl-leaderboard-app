@@ -110,6 +110,13 @@ const linksList = [
     link: '/worst-tracks-picker'
   },
   {
+    title: 'Replay Viewer',
+    caption: 'Analyse and compare replays',
+    icon: 'visibility',
+    link: '/replay-viewer',
+    badge: 'PREVIEW'
+  },
+  {
     title: 'FAQ',
     caption: 'Frequently asked questions',
     icon: 'help',
