@@ -110,6 +110,13 @@ const linksList = [
     link: '/worst-tracks-picker'
   },
   {
+    title: 'Replay Viewer',
+    caption: 'Analyse and compare replays',
+    icon: 'visibility',
+    link: '/replay-viewer',
+    badge: 'PREVIEW'
+  },
+  {
     title: 'FAQ',
     caption: 'Frequently asked questions',
     icon: 'help',
@@ -182,6 +189,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.q-drawer {
+  .q-item__section--side {
+    padding-right: 16px;
+  }
+  .q-item__section--avatar {
+    min-width: unset;
+  }
+}
 .first-place {
   background-image: url('assets/gold-medal.svg');
 }

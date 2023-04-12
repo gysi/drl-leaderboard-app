@@ -14,63 +14,14 @@
       bordered
     >
       <template v-slot:top-left>
-        <img v-if="searchText?.mapName != null"
+        <img v-if="selectedTrack?.mapName != null"
              loading="lazy"
              class="animated-background-image"
              style="mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 160px, rgba(0,0,0,1));"
-             :src="`/maps/map-${searchText.mapName.toLowerCase().replaceAll(/[. ]/g, '-')}-fs8.png`" />
+             :src="`/maps/map-${selectedTrack.mapName.toLowerCase().replaceAll(/[. ]/g, '-')}-fs8.png`" />
         <div class="row" style="overflow: hidden; position: relative; padding: 12px 16px;">
-
           <div class="q-table__title">Track Rankings</div>
-          <q-select
-            ref="trackselect"
-            filled
-            v-model="searchText"
-            use-input
-            autofocus
-            input-debounce="150"
-            :options="searchResults"
-            @filter="search"
-            @new-value="onEnterPressed"
-            @update:model-value="fetchData"
-            style="width: 350px"
-            class="q-ml-md"
-            use-chips
-            label="Enter track name"
-          >
-            <template v-slot:selected-item="props">
-              <q-chip
-                v-if="props.selected"
-                :key="props.selected"
-                :value="props.selected"
-                removable
-                @remove="() => { searchText = null }">{{ props.opt.name }}</q-chip>
-            </template>
-            <template v-slot:option="props">
-              <q-item
-                v-bind="props.itemProps"
-                clickable
-                :active="props.selected"
-                :style="props.selected ? 'background: #e0e0e0' : ''"
-                @update:model-value="props.toggleOption(props.opt)"
-              >
-                <q-item-section>
-                  <q-item-label><span v-html="this.highlightBySubstrings(this.currentSearchPartsForHighlight, props.opt.name)"></span></q-item-label>
-                  <q-item-label caption><span v-html="this.highlightBySubstrings(this.currentSearchPartsForHighlight, props.opt.mapName)"></span></q-item-label>
-                  <q-item-label caption ><span v-html="this.highlightBySubstrings(this.currentSearchPartsForHighlight, props.opt.parentCategory)"></span></q-item-label>
-                </q-item-section>
-              </q-item>
-            </template>
-            <template v-slot:no-option>
-              <q-item
-                @click="fetchData"
-              >
-                <q-item-section class="text-grey">
-                  No results
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
+          <TracksSearchSelect @track-selected="onTrackSelection" />
         </div>
       </template>
       <template v-slot:header-cell-points="props">
@@ -138,27 +89,14 @@
 import { defineComponent } from 'vue'
 import axios from 'axios';
 import {backGroundColorByPosition, formatMilliSeconds, getDateDifference} from "src/modules/LeaderboardFunctions";
+import TracksSearchSelect from "components/TracksSearchSelect.vue";
 
 export default defineComponent({
   name: 'TrackLbPage',
-  async created(){
-    let trackId = this.$router.currentRoute.value.query.trackId;
-    await this.fetchTracks();
-    if(!!trackId) {
-      let track = this.tracks.filter(track => track.id === trackId)[0];
-      if(!!track) {
-        this.searchText = track;
-      }
-    }
-    await this.fetchData(this.searchText);
-  },
+  components: {TracksSearchSelect},
   data(){
     return {
-      tracks: [],
-      searchText: null,
-      currentSearchPartsForHighlight: [],
-      searchResults: [],
-      loadingState: true,
+      selectedTrack: null,
       columns: [
         { name: 'position', label: '#', field: 'position' },
         { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
@@ -177,59 +115,15 @@ export default defineComponent({
     }
   },
   methods: {
-    onEnterPressed(val) {
-      this.$refs.trackselect.toggleOption(val);
-    },
-    async fetchTracks(){
-      try {
-        const response = await axios.get(process.env.DLAPP_API_URL+'/tracks');
-        this.tracks = response.data;
-      } catch (error) {
-        console.error(error);
-      } finally {
-      }
-    },
-    search(val, update, abort) {
-      if(!val){
-        this.searchResults = this.tracks;
-      }
-      this.loadingState = true;
-      this.searchResults = [];
-      val = val.toLowerCase().split(' ');
-      this.currentSearchPartsForHighlight = val;
-      this.tracks.filter((track) => {
-        let foundCount = 0;
-        for (let i = 0; i < val.length; i++) {
-          let foundInPart = 0;
-          if(!!track.name && track.name.toLowerCase().indexOf(val[i]) > -1){
-            foundInPart = 1;
-          }
-          if(!!track.mapName && track.mapName.toLowerCase().indexOf(val[i]) > -1){
-            foundInPart = 1;
-          }
-          if(!!track.parentCategory && track.parentCategory.toLowerCase().indexOf(val[i]) > -1){
-            foundInPart = 1;
-          }
-          foundCount += foundInPart;
-        }
-        return foundCount === val.length;
-      }).forEach((track) => {
-        this.searchResults.push(track);
-      });
-      this.loadingState = false;
-      update();
+    onTrackSelection(track) {
+      this.selectedTrack = track;
+      this.fetchData(track);
     },
     async fetchData(track) {
-      console.log("start", new Date().getTime());
       if(!track || !track.id) {
         this.rows = [];
         return;
       }
-      this.$router.replace({
-        query: {
-          trackId: track.id
-        }
-      });
       this.loading = true;
       try {
         const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/bytrack/${track.id}?page=1&limit=100`);
@@ -239,24 +133,9 @@ export default defineComponent({
       } finally {
         this.loading = false;
       }
-      console.log("end", new Date().getTime());
     },
     formatFlagUrl(flagUrl){
       return flagUrl.substring(flagUrl.length-6, flagUrl.length-4);
-    },
-    highlightBySubstrings(searchParts, stringToHighlight){
-      if(!searchParts || searchParts.length === 0 || !stringToHighlight){
-        return stringToHighlight;
-      }
-      let searchPartsRegex = searchParts.filter(part => !!part).join(')|(');
-      if(!searchPartsRegex){
-        return stringToHighlight;
-      }
-      let reg = new RegExp('('+searchPartsRegex+')', 'gi');
-      stringToHighlight = stringToHighlight.replace(reg, function(str) {
-        return '<b class="search-highlight">'+str+'</b>'
-      });
-      return stringToHighlight;
     },
     formatMilliSeconds,
     backGroundColorByPosition,
@@ -305,9 +184,4 @@ tbody .q-item
 
 .q-batch-Xbox
   background-color: rgb(16,120,15)
-
-:deep(.search-highlight)
-  background-color: rgba(255,255,255,0.1)
-  font-weight: 900
-  color: rgba(255,255,255,1)
 </style>
