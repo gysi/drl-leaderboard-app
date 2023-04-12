@@ -37,6 +37,7 @@ app:
     token: "[PASTE YOUR TOKEN HERE]"
     leaderboard-endpoint: "https://api.drlgame.com/leaderboards/?limit=20&game-type=Race&score-type=TimeMin&page={page}&token={token}&diameter=7&custom-physics=false&drl-official=true"
     maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&map-category=MapDRL&map-category=MapMultiGP&map-category=MapDRLSimCup&map-category=MapVirtualSeason&map-category=MapFeatured"
+    map-detail-endpoint: "https://api.drlgame.com/maps/{guid}?token={token}&guid={guid}&root=true"
     # To finish within 10 minutes I need at least 1 request every 0.7 seconds = ~1.43 requests/s
 #    duration-between-requests: 666ms # ~1.5 requests/s # Took 17 Minutes, because prod server is slower than my local machine
     duration-between-requests: 200ms # ~3 requests/s, which isn't really 3 requests/s, because the requests are not parallel and we need to process the data

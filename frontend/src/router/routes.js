@@ -10,7 +10,8 @@ const routes = [
       { name: 'tracklb', path: 'track-lb', component: () => import('pages/TrackLbPage.vue'), props: route => ({ q: route.query.q }) },
       { name: 'playerlb', path: 'player-lb', component: () => import('pages/PlayerLbPage.vue'), props: route => ({ q: route.query.q }) },
       { name: 'faq', path: 'faq', component: () => import('pages/FAQPage.vue') },
-      { name: 'worstTracksPicker', path: 'worst-tracks-picker', component: () => import('pages/WorstTracksPickerPage.vue') }
+      { name: 'worstTracksPicker', path: 'worst-tracks-picker', component: () => import('pages/WorstTracksPickerPage.vue') },
+      { name: 'replayviewer', path: 'replay-viewer', component: () => import('pages/ReplayPage.vue') },
     ]
   },
 

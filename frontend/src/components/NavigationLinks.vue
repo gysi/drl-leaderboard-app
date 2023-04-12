@@ -15,7 +15,7 @@
     </q-item-section>
 
     <q-item-section>
-      <q-item-label>{{ title }}</q-item-label>
+      <q-item-label>{{ title }}<q-badge color="accent" style="margin-left: 5px" v-if="badge" :label="badge" align="top"/></q-item-label>
       <q-item-label caption>{{ caption }}</q-item-label>
     </q-item-section>
   </q-item>
@@ -44,6 +44,10 @@ export default defineComponent({
       default: false
     },
     icon: {
+      type: String,
+      default: ''
+    },
+    badge: {
       type: String,
       default: ''
     }

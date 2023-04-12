@@ -3,14 +3,13 @@ package de.gregord.drlleaderboardbackend.controllers;
 import de.gregord.drlleaderboardbackend.domain.LeaderboardByPlayerView;
 import de.gregord.drlleaderboardbackend.domain.TrackView;
 import de.gregord.drlleaderboardbackend.repositories.TracksRepository;
+import de.gregord.drlleaderboardbackend.services.DRLApiService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -18,14 +17,17 @@ import java.util.List;
 public class TrackController {
 
     private final TracksRepository tracksRepository;
+    private final DRLApiService drlApiService;
     private final ModelMapper modelMapper;
 
     public TrackController(
             ModelMapper modelMapper,
-            TracksRepository tracksRepository
+            TracksRepository tracksRepository,
+            DRLApiService drlApiService
     ) {
         this.modelMapper = modelMapper;
         this.tracksRepository = tracksRepository;
+        this.drlApiService = drlApiService;
     }
 
     @GetMapping
@@ -47,5 +49,11 @@ public class TrackController {
     public ResponseEntity<List<LeaderboardByPlayerView.LeaderboardByPlayerView_Track>> missingTracksByPlayerName(@RequestParam String playerName) {
         List<LeaderboardByPlayerView.LeaderboardByPlayerView_Track> players = tracksRepository.findMissingTracksByPlayerName(playerName);
         return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/details/{trackId}")
+    public ResponseEntity<LinkedHashMap> getMapDetails(@PathVariable String trackId) {
+        LinkedHashMap mapDetails = drlApiService.getMapDetails(trackId);
+        return ResponseEntity.ok(mapDetails);
     }
 }
