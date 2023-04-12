@@ -126,7 +126,7 @@ export default defineComponent({
       }
       this.loading = true;
       try {
-        const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/bytrack/${track.id}?page=1&limit=100`);
+        const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/bytrack/${track.id}?page=1&limit=150`);
         this.rows = response.data;
       } catch (error) {
         console.error(error);
