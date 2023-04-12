@@ -28,6 +28,7 @@ COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
     frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/.yarnrc.yml frontend/index.html frontend/jsconfig.json \
     frontend/package.json frontend/postcss.config.js frontend/quasar.config.js frontend/yarn.lock ./
 
+RUN yarn install
 RUN DLAPP_ENV=STAGING yarn quasar build
 
 FROM node:18-alpine as frontend-builder-prod
@@ -39,6 +40,7 @@ COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
     frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/.yarnrc.yml frontend/index.html frontend/jsconfig.json \
     frontend/package.json frontend/postcss.config.js frontend/quasar.config.js frontend/yarn.lock ./
 
+RUN yarn install
 RUN DLAPP_ENV=PROD yarn quasar build
 
 FROM python:3.11-bullseye as runner
