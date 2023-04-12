@@ -70,6 +70,14 @@ public class LeaderboardController {
         return ResponseEntity.ok(byGuid);
     }
 
+    @GetMapping("/replays/bytrack/{trackId}")
+    public ResponseEntity<List<ReplaysByTrackView>> getReplaysByTrackId(
+            @PathVariable Long trackId
+    ) {
+        List<ReplaysByTrackView> replays = leaderboardRepository.findByTrackIdAndIsInvalidRunFalse(trackId, Sort.by(Sort.Order.asc("position")));
+        return ResponseEntity.ok(replays);
+    }
+
     @GetMapping("/find-players")
     public ResponseEntity<List<String>> findPlayers(@RequestParam String playerName) {
         List<String> players = leaderboardRepository
