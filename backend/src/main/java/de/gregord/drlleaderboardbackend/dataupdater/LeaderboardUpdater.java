@@ -177,7 +177,6 @@ public class LeaderboardUpdater {
             }
             int page = 1;
             int maxEntries = 100;
-            int currentEntries = 0;
             String nextPageUrl = null;
             long leaderboardPosition = 1;
             // <player_id, leaderboard>
@@ -312,15 +311,13 @@ public class LeaderboardUpdater {
                     leaderboardEntryEntriesToBeSaved.add(leaderboardEntry);
                     alreadyFoundPlayerIds.put(leaderboardEntry.getPlayerId(), leaderboardEntry);
                     alreadyFoundPlayerNames.put(leaderboardEntry.getPlayerName(), leaderboardEntry);
-
-                    currentEntries++;
                     currentLeaderboardEntries.remove(leaderboardEntry.getPlayerId());
                 }
 
                 nextPageUrl = (String) paging.get("next-page-url");
                 page++;
                 Thread.sleep(durationBetweenRequests.toMillis());
-            } while (currentEntries < maxEntries && nextPageUrl != null);
+            } while (leaderboardPosition <= maxEntries && nextPageUrl != null);
 
             LOG.info("Saving leaderboard entries for track " + track.getName() + " with map id " + track.getMapId() + " and map name " + track.getMapName());
             leaderboardService.saveAndDeleteLeaderboardEntries(leaderboardEntryEntriesToBeSaved, currentLeaderboardEntries.values());
