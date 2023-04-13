@@ -472,9 +472,10 @@ tbody .td-borders-font-size16 {
 }
 
 .table-with-brackground-image {
-  .q-table__container .q-table__top .q-table-control {
+  .q-table__top .q-table__control {
     width: 100%;
     position: relative;
+    align-items: flex-start !important;
   }
 
   .q-table__top {

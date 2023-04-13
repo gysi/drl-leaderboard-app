@@ -555,9 +555,6 @@
               <div class="text-h6">Initial Release</div>
             </q-card-section>
           </q-card>
-
-
-
         </q-card>
       </q-card>
     </q-dialog>
