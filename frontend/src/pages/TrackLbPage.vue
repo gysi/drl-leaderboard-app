@@ -110,7 +110,7 @@ export default defineComponent({
       rows: [],
       loading: false,
       pagination: {
-        rowsPerPage: 100,
+        rowsPerPage: 0,
       },
     }
   },
