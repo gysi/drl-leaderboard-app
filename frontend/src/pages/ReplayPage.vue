@@ -5,7 +5,7 @@
       :replay-url="state.selectedReplayUrl"
     >
       <template v-slot:header>
-        <div style="position: absolute">
+        <div>
           <TracksSearchSelect
             @track-selected="onTrackSelected"
             class="q-mt-md q-ml-md"

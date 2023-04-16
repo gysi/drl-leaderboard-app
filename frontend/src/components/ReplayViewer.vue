@@ -1,16 +1,21 @@
 <template>
   <div ref="container" class="three-container">
-    <slot name="header"></slot>
+    <div style="position: absolute">
+      <slot name="header"></slot>
+      <div class="q-mt-md q-ml-md"><button>Test</button></div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Text } from 'troika-three-text';
 import axios from 'axios';
 import pako from 'pako';
+import { formatMilliSeconds } from 'src/modules/LeaderboardFunctions.js';
+import {lessThanEqual} from "three/nodes";
 
 const props = defineProps({
   trackId: {
@@ -23,67 +28,78 @@ const props = defineProps({
   }
 });
 
-// // watch trackid and replayUrl
-// watch(() => props.trackId, (val) => {
-//   console.log("replayviewer trackId changed", val);
-//   if(val){
-//     loadReplay()
-//   }
-// });
+let loadingTrackPromise = null;
+watch(() => props.trackId, (val) => {
+  console.log("replayviewer trackId changed", val);
+  if(val){
+    disposeSceneObjects();
+    currentSplineColor = 0;
+    loadingTrackPromise = loadTrack(val);
+  }
+});
 
 watch(() => props.replayUrl, (val) => {
   console.log("replayviewer replayUrl changed", val);
   if(val){
-    for (let i = disposables.length - 1; i >= 0; i--) {
-      disposables[i].dispose();
+    loadReplay(props.trackId, val, splineColors[currentSplineColor]);
+    if(currentSplineColor >= splineColors.length - 1){
+      currentSplineColor = 0;
+    } else {
+      currentSplineColor++;
     }
-    loadReplay(props.trackId, val);
   }
 });
 
 const container = ref(null);
 
+let splineColors = [
+  0x00FF00,
+  0x71bbff,
+  0xff76eb,
+  0xffe54c,
+  0xcffffd,
+];
+let currentSplineColor = 0;
 let renderer, scene, camera, controls;
-const textLabels = [];
-const disposables = [];
+let textLabels = [];
+let textLabels2 = [];
+let disposables = [];
+let sceneObjects = [];
 
 // Function to create text labels
-function createLabel(scene, text, position) {
+function createLabel(scene, text, position, textLabels) {
   const renderedText = new Text();
 
   renderedText.text = text;
   renderedText.color = 0xFFFFFF;
   renderedText.fontSize = 1;
   renderedText.position.set(position.x, position.y, position.z);
-
   textLabels.push(renderedText);
 
+  sceneObjects.push(renderedText);
   scene.add(renderedText);
 }
 
+const defaultCubeGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+const defaultCubeMaterial = new THREE.MeshBasicMaterial({
+  color: 0xff0000,
+  // alpha
+  transparent: true,
+  // opacity
+  opacity: 0.5,
+  side: THREE.BackSide,
+  fog: false,
+});
 function addCubes(color, scene, events, positionExtractor, scalingExtractor = null, rotationExtractor = null){
-  const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-  disposables.push(geometry);
-  const material = new THREE.MeshBasicMaterial({
-    color: color,
-    // alpha
-    transparent: true,
-    // opacity
-    opacity: 0.5,
-    side: THREE.BackSide,
-    fog: false,
-  });
-  disposables.push(material);
-
   events.forEach((event) => {
     let cube;
     if(scalingExtractor != null){
       const [sx, sy, sz] = scalingExtractor(event);
       const customGeometry = new THREE.BoxGeometry(sx, sy, sz)
       disposables.push(customGeometry);
-      cube = new THREE.Mesh(customGeometry, material);
+      cube = new THREE.Mesh(customGeometry, defaultCubeMaterial);
     } else {
-      cube = new THREE.Mesh(geometry, material);
+      cube = new THREE.Mesh(defaultCubeGeometry, defaultCubeMaterial);
     }
     const [z, y, x] = positionExtractor(event);
     cube.position.set(x, y, z);
@@ -100,6 +116,10 @@ function addCubes(color, scene, events, positionExtractor, scalingExtractor = nu
       combinedQuaternion.normalize();
       cube.setRotationFromQuaternion(combinedQuaternion)
     }
+    cube.matrixAutoUpdate = false;
+    cube.updateMatrix();
+
+    sceneObjects.push(cube);
     scene.add(cube);
   });
 }
@@ -112,21 +132,19 @@ function addSplines(color, scene, events, eventPositionExtractor, replayData){
   const dronePosZ = replayData['drone-pz'];
   const points = events.flatMap((event) => {
     let eventSample = event["event-sample"];
-    if (eventSample === 0) {
+    if (eventSample === 0 || event["event-type"] === 7) {
       return [];
     }
     const vectors = [];
-    for (let i = lastEventSample; i <= eventSample; i++) {
+    for (let i = lastEventSample; i < eventSample; i++) {
       vectors.push(new THREE.Vector3(
         dronePosZ[i],
         dronePosY[i],
         dronePosX[i]
       ));
     }
-    const [z, y, x] = eventPositionExtractor(event);
-    // console.log('vectors', vectors);
-    // console.log('checkpoint', new THREE.Vector3(x, y, z));
-    vectors.push(new THREE.Vector3(x, y, z));
+    // const [z, y, x] = eventPositionExtractor(event);
+    // vectors.push(new THREE.Vector3(x, y, z));
     lastEventSample = eventSample;
     return vectors;
   });
@@ -135,29 +153,87 @@ function addSplines(color, scene, events, eventPositionExtractor, replayData){
   const spline = new THREE.CatmullRomCurve3(points);
 
   // Generate a geometry from the spline
-  const geometry = new THREE.BufferGeometry().setFromPoints(spline.getPoints(points.length));
+  // const geometry = new THREE.BufferGeometry().setFromPoints(spline.getPoints(points.length));
+  // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const geometry = new THREE.TubeGeometry( spline, points.length, 0.3, 3, false );
   disposables.push(geometry);
-  const material = new THREE.LineBasicMaterial({ color: color });
+
+  const material = new THREE.MeshStandardMaterial({ color: color, wireframe: false });
+  // const material = new THREE.LineBasicMaterial({ color: color, linewidth: 10 });
+
   disposables.push(material)
   // Create a line using the geometry and material
-  const line = new THREE.Line(geometry, material);
+  // const line = new THREE.Line(geometry, material);
+  const line = new THREE.Mesh(geometry, material);
 
+  line.matrixAutoUpdate = false;
+  line.updateMatrix();
+
+  sceneObjects.push(line);
   scene.add(line);
 }
 
-function addLabels(scene, events, positionExtractor){
-  // Add labels to the events
-  events.forEach((event, index) => {
-    const [z, y, x] = positionExtractor(event);
-    const position = new THREE.Vector3(x, y, z);
-
+function addTrackLabels(scene, checkpoints){
+  // Add labels to the checkpoints
+  checkpoints.forEach((checkpoint, index) => {
+    const position = new THREE.Vector3(checkpoint.position.z, checkpoint.position.y, checkpoint.position.x);
     if (index === 0) {
-      createLabel(scene, "Start", position);
-    } else if (index === events.length - 1) {
-      createLabel(scene, "End", position);
+      createLabel(scene, "Start", position, textLabels);
+    } else if (index === checkpoints.length - 1) {
+      createLabel(scene, "End", position, textLabels);
     } else {
-      createLabel(scene, event["event-time"].toFixed(2), position);
+      createLabel(scene, '#' + (index-1), position, textLabels);
     }
+  });
+}
+
+function addReplayLabels(scene, events, positionExtractor){
+  // Add labels to the events
+  let labelArrayOffset = 0;
+  let offsetAmount = null;
+  let lap = 0;
+  events.forEach((event, index) => {
+    const isLapStart = event["event-type"] === 7;
+    if (isLapStart) lap++;
+
+    // console.log('indexoffset', index, index - (labelArrayOffset + lap))
+    let textLabel = textLabels[index - (labelArrayOffset + lap)];
+    if (textLabel) {
+      const time = formatMilliSeconds(event["event-time"] * 1000);
+      textLabel.text += isLapStart ? ` Lap ${lap}` : `\n${time}`;
+    } else {
+      // console.log('no text label', index);
+    }
+
+    if (isLapStart) {
+      if (offsetAmount === null) {
+        offsetAmount = index - 1;
+      }
+      labelArrayOffset += offsetAmount;
+    }
+
+    // if(index <= 38) {
+    //
+    //   const [z, y, x] = positionExtractor(event);
+    //   const position = new THREE.Vector3(x, y, z);
+    //   if (index === 0) {
+    //     createLabel(scene, "Start", position, textLabels2);
+    //     // } else if (index === events.length - 1) {
+    //     //   createLabel(scene, textLabel, position);
+    //   } else if (event["event-type"] === 7) {
+    //     console.log('lap end2', index)
+    //     let time = formatMilliSeconds(event["event-time"] * 1000);
+    //     let textLabel = '\n\n\n\n_' + time;
+    //     if (isLapStart) {
+    //       textLabel = textLabel + ' ' + 'Lap end';
+    //     }
+    //     createLabel(scene, textLabel, position, textLabels2);
+    //   } else {
+    //     let time = formatMilliSeconds(event["event-time"] * 1000);
+    //     let textLabel = '\n\n\n\n_' + time;
+    //     createLabel(scene, textLabel, position, textLabels2);
+    //   }
+    // }
   });
 }
 
@@ -216,6 +292,9 @@ function extractJSON(str) {
 function createCheckpointsFromTrackDetailData(data){
   const checkPoints = []
   data.root.children.forEach((child) => {
+    // if(child['is-lap-start'] === true || child['is-lap-end'] === true) {
+
+    // }
     if(child['podium-index'] === 0) {
       checkPoints.push({
         position: {
@@ -232,16 +311,18 @@ function createCheckpointsFromTrackDetailData(data){
         index: -1
       })
     } else if(child['gate-index'] != null && child['is-trigger'] === true) {
-      checkPoints.push({
+      // console.log('gate-index', child['gate-index']);
+      // console.log('child', child);
+      let checkpoint = {
         position: {
           x: child['local-position'][0],
           y: child['local-position'][1],
           z: child['local-position'][2]
         },
         scaling: {
-          x: child['local-scale'][0]*3, // scale up a bit to match the size of the checkpoints as close as possible
-          y: child['local-scale'][1]*3,
-          z: child['local-scale'][2]*3
+          x: child['local-scale'][0]*3.1, // scale up a bit to match the size of the checkpoints as close as possible
+          y: child['local-scale'][1]*3.1,
+          z: child['local-scale'][2]*1
         },
         rotation: [
           child['local-rotation'][0],
@@ -250,7 +331,13 @@ function createCheckpointsFromTrackDetailData(data){
           child['local-rotation'][3]
         ],
         index: child['gate-index']
-      })
+      }
+      if(child['module-scale']){ // if module scale is set then multiply the checkpoint scale with it
+        checkpoint.scaling.x *= child['module-scale'][0]*1.3
+        checkpoint.scaling.y *= child['module-scale'][1]*1.3
+        checkpoint.scaling.z *= child['module-scale'][2]
+      }
+      checkPoints.push(checkpoint)
       // console.log('child', child['gate-index'], child);
     }
   });
@@ -329,9 +416,41 @@ function sumMarkerData(markers){
   sumFloatArray(dronePosZ);
 }
 
-const loadReplay = async (trackId, replayUrl) => {
+let checkPoints = [];
+const loadTrack = async (trackId) => {
   const trackDetails = await axios.get(process.env.DLAPP_API_URL+'/tracks/details/'+trackId);
-  const checkPoints = createCheckpointsFromTrackDetailData(trackDetails.data);
+  checkPoints = createCheckpointsFromTrackDetailData(trackDetails.data);
+
+  // Calculate the center of the event positions
+  // console.log("checkPoints", checkPoints)
+  const center = checkPoints.reduce(
+    (acc, event) => {
+      const {x, y, z} = event.position;
+      acc.x += z;
+      acc.y += y;
+      acc.z += x;
+      return acc;
+    },
+    { x: 0, y: 0, z: 0 }
+  );
+  center.x /= checkPoints.length;
+  center.y /= checkPoints.length;
+  center.z /= checkPoints.length;
+
+  camera.position.set(center.x+25, center.y+25, center.z+25);
+  controls.target.set(center.x, center.y, center.z);
+
+  addCubes(0xff0000, scene, checkPoints,
+    (event) => [event.position.x, event.position.y, event.position.z],
+    (event) => [event.scaling.x, event.scaling.y, event.scaling.z],
+    (event) => event.rotation
+  )
+
+  addTrackLabels(scene, checkPoints);
+}
+
+const loadReplay = async (trackId, replayUrl, splineColor) => {
+  await loadingTrackPromise;
   const response = await axios.get(replayUrl, { responseType: 'arraybuffer' });
   const decodedData = new TextDecoder().decode(response.data);
   const replayCheckPointData = extractJSON(decodedData)[0];
@@ -352,44 +471,29 @@ const loadReplay = async (trackId, replayUrl) => {
   });
   let markers = findMarkersAndExtractData(new Uint8Array(response.data));
   sumMarkerData(markers);
+  // console.log("time markers", markers['time']);
 
-  // Calculate the center of the event positions
-  const center = replayCheckPointData.events.reduce(
-    (acc, event) => {
-      const [z, y, x] = event["event-position"];
-      if(acc.x === 0 && acc.y === 0 && acc.z === 0){
-        acc.x = x;
-        acc.y = y;
-        acc.z = z;
-      }else {
-        acc.x += x;
-        acc.y += y;
-        acc.z += z;
-      }
-      return acc;
-    },
-    { x: 0, y: 0, z: 0 }
-  );
-  center.x /= replayCheckPointData.events.length;
-  center.y /= replayCheckPointData.events.length;
-  center.z /= replayCheckPointData.events.length;
-
-  camera.position.set(center.x, center.y, center.z); // 200 is an arbitrary distance from the center
-  camera.lookAt(center.x, center.y, center.z);
-
-  addCubes(0x00ff00, scene, replayCheckPointData.events, (event) => event["event-position"])
-  addCubes(0xff0000, scene, checkPoints,
-    (event) => [event.position.x, event.position.y, event.position.z],
-    (event) => [event.scaling.x, event.scaling.y, event.scaling.z],
-    (event) => event.rotation
-  )
-  addSplines(0x00ff00, scene, replayCheckPointData.events,
+  // addCubes(0x00ff00, scene, replayCheckPointData.events, (event) => event["event-position"])
+  addSplines(splineColor, scene, replayCheckPointData.events,
     (event) => event["event-position"],
     markers
   )
-  addLabels(scene, replayCheckPointData.events, (event) => event["event-position"])
+  addReplayLabels(scene, replayCheckPointData.events, (event) => event["event-position"])
+}
 
-  // animate(scene, camera);
+function disposeSceneObjects() {
+  if(scene == null){
+    return;
+  }
+  disposables.forEach((disposable) => {
+    disposable.dispose();
+  });
+  sceneObjects.forEach((sceneObject) => {
+    scene.remove(sceneObject);
+  });
+  disposables = [];
+  textLabels = []
+  sceneObjects = [];
 }
 
 onMounted(() => {
@@ -399,16 +503,26 @@ onMounted(() => {
 
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
-    75,
+    90,
     container.value.offsetWidth / container.value.offsetHeight,
     0.1,
     1000
   );
 
   controls = new OrbitControls(camera, renderer.domElement);
-  controls.panSpeed = 0.5;
+  controls.panSpeed = 1;
   controls.rotateSpeed = 0.5;
-  controls.zoomSpeed = 1;
+  controls.zoomSpeed = 1.8;
+  controls.minDistance = 8;
+  controls.maxDistance = 1000;
+
+  const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5); // Add ambient light with an intensity of 1
+  scene.add(ambientLight);
+
+  // Create a directional light
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+  directionalLight.position.set(1, 1, 1);
+  scene.add(directionalLight);
 
   animate(scene, camera);
 });

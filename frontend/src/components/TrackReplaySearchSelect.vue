@@ -74,7 +74,7 @@ const state = reactive({
 
 //watch for trackId changes
 watch(() => props.trackId, (val) => {
-  console.log("trackId changed", val);
+  // console.log("trackId changed", val);
   if(val){
     state.searchText = null;
     state.searchResults = null;
@@ -87,13 +87,13 @@ const fetchData = async (trackId) => {
   state.loading = true;
   try {
     const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/replays/bytrack/'+trackId);
-    console.log("fetching data", response.data);
+    // console.log("fetching data", response.data);
     state.replays = response.data;
     state.searchResults = response.data;
   } catch(error) {
     console.error(error);
   } finally {
-    console.log("fetching data done")
+    // console.log("fetching data done")
     state.loading = false;
   }
 }
