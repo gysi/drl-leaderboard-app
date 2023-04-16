@@ -72,6 +72,7 @@ module.exports = configure(function (/* ctx */) {
       // analyze: true,
       env: (function () {
         global_vars = {
+          DLAPP_ENV: process.env.DLAPP_ENV ? process.env.DLAPP_ENV : 'LOCAL',
           DLAPP_SWAGGER_URL_PART: "/swagger-ui.html"
         }
         env_vars = {
