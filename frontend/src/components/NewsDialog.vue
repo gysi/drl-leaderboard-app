@@ -23,6 +23,8 @@
             <q-card-section class="q-py-sm q-pl-lg dialog-news-content">
               <div class="text-h6">Features & Bugfixes (Replay Viewer)</div>
               <ul class="q-my-sm" style="font-size: 1rem">
+                <li>Improved performance of the replay viewer
+                </li>
                 <li>If you select a new track, the old track is now removed from the replay viewer
                 </li>
                 <li>Lines are now thicker and have a depth due to added lightning
