@@ -16,7 +16,7 @@
 <!-- 1.9.0 Release -->
           <q-card>
             <q-card-section class="q-py-none q-px-sm row dialog-news-content-header">
-              <div class="text-h5 q-py-sm">1.8.1 Release</div><q-space />
+              <div class="text-h5 q-py-sm">1.9.0 Release</div><q-space />
               <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2023-04-16 03:00') }}</div>
             </q-card-section>
 
