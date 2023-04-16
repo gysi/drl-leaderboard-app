@@ -10,6 +10,7 @@ server {
     error_log  /var/log/nginx/http-{{ server.hostname }}.error.log warn;
 
     location / {
+        add_header Link "<https://$host$request_uri>; rel=\"canonical\"";
         return 302 https://$host$request_uri;
         #return 200 'Hello World!';
         #add_header Content-Type text/plain;
