@@ -312,6 +312,9 @@ public class LeaderboardUpdater {
                     alreadyFoundPlayerIds.put(leaderboardEntry.getPlayerId(), leaderboardEntry);
                     alreadyFoundPlayerNames.put(leaderboardEntry.getPlayerName(), leaderboardEntry);
                     currentLeaderboardEntries.remove(leaderboardEntry.getPlayerId());
+                    if(leaderboardPosition > maxEntries){
+                        break;
+                    }
                 }
 
                 nextPageUrl = (String) paging.get("next-page-url");
