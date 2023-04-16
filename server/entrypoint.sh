@@ -29,12 +29,20 @@ do
       ./ansible/run_playbook.sh test test playbook_deploy-app.yaml
       shift
       ;;
+    deploy-app-testserver-quick)
+      ./ansible/run_playbook.sh test test playbook_deploy-app-quick.yaml
+      shift
+      ;;
     update-prodserver)
       ./ansible/run_playbook.sh prod2 prod playbook_update-server.yaml
       shift
       ;;
     deploy-app-prodserver)
       ./ansible/run_playbook.sh prod2 prod playbook_deploy-app.yaml
+      shift
+      ;;
+    deploy-app-prodserver-quick)
+      ./ansible/run_playbook.sh prod2 prod playbook_deploy-app-quick.yaml
       shift
       ;;
     *)
