@@ -60,6 +60,7 @@ server {
 
     location / {
         charset utf-8;
+        try_files $uri $uri/ /index.html;
     }
 
     # CSS and Javascript
