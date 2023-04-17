@@ -6,6 +6,7 @@ RUN ./mvnw dependency:resolve
 COPY backend/src ./src
 RUN ./mvnw install spring-boot:repackage
 
+
 FROM alpine:3 as native-image-backend-builder
 WORKDIR /app
 RUN wget https://download.bell-sw.com/vm/22.3.0/bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
@@ -19,29 +20,28 @@ RUN ./mvnw dependency:resolve
 COPY backend/src ./src
 RUN ./mvnw -Pnative native:compile
 
-FROM node:18-alpine as frontend-builder-staging
+
+FROM node:18-alpine as frontend-builder
 WORKDIR /app
 COPY frontend/.yarn .yarn/
+COPY frontend/.yarnrc.yml frontend/package.json frontend/yarn.lock ./
+RUN yarn install
 COPY frontend/public public/
 COPY frontend/src src/
 COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
-    frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/.yarnrc.yml frontend/index.html frontend/jsconfig.json \
-    frontend/package.json frontend/postcss.config.js frontend/quasar.config.js frontend/yarn.lock ./
+    frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/index.html frontend/jsconfig.json \
+    frontend/postcss.config.js frontend/quasar.config.js ./
 
-RUN yarn install
+
+FROM frontend-builder as frontend-builder-staging
+WORKDIR /app
 RUN DLAPP_ENV=STAGING yarn quasar build
 
-FROM node:18-alpine as frontend-builder-prod
-WORKDIR /app
-COPY frontend/.yarn .yarn/
-COPY frontend/public public/
-COPY frontend/src src/
-COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
-    frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/.yarnrc.yml frontend/index.html frontend/jsconfig.json \
-    frontend/package.json frontend/postcss.config.js frontend/quasar.config.js frontend/yarn.lock ./
 
-RUN yarn install
+FROM frontend-builder as frontend-builder-prod
+WORKDIR /app
 RUN DLAPP_ENV=PROD yarn quasar build
+
 
 FROM python:3.11-bullseye as runner
 WORKDIR /

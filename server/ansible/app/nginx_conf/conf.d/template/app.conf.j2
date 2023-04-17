@@ -10,6 +10,7 @@ server {
     error_log  /var/log/nginx/http-{{ server.hostname }}.error.log warn;
 
     location / {
+        add_header Link "<https://$host$request_uri>; rel=\"canonical\"";
         return 302 https://$host$request_uri;
         #return 200 'Hello World!';
         #add_header Content-Type text/plain;
@@ -60,12 +61,15 @@ server {
 
     location / {
         charset utf-8;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        try_files $uri $uri/ /index.html;
     }
 
     # CSS and Javascript
     location ~* \.(?:css|js|woff|woff2)$ {
         expires 1M;
         access_log off;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         add_header Cache-Control "public";
     }
 }

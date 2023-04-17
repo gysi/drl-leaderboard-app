@@ -11,6 +11,50 @@
 
 const { configure } = require('quasar/wrappers');
 const path = require('path');
+const { simpleSitemapAndIndex } = require('sitemap');
+const { sitemapRoutes } = require('./src/router/sitemapRoutes.js');
+const { Readable } = require('stream');
+const ejs = require('ejs');
+const fs = require('fs');
+
+const srcDir = path.join(__dirname, 'src');
+const pubDir = path.join(__dirname, 'public');
+
+function processEJSFiles(dir) {
+  fs.readdirSync(dir).forEach((file) => {
+    const filePath = path.join(dir, file);
+    const fileStat = fs.statSync(filePath);
+
+    if (fileStat.isDirectory()) {
+      // If the current file is a directory, recursively process its contents
+      processEJSFiles(filePath);
+    } else if (path.extname(file) === '.ejs') {
+      // If the current file is an .ejs file, process it using EJS
+      const ejsTemplate = fs.readFileSync(filePath, 'utf-8');
+      const htmlContent = ejs.render(ejsTemplate);
+
+      const outputFilename = path.basename(file, '.ejs');
+      const outputFilePath = path.join(dir, outputFilename);
+
+      fs.writeFileSync(outputFilePath, htmlContent);
+      console.log(`Processed: ${filePath}`);
+    }
+  });
+}
+processEJSFiles(pubDir);
+processEJSFiles(srcDir);
+
+async function generateSitemap() {
+  simpleSitemapAndIndex({
+    hostname: process.env.DLAPP_ENV === 'PROD' ? 'https://drl-leaderboards.miau.io' : 'https://drl-leaderboards-test.miau.io',
+    destinationDir: './public',
+    sourceData: sitemapRoutes,
+    gzip: false,
+    limit: 45000
+  }).then(() => {
+    console.log('Sitemap generated');
+  })
+}
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -61,7 +105,7 @@ module.exports = configure(function (/* ctx */) {
         node: 'node16'
       },
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -72,6 +116,7 @@ module.exports = configure(function (/* ctx */) {
       // analyze: true,
       env: (function () {
         global_vars = {
+          DLAPP_ENV: process.env.DLAPP_ENV ? process.env.DLAPP_ENV : 'LOCAL',
           DLAPP_SWAGGER_URL_PART: "/swagger-ui.html"
         }
         env_vars = {
@@ -94,7 +139,11 @@ module.exports = configure(function (/* ctx */) {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      extendViteConf (viteConf) {
+        generateSitemap().catch(err => {
+          console.error('Error generating sitemap:', err);
+        });
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [
@@ -104,7 +153,7 @@ module.exports = configure(function (/* ctx */) {
 
           // you need to set i18n resource including paths !
           include: path.resolve(__dirname, './src/i18n/**')
-        }]
+        }],
       ]
     },
 

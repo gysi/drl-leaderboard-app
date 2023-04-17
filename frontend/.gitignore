@@ -39,3 +39,7 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+
+public/robots.txt
+public/sitemap-0.xml
+public/sitemap-index.xml
