@@ -2,7 +2,7 @@
   <div ref="container" class="three-container">
     <div style="position: absolute">
       <slot name="header"></slot>
-      <div class="q-mt-md q-ml-md"><button>Test</button></div>
+<!--      <div class="q-mt-md q-ml-md"><button>Test</button></div>-->
     </div>
   </div>
 </template>
@@ -15,7 +15,6 @@ import { Text } from 'troika-three-text';
 import axios from 'axios';
 import pako from 'pako';
 import { formatMilliSeconds } from 'src/modules/LeaderboardFunctions.js';
-import {lessThanEqual} from "three/nodes";
 
 const props = defineProps({
   trackId: {

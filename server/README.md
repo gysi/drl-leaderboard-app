@@ -51,18 +51,25 @@ Deploys the leaderboard app:
 ```bash
 ./docker_run.sh deploy-app-testserver
 ```
-
+Or use the quick variant to just deploy the app and nothing else
+```bash
+./docker_run.sh deploy-app-testserver-quick
+```
 ### Production server
 Updates distro:
 ```bash
 ./docker_run.sh update-prodserver
 ```
+This should be done after creating a new server. Make a snapshot of the server before doing this after you deployed the app so that when this fails you can revert to the snapshot and retest.  
+
 Deploys the leaderboard app:
 ```bash
 ./docker_run.sh deploy-app-prodserver
 ```
-This should be done after creating a new server. Make a snapshot of the server before doing this after you deployed the app so that when this fails you can revert to the snapshot and retest.
-
+Or use the quick variant to just deploy the app and nothing else
+```bash
+./docker_run.sh deploy-app-prodserver-quick
+```
 
 ## Misc
 

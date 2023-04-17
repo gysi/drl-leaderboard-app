@@ -13,16 +13,33 @@
         </q-banner>
         <q-separator />
         <q-card style="max-height: 40rem" class="scroll">
+<!-- 1.9.1 Release -->
+          <q-card>
+            <q-card-section class="q-py-none q-px-sm row dialog-news-content-header">
+              <div class="text-h5 q-py-sm">1.9.1 Release</div><q-space />
+              <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2023-04-16 23:53') }}</div>
+            </q-card-section>
+            <q-card-section class="q-py-sm q-pl-lg dialog-news-content">
+              <div class="text-h6">Misc</div>
+              <ul class="q-my-sm" style="font-size: 1rem">
+                <li>Changes Hashrouting (#) to Historyrouting (no #) for better SEO. If you have bookmarked a page, you have to update the link.
+                </li>
+              </ul>
+            </q-card-section>
+          </q-card>
+          <q-separator />
 <!-- 1.9.0 Release -->
           <q-card>
             <q-card-section class="q-py-none q-px-sm row dialog-news-content-header">
-              <div class="text-h5 q-py-sm">1.8.1 Release</div><q-space />
+              <div class="text-h5 q-py-sm">1.9.0 Release</div><q-space />
               <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2023-04-16 03:00') }}</div>
             </q-card-section>
 
             <q-card-section class="q-py-sm q-pl-lg dialog-news-content">
               <div class="text-h6">Features & Bugfixes (Replay Viewer)</div>
               <ul class="q-my-sm" style="font-size: 1rem">
+                <li>Improved performance of the replay viewer
+                </li>
                 <li>If you select a new track, the old track is now removed from the replay viewer
                 </li>
                 <li>Lines are now thicker and have a depth due to added lightning
