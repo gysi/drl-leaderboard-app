@@ -71,6 +71,7 @@ import NavigationLinks from 'components/NavigationLinks.vue'
 import {version} from '../../package.json'
 import { useQuasar } from "quasar"
 import NewsDialog from "components/NewsDialog.vue";
+import isCrawler  from "src/modules/isCrawler";
 
 const linksList = [
   {
@@ -153,7 +154,7 @@ export default defineComponent({
 
     let showNewsDialog = false;
     let newsDialogVersion = $q.localStorage.getItem('newsDialogSeen');
-    if(newsDialogVersion !== version){
+    if(newsDialogVersion !== version && isCrawler() === false){
       $q.localStorage.set('newsDialogSeen', version);
       showNewsDialog = true;
     }
