@@ -9,7 +9,7 @@
           :loading="latestActivity.loading"
           :pagination="latestActivity.pagination"
           :row-key="latestActivity.uniqueFunction"
-          table-class="home-tables"
+          class="col-auto"
           flat
           bordered
           hide-bottom
@@ -41,6 +41,7 @@
           :loading="latestActivityTop10.loading"
           :pagination="latestActivityTop10.pagination"
           :row-key="latestActivity.uniqueFunction"
+          class="col-auto"
           flat
           bordered
           hide-bottom
@@ -74,6 +75,7 @@
           :loading="mostPbsLast7Days.loading"
           :pagination="mostPbsLast7Days.pagination"
           row-key="playerName"
+          class="col-auto"
           flat
           bordered
           hide-bottom
@@ -97,6 +99,7 @@
           :loading="mostPbsLastMonth.loading"
           :pagination="mostPbsLastMonth.pagination"
           row-key="playerName"
+          class="col-auto"
           flat
           bordered
           hide-bottom
@@ -120,6 +123,7 @@
           :loading="mostTrackEntriesLast14Days.loading"
           :pagination="mostTrackEntriesLast14Days.pagination"
           row-key="id"
+          class="col-auto"
           flat
           bordered
           hide-bottom
@@ -148,6 +152,7 @@
           :loading="mostTrackEntriesLastMonth.loading"
           :pagination="mostTrackEntriesLastMonth.pagination"
           row-key="id"
+          class="col-auto"
           flat
           bordered
           hide-bottom
