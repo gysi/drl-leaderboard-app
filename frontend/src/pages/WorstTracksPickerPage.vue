@@ -22,6 +22,7 @@
           <q-menu
             anchor="bottom middle"
             self="top middle"
+            class="q-menu-dropdown"
           >
             <div class="column items-start" style="max-width: 400px">
               <q-list separator bordered>
@@ -60,6 +61,7 @@
           self="top middle"
           :model-value="this.menuModelValue"
           persistent
+          class="q-menu-dropdown"
         >
           <div :ref="(ref) => menuRef = ref" v-show="showMenu" class="row no-wrap q-pa-md">
             <div class="column">
@@ -102,7 +104,7 @@
                  :label="this.worstTracksTable.rows.length"
                  rounded floating
         />
-        <q-menu>
+        <q-menu class="q-menu-dropdown">
           <q-table
             title="Trackpool"
             :columns="worstTracksTable.columns"

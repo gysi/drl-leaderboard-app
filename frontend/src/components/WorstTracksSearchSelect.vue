@@ -16,6 +16,7 @@
     :loading="loadingState"
     multiple
     popup-content-style="height: 40vh"
+    popup-content-class="q-menu-dropdown"
   >
     <template v-slot:selected>
       <q-chip
@@ -26,7 +27,7 @@
           e.preventDefault();
         }">
         {{ `${selection.name} (${selection.filteredOut.length})` }}
-        <q-menu :ref="`menu${idx}`" max-height="30vh" class="bg-red">
+        <q-menu :ref="`menu${idx}`" max-height="30vh" class="q-menu-dropdown bg-red">
           <q-list>
             <q-item v-for="out in selection.filteredOut" :key="out.id">
               {{ out.name }}
