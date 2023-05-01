@@ -309,8 +309,18 @@ export default defineComponent({
 
 .grid-sizer,
 .grid-item
-  width: 20%
-  min-width: 40rem
+  width: 30%
+
+@media (max-width: 1700px)
+  .grid-sizer,
+  .grid-item
+    width: 49%
+
+@media (max-width: 1200px)
+  .grid-sizer,
+  .grid-item
+    width: 100%
+
 
 .grid-item
   margin: 0
