@@ -28,7 +28,7 @@ server {
 }
 
 server {
-    listen 443 ssl;
+    listen 443 http2 ssl;
     server_name {{ server.hostname }};
     ssl_certificate /etc/letsencrypt/live/{{ server.hostname }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ server.hostname }}/privkey.pem;
