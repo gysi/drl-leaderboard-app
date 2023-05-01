@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="index-page q-pa-md">
     <div class="row justify-start items-start q-col-gutter-md content-start">
       <div class="row col-12 justify-start items-start q-gutter-md">
         <q-table
@@ -302,4 +302,12 @@ export default defineComponent({
 
 :deep(.q-table thead th)
   font-size: 18px
+
+// On mobile devices, make the table rows bigger (48px) so that google doesn't complain about clickable elements being too close together
+@media (any-pointer: coarse)
+  .index-page :deep(tr, td)
+    height: 49px !important
+
+
+
 </style>
