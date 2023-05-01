@@ -8,7 +8,7 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-
+const vue = require('@vitejs/plugin-vue');
 const { configure } = require('quasar/wrappers');
 const path = require('path');
 const { simpleSitemapAndIndex } = require('sitemap');
@@ -75,7 +75,7 @@ module.exports = configure(function (/* ctx */) {
     // https://v2.quasar.dev/quasar-cli/boot-files
     boot: [
       'i18n',
-      'axios',
+      'axios'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -121,12 +121,15 @@ module.exports = configure(function (/* ctx */) {
         }
         env_vars = {
           LOCAL: {
+            DLAPP_URL: 'http://localhost:9000',
             DLAPP_API_URL: 'http://localhost:8080/api',
           },
           STAGING: {
+            DLAPP_URL: 'https://drl-leaderboards-test.miau.io',
             DLAPP_API_URL: 'https://drl-leaderboards-test.miau.io/api'
           },
           PROD: {
+            DLAPP_URL: 'https://drl-leaderboards.miau.io',
             DLAPP_API_URL: 'https://drl-leaderboards.miau.io/api'
           }
         };
@@ -144,7 +147,14 @@ module.exports = configure(function (/* ctx */) {
           console.error('Error generating sitemap:', err);
         });
       },
-      // viteVuePluginOptions: {},
+      viteVuePluginOptions: {
+        template: {
+          compilerOptions: {
+            // treat all tags with a dash as custom elements
+            isCustomElement: (tag) => tag.includes('shadow-')
+          }
+        }
+      },
 
       vitePlugins: [
         ['@intlify/vite-plugin-vue-i18n', {
@@ -153,7 +163,15 @@ module.exports = configure(function (/* ctx */) {
 
           // you need to set i18n resource including paths !
           include: path.resolve(__dirname, './src/i18n/**')
-        }],
+        },
+          vue({
+          template: {
+            compilerOptions: {
+              // treat all tags with a dash as custom elements
+              isCustomElement: (tag) => tag.includes('-')
+            }
+          }
+        })],
       ]
     },
 

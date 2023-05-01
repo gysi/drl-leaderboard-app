@@ -15,16 +15,17 @@
     class="q-ml-md"
     use-chips
     label="Enter player name"
+    popup-content-class="q-menu-dropdown"
   >
-  <template v-slot:no-option>
-    <q-item
-      @click="onPlayerSelected"
-    >
-      <q-item-section class="text-grey">
-        No results
-      </q-item-section>
-    </q-item>
-  </template>
+    <template v-slot:no-option>
+      <q-item
+        @click="onPlayerSelected"
+      >
+        <q-item-section class="text-grey">
+          No results
+        </q-item-section>
+      </q-item>
+    </template>
   </q-select>
 </template>
 
@@ -40,7 +41,7 @@ export default {
     }
   },
   emits: ['onPlayerSelected'],
-  data(){
+  data() {
     return {
       searchText: this.initialSelection !== "null" && this.initialSelection != null ? [this.initialSelection] : null,
       searchResults: [],
@@ -52,13 +53,13 @@ export default {
       this.$refs.userselect.toggleOption(val);
     },
     async playerSearch(val, update, abort) {
-      if(val === ""){
+      if (val === "") {
         this.searchResults = [];
         abort();
         return;
       }
       this.loadingState = true;
-      const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/find-players?playerName='+val);
+      const response = await axios.get(process.env.DLAPP_API_URL + '/leaderboards/find-players?playerName=' + val);
       this.searchResults = response.data;
       this.loadingState = false;
       update();

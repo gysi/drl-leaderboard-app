@@ -23,7 +23,7 @@
           @update:model-value="this.toggleDarkMode"
           left-label
           color="accent"
-          />
+        />
         <div style="margin-left: 15px">by gysi (v{{ version }})</div>
       </q-toolbar>
     </q-header>
@@ -47,7 +47,7 @@
           <q-item-section
             avatar
           >
-            <q-icon name="feed" />
+            <q-icon name="feed"/>
           </q-item-section>
 
           <q-item-section>
@@ -59,18 +59,19 @@
     </q-drawer>
 
     <q-page-container style="height: 100vh">
-      <router-view />
+      <router-view/>
     </q-page-container>
     <NewsDialog v-model:show-dialog="showNews" class="dialog-news"/>
   </q-layout>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import {defineComponent, ref} from 'vue'
 import NavigationLinks from 'components/NavigationLinks.vue'
 import {version} from '../../package.json'
-import { useQuasar } from "quasar"
+import {useQuasar} from "quasar"
 import NewsDialog from "components/NewsDialog.vue";
+import isCrawler from "src/modules/isCrawler";
 
 const linksList = [
   {
@@ -117,6 +118,13 @@ const linksList = [
     badge: 'PREVIEW'
   },
   {
+    title: 'Stream Card Creator',
+    caption: 'Create stream cards for your stream',
+    link: '/stream-card-creator',
+    icon: 'movie_filter',
+    badge: 'PREVIEW'
+  },
+  {
     title: 'FAQ',
     caption: 'Frequently asked questions',
     icon: 'help',
@@ -126,7 +134,7 @@ const linksList = [
     title: 'API',
     caption: 'API documentation',
     icon: 'code',
-    link: process.env.DLAPP_API_URL+process.env.DLAPP_SWAGGER_URL_PART,
+    link: process.env.DLAPP_API_URL + process.env.DLAPP_SWAGGER_URL_PART,
     external: true
   }
 ]
@@ -137,23 +145,25 @@ export default defineComponent({
     NewsDialog,
     NavigationLinks
   },
-  setup () {
+  setup() {
     const $q = useQuasar()
     const leftDrawerOpen = ref(false)
     const darkModeInStorage = $q.localStorage.getItem('darkMode');
     const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
     let useDarkMode = ref(false);
-    if(darkModeInStorage){
+    if (darkModeInStorage) {
       useDarkMode = ref(true);
-    } else if(darkModeInStorage === false){
+      $q.dark.set(true);
+    } else if (darkModeInStorage === false) {
 
     } else if (prefersDarkScheme.matches) {
       useDarkMode = ref(true);
+      $q.dark.set(true);
     }
 
     let showNewsDialog = false;
     let newsDialogVersion = $q.localStorage.getItem('newsDialogSeen');
-    if(newsDialogVersion !== version){
+    if (newsDialogVersion !== version && isCrawler() === false) {
       $q.localStorage.set('newsDialogSeen', version);
       showNewsDialog = true;
     }
@@ -161,7 +171,7 @@ export default defineComponent({
     return {
       linksList: linksList,
       leftDrawerOpen,
-      toggleLeftDrawer () {
+      toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
       quasar: $q,
@@ -175,10 +185,11 @@ export default defineComponent({
     }
   },
   methods: {
-    toggleDarkMode(){
+    toggleDarkMode() {
       this.darkMode = !this.darkMode;
       this.$q.localStorage.set('darkMode', this.darkMode);
-      if(this.darkMode){
+      this.$q.dark.set(!!this.darkMode)
+      if (this.darkMode) {
         document.body.classList.add("body--dark")
       } else {
         document.body.classList.remove("body--dark");
@@ -193,10 +204,12 @@ export default defineComponent({
   .q-item__section--side {
     padding-right: 16px;
   }
+
   .q-item__section--avatar {
     min-width: unset;
   }
 }
+
 .first-place {
   background-image: url('assets/gold-medal.svg');
 }
@@ -224,9 +237,9 @@ export default defineComponent({
   //min-height: inherit
 
   thead tr th {
-  position: sticky;
-  z-index: 1;
-  font-size: 18px;
+    position: sticky;
+    z-index: 1;
+    font-size: 18px;
   }
 
   thead tr:first-child th {
@@ -237,6 +250,7 @@ export default defineComponent({
   td {
     font-size: 200px;
   }
+
   /* this is when the loading indicator appears */
   &.q-table--loading thead tr:last-child th {
     /* height of all previous header rows */
@@ -246,9 +260,9 @@ export default defineComponent({
 
 tbody .td-borders-font-size16 {
   //color: black
-  border-left: 1px solid rgb(0,0,0,0.4);
+  border-left: 1px solid rgb(0, 0, 0, 0.4);
   border-right: 0;
-  border-top: 1px solid rgb(0,0,0,0.4);
+  border-top: 1px solid rgb(0, 0, 0, 0.4);
   border-bottom: 0;
   font-weight: normal;
   font-size: 16px;
@@ -263,7 +277,11 @@ tbody .td-borders-font-size16 {
 }
 
 .button-fills-whole-td {
-  top: 0; left: 0; width: 100%; height: 100%; position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
 }
 
 // montage -resize 120 map-* -auto-orient -geometry +1+1 -background none -format png maps.png
@@ -484,7 +502,7 @@ tbody .td-borders-font-size16 {
   }
 
   .q-field--filled .q-field__control {
-    background-color: rgb(0,0,0,0.7);
+    background-color: rgb(0, 0, 0, 0.7);
   }
 
   // for f in map-*.png; do convert "$f" -gaussian-blur 5x5 -quality 100 "${f%.*}-blurred.png"; done
@@ -500,10 +518,17 @@ tbody .td-borders-font-size16 {
     will-change: transform;
   }
 }
+
 @keyframes move-track-background {
-  0% { transform: translateY(-3%); }
-  50% { transform: translateY(calc(-97% + 92px)); }
-  100% { transform: translateY(-3%); }
+  0% {
+    transform: translateY(-3%);
+  }
+  50% {
+    transform: translateY(calc(-97% + 92px));
+  }
+  100% {
+    transform: translateY(-3%);
+  }
 }
 
 @media (min-width: 600px) {

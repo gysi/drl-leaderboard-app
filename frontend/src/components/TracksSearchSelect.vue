@@ -15,6 +15,7 @@
     use-chips
     label="Enter track name"
     :loading="state.loading"
+    popup-content-class="q-menu-dropdown"
   >
     <template v-slot:selected-item="props">
       <q-chip

@@ -6,7 +6,8 @@ const sitemapRoutes = [
   { url: '/player-lb', priority: 0.9 },
   { url: '/faq', priority: 0.9 },
   { url: '/worst-tracks-picker', priority: 0.9 },
-  { url: '/replay-viewer', priority: 0.9 }
+  { url: '/replay-viewer', priority: 0.9 },
+  { url: '/stream-card-creator', priority: 0.9 }
 ];
 
 module.exports = {

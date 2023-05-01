@@ -109,5 +109,5 @@ Webapp for displaying DRL Simulator leaderboards.
       * ??? More stuff
     * [ ] Tournaments
       * [ ] Point system like Grim is doing
-    * [ ] A feature that would fetch the replay from DRL and display the raceline in 3D and compare it to other players for a track 
+    * [] A feature that would fetch the replay from DRL and display the raceline in 3D and compare it to other players for a track 
 
