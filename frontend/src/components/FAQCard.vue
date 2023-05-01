@@ -68,6 +68,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.faq-card-content
+  overflow-x: auto
+
 .truncated
   max-height: 10rem
   overflow: hidden
