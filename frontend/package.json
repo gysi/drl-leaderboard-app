@@ -37,6 +37,7 @@
     "eslint-plugin-vue": "^9.0.0",
     "postcss": "^8.4.14",
     "prettier": "^2.5.1",
+    "purgecss": "^5.0.0",
     "sitemap": "^7.1.1",
     "vite": "^2.9.13"
   },
