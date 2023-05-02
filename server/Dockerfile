@@ -30,17 +30,17 @@ COPY frontend/public public/
 COPY frontend/src src/
 COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
     frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/index.html frontend/jsconfig.json \
-    frontend/postcss.config.js frontend/quasar.config.js ./
+    frontend/postcss.config.js frontend/quasar.config.js frontend/purgecss.config.js ./
 
 
 FROM frontend-builder as frontend-builder-staging
 WORKDIR /app
-RUN DLAPP_ENV=STAGING yarn quasar build
+RUN DLAPP_ENV=STAGING yarn quasar build && yarn purgecss --config ./purgecss.config.js
 
 
 FROM frontend-builder as frontend-builder-prod
 WORKDIR /app
-RUN DLAPP_ENV=PROD yarn quasar build
+RUN DLAPP_ENV=PROD yarn quasar build && yarn purgecss --config ./purgecss.config.js
 
 
 FROM python:3.11-bullseye as runner

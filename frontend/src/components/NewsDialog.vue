@@ -620,7 +620,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { getDateDifferenceToNowByGermanTimezone } from 'src/modules/LeaderboardFunctions'
-import ReplayPage from "pages/ReplayPage.vue";
 
 const props = defineProps(['showDialog'])
 const emit = defineEmits(['update:showDialog'])

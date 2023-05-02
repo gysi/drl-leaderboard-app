@@ -9,6 +9,7 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 const vue = require('@vitejs/plugin-vue');
+
 const { configure } = require('quasar/wrappers');
 const path = require('path');
 const { simpleSitemapAndIndex } = require('sitemap');
@@ -102,8 +103,10 @@ module.exports = configure(function (/* ctx */) {
     build: {
       target: {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
-        node: 'node16'
+        node: 'node18'
       },
+
+      minify: 'terser',
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
@@ -164,15 +167,14 @@ module.exports = configure(function (/* ctx */) {
           // you need to set i18n resource including paths !
           include: path.resolve(__dirname, './src/i18n/**')
         },
-          vue({
+        vue({
           template: {
             compilerOptions: {
               // treat all tags with a dash as custom elements
               isCustomElement: (tag) => tag.includes('-')
             }
-          }
-        })],
-      ]
+          }}),
+      ]]
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
