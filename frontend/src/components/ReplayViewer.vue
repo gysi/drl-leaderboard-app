@@ -450,6 +450,13 @@ const loadTrack = async (trackId) => {
 
 const loadReplay = async (trackId, replayUrl, splineColor) => {
   await loadingTrackPromise;
+  // if replay url contains https://drl-game-dashboard.s3.amazonaws.com
+  // then replace it with process.env.DLAPP_API_URL
+  if(replayUrl.startsWith("https://drl-game-dashboard.s3.amazonaws.com")) {
+    let tempReplayUrl = replayUrl;
+    replayUrl = process.env.DLAPP_URL + "/proxy?url=" + encodeURIComponent(tempReplayUrl);
+  }
+
   const response = await axios.get(replayUrl, { responseType: 'arraybuffer' });
   const decodedData = new TextDecoder().decode(response.data);
   const replayCheckPointData = extractJSON(decodedData)[0];

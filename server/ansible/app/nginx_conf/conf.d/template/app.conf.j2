@@ -76,4 +76,28 @@ server {
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         add_header Cache-Control "public";
     }
+
+    location /proxy {
+        if ( $arg_url = '') {
+          return 400 "Missing redirect parameter in request";
+        }
+        if ( $arg_url ~ (.+)%3A%2F%2F(.+) ){ # fix :// between scheme and destination
+          set $arg_url $1://$2;
+        }
+        if ( $arg_url ~ (.+?)%3A(.*) ){ # fix : between destination and port
+          set $arg_url $1:$2;
+        }
+        if ( $arg_url ~ (.+?)%2F(.*) ){ # fix / after port, the rest will be decoded by proxy_pass
+          set $arg_url $1/$2;
+        }
+        # Only allow proxy pass if $arg_url starts with https://drl-game-dashboard.s3.amazonaws.com
+        if ( $arg_url !~ ^https://drl-game-dashboard.s3.amazonaws.com ) {
+          return 403 "This proxy only accepts requests to https://drl-game-dashboard.s3.amazonaws.com";
+        }
+
+        # Docker DNS Resolver, this is needed so that nginx doesn't crash when the upstream is not available
+        resolver 127.0.0.11 valid=30s ipv6=off;
+
+        proxy_pass $arg_url;
+    }
 }
