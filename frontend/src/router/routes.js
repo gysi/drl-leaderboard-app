@@ -1,10 +1,12 @@
+import MainLayout from "layouts/MainLayout.vue";
+import IndexPage from "pages/IndexPage.vue";
 
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: MainLayout,
     children: [
-      { name: 'home', path: '', component: () => import('pages/IndexPage.vue') },
+      { name: 'home', path: '', component: IndexPage },
       { name: 'overallrankings', path: 'overall-rankings', component: () => import('pages/OverallPage.vue') },
       { name: 'tracks', path: 'tracks', component: () => import('pages/TracksPage.vue') },
       { name: 'tracklb', path: 'track-lb', component: () => import('pages/TrackLbPage.vue'), props: route => ({ q: route.query.q }) },
