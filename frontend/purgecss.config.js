@@ -25,6 +25,7 @@ module.exports = {
       /q-drawer.*/,
       /q-batch.*/,
       /q-table__sort.*/,
+      /q-dialog__inner*/,
       /map-.*/,
       /.*slotmachine.*/,
       /text-.*/,
