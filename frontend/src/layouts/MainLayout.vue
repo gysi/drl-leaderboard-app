@@ -284,8 +284,11 @@ tbody .td-borders-font-size16 {
   position: absolute;
 }
 
+// AssetStudioGUI -> Filter Type = Texture2D -> Export -> "Filtered assets"
+// exported maps are named like background*
 // montage -resize 120 map-* -auto-orient -geometry +1+1 -background none -format png maps.png
 // http://www.spritecow.com/
+// then use the tool pngquant to make the source pngs smaller
 .map-2017-world-championship {
   object-fit: none;
   object-position: -1px -1px;
@@ -461,30 +464,37 @@ tbody .td-borders-font-size16 {
   height: 68px !important;
 }
 
-.map-skatepark-la {
+.map-silicon-valley {
   object-fit: none;
   object-position: -123px -281px;
   width: 120px !important;
   height: 68px !important;
 }
 
-.map-the-house {
+.map-skatepark-la {
   object-fit: none;
   object-position: -245px -281px;
   width: 120px !important;
   height: 68px !important;
 }
 
-.map-u-s--air-force-boneyard {
+.map-the-house {
   object-fit: none;
   object-position: -367px -281px;
   width: 120px !important;
   height: 68px !important;
 }
 
-.map-u-s--air-force-night-mode {
+.map-u-s--air-force-boneyard {
   object-fit: none;
   object-position: -489px -281px;
+  width: 120px !important;
+  height: 68px !important;
+}
+
+.map-u-s--air-force-night-mode {
+  object-fit: none;
+  object-position: -611px -281px;
   width: 120px !important;
   height: 68px !important;
 }

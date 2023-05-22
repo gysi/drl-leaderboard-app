@@ -109,8 +109,6 @@ public class LeaderboardUpdater {
         this.cacheManager = cacheManager;
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    @Order(200)
     @Caching(evict = {
             @CacheEvict(value = "leaderboardbyplayername", allEntries = true),
             @CacheEvict(value = "overallranking", allEntries = true),
@@ -129,7 +127,6 @@ public class LeaderboardUpdater {
         }
     }
 
-    @Scheduled(cron = "${app.data-updater.leaderboards.cron}")
     @Caching(evict = {
             @CacheEvict(value = "leaderboardbyplayername", allEntries = true),
             @CacheEvict(value = "overallranking", allEntries = true),

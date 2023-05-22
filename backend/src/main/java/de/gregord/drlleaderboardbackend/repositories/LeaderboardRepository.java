@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,6 +36,15 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
     Collection<LeaderboardEntry> findByTrackIdAndPlayerIdIn(Long trackId, Collection<String> playerIds);
 
     List<ReplaysByTrackView> findByTrackIdAndIsInvalidRunFalse(Long trackId, Sort sort);
+
+    List<LeaderboardEntry> findByTrackId(Long trackId);
+
+    @Modifying
+    @Query(value = """
+            DELETE FROM leaderboards_beaten_by
+            WHERE leaderboard_id = :leaderboardId or beaten_by_leaderboard_id = :leaderboardId
+            """, nativeQuery = true)
+    void deleteBeatenByEntriesByLeaderboardId(Long leaderboardId);
 
     @Cacheable("overallranking")
     @Query(value = """
