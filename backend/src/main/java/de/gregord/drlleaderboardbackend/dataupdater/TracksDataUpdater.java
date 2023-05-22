@@ -25,9 +25,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@EnableScheduling
 @Component
-@Aspect
 public class TracksDataUpdater {
     public static Logger LOG = LoggerFactory.getLogger(TracksDataUpdater.class);
 //    public static String endpointMaps = "https://api.drlgame.com/progression/maps?token={token}";
@@ -82,6 +80,8 @@ public class TracksDataUpdater {
 
         mapIdToMapName.put("MP-0c6", "MULTIGP");
 
+        mapIdToMapName.put("MP-cb7", "SILICON VALLEY");
+
         mapIdToParentCategory.put("MP-3fd", "DRL MAPS");
         mapIdToParentCategory.put("MP-693", "DRL MAPS");
         mapIdToParentCategory.put("MP-2e1", "DRL MAPS");
@@ -100,6 +100,7 @@ public class TracksDataUpdater {
         mapIdToParentCategory.put("MP-92e", "DRL MAPS");
         mapIdToParentCategory.put("MP-ad9", "DRL MAPS");
         mapIdToParentCategory.put("MP-bf7", "DRL MAPS");
+        mapIdToParentCategory.put("MP-cb7", "DRL MAPS");
 
         mapIdToParentCategory.put("MP-2cb", "ORIGINALS");
         mapIdToParentCategory.put("MP-f95", "ORIGINALS");
@@ -159,15 +160,13 @@ public class TracksDataUpdater {
     }
 
     @Transactional
-    @EventListener(ApplicationReadyEvent.class)
-    @Order(100)
     @CacheEvict(value = "tracks", allEntries = true)
     public void initialize() {
         long count = tracksRepository.count();
-        if(count <= 0) {
+//        if(count <= 0) {
             LOG.info("No tracks found in database, initializing...");
             updateMapsData();
-        }
+//        }
     }
 
     @Transactional
@@ -282,6 +281,10 @@ public class TracksDataUpdater {
                 Collection<Track> byTrackNotIn = tracksRepository.findByIdNotIn(tracks.stream().map(Track::getId).collect(Collectors.toList()));
                 LOG.info("Deleting " + byTrackNotIn.size() + " tracks");
                 LOG.info(byTrackNotIn.stream().map(Track::getName).collect(Collectors.joining(", ")));
+                byTrackNotIn.stream().forEach(track -> leaderboardRepository.findByTrackId(track.getId()).forEach( entry -> {
+                    leaderboardRepository.deleteBeatenByEntriesByLeaderboardId(entry.getId());
+                    leaderboardRepository.delete(entry);
+                }));
                 tracksRepository.deleteAll(byTrackNotIn);
             }
         } catch (Exception e) {
