@@ -21,8 +21,8 @@ const props = defineProps({
     type: String,
     default: null
   },
-  replayUrl: {
-    type: String,
+  replayData: {
+    type: Object,
     default: null
   }
 });
@@ -37,10 +37,10 @@ watch(() => props.trackId, (val) => {
   }
 });
 
-watch(() => props.replayUrl, (val) => {
-  console.log("replayviewer replayUrl changed", val);
-  if(val){
-    loadReplay(props.trackId, val, splineColors[currentSplineColor]);
+watch(() => props.replayData, (replayData) => {
+  console.log("replayviewer replayData changed", replayData);
+  if(replayData){
+    loadReplay(props.trackId, replayData, replayData.playerName === 'devils' ? 0xff00ff : splineColors[currentSplineColor]);
     if(currentSplineColor >= splineColors.length - 1){
       currentSplineColor = 0;
     } else {
@@ -58,6 +58,7 @@ let splineColors = [
   0xffe54c,
   0xcffffd,
 ];
+
 let currentSplineColor = 0;
 let renderer, scene, camera, controls;
 let textLabels = [];
@@ -448,11 +449,12 @@ const loadTrack = async (trackId) => {
   addTrackLabels(scene, checkPoints);
 }
 
-const loadReplay = async (trackId, replayUrl, splineColor) => {
+const loadReplay = async (trackId, replayData, splineColor) => {
   await loadingTrackPromise;
+  let replayUrl = replayData.replayUrl;
   // if replay url contains https://drl-game-dashboard.s3.amazonaws.com
   // then replace it with process.env.DLAPP_API_URL
-  if(replayUrl.startsWith("https://drl-game-dashboard.s3.amazonaws.com")) {
+  if(replayData.replayUrl.startsWith("https://drl-game-dashboard.s3.amazonaws.com")) {
     let tempReplayUrl = replayUrl;
     replayUrl = process.env.DLAPP_URL + "/proxy?url=" + encodeURIComponent(tempReplayUrl);
   }

@@ -2,7 +2,7 @@
   <q-page style="height: 100%; width: 100%" class="q-pa-md">
     <replay-viewer
       :track-id="state.selectedTrackId"
-      :replay-url="state.selectedReplayUrl"
+      :replay-data="state.selectedReplayData"
     >
       <template v-slot:header>
         <div>
@@ -31,19 +31,19 @@
   const state = reactive({
     replaySelectionDisabled: true,
     selectedTrackId: null,
-    selectedReplayUrl: null
+    selectedReplayData: null
   });
 
   const onTrackSelected = (track) => {
     console.log("track selected", track);
     state.replaySelectionDisabled = false;
-    state.selectedReplayUrl = null;
+    state.selectedReplayData = null;
     state.selectedTrackId = track.id;
   }
 
-  const onReplaySelected = (replay) => {
-    console.log("replay selected", replay);
-    state.selectedReplayUrl = replay.replayUrl;
+  const onReplaySelected = (replayData) => {
+    console.log("replay selected", replayData);
+    state.selectedReplayData = replayData;
   }
 
 </script>
