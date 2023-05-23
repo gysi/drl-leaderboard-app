@@ -127,6 +127,7 @@ const onEnterPressed = (val) => {
 }
 
 const onSelected = (player) => {
+  console.log("onSelected", player);
   emit('on-selected', player);
 };
 </script>
