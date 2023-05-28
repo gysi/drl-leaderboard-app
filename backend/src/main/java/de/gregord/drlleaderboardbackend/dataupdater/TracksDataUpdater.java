@@ -163,10 +163,10 @@ public class TracksDataUpdater {
     @CacheEvict(value = "tracks", allEntries = true)
     public void initialize() {
         long count = tracksRepository.count();
-//        if(count <= 0) {
+        if(count <= 0) {
             LOG.info("No tracks found in database, initializing...");
             updateMapsData();
-//        }
+        }
     }
 
     @Transactional
