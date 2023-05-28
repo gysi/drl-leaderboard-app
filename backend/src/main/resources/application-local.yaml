@@ -32,6 +32,6 @@ logging:
 #    org.hibernate.orm.jdbc.bind: trace
 #    org.springframework: trace
 #    org.hibernate: trace
-    org.springframework.orm.jpa: DEBUG
-    org.springframework.transaction: DEBUG
-    org.hibernate.engine.transaction.internal.TransactionImpl: DEBUG
+#    org.springframework.orm.jpa: DEBUG
+#    org.springframework.transaction: DEBUG
+#    org.hibernate.engine.transaction.internal.TransactionImpl: DEBUG
