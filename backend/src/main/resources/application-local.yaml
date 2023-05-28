@@ -4,19 +4,34 @@ spring:
   jpa:
     properties:
       hibernate:
-        generate_statistics: true
+        generate_statistics: false
 
 app:
-  show-sql: true
+  show-sql: false
   drl-api:
     # To finish within 30 minutes I need at least 1 request every 2.1 seconds = 0.47 requests/s
-    duration-between-requests: 2000ms # ~0.5 requests/s
+#    duration-between-requests: 2000ms # ~0.5 requests/s
+    duration-between-requests: 140ms # ~0.5 requests/s
   data-updater:
     leaderboards:
-      cron: "0 */30 * * * *" # every 30 Minutes
+      cron: "-" # disabled
+#      cron: "*/20 * * * * *" # every 10 Minutes
+    tracks:
+      cron: "-" # disabled
 
 logging:
   logback:
     rollingpolicy:
       file-name-pattern: logs/drl-api-crawler-%d{yyyy-MM-dd}.%i
       clean-history-on-start: true
+
+  level:
+    root: info
+    de.gregord.drlleaderboardbackend: info
+#    org.hibernate.SQL: debug
+#    org.hibernate.orm.jdbc.bind: trace
+#    org.springframework: trace
+#    org.hibernate: trace
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: DEBUG
+    org.hibernate.engine.transaction.internal.TransactionImpl: DEBUG
