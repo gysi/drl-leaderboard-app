@@ -170,7 +170,6 @@ public class TracksDataUpdater {
     }
 
     @Transactional
-    @Scheduled(cron = "${app.data-updater.tracks.cron}")
     @Caching(evict = {
         @CacheEvict(value = "tracks", allEntries = true),
         @CacheEvict(value = "parentCategories", allEntries = true)

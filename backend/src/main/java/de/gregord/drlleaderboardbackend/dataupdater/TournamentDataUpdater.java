@@ -7,22 +7,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TournamentDataUpdater {
     public static Logger LOG = LoggerFactory.getLogger(TournamentDataUpdater.class);
 
     private final String token;
     private final String tournamentEndpoint;
+    private final String tournamentDetailEndpoint;
     private final TournamentRepository tournamentRepository;
 
     public TournamentDataUpdater(
             @Value("${app.drl-api.token}") String token,
             @Value("${app.drl-api.tournament-endpoint}") String tournamentEndpoint,
+            @Value("${app.drl-api.tournament-detail-endpoint}") String tournamentDetailEndpoint,
             TournamentRepository tournamentRepository
     ){
         this.token = token;
         this.tournamentEndpoint = tournamentEndpoint;
+        this.tournamentDetailEndpoint = tournamentDetailEndpoint;
         this.tournamentRepository = tournamentRepository;
     }
 
@@ -31,13 +35,12 @@ public class TournamentDataUpdater {
     public void initialize() {
         long count = tournamentRepository.count();
         if(count <= 0) {
-        LOG.info("No tracks found in database, initializing...");
+            LOG.info("No tournaments found in database, initializing...");
             updateData();
         }
     }
 
     @Transactional
-    @Scheduled(cron = "${app.data-updater.tournaments.cron}")
     @Caching(evict = {
             @CacheEvict(value = "tournaments", allEntries = true),
     })
