@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Map;
 
 @Component
 public class TournamentDataUpdater {
@@ -45,6 +48,11 @@ public class TournamentDataUpdater {
             @CacheEvict(value = "tournaments", allEntries = true),
     })
     public void updateData() {
-
+        LOG.info("Updating tournament data...");
+        do {
+            UriComponentsBuilder tournamentEndpointBuilder = UriComponentsBuilder.fromUriString(tournamentEndpoint);
+            String requestUrl = tournamentEndpointBuilder.buildAndExpand(Map.of("token", token )).toUriString();
+            LOG.info("requestUrl: " + requestUrl);
+        } while(false);
     }
 }

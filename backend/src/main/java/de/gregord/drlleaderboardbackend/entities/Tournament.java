@@ -2,10 +2,7 @@ package de.gregord.drlleaderboardbackend.entities;
 
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRound;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +16,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "tournaments", indexes = {
+        @Index(columnList = "guid", unique = true),
+        @Index(columnList = "drlId"),
+        @Index(columnList = "title"),
+        @Index(columnList = "map"),
+        @Index(columnList = "customMap"),
+        @Index(columnList = "customMapTitle"),
+        @Index(columnList = "playerIds"),
+        @Index(columnList = "rankings"),
+        @Index(columnList = "matches"),
+        @Index(columnList = "createdAt"),
+        @Index(columnList = "updatedAt"),
+        @Index(columnList = "registrationStartAt"),
+        @Index(columnList = "registrationEndAt"),
+        @Index(columnList = "nextTurnAt"),
+        @Index(columnList = "completedAt"),
+})
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
@@ -41,10 +55,11 @@ public class Tournament {
     private String customMapTitle; // drl api name "custom-map-title"
     private String trackId; // drl api name "track", seems to be null
 
-    private String status; // drl api name "status": 'idle', 'complete'
+    private String status; // drl api name "status": 'idle', 'complete' TODO: status of running tournament?
 
     private String region; // drl api name "region"
     private Boolean isPrivate; // drl api name "private"
+    private Boolean isTestTournament;
 
     private int playersPerMatch; // drl api name "players-per-match"
     private int winnerPerMatch; // drl api name "winners-per-match"
