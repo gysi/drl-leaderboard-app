@@ -41,7 +41,7 @@ public class TournamentRound implements Serializable {
     private String id; // drl api mapping: id
     private Integer nOrder; // drl api mapping: norder
     private String title; // drl api mapping: title
-    private String status; // drl api mapping: status, values: 'idle', 'complete'
+    private String status; // drl api mapping: status, values: 'idle', 'active', 'complete'
     private String mode; // drl api mapping: mode, values: 'leaderboard', 'sudden_death'
     private LocalDateTime startAt; // drl api mapping: start-at
     private LocalDateTime endAt; // drl api mapping: end-at
