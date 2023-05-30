@@ -67,16 +67,17 @@ public class TournamentDataUpdater {
         LOG.info("Updating tournament data...");
         UriComponentsBuilder tournamentEndpointBuilder = UriComponentsBuilder.fromUriString(tournamentEndpoint);
         String requestUrl = tournamentEndpointBuilder.buildAndExpand(Map.of("token", token )).toUriString();
+        LOG.info("Tournament requestUrl: " + requestUrl);
         try {
             ResponseEntity<Map> exchange = (new RestTemplate()).exchange(requestUrl, HttpMethod.GET, null, Map.class);
             Map<String, Object> body = exchange.getBody();
             if (body == null) {
-                LOG.error("Could not retrieve tournament data from DRL API");
+                LOG.error("Could not retrieve tournament data from DRL API, no body for request: {}", requestUrl);
                 return;
             }
             List<Map<String, Object>> data = (List<Map<String, Object>>) body.get("data");
             if (data == null) {
-                LOG.error("Could not retrieve tournament data from DRL API");
+                LOG.error("Could not retrieve tournament data from DRL API, no data for request: {}", requestUrl);
                 return;
             }
             for (Map<String, Object> tournamentJSON : data) {
@@ -84,7 +85,7 @@ public class TournamentDataUpdater {
                 String tournamentGuid = (String) tournamentJSON.get("guid");
                 Tournament tournament = tournamentRepository.findTournamentByDrlId(tournamentDrlId).orElseGet(Tournament::new);
                 Boolean tournamentAlreadyExists = tournament.getId() != null;
-                if(tournamentAlreadyExists && tournament.getStatus().equals("completed")){
+                if(tournamentAlreadyExists && tournament.getStatus().equals("complete")){
                     LOG.info("Tournament {} is already completed and saved within the db, skipping...", tournamentGuid);
                     continue;
                 }
@@ -210,12 +211,10 @@ public class TournamentDataUpdater {
                     tournamentRound.setMatches(tournamentMatches);
                 }
                 tournament.setRounds(tournamentRounds);
-                LOG.info("tournament: " + tournament);
                 tournamentRepository.save(tournament);
                 Optional.ofNullable(cacheManager.getCache("tournamentRankings"))
                         .ifPresent(Cache::invalidate);
             }
-            LOG.info("requestUrl: " + requestUrl);
         } catch (Exception e) {
             LOG.error("Could not retrieve tournament data from DRL API", e);
         }
