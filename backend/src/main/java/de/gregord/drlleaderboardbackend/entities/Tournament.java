@@ -55,7 +55,7 @@ public class Tournament {
     private String customMapTitle; // drl api name "custom-map-title"
     private String track; // drl api name "track", seems to be null
 
-    private String status; // drl api name "status": 'idle', 'complete' TODO: status of running tournament?
+    private String status; // drl api name "status": 'idle', 'active', complete'
 
     private String region; // drl api name "region"
     private Boolean isPrivate; // drl api name "private"
