@@ -25,7 +25,7 @@ import java.util.List;
         @Index(columnList = "customMapTitle"),
         @Index(columnList = "playerIds"),
         @Index(columnList = "rankings"),
-        @Index(columnList = "matches"),
+        @Index(columnList = "rounds"),
         @Index(columnList = "createdAt"),
         @Index(columnList = "updatedAt"),
         @Index(columnList = "registrationStartAt"),
@@ -53,7 +53,7 @@ public class Tournament {
     private String map; // drl api name "map"
     private String customMap; // drl api name "custom-map"
     private String customMapTitle; // drl api name "custom-map-title"
-    private String trackId; // drl api name "track", seems to be null
+    private String track; // drl api name "track", seems to be null
 
     private String status; // drl api name "status": 'idle', 'complete' TODO: status of running tournament?
 
@@ -61,9 +61,10 @@ public class Tournament {
     private Boolean isPrivate; // drl api name "private"
     private Boolean isTestTournament;
 
-    private int playersPerMatch; // drl api name "players-per-match"
-    private int winnerPerMatch; // drl api name "winners-per-match"
-    private int heatsPerMatch; // drl api name "heats-per-match"
+    private int playersSize; // drl api name "players-size"
+    private String playersPerMatch; // drl api name "players-per-match"
+    private String winnersPerMatch; // drl api name "winners-per-match"
+    private String heatsPerMatch; // drl api name "heats-per-match"
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<String> playerIds; // drl api name "player-ids"
@@ -72,7 +73,7 @@ public class Tournament {
     private List<TournamentRanking> rankings; // drl api name "ranking"
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<TournamentRound> matches; // drl api name "matches"
+    private List<TournamentRound> rounds; // drl api name "rounds"
 
     private LocalDateTime createdAt; // drl api name "created-at"
     private LocalDateTime updatedAt; // drl api name "updated-at"

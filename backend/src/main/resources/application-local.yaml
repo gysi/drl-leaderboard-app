@@ -18,6 +18,8 @@ app:
 #      cron: "*/20 * * * * *" # every 10 Minutes
     tracks:
       cron: "-" # disabled
+    tournaments:
+      cron: "-" # disabled
 
 logging:
   logback:
