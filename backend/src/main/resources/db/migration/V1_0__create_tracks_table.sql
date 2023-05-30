@@ -2,23 +2,23 @@ create table if not exists tracks
 (
     id              bigint not null
         primary key,
-    categories      varchar(255),
+    categories      text,
     created_at      timestamp(6),
-    drl_track_id    varchar(255),
-    guid            varchar(255)
+    drl_track_id    text,
+    guid            text
         constraint c_tracks_guid_unique
             unique,
     is_drl_official boolean,
     is_public       boolean,
-    map_category    varchar(255),
+    map_category    text,
     map_difficulty  integer,
     map_distance    double precision,
-    map_id          varchar(255),
+    map_id          text,
     map_laps        integer,
-    map_mode_type   varchar(255),
-    map_name        varchar(255),
-    name            varchar(255),
-    parent_category varchar(255),
+    map_mode_type   text,
+    map_name        text,
+    name            text,
+    parent_category text,
     updated_at      timestamp(6)
 );
 

@@ -20,6 +20,8 @@ spring:
           batch_size: 100
         order_updates: true
         order_inserts: true
+        type:
+          json_format_mapper: de.gregord.drlleaderboardbackend.config.CustomHibernateJsonFormatter
     generate-ddl: false # true
     database: postgresql
   flyway:
