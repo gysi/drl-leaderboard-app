@@ -190,7 +190,7 @@ watch([settings, activeCard], onChange, {deep: true});
 onChange();
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 #streamcard-info
   font-size: 18px
   margin: 8px 0px 0px 8px

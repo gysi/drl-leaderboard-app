@@ -93,6 +93,13 @@ const linksList = [
     link: '/overall-rankings'
   },
   {
+    title: 'Tournaments',
+    caption: 'Overview of all tournaments',
+    icon: 'emoji_events',
+    link: '/tournaments',
+    badge: 'PREVIEW'
+  },
+  {
     title: 'Track Leaderboard',
     caption: 'Leaderboard for a specific track',
     icon: 'timeline',

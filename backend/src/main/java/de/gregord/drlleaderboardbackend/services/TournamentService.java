@@ -1,5 +1,6 @@
 package de.gregord.drlleaderboardbackend.services;
 
+import de.gregord.drlleaderboardbackend.domain.Season;
 import de.gregord.drlleaderboardbackend.domain.TournamentRankings;
 import de.gregord.drlleaderboardbackend.entities.Tournament;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;
@@ -9,45 +10,16 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.gregord.drlleaderboardbackend.domain.Season.SEASON_MAPPING_BY_SEASON_ID;
+
 @Service
 public class TournamentService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(TournamentService.class);
-
-    public enum Season {
-        SEASON_2023_24("2023-24", "Season 2023-24",
-                LocalDateTime.of(2024,5,23, 0, 0)),
-        SEASON_2024_25("2024-25", "Season 2024-25",
-                LocalDateTime.of(2025,5,23, 0, 0));
-
-        private final String seasonId;
-        private final String seasonName;
-        private final LocalDateTime seasonEndDate;
-
-        Season(String seasonId, String seasonName, LocalDateTime seasonEndDate) {
-            this.seasonId = seasonId;
-            this.seasonName = seasonName;
-            this.seasonEndDate = seasonEndDate;
-        }
-
-        public String getSeasonId() {
-            return seasonId;
-        }
-
-        public String getSeasonName() {
-            return seasonName;
-        }
-
-        public LocalDateTime getSeasonEndDate() {
-            return seasonEndDate;
-        }
-    }
 
     TournamentRepository tournamentRepository;
 
@@ -57,17 +29,16 @@ public class TournamentService {
 
     @Transactional(readOnly = true)
     @Cacheable("tournamentRankings")
-    public TournamentRankings getOverallRanking() {
-        try(Stream<Tournament> tournaments = tournamentRepository.streamTournamentsForOverallRanking()) {
-            Map<String, TournamentRankings.SeasonRanking> seasonRankingsMap = new java.util.HashMap<>();
-            Map<String, Map<String, TournamentRankings.PlayerRanking>> playerRankingsMapBySeason = new java.util.HashMap<>();
-            for (Season season : Season.values()) {
-                seasonRankingsMap.put(season.getSeasonId(), new TournamentRankings.SeasonRanking(season.getSeasonName()));
-                playerRankingsMapBySeason.put(season.getSeasonId(), new java.util.HashMap<>());
-            }
+    public TournamentRankings getTournamentRankingForSeason(String seasonId) {
+        Season season = SEASON_MAPPING_BY_SEASON_ID.get(seasonId);
+        if(season == null){
+            throw new IllegalArgumentException("No season found for seasonId: " + seasonId);
+        }
+        try(Stream<Tournament> tournaments = tournamentRepository.streamTournaments(season.getSeasonStartDate(), season.getSeasonEndDate())) {
+            // Map<PlayerId, PlayerRanking>
+            Map<String, TournamentRankings.PlayerRanking> playerRankingMap = new java.util.HashMap<>();
+
             tournaments.forEach(tournament -> {
-                String seasonId = getSeasonId(tournament);
-                Map<String, TournamentRankings.PlayerRanking> playerRankingMap = playerRankingsMapBySeason.get(seasonId);
                 List<TournamentRanking> rankings = tournament.getRankings();
                 for (int i = 0; i < rankings.size(); i++) {
                     int position = i+1;
@@ -75,44 +46,74 @@ public class TournamentService {
                         break;
                     }
                     TournamentRanking ranking = rankings.get(i);
+
+                    // Player ranking
                     TournamentRankings.PlayerRanking playerRanking = playerRankingMap.computeIfAbsent(ranking.getPlayerId(), playerId -> {
                         TournamentRankings.PlayerRanking newPlayerRanking = new TournamentRankings.PlayerRanking();
                         newPlayerRanking.setCommonPlayerName(ranking.getProfileName());
                         return newPlayerRanking;
                     });
                     playerRanking.setCommonPlayerName(ranking.getProfileName());
-                    playerRanking.addPoints(getPointByIRLSystem(position));
                     playerRanking.incrementNumberOfTournamentsPlayed();
+                    if (ranking.getGoldenPos() != null && ranking.getGoldenPos() != 0) {
+                        playerRanking.incrementNumberOfGoldenHeats();
+                    }
+                    playerRanking.setTotalPoints(playerRanking.getTotalPoints() + getPointByIRLSystem(position));
+
+                    // Tournament
                     TournamentRankings.Tournament tournamentPlayerParticipatedIn = new TournamentRankings.Tournament();
                     tournamentPlayerParticipatedIn.setNameUsedInGame(ranking.getProfileName());
                     tournamentPlayerParticipatedIn.setTitle(tournament.getTitle());
                     tournamentPlayerParticipatedIn.setPosition(position);
+                    tournamentPlayerParticipatedIn.setPoints(getPointByIRLSystem(position));
                     tournamentPlayerParticipatedIn.setStartDate(tournament.getRegistrationEndAt());
-                    playerRanking.getTournaments().addFirst(tournamentPlayerParticipatedIn);
+
+                    playerRanking.getPlayedTournaments().addFirst(tournamentPlayerParticipatedIn);
                 }
             });
 
             TournamentRankings tournamentRankings = new TournamentRankings();
-            List<TournamentRankings.SeasonRanking> seasons = tournamentRankings.getSeasons();
-            Arrays.stream(Season.values()).forEach(season -> {
-                Map<String, TournamentRankings.PlayerRanking> playerRankingMap = playerRankingsMapBySeason.get(season.seasonId);
-                List<TournamentRankings.PlayerRanking> sortedPlayerRankingsForSeason = playerRankingMap.values().stream()
-                        .sorted((o1, o2) -> o2.getPoints().compareTo(o1.getPoints()))
-                        .collect(Collectors.toList());
-                // set most used name as common name for each PlayerRanking
-                sortedPlayerRankingsForSeason.forEach(playerRanking -> {
-                    String mostUsedName = playerRanking.getTournaments().stream()
-                            .collect(Collectors.groupingBy(TournamentRankings.Tournament::getNameUsedInGame, Collectors.counting()))
-                            .entrySet().stream()
-                            .max(Map.Entry.comparingByValue())
-                            .map(Map.Entry::getKey)
-                            .orElse(playerRanking.getCommonPlayerName());
-                    playerRanking.setCommonPlayerName(mostUsedName);
-                });
-                TournamentRankings.SeasonRanking seasonRanking = seasonRankingsMap.get(season.seasonId);
-                seasonRanking.setRankings(sortedPlayerRankingsForSeason);
-                seasons.add(seasonRanking);
+            tournamentRankings.setSeasonName(season.getSeasonName());
+            tournamentRankings.setSeasonStartDate(season.getSeasonStartDate());
+            tournamentRankings.setSeasonEndDate(season.getSeasonEndDate());
+
+            playerRankingMap.values().forEach(playerRanking -> {
+                // get and set best 12 positions in the player ranking
+                List<Integer> best12Positions = playerRanking.getPlayedTournaments().stream()
+                        .map(TournamentRankings.Tournament::getPosition)
+                        .sorted()
+                        .limit(12).toList();
+                playerRanking.setBest12Positions(best12Positions);
+                // set points for each seasion based on the tournamentWeeks
+                int points = playerRanking.getPlayedTournaments().stream()
+                        .mapToInt(TournamentRankings.Tournament::getPoints)
+                        .sorted()
+                        .limit(12)
+                        .sum();
+                playerRanking.setPointsBest12Tournaments(points);
             });
+
+            // Sort PlayerRankings by points
+            List<TournamentRankings.PlayerRanking> sortedPlayerRankings = playerRankingMap.values().stream()
+                    .sorted((o1, o2) -> o2.getTotalPoints().compareTo(o1.getTotalPoints()))
+                    .collect(Collectors.toList());
+
+            for (int i = 0; i < sortedPlayerRankings.size(); i++) {
+                sortedPlayerRankings.get(i).setPosition(i+1);
+            }
+
+            // Set most used name as common name for each PlayerRanking
+            sortedPlayerRankings.forEach(playerRanking -> {
+                String mostUsedName = playerRanking.getPlayedTournaments().stream()
+                        .collect(Collectors.groupingBy(TournamentRankings.Tournament::getNameUsedInGame, Collectors.counting()))
+                        .entrySet().stream()
+                        .max(Map.Entry.comparingByValue())
+                        .map(Map.Entry::getKey)
+                        .orElse(playerRanking.getCommonPlayerName());
+                playerRanking.setCommonPlayerName(mostUsedName);
+            });
+
+            tournamentRankings.setRankings(sortedPlayerRankings);
 
             return tournamentRankings;
         }
@@ -121,7 +122,7 @@ public class TournamentService {
     private String getSeasonId(Tournament tournament) {
         Season[] values = Season.values();
         for (Season value : values) {
-            if(tournament.getCreatedAt()
+            if(tournament.getRegistrationEndAt()
                     .isBefore(value.getSeasonEndDate())){
                 return value.getSeasonId();
             }

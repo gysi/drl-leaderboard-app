@@ -176,8 +176,14 @@ public class TournamentDataUpdater {
                     tournamentRound.setTitle((String) roundJSON.get("title"));
                     tournamentRound.setStatus((String) roundJSON.get("status"));
                     tournamentRound.setMode((String) roundJSON.get("mode"));
-                    tournamentRound.setStartAt(LocalDateTime.from(ZonedDateTime.parse((String) roundJSON.get("start-at"))));
-                    tournamentRound.setEndAt(LocalDateTime.from(ZonedDateTime.parse((String) roundJSON.get("end-at"))));
+                    tournamentRound.setStartAt(
+                            roundJSON.get("start-at") == null ? null :
+                            LocalDateTime.from(ZonedDateTime.parse((String) roundJSON.get("start-at")))
+                    );
+                    tournamentRound.setEndAt(
+                            roundJSON.get("end-at") == null ? null :
+                            LocalDateTime.from(ZonedDateTime.parse((String) roundJSON.get("end-at")))
+                    );
                     tournamentRounds.add(tournamentRound);
                     List<Map<String, Object>> matchesJSON = (List<Map<String, Object>>) roundJSON.get("matches");
                     List<TournamentRound.Match> tournamentMatches = new ArrayList<>();

@@ -8,6 +8,7 @@ const routes = [
     children: [
       { name: 'home', path: '', component: IndexPage },
       { name: 'overallrankings', path: 'overall-rankings', component: () => import('pages/OverallPage.vue') },
+      { name: 'tournaments', path: 'tournaments', component: () => import('pages/TournamentsPage.vue') },
       { name: 'tracks', path: 'tracks', component: () => import('pages/TracksPage.vue') },
       { name: 'tracklb', path: 'track-lb', component: () => import('pages/TrackLbPage.vue'), props: route => ({ q: route.query.q }) },
       { name: 'playerlb', path: 'player-lb', component: () => import('pages/PlayerLbPage.vue'), props: route => ({ q: route.query.q }) },

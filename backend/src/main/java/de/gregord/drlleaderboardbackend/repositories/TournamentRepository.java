@@ -4,6 +4,7 @@ import de.gregord.drlleaderboardbackend.entities.Tournament;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -12,8 +13,9 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
 
     @Query("""
         SELECT t FROM Tournament t
-            WHERE t.isTestTournament = false and t.status = 'complete'
-            ORDER BY t.createdAt ASC
+            WHERE t.isTestTournament = false AND t.status = 'complete'
+                AND t.registrationEndAt >= :lowerBound AND t.registrationEndAt < :upperBound
+            ORDER BY t.registrationEndAt ASC
     """)
-    Stream<Tournament> streamTournamentsForOverallRanking();
+    Stream<Tournament> streamTournaments(LocalDateTime lowerBound, LocalDateTime upperBound);
 }
