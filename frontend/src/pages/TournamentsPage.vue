@@ -3,9 +3,9 @@
     <q-card class="doc-api q-mb-md" flat bordered style="max-width: 1000px">
       <!--      Header-->
       <div class="header-toolbar row items-center q-pr-sm">
-        <div class="doc-card-title q-my-xs q-mr-sm ">{{ tournamentTitle }}</div>
+        <div class="doc-card-title q-my-xs q-mr-sm ">{{ seasonTitle }}</div>
         <div id="streamcard-info">
-          <p>Started on {{ tournamentStartDate }} UTC and will end at {{ tournamentEndDate }} UTC</p>
+          <p>Started on {{ seasonStartDate }} UTC and will end at {{ seasonEndDate }} UTC</p>
           <p>The tournament points are based on the DRL irl point system and only the top 12 tournaments for each player are counted.</p>
         </div>
       </div>
@@ -38,8 +38,39 @@
           >
           </q-table>
         </q-tab-panel>
-        <q-tab-panel class="q-pa-none" name="tournaments (coming soon)">
-          Coming Soon
+        <q-tab-panel class="q-pa-none" name="tournaments">
+          <q-table
+            :columns="tournamentTable.columns"
+            :rows="tournaments"
+            :loading="tournamentTable.loading.value"
+            row-key="guid"
+            class="my-sticky-header-table"
+            table-class="col-auto"
+            style="max-height: 100%;"
+            :pagination="{rowsPerPage: 0}"
+            hide-pagination
+            bordered
+            flat
+            grid
+          >
+            <template v-slot:item="props">
+              <div class="q-table__grid-item col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                <q-card class="">
+                  <q-card-section>
+                    <q-item-section>
+                      <q-item-label>{{props.row.title}}</q-item-label>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label v-for="(player, i) in props.row.top3" v-bind:key="player">{{i+1}}. {{player}}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-item-label>{{ toLocalDateformat(props.row.startDate) }}</q-item-label>
+                    </q-item-section>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </template>
+          </q-table>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -48,29 +79,37 @@
 
 <script setup>
 import axios from 'axios';
-import {computed, ref, shallowRef} from "vue";
+import {computed, ref, shallowRef, watch} from "vue";
 import {format, parseISO} from 'date-fns'
+import {utcToZonedTime} from "date-fns-tz";
 
 const tournamentRanking = shallowRef([]);
 
-const tournamentTitle = computed(() => {
+const seasonTitle = computed(() => {
   return tournamentRanking.value.seasonName == null ? 'Tournaments Rankings' : `Tournament Rankings - ${tournamentRanking.value.seasonName}`;
 })
 
-const tournamentStartDate = computed(() => {
+const seasonStartDate = computed(() => {
   if (tournamentRanking.value.seasonStartDate == null) return;
   const date = parseISO(tournamentRanking.value.seasonStartDate)
   return format(date, 'yyyy-MM-dd');
 })
 
-const tournamentEndDate = computed(() => {
+const seasonEndDate = computed(() => {
   if (tournamentRanking.value.seasonEndDate == null) return;
   const date = parseISO(tournamentRanking.value.seasonEndDate)
   return format(date, 'yyyy-MM-dd');
 })
 
 const currentTab = ref("rankings")
-const tabsList = ["rankings", "tournaments (coming soon)"]
+// watch currentTab
+watch(currentTab, (val) => {
+  if (val === "tournaments") {
+    fetchTournaments();
+  }
+})
+
+const tabsList = ["rankings", "tournaments"]
 const rankingsTable = {
   columns: [
     { name: 'position', label: '#', field: 'position', align: 'left' },
@@ -89,14 +128,41 @@ const rankingsTable = {
 const fetchTournamentRankings = async () => {
   rankingsTable.loading.value = true;
   const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/rankings-current-season`);
-  console.log(response.data);
   tournamentRanking.value = response.data;
   rankingsTable.loading.value = false;
 }
 
-fetchTournamentRankings();
+const tournaments = shallowRef([]);
 
-//query tournaments from backend
+const tournamentTable = {
+  columns: [
+    // { name: 'guid', label: 'GUID', field: 'guid' },
+    { name: 'title', label: 'Title', field: 'title' },
+    { name: 'top3', label: 'Top 3', field: 'top3' },
+    { name: 'startDate', label: 'Start Date', field: 'startDate'
+    }
+  ],
+  loading: ref(false),
+}
+
+const toLocalDateformat = (val) => {
+  if (val) {
+    const date = new Date(val+'Z')
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const zonedDate = utcToZonedTime(date, userTimezone);
+    const pattern = 'yyyy-MM-dd HH:mm:ss'
+    return format(zonedDate, pattern, { timeZone: userTimezone }) + ' ' + userTimezone
+  }
+};
+
+const fetchTournaments = async () => {
+  tournamentTable.loading.value = true;
+  const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/tournaments-current-season`);
+  tournaments.value = response.data;
+  tournamentTable.loading.value = false;
+}
+
+fetchTournamentRankings();
 
 </script>
 
