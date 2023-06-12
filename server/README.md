@@ -94,3 +94,9 @@ List banned IPs:
 ```bash
 fail2ban-client status [jailname]
 ```
+
+### GoAccess
+Analyze logs:
+```bash
+goaccess https-drl-leaderboards.miau.io.access.log* --log-format='%h - %^ [%d:%t %^] "%r" %s %b "%R" "%u" "%^"' --date-format='%d/%b/%Y' --time-format='%H:%M:%S'
+```
