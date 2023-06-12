@@ -57,7 +57,6 @@
   ]
   const rows = shallowRef([]);
   const loading = ref(true);
-  const consoleRef = console;
 
   function qpageStyleFn(offset, height) {
     return {

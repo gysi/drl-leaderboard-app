@@ -87,6 +87,10 @@ public class AppConfig {
                         .expireAfterWrite(1, TimeUnit.MINUTES)
                         .entryCapacity(1)
                         .permitNullValues(true))
+                .addCache(c -> c.name("tournamentRankings")
+                        .eternal(true)
+                        .entryCapacity(1)
+                        .permitNullValues(true))
                 ;
     }
 

@@ -1,3 +1,4 @@
+version: '3.8'
 services:
 #  web:
 #    build: ./flask_test
@@ -22,13 +23,19 @@ services:
     networks:
       - local_network
   backend:
-    build: ./backend/native
+    build: ./backend
     env_file:
       - docker_compose.env
     ports:
       - "8080:8080"
     volumes:
       - /var/log/backend:/var/log
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 512M
     networks:
       - local_network
     depends_on:

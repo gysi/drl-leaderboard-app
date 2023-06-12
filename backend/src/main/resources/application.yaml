@@ -10,7 +10,7 @@ spring:
     password: admin
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none # update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     properties:
@@ -20,8 +20,17 @@ spring:
           batch_size: 100
         order_updates: true
         order_inserts: true
-    generate-ddl: true
+        type:
+          json_format_mapper: de.gregord.drlleaderboardbackend.config.CustomHibernateJsonFormatter
+    generate-ddl: false # true
     database: postgresql
+  flyway:
+    validateMigrationNaming: true
+    locations: classpath:db/migration
+  task:
+    scheduling:
+      pool:
+        size: 3
 
 management:
   endpoints:
@@ -38,6 +47,8 @@ app:
     leaderboard-endpoint: "https://api.drlgame.com/leaderboards/?limit=20&game-type=Race&score-type=TimeMin&page={page}&token={token}&diameter=7&custom-physics=false&drl-official=true"
     maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&map-category=MapDRL&map-category=MapMultiGP&map-category=MapDRLSimCup&map-category=MapVirtualSeason&map-category=MapFeatured"
     map-detail-endpoint: "https://api.drlgame.com/maps/{guid}?token={token}&guid={guid}&root=true"
+    tournament-endpoint: "https://api.drlgame.com/tournaments?token={token}&limit=12&minimum-skill=0"
+    tournament-detail-endpoint: "https://api.drlgame.com/tournaments/{guid}?token={token}"
     # To finish within 10 minutes I need at least 1 request every 0.7 seconds = ~1.43 requests/s
 #    duration-between-requests: 666ms # ~1.5 requests/s # Took 17 Minutes, because prod server is slower than my local machine
     duration-between-requests: 200ms # ~3 requests/s, which isn't really 3 requests/s, because the requests are not parallel and we need to process the data
@@ -47,6 +58,8 @@ app:
       cron: "0 */2 * * * *" # every 2 Minutes (But waits for the previous run to finish)
     tracks:
       cron: "0 0 0 * * *" # every day at 0:00
+    tournaments:
+      cron: "0 */2 * * * *" # every 2 Minutes (But waits for the previous run to finish)
 
 server:
   error:
