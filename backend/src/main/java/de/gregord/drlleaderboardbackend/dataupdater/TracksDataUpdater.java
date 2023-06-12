@@ -163,14 +163,13 @@ public class TracksDataUpdater {
     @CacheEvict(value = "tracks", allEntries = true)
     public void initialize() {
         long count = tracksRepository.count();
-//        if(count <= 0) {
+        if(count <= 0) {
             LOG.info("No tracks found in database, initializing...");
             updateMapsData();
-//        }
+        }
     }
 
     @Transactional
-    @Scheduled(cron = "${app.data-updater.tracks.cron}")
     @Caching(evict = {
         @CacheEvict(value = "tracks", allEntries = true),
         @CacheEvict(value = "parentCategories", allEntries = true)

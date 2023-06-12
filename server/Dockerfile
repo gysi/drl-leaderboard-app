@@ -7,18 +7,18 @@ COPY backend/src ./src
 RUN ./mvnw install spring-boot:repackage
 
 
-FROM alpine:3 as native-image-backend-builder
-WORKDIR /app
-RUN wget https://download.bell-sw.com/vm/22.3.0/bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
-RUN wget -P /etc/apk/keys/ https://apk.bell-sw.com/info@bell-sw.com-5fea454e.rsa.pub
-RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
-ENV PATH="/opt/bellsoft/liberica-vm-core-22.3.0-openjdk17/bin:${PATH}"
-RUN apk add build-base zlib-dev fontconfig-dev freetype-dev
-COPY backend/.mvn .mvn
-COPY backend/mvnw backend/pom.xml ./
-RUN ./mvnw dependency:resolve
-COPY backend/src ./src
-RUN ./mvnw -Pnative native:compile
+#FROM alpine:3 as native-image-backend-builder
+#WORKDIR /app
+#RUN wget https://download.bell-sw.com/vm/22.3.0/bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
+#RUN wget -P /etc/apk/keys/ https://apk.bell-sw.com/info@bell-sw.com-5fea454e.rsa.pub
+#RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
+#ENV PATH="/opt/bellsoft/liberica-vm-core-22.3.0-openjdk17/bin:${PATH}"
+#RUN apk add build-base zlib-dev fontconfig-dev freetype-dev
+#COPY backend/.mvn .mvn
+#COPY backend/mvnw backend/pom.xml ./
+#RUN ./mvnw dependency:resolve
+#COPY backend/src ./src
+#RUN ./mvnw -Pnative native:compile
 
 
 FROM node:18-alpine as frontend-builder
@@ -87,7 +87,7 @@ RUN ssh-keygen -p -P $sshpassword_arg -N '' -f .ssh/id_ed25519
 COPY --chown=myuser:mygroup server/ansible ansible
 
 COPY --from=backend-builder --chown=myuser:mygroup /app/target/*.jar /home/myuser/ansible/app/backend/app.jar
-COPY --from=native-image-backend-builder --chown=myuser:mygroup /app/target/DRLLeaderboardBackend /home/myuser/ansible/app/backend/native/DRLLeaderboardBackend
+#COPY --from=native-image-backend-builder --chown=myuser:mygroup /app/target/DRLLeaderboardBackend /home/myuser/ansible/app/backend/native/DRLLeaderboardBackend
 COPY --from=frontend-builder-staging --chown=myuser:mygroup /app/dist/spa /home/myuser/ansible/app/frontend/staging/leaderboard
 COPY --from=frontend-builder-prod --chown=myuser:mygroup /app/dist/spa /home/myuser/ansible/app/frontend/prod/leaderboard
 
