@@ -37,13 +37,15 @@ COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
 
 FROM frontend-builder as frontend-builder-staging
 WORKDIR /app
-RUN DLAPP_ENV=STAGING yarn quasar build && yarn purgecss --config ./purgecss.config.js
-
+# TODO deactivate purge for now, because it removes too much
+#RUN DLAPP_ENV=STAGING yarn quasar build && yarn purgecss --config ./purgecss.config.js
+RUN DLAPP_ENV=STAGING yarn quasar build
 
 FROM frontend-builder as frontend-builder-prod
 WORKDIR /app
-RUN DLAPP_ENV=PROD yarn quasar build && yarn purgecss --config ./purgecss.config.js
-
+# TODO deactivate purge for now, because it removes too much
+#RUN DLAPP_ENV=PROD yarn quasar build && yarn purgecss --config ./purgecss.config.js
+RUN DLAPP_ENV=PROD yarn quasar build
 
 FROM python:3.11-bullseye as runner
 WORKDIR /
