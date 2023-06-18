@@ -29,13 +29,16 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - /var/log/backend:/var/log
+      - /var/log/backend:/var/log/backend
+      - /var/log/gc_backend:/var/log/gc_backend
+      - /var/log/heapdumps_backend:/var/log/heapdumps_backend
+      - ./data/backend/imgcache:/imgcache
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 900M
         reservations:
-          memory: 512M
+          memory: 900M
     networks:
       - local_network
     depends_on:
