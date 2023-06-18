@@ -17,7 +17,7 @@ public class TournamentRound implements Serializable {
         private String id; // drl api mapping: id
         private List<Player> players; // drl api mapping: players
         private List<String> playerOrder; // drl api mapping: player-order, empty list if not started
-        private String status; // drl api mapping: status, values: 'idle', 'complete' TODO: status of running tournament?
+        private String status; // drl api mapping: status, values: 'idle', 'active', 'complete'
         private Integer nOrder; // drl api mapping: norder
         private Integer numWinners; // drl api mapping: num-winners, number of players that will advance to the next round
         private Integer heats; // drl api mapping: heats

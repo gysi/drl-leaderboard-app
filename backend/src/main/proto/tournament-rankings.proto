@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+package de.gregord.drlleaderboardbackend.domain;
+
+message TournamentRankings {
+  string seasonName = 1;
+  google.protobuf.Timestamp seasonStartDate = 2;
+  google.protobuf.Timestamp seasonEndDate = 3;
+  repeated PlayerRanking rankings = 4;
+
+  message PlayerRanking {
+    string commonPlayerName = 1;
+    int32 numberOfTournamentsPlayed = 2;
+    int32 numberOfGoldenHeats = 3;
+    int32 totalPoints = 4;
+    int32 position = 5;
+    int32 pointsBest12Tournaments = 6;
+    repeated int32 best12Positions = 7;
+    repeated Tournament playedTournaments = 8;
+  }
+
+  message Tournament {
+    string title = 1;
+    google.protobuf.Timestamp startDate = 2;
+    int32 position = 3;
+    int32 points = 4;
+    string nameUsedInGame = 5;
+  }
+}
