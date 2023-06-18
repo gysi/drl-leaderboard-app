@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  backend:
+    build:
+        context: ../../../
+        dockerfile: src/docker/local/Dockerfile
+    env_file:
+      - docker_compose.env
+      - docker_compose_no_data_updaters.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../../../logs/backend:/var/log/backend
+      - ../../../logs/gc_backend:/var/log/gc_backend
+      - ../../../logs/heapdumps_backend:/var/log/heapdumps_backend
+    networks:
+      - local_network
+    deploy:
+      resources:
+        limits:
+          memory: 800M
+        reservations:
+          memory: 800M
+
+networks:
+  local_network:
