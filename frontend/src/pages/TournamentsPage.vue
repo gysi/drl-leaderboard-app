@@ -60,7 +60,7 @@
                     <q-card-section class="absolute-top" style="background: rgba(0,0,0,70%)">
                         <div class="" style="font-size: 20px">{{props.row.title}}</div>
                         <div class="text-subtitle2 text-grey-5">{{ toLocalDateformat(props.row.startDate) }}</div>
-                        <q-separator />
+                        <q-separator v-if="props.row.top3.length !== 0" class="bg-grey-6" />
                         <div v-for="(player, i) in props.row.top3" v-bind:key="player">{{i+1}}. {{player}}</div>
                     </q-card-section>
                     <q-card-section v-if="props.row.status === 'idle'" class="absolute-bottom" style="background: rgba(255,0,0,80%)">

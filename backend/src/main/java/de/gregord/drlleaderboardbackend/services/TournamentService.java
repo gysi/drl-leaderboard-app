@@ -95,7 +95,7 @@ public class TournamentService {
 
             // Sort PlayerRankings by points
             List<TournamentRankings.PlayerRanking> sortedPlayerRankings = playerRankingMap.values().stream()
-                    .sorted((o1, o2) -> o2.getTotalPoints().compareTo(o1.getTotalPoints()))
+                    .sorted((o1, o2) -> o2.getTotalPoints().compareTo(o1.getPointsBest12Tournaments()))
                     .collect(Collectors.toList());
 
             for (int i = 0; i < sortedPlayerRankings.size(); i++) {
