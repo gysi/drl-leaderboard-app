@@ -67,7 +67,8 @@ WORKDIR /home/myuser
 
 # INSTALL ANSIBLE
 ENV PATH="/home/myuser/.local/bin:${PATH}"
-RUN python3 -m pip install --user ansible && \
+ARG ansibleversion_arg
+RUN python3 -m pip install --user ansible==${ansibleversion_arg} && \
     python3 -m pip install --user "ansible-lint"
 
 
