@@ -33,6 +33,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
          FROM Tournament t
          WHERE t.isTestTournament = false
              AND t.registrationEndAt >= :lowerBound AND t.registrationEndAt < :upperBound
+             AND t.status != 'canceled'
          ORDER BY t.registrationEndAt DESC
     """)
     List<TournamentView> _getTournament(LocalDateTime lowerBound, LocalDateTime upperBound);
