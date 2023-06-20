@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -87,8 +88,10 @@ public class TournamentService {
                 // set points for each seasion based on the tournamentWeeks
                 int points = playerRanking.getPlayedTournaments().stream()
                         .mapToInt(TournamentRankings.Tournament::getPoints)
-                        .sorted()
+                        .boxed()
+                        .sorted(Collections.reverseOrder())
                         .limit(12)
+                        .mapToInt(Integer::intValue)
                         .sum();
                 playerRanking.setPointsBest12Tournaments(points);
             });
@@ -130,7 +133,16 @@ public class TournamentService {
         return null;
     }
 
-    private int getPointByIRLSystem(Integer position){
+//    public static void main(String[] args) {
+//        int[] ints = {1, 2, 2, 3, 3, 3, 3, 5, 5, 6, 6, 7};
+//        // getPointByIRLSystem for each number and sum them up
+//        int sum = Arrays.stream(ints)
+//                .map(TournamentService::getPointByIRLSystem)
+//                .sum();
+//        System.out.println(sum);
+//    }
+
+    private static int getPointByIRLSystem(Integer position){
         if(position == 1){
             return 25;
         }
