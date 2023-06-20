@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -24,11 +25,15 @@ import java.util.concurrent.Semaphore;
 public class ImgCacheController {
 
     private final Path storagePath = Paths.get("imgcache");
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     // Only let 2 Threads download a image at the same time to save memory
     private final Semaphore semaphore = new Semaphore(2);
 
     public ImgCacheController() {
+        DefaultUriBuilderFactory defaultUriBuilderFactory = new DefaultUriBuilderFactory();
+        defaultUriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
+        restTemplate = new RestTemplate();
+        restTemplate.setUriTemplateHandler(defaultUriBuilderFactory);
         try {
             if (!Files.exists(storagePath)) {
                 Files.createDirectories(storagePath);
