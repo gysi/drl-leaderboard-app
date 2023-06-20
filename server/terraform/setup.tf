@@ -14,8 +14,8 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
-resource "hcloud_server" "prod2" {
-  name = "${var.hcloud_name}2"
+resource "hcloud_server" "prod3" {
+  name = "${var.hcloud_name}3"
   server_type = "cx11"
   image = "debian-11"
   location = "nbg1"
