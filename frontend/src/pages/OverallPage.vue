@@ -17,6 +17,9 @@
       :rows-per-page-options="[0]"
       hide-bottom
       virtual-scroll-item-size="65"
+      virtual-scroll-slice-ratio-before="2"
+      virtual-scroll-slice-ratio-after="2"
+      virtual-scroll-sticky-size-start="49"
     >
       <template v-slot:top-left>
         <div class="row">
@@ -88,7 +91,7 @@
 </template>
 
 <script>
-import {defineComponent} from 'vue'
+import {computed, defineComponent} from 'vue'
 import axios from 'axios';
 import {backGroundColorByPosition, formatMilliSeconds, getDateDifference} from 'src/modules/LeaderboardFunctions'
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
@@ -154,6 +157,8 @@ export default defineComponent({
         this.rows = response.data.map((row) => {
           if (row['profileThumb'].includes('placeholder.png')) {
             row['profileThumb'] = placeholder;
+          }else{
+            row['profileThumb'] = this.buildImgCacheUrl(row['profileThumb']);
           }
           return row;
         });
@@ -183,6 +188,13 @@ export default defineComponent({
       }
 
       return words.join(' ');
+    },
+    buildImgCacheUrl(url){
+      if (url) {
+        if(url.includes('placeholder.png')) return url;
+        let encodedUrl = encodeURIComponent(url);
+        return computed(() => `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`).value;
+      }
     },
     formatMilliSeconds, backGroundColorByPosition, getDateDifference
   },

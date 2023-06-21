@@ -126,14 +126,17 @@ module.exports = configure(function (/* ctx */) {
           LOCAL: {
             DLAPP_URL: 'http://localhost:9000',
             DLAPP_API_URL: 'http://localhost:8080/api',
+            DLAPP_THUMBOR_URL: 'http://localhost/thumbor'
           },
           STAGING: {
             DLAPP_URL: 'https://drl-leaderboards-test.miau.io',
-            DLAPP_API_URL: 'https://drl-leaderboards-test.miau.io/api'
+            DLAPP_API_URL: 'https://drl-leaderboards-test.miau.io/api',
+            DLAPP_THUMBOR_URL: 'https://drl-leaderboards-test.miau.io/thumbor'
           },
           PROD: {
             DLAPP_URL: 'https://drl-leaderboards.miau.io',
-            DLAPP_API_URL: 'https://drl-leaderboards.miau.io/api'
+            DLAPP_API_URL: 'https://drl-leaderboards.miau.io/api',
+            DLAPP_THUMBOR_URL: 'https://drl-leaderboards.miau.io/thumbor'
           }
         };
         console.log({ ...global_vars, ...env_vars[process.env.DLAPP_ENV ? process.env.DLAPP_ENV : 'LOCAL'] });

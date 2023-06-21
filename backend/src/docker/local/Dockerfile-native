@@ -1,38 +1,13 @@
-#FROM alpine:3 as native-image-backend-builder
-#WORKDIR /app
-## https://bell-sw.com/pages/downloads/native-image-kit/
-##RUN wget https://download.bell-sw.com/vm/22.3.0/bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
-#RUN wget https://download.bell-sw.com/vm/23.0.0/bellsoft-liberica-vm-full-openjdk17.0.7+7-23.0.0+1-linux-x64-musl.apk
-#RUN wget -P /etc/apk/keys/ https://apk.bell-sw.com/info@bell-sw.com-5fea454e.rsa.pub
-##RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
-#RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.7+7-23.0.0+1-linux-x64-musl.apk
-#ENV PATH="/opt/bellsoft/liberica-vm-core-23.0.0-openjdk17/bin:${PATH}"
-#RUN apk add build-base zlib-dev fontconfig-dev freetype-dev
-#COPY .mvn .mvn
-#COPY mvnw pom.xml ./
-#RUN ./mvnw dependency:resolve
-#COPY src/main ./src/main
-#COPY src/test ./src/test
-#RUN ./mvnw -Pnative native:compile
-
-FROM debian:bullseye-slim as native-image-backend-builder
+FROM alpine:3 as native-image-backend-builder
 WORKDIR /app
 # https://bell-sw.com/pages/downloads/native-image-kit/
-# Fullkit is need because of javafx (ImageIO Library) and this isn't available for alpine
-RUN apt-get update && apt-get install -y  \
-    g++ make zlib1g-dev \
-    wget
 #RUN wget https://download.bell-sw.com/vm/22.3.0/bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
-RUN wget https://download.bell-sw.com/vm/23.0.0/bellsoft-liberica-vm-full-openjdk17.0.7+7-23.0.0+1-linux-amd64.deb
-#RUN wget https://download.bell-sw.com/vm/22.3.2/bellsoft-liberica-vm-full-openjdk17.0.7+7-22.3.2+1-linux-amd64.deb
+RUN wget https://download.bell-sw.com/vm/23.0.0/bellsoft-liberica-vm-core-openjdk17.0.7+7-23.0.0+1-linux-x64-musl.apk
 RUN wget -P /etc/apk/keys/ https://apk.bell-sw.com/info@bell-sw.com-5fea454e.rsa.pub
 #RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
-#RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.7+7-23.0.0+1-linux-x64-musl.apk
-RUN apt-get install -y ./bellsoft-liberica-vm-full-openjdk17.0.7+7-23.0.0+1-linux-amd64.deb
-#RUN apt-get install -y ./bellsoft-liberica-vm-full-openjdk17.0.7+7-22.3.2+1-linux-amd64.deb
-#RUN ls -la /opt/bellsoft/
-#ENV PATH="/opt/bellsoft/liberica-vm-full-22.3.2-openjdk17/bin:${PATH}"
-ENV PATH="/opt/bellsoft/liberica-vm-full-23.0.0-openjdk17/bin:${PATH}"
+RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.7+7-23.0.0+1-linux-x64-musl.apk
+ENV PATH="/opt/bellsoft/liberica-vm-core-23.0.0-openjdk17/bin:${PATH}"
+RUN apk add build-base zlib-dev fontconfig-dev freetype-dev
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
 RUN ./mvnw dependency:resolve
@@ -40,20 +15,45 @@ COPY src/main ./src/main
 COPY src/test ./src/test
 RUN ./mvnw -Pnative native:compile
 
-#FROM alpine:3
+#FROM debian:bullseye-slim as native-image-backend-builder
 #WORKDIR /app
-#RUN apk add fontconfig-dev freetype-dev
-#COPY --from=native-image-backend-builder /app/target/DRLLeaderboardBackend /app/DRLLeaderboardBackend
-#RUN chmod +x /app/DRLLeaderboardBackend
-#ENTRYPOINT ["/app/DRLLeaderboardBackend"]
+## https://bell-sw.com/pages/downloads/native-image-kit/
+## Fullkit is need because of javafx (ImageIO Library) and this isn't available for alpine
+#RUN apt-get update && apt-get install -y  \
+#    g++ make zlib1g-dev \
+#    wget
+##RUN wget https://download.bell-sw.com/vm/22.3.0/bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
+#RUN wget https://download.bell-sw.com/vm/23.0.0/bellsoft-liberica-vm-full-openjdk17.0.7+7-23.0.0+1-linux-amd64.deb
+##RUN wget https://download.bell-sw.com/vm/22.3.2/bellsoft-liberica-vm-full-openjdk17.0.7+7-22.3.2+1-linux-amd64.deb
+#RUN wget -P /etc/apk/keys/ https://apk.bell-sw.com/info@bell-sw.com-5fea454e.rsa.pub
+##RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.5+8-22.3.0+2-linux-x64-musl.apk
+##RUN apk add ./bellsoft-liberica-vm-core-openjdk17.0.7+7-23.0.0+1-linux-x64-musl.apk
+#RUN apt-get install -y ./bellsoft-liberica-vm-full-openjdk17.0.7+7-23.0.0+1-linux-amd64.deb
+##RUN apt-get install -y ./bellsoft-liberica-vm-full-openjdk17.0.7+7-22.3.2+1-linux-amd64.deb
+##RUN ls -la /opt/bellsoft/
+##ENV PATH="/opt/bellsoft/liberica-vm-full-22.3.2-openjdk17/bin:${PATH}"
+#ENV PATH="/opt/bellsoft/liberica-vm-full-23.0.0-openjdk17/bin:${PATH}"
+#COPY .mvn .mvn
+#COPY mvnw pom.xml ./
+#RUN ./mvnw dependency:resolve
+#COPY src/main ./src/main
+#COPY src/test ./src/test
+#RUN ./mvnw -Pnative native:compile
 
-FROM debian:bullseye-slim
+FROM alpine:3
 WORKDIR /app
-# Update the package lists for upgrades and new package installations.
-RUN apt-get update && apt-get install -y \
-    fontconfig \
-    libfreetype6-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add fontconfig-dev freetype-dev
 COPY --from=native-image-backend-builder /app/target/DRLLeaderboardBackend /app/DRLLeaderboardBackend
 RUN chmod +x /app/DRLLeaderboardBackend
 ENTRYPOINT ["/app/DRLLeaderboardBackend"]
+
+#FROM debian:bullseye-slim
+#WORKDIR /app
+## Update the package lists for upgrades and new package installations.
+#RUN apt-get update && apt-get install -y \
+#    fontconfig \
+#    libfreetype6-dev \
+#    && rm -rf /var/lib/apt/lists/*
+#COPY --from=native-image-backend-builder /app/target/DRLLeaderboardBackend /app/DRLLeaderboardBackend
+#RUN chmod +x /app/DRLLeaderboardBackend
+#ENTRYPOINT ["/app/DRLLeaderboardBackend"]

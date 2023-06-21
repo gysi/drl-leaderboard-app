@@ -167,9 +167,7 @@ const toLocalDateformat = (val) => {
 const buildImgCacheUrl = (url) => {
   if (url) {
     let encodedUrl = encodeURIComponent(url);
-    let parts = url.split("/");
-    let extractedPart = parts[8];  // parts[8] because the required string is at the 9th position when split by "/"
-    return computed(() => `${process.env.DLAPP_API_URL}/img/${extractedPart}.png?url=${encodedUrl}`).value;
+    return computed(() => `${process.env.DLAPP_THUMBOR_URL}/x500/${encodedUrl}`).value;
   }
 }
 
