@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-md items-start">
-    <q-card class="doc-api q-mb-md" flat bordered style="max-width: 1000px">
+    <q-card class="doc-api q-mb-md" flat bordered style="mmax-width: 1000px">
       <!--      Header-->
       <div class="header-toolbar row items-center q-pr-sm">
         <div class="doc-card-title q-my-xs q-mr-sm ">{{ seasonTitle }}</div>
@@ -54,20 +54,28 @@
             grid
           >
             <template v-slot:item="props">
-              <div class="q-table__grid-item col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                <q-card class="">
-                  <q-card-section>
-                    <q-item-section>
-                      <q-item-label>{{props.row.title}}</q-item-label>
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label v-for="(player, i) in props.row.top3" v-bind:key="player">{{i+1}}. {{player}}</q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                      <q-item-label>{{ toLocalDateformat(props.row.startDate) }}</q-item-label>
-                    </q-item-section>
-                  </q-card-section>
+              <div class="q-table__grid-item col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <q-card class="bg-black">
+                <q-img :src="buildImgCacheUrl(props.row.imgUrl)" height="450px" fit="cover">
+                    <q-card-section class="absolute-top" style="background: rgba(0,0,0,70%)">
+                        <div class="" style="font-size: 20px">{{props.row.title}}</div>
+                        <div class="text-subtitle2 text-grey-5">{{ toLocalDateformat(props.row.startDate) }}</div>
+                        <q-separator v-if="props.row.top3.length !== 0" class="bg-grey-6" />
+                        <div v-for="(player, i) in props.row.top3" v-bind:key="player">{{i+1}}. {{player}}</div>
+                    </q-card-section>
+                    <q-card-section v-if="props.row.status === 'idle'" class="absolute-bottom" style="background: rgba(255,0,0,80%)">
+                      <div style="text-align: center; font-weight: 900; font-size: 16px">Starts in</div>
+                      <div style="text-align: center; font-weight: 900; font-size: 16px">{{getDateDifferenceToNow(props.row.startDate)}}</div>
+                    </q-card-section>
+                    <q-card-section v-if="props.row.status === 'active'" class="absolute-bottom" style="background: rgba(197,197,63,0.95)">
+                        <div style="text-align: center; font-weight: 900; font-size: 16px">RUNNING</div>
+                    </q-card-section>
+                    <q-card-section v-if="props.row.status === 'complete'" class="absolute-bottom" style="background: rgba(64,169,60,0.8)">
+                        <div style="text-align: center; font-weight: 900; font-size: 16px">COMPLETED</div>
+                    </q-card-section>
+                </q-img>
                 </q-card>
+
               </div>
             </template>
           </q-table>
@@ -80,8 +88,9 @@
 <script setup>
 import axios from 'axios';
 import {computed, ref, shallowRef, watch} from "vue";
-import {format, parseISO} from 'date-fns'
+import {format, parseISO, formatDuration, intervalToDuration} from 'date-fns'
 import {utcToZonedTime} from "date-fns-tz";
+import {getDateDifference} from 'src/modules/LeaderboardFunctions'
 
 const tournamentRanking = shallowRef([]);
 
@@ -139,8 +148,8 @@ const tournamentTable = {
     // { name: 'guid', label: 'GUID', field: 'guid' },
     { name: 'title', label: 'Title', field: 'title' },
     { name: 'top3', label: 'Top 3', field: 'top3' },
-    { name: 'startDate', label: 'Start Date', field: 'startDate'
-    }
+    { name: 'startDate', label: 'Start Date', field: 'startDate' },
+    { name: 'imgUrl', label:'Img Url', field: 'imgUrl' }
   ],
   loading: ref(false),
 }
@@ -155,10 +164,42 @@ const toLocalDateformat = (val) => {
   }
 };
 
+const buildImgCacheUrl = (url) => {
+  if (url) {
+    let encodedUrl = encodeURIComponent(url);
+    return computed(() => `${process.env.DLAPP_THUMBOR_URL}/x500/${encodedUrl}`).value;
+  }
+}
+
+const getDateDifferenceToNow = (dateString) => {
+    if(!dateString) return '';
+    let duration = intervalToDuration({
+      start: new Date(),
+      end: new Date(dateString+'Z')
+    });
+    let units = [];
+    if(duration.months > 0 ){
+      units.push('months');
+    }
+    if(duration.days > 0 ){
+      units.push('days');
+    } else {
+      if (duration.hours > 0) {
+        units.push('hours');
+      }
+      if (duration.minutes > 0) {
+        units.push('minutes');
+      }
+      units.push('seconds');
+    }
+    return formatDuration(duration, { format: units });
+}
+
 const fetchTournaments = async () => {
   tournamentTable.loading.value = true;
   const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/tournaments-current-season`);
   tournaments.value = response.data;
+  console.log(tournaments.value);
   tournamentTable.loading.value = false;
 }
 

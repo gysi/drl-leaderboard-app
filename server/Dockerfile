@@ -3,7 +3,8 @@ WORKDIR /app
 COPY backend/.mvn .mvn
 COPY backend/mvnw backend/pom.xml ./
 RUN ./mvnw dependency:resolve
-COPY backend/src ./src
+COPY backend/src/main ./src/main
+COPY backend/src/test ./src/test
 RUN ./mvnw install spring-boot:repackage
 
 
@@ -17,7 +18,8 @@ RUN ./mvnw install spring-boot:repackage
 #COPY backend/.mvn .mvn
 #COPY backend/mvnw backend/pom.xml ./
 #RUN ./mvnw dependency:resolve
-#COPY backend/src ./src
+#COPY backend/src/main ./src/main
+#COPY backend/src/test ./src/test
 #RUN ./mvnw -Pnative native:compile
 
 
@@ -35,13 +37,15 @@ COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
 
 FROM frontend-builder as frontend-builder-staging
 WORKDIR /app
-RUN DLAPP_ENV=STAGING yarn quasar build && yarn purgecss --config ./purgecss.config.js
-
+# TODO deactivate purge for now, because it removes too much
+#RUN DLAPP_ENV=STAGING yarn quasar build && yarn purgecss --config ./purgecss.config.js
+RUN DLAPP_ENV=STAGING yarn quasar build
 
 FROM frontend-builder as frontend-builder-prod
 WORKDIR /app
-RUN DLAPP_ENV=PROD yarn quasar build && yarn purgecss --config ./purgecss.config.js
-
+# TODO deactivate purge for now, because it removes too much
+#RUN DLAPP_ENV=PROD yarn quasar build && yarn purgecss --config ./purgecss.config.js
+RUN DLAPP_ENV=PROD yarn quasar build
 
 FROM python:3.11-bullseye as runner
 WORKDIR /
@@ -67,7 +71,8 @@ WORKDIR /home/myuser
 
 # INSTALL ANSIBLE
 ENV PATH="/home/myuser/.local/bin:${PATH}"
-RUN python3 -m pip install --user ansible && \
+ARG ansibleversion_arg
+RUN python3 -m pip install --user ansible==${ansibleversion_arg} && \
     python3 -m pip install --user "ansible-lint"
 
 

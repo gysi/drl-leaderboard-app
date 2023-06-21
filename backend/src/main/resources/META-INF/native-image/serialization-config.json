@@ -1,3 +1,41 @@
-[
-  {"name":"java.time.Ser"}
-]
+{
+  "types":[
+    {
+      "name":"de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking"
+    },
+    {
+      "name":"de.gregord.drlleaderboardbackend.entities.tournament.TournamentRound"
+    },
+    {
+      "name":"de.gregord.drlleaderboardbackend.entities.tournament.TournamentRound$Match"
+    },
+    {
+      "name":"de.gregord.drlleaderboardbackend.entities.tournament.TournamentRound$Player"
+    },
+    {
+      "name":"java.lang.Integer"
+    },
+    {
+      "name":"java.lang.Long"
+    },
+    {
+      "name":"java.lang.Number"
+    },
+    {
+      "name":"java.lang.String"
+    },
+    {
+      "name":"java.time.LocalDateTime"
+    },
+    {
+      "name":"java.time.Ser"
+    },
+    {
+      "name":"java.util.ArrayList"
+    }
+  ],
+  "lambdaCapturingTypes":[
+  ],
+  "proxies":[
+  ]
+}

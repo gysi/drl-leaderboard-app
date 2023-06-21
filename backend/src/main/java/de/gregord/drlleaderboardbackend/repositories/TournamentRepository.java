@@ -26,11 +26,14 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
             t.guid as guid,
             t.title as title,
             t.customMapTitle as trackName,
+            t.imageUrl as imgUrl,
             jsonb_path_query_array(t.rankings, '$[0 to 2].profileName') AS top3,
-            t.registrationEndAt as startDate
+            t.registrationEndAt as startDate,
+            t.status as status
          FROM Tournament t
          WHERE t.isTestTournament = false
              AND t.registrationEndAt >= :lowerBound AND t.registrationEndAt < :upperBound
+             AND t.status != 'canceled'
          ORDER BY t.registrationEndAt DESC
     """)
     List<TournamentView> _getTournament(LocalDateTime lowerBound, LocalDateTime upperBound);
