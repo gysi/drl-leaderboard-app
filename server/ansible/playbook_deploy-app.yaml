@@ -105,6 +105,16 @@
         checksum: true
       notify: Restart Fail2Ban
 
+    - name: "Create directories for thumbor with correct permissions"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0777'
+      loop:
+        - app/data/imgcache
+        - app/data/imgcache/result-storage
+        - app/data/imgcache/source-storage
+
     - name: "Synchronize Docker Compose project with remote host"
       ansible.posix.synchronize:
         src: app/

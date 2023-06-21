@@ -97,11 +97,12 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.imgscalr</groupId>
-            <artifactId>imgscalr-lib</artifactId>
-            <version>4.2</version>
-        </dependency>
+<!--        Deactivated because ImageController isn't needed anymore, we use Thumbor instead-->
+<!--        <dependency>-->
+<!--            <groupId>org.imgscalr</groupId>-->
+<!--            <artifactId>imgscalr-lib</artifactId>-->
+<!--            <version>4.2</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
@@ -209,7 +210,7 @@
                         <configuration>
                             <mainClass>de.gregord.drlleaderboardbackend.Main</mainClass>
                             <buildArgs>
-                                <arg>--initialize-at-build-time=ch.qos.logback.classic.Logger,ch.qos.logback.core.status.StatusBase,ch.qos.logback.core.util.Loader,ch.qos.logback.core.status.InfoStatus,ch.qos.logback.classic.Level,org.slf4j.LoggerFactory,ch.qos.logback.core.CoreConstants,ch.qos.logback.core.util.StatusPrinter,org.slf4j.MDC</arg>
+                                <arg>-H:+ReportExceptionStackTraces --trace-object-instantiation=java.util.jar.JarFile --initialize-at-build-time=ch.qos.logback.classic.Logger,ch.qos.logback.core.status.StatusBase,ch.qos.logback.core.util.Loader,ch.qos.logback.core.status.InfoStatus,ch.qos.logback.classic.Level,org.slf4j.LoggerFactory,ch.qos.logback.core.CoreConstants,ch.qos.logback.core.util.StatusPrinter,org.slf4j.MDC</arg>
                             </buildArgs>
                         </configuration>
                     </plugin>
