@@ -1,0 +1,21 @@
+FROM node:18-alpine as frontend-builder
+WORKDIR /app
+COPY frontend/.yarn .yarn/
+COPY frontend/.yarnrc.yml frontend/package.json frontend/yarn.lock ./
+RUN yarn install
+COPY frontend/public public/
+COPY frontend/src src/
+COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
+    frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/index.html frontend/jsconfig.json \
+    frontend/postcss.config.js frontend/quasar.config.js frontend/purgecss.config.js ./
+
+
+FROM frontend-builder as frontend-builder-staging
+WORKDIR /app
+# TODO deactivate purge for now, because it removes too much
+#RUN DLAPP_ENV=STAGING yarn quasar build && yarn purgecss --config ./purgecss.config.js
+RUN DLAPP_ENV=LOCAL yarn quasar build
+
+FROM nginx:latest
+RUN rm /etc/nginx/conf.d/default.conf
+COPY --from=frontend-builder-staging /app/dist/spa /www/leaderboard

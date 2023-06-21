@@ -49,13 +49,9 @@
     - name: "Add packages necessary for docker to work"
       ansible.builtin.apt:
         name:
-          - apt-transport-https
           - ca-certificates
+          - gnupg
           - curl
-          - gnupg-agent
-          - software-properties-common
-          - lsb-release
-          - python3-pip
         state: present
         update_cache: true
 
@@ -71,16 +67,13 @@
 
     - name: "Install Docker"
       ansible.builtin.apt:
-        name: docker-ce=5:20.*
+        name:
+          - docker-ce=5:24.*
+          - docker-ce-cli=5:24.*
+          - containerd.io
+          - docker-compose-plugin
         state: present
         update_cache: true
-
-    - name: "Install Docker Module for Python"
-      ansible.builtin.pip:
-        name:
-          - docker>=6.0.0,<7.0.0
-          - docker-compose==1.29.2
-        state: present
 
     - name: "Gather the package facts"
       ansible.builtin.package_facts:
@@ -111,6 +104,16 @@
         recursive: true
         checksum: true
       notify: Restart Fail2Ban
+
+    - name: "Create directories for thumbor with correct permissions"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0777'
+      loop:
+        - app/data/imgcache
+        - app/data/imgcache/result-storage
+        - app/data/imgcache/source-storage
 
     - name: "Synchronize Docker Compose project with remote host"
       ansible.posix.synchronize:
@@ -154,9 +157,11 @@
       register: certdir_transmitters
 
     - name: "Tear down existing services"
-      community.docker.docker_compose:
-        project_src: /root/app
-        state: absent
+      ansible.builtin.command:
+        chdir: /root/app
+        cmd: docker compose down
+      register: result
+      changed_when: result.stdout != ""
 
     - name: "Create certificates"
       ansible.builtin.command: app/init-letsencrypt.sh
@@ -164,15 +169,15 @@
       changed_when: true
 
     - name: "Create and start services"
-      community.docker.docker_compose:
-        project_src: /root/app
-        build: true
-        state: present
-      register: output
+      ansible.builtin.command:
+        chdir: /root/app
+        cmd: docker compose up --build --remove-orphans -d
+      register: result
+      changed_when: result.stdout != ""
 
-    - name: "Docker-compose debug"
-      ansible.builtin.debug:
-        var: output
+#    - name: "Docker-compose debug"
+#      ansible.builtin.debug:
+#        var: output
 
     - name: "Adds logrotate configuration"
       ansible.posix.synchronize:

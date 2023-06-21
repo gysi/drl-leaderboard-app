@@ -5,10 +5,10 @@ shopt -s inherit_errexit
 
 cd "$(dirname "$0")"
 
-if ! [ -x "$(command -v docker-compose)" ]; then
-  echo 'Error: docker-compose is not installed.' >&2
-  exit 1
-fi
+#if ! [ -x "$(command -v docker compose)" ]; then
+#  echo 'Error: docker-compose is not installed.' >&2
+#  exit 1
+#fi
 # when specifing multiple domains just add a space between them
 domains=({{ server.hostname }} {{ server.hostname_transmitters }})
 rsa_key_size=4096
@@ -36,7 +36,7 @@ for domain in "${domains[@]}"; do
   echo "### Creating dummy certificate for $domain ..."
   path="/etc/letsencrypt/live/$domain"
   mkdir -p "$data_path/conf/live/$domain"
-  docker-compose run --rm --entrypoint "\
+  docker compose run --rm --entrypoint "\
     openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
       -keyout '$path/privkey.pem' \
       -out '$path/fullchain.pem' \
@@ -46,12 +46,12 @@ done
 
 
 echo "### Starting nginx ..."
-docker-compose up --force-recreate -d nginx
+docker compose up --force-recreate -d nginx
 echo
 
 for domain in "${domains[@]}"; do
   echo "### Deleting dummy certificate for $domain ..."
-  docker-compose run --rm --entrypoint "\
+  docker compose run --rm --entrypoint "\
     rm -Rf /etc/letsencrypt/live/$domain && \
     rm -Rf /etc/letsencrypt/archive/$domain && \
     rm -Rf /etc/letsencrypt/renewal/$domain.conf" certbot
@@ -78,7 +78,7 @@ staging_arg=""
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
 for domain in "${domains[@]}"; do
-  docker-compose run --rm --entrypoint "\
+  docker compose run --rm --entrypoint "\
     certbot certonly --webroot -w /var/www/certbot \
       $staging_arg \
       $email_arg \
@@ -91,4 +91,4 @@ for domain in "${domains[@]}"; do
 done
 
 echo "### Reloading nginx ..."
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload

@@ -4,6 +4,16 @@
   user: root
 
   tasks:
+    - name: "Create directories for thumbor with correct permissions"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0777'
+      loop:
+        - app/data/imgcache
+        - app/data/imgcache/result-storage
+        - app/data/imgcache/source-storage
+
     - name: "Synchronize Docker Compose project with remote host"
       ansible.posix.synchronize:
         src: app/
@@ -46,9 +56,11 @@
       register: certdir_transmitters
 
     - name: "Tear down existing services"
-      community.docker.docker_compose:
-        project_src: /root/app
-        state: absent
+      ansible.builtin.command:
+        chdir: /root/app
+        cmd: docker compose down
+      register: result
+      changed_when: result.stdout != ""
 
     - name: "Create certificates"
       ansible.builtin.command: app/init-letsencrypt.sh
@@ -56,12 +68,12 @@
       changed_when: true
 
     - name: "Create and start services"
-      community.docker.docker_compose:
-        project_src: /root/app
-        build: true
-        state: present
-      register: output
+      ansible.builtin.command:
+        chdir: /root/app
+        cmd: docker compose up --build --remove-orphans -d
+      register: result
+      changed_when: result.stdout != ""
 
-    - name: "Docker-compose debug"
-      ansible.builtin.debug:
-        var: output
+#    - name: "Docker-compose debug"
+#      ansible.builtin.debug:
+#        var: output

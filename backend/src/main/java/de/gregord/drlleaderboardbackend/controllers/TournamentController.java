@@ -2,7 +2,9 @@ package de.gregord.drlleaderboardbackend.controllers;
 
 import de.gregord.drlleaderboardbackend.domain.Season;
 import de.gregord.drlleaderboardbackend.domain.TournamentRankings;
+import de.gregord.drlleaderboardbackend.domain.TournamentRankingsOuterClass;
 import de.gregord.drlleaderboardbackend.domain.TournamentView;
+import de.gregord.drlleaderboardbackend.domain.convert.TournamentRankingsToProto;
 import de.gregord.drlleaderboardbackend.repositories.TournamentRepository;
 import de.gregord.drlleaderboardbackend.services.TournamentService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +33,9 @@ public class TournamentController {
         return tournamentService.getTournamentRankingForSeason(seasonId);
     }
 
-    @GetMapping("/rankings-current-season")
-    public TournamentRankings rankingsCurrentSeason() {
-        return tournamentService.getTournamentRankingForSeason(SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue().getSeasonId());
+    @GetMapping(path = "/rankings-current-season", produces = {"application/json", "application/x-protobuf"})
+    public TournamentRankingsOuterClass.TournamentRankings rankingsCurrentSeason() {
+        return TournamentRankingsToProto.convertDomainToProto(tournamentService.getTournamentRankingForSeason(SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue().getSeasonId()));
     }
 
     @GetMapping("/seasons")

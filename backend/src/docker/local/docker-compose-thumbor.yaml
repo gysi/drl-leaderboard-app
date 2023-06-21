@@ -1,0 +1,18 @@
+services:
+  thumbor:
+    image: thumbororg/thumbor:7.5-py-3.11
+    ports:
+      - "8888:8888"
+    command: [
+      "--conf", "/home/thumbor/thumbor.conf",
+#      "-l", "debug"
+    ]
+    volumes:
+      - ../../../imgcache/result-storage:/home/thumbor/imgcache/result-storage
+      - ../../../imgcache/source-storage:/home/thumbor/imgcache/source-storage
+      - ./thumbor.conf:/home/thumbor/thumbor.conf
+    networks:
+      - local_network
+
+networks:
+  local_network:
