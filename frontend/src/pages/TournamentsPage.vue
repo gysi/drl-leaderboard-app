@@ -1,6 +1,6 @@
 <template>
-  <q-page class="q-pa-md items-start">
-    <q-card class="doc-api q-mb-md" flat bordered style="mmax-width: 1000px">
+  <q-page class="q-pa-md items-start" style="height: 100%">
+    <q-card class="doc-api q-mb-md" flat bordered style="height: 100%; max-height: 100%; display: grid; grid-template-rows: auto auto auto 1fr;">
       <!--      Header-->
       <div class="header-toolbar row items-center q-pr-sm">
         <div class="doc-card-title q-my-xs q-mr-sm ">{{ seasonTitle }}</div>
@@ -29,8 +29,7 @@
             :loading="rankingsTable.loading.value"
             row-key="track.id"
             class="my-sticky-header-table"
-            table-class="col-auto"
-            style="max-height: 100%;"
+            style="height: 100%;"
             :pagination="{rowsPerPage: 0}"
             hide-pagination
             bordered
