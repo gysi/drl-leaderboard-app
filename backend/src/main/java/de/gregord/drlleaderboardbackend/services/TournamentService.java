@@ -43,9 +43,9 @@ public class TournamentService {
                 List<TournamentRanking> rankings = tournament.getRankings();
                 for (int i = 0; i < rankings.size(); i++) {
                     int position = i+1;
-                    if(position > 11){ // 12th place and above get no points
-                        break;
-                    }
+//                    if(position > 11){ // 12th place and above get no points
+//                        break;
+//                    }
                     TournamentRanking ranking = rankings.get(i);
 
                     // Player ranking
