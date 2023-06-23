@@ -93,7 +93,7 @@
 <script>
 import {computed, defineComponent} from 'vue'
 import axios from 'axios';
-import {backGroundColorByPosition, formatMilliSeconds, getDateDifference} from 'src/modules/LeaderboardFunctions'
+import {backGroundColorByPosition, formatMilliSeconds } from 'src/modules/LeaderboardFunctions'
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
 import placeholder from 'src/assets/placeholder.png'
 
@@ -196,7 +196,7 @@ export default defineComponent({
         return computed(() => `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`).value;
       }
     },
-    formatMilliSeconds, backGroundColorByPosition, getDateDifference
+    formatMilliSeconds, backGroundColorByPosition
   },
   created() {
     this.fetchData();
