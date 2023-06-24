@@ -58,7 +58,7 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container style="height: 100vh">
+    <q-page-container style="height: 100dvh">
       <router-view/>
     </q-page-container>
     <NewsDialog v-model:show-dialog="showNews" class="dialog-news"/>

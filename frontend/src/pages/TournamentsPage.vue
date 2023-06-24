@@ -55,7 +55,7 @@
             <template v-slot:item="props">
               <div class="q-table__grid-item col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
                 <q-card class="bg-black">
-                <q-img :src="buildImgCacheUrl(props.row.imgUrl)" height="450px" fit="cover">
+                <q-img :src="buildImgCacheUrl(props.row.imgUrl)" height="450px" fit="cover" style="height: 450px">
                     <q-card-section class="absolute-top" style="background: rgba(0,0,0,70%)">
                         <div class="" style="font-size: 20px">{{props.row.title}}</div>
                         <div class="text-subtitle2 text-grey-5">{{ toLocalDateformat(props.row.startDate) }}</div>
