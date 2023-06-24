@@ -124,6 +124,7 @@ module.exports = configure(function (/* ctx */) {
         }
         env_vars = {
           LOCAL: {
+            // 192.168.178.31 for testing vm from host/phone
             DLAPP_URL: 'http://localhost:9000',
             DLAPP_API_URL: 'http://localhost:8080/api',
             DLAPP_THUMBOR_URL: 'http://localhost/thumbor'

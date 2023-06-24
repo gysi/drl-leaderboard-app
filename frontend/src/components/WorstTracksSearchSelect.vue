@@ -15,7 +15,7 @@
     label="Enter track name"
     :loading="loadingState"
     multiple
-    popup-content-style="height: 40vh"
+    popup-content-style="height: 40dvh"
     popup-content-class="q-menu-dropdown"
   >
     <template v-slot:selected>
@@ -27,7 +27,7 @@
           e.preventDefault();
         }">
         {{ `${selection.name} (${selection.filteredOut.length})` }}
-        <q-menu :ref="`menu${idx}`" max-height="30vh" class="q-menu-dropdown bg-red">
+        <q-menu :ref="`menu${idx}`" max-height="30dvh" class="q-menu-dropdown bg-red">
           <q-list>
             <q-item v-for="out in selection.filteredOut" :key="out.id">
               {{ out.name }}
