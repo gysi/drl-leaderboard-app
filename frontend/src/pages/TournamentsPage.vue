@@ -5,9 +5,21 @@
       <div class="header-toolbar row items-center q-pr-sm">
         <div class="doc-card-title q-my-xs q-mr-sm ">{{ seasonTitle }}</div>
         <div id="streamcard-info">
-          <p>Started on {{ seasonStartDate }} UTC and will end at {{ seasonEndDate }} UTC</p>
-          <p>The tournament points are based on the DRL irl point system and only the top 12 tournaments for each player are counted.</p>
+          <q-icon name="event"></q-icon>
+          {{ seasonStartDate }} - {{ seasonEndDate }}
         </div>
+      </div>
+      <div class="row q-ma-xs">
+      <div v-for="tournament in seasonStatus.tournaments"
+            :key="tournament.startTime"
+           :class="tournament.status === 'CANCELLED' ? 'bg-red' : tournament.status === 'COMPLETED' ? 'bg-green' : 'bg-yellow'"
+           style="width: 12px; height: 12px; margin: 1px"
+      >
+        <q-tooltip>
+          <div>{{ tournament.status }}</div>
+          <div>{{ toLocalDateformat(tournament.startTime) }}</div>
+        </q-tooltip>
+      </div>
       </div>
 
       <!--      Tabs-->
@@ -35,6 +47,15 @@
             bordered
             flat
           >
+            <template v-slot:header-cell-pointsBest12Tournaments="props">
+              <th :class="props.col.__thClass">
+                {{ props.col.label }}
+                <q-btn type="a" icon="help" size="1.3rem"
+                       fab flat padding="5px"
+                       :to="{ name: 'faq', query: { card: 'tournamentPointSystem' } }"
+                />
+              </th>
+            </template>
           </q-table>
         </q-tab-panel>
         <q-tab-panel class="q-pa-none" name="tournaments">
@@ -100,13 +121,13 @@ const seasonTitle = computed(() => {
 const seasonStartDate = computed(() => {
   if (tournamentRanking.value.seasonStartDate == null) return;
   const date = parseISO(tournamentRanking.value.seasonStartDate)
-  return format(date, 'yyyy-MM-dd');
+  return format(date, 'MMM do, yyyy');
 })
 
 const seasonEndDate = computed(() => {
   if (tournamentRanking.value.seasonEndDate == null) return;
   const date = parseISO(tournamentRanking.value.seasonEndDate)
-  return format(date, 'yyyy-MM-dd');
+  return format(date, 'MMM do, yyyy');
 })
 
 const currentTab = ref("rankings")
@@ -152,6 +173,8 @@ const tournamentTable = {
   ],
   loading: ref(false),
 }
+
+const seasonStatus = shallowRef({});
 
 const toLocalDateformat = (val) => {
   if (val) {
@@ -202,6 +225,12 @@ const fetchTournaments = async () => {
   tournamentTable.loading.value = false;
 }
 
+const fetchSeasonStatus = async () => {
+  const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/season-status`);
+  seasonStatus.value = response.data;
+}
+
+fetchSeasonStatus();
 fetchTournamentRankings();
 
 </script>

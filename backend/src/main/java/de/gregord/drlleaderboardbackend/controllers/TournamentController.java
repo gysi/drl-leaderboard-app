@@ -1,9 +1,7 @@
 package de.gregord.drlleaderboardbackend.controllers;
 
-import de.gregord.drlleaderboardbackend.domain.Season;
-import de.gregord.drlleaderboardbackend.domain.TournamentRankings;
+import de.gregord.drlleaderboardbackend.domain.*;
 import de.gregord.drlleaderboardbackend.domain.TournamentRankingsOuterClass;
-import de.gregord.drlleaderboardbackend.domain.TournamentView;
 import de.gregord.drlleaderboardbackend.domain.convert.TournamentRankingsToProto;
 import de.gregord.drlleaderboardbackend.repositories.TournamentRepository;
 import de.gregord.drlleaderboardbackend.services.TournamentService;
@@ -26,6 +24,11 @@ public class TournamentController {
     public TournamentController(TournamentService tournamentService, TournamentRepository tournamentRepository) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentService = tournamentService;
+    }
+
+    @GetMapping("/season-status")
+    public TournamentSeason seasonStatus() {
+        return tournamentService.getSeasonStatus(SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue().getSeasonId());
     }
 
     @GetMapping("/rankings-for-season")
