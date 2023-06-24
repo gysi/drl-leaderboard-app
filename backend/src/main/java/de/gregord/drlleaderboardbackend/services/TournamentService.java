@@ -2,6 +2,7 @@ package de.gregord.drlleaderboardbackend.services;
 
 import de.gregord.drlleaderboardbackend.domain.Season;
 import de.gregord.drlleaderboardbackend.domain.TournamentRankings;
+import de.gregord.drlleaderboardbackend.domain.TournamentSeason;
 import de.gregord.drlleaderboardbackend.entities.Tournament;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;
 import de.gregord.drlleaderboardbackend.repositories.TournamentRepository;
@@ -177,5 +178,24 @@ public class TournamentService {
             return 1;
         }
         return 0;
+    }
+
+    @Transactional(readOnly = true)
+    public TournamentSeason getSeasonStatus(String seasonId) {
+        Season season = SEASON_MAPPING_BY_SEASON_ID.get(seasonId);
+        if(season == null){
+            throw new IllegalArgumentException("No season found for seasonId: " + seasonId);
+        }
+        TournamentSeason tournamentSeason = new TournamentSeason(season.getSeasonStartDate(), season.getSeasonEndDate());
+        try(Stream<Tournament> tournaments = tournamentRepository.streamTournaments(season.getSeasonStartDate(), season.getSeasonEndDate())) {
+            List<TournamentSeason.Tournament> transformedTournaments = tournaments.map(tournament -> {
+                TournamentSeason.Tournament seasonTournament = new TournamentSeason.Tournament(
+                        tournament.getRegistrationEndAt(), TournamentSeason.TournamentStatus.COMPLETED
+                );
+                return seasonTournament;
+            }).collect(Collectors.toList());
+            tournamentSeason.checkStatusOfTournaments(transformedTournaments);
+        }
+        return tournamentSeason;
     }
 }

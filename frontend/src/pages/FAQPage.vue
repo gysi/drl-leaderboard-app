@@ -3,109 +3,109 @@
     <div class="grid">
       <div class="grid-sizer"></div>
       <FAQCard
-          title="How does the point system work?"
-          :msnry="msnry"
-          :initially-expanded="this.$router.currentRoute.value.query.card === 'pointSystem'"
-        >
-          <div>The number of points a player receives is calculated based on their position on the leaderboard using the formula</div>
-          <b><span>points = 101 - position</span></b>
-          <div>In addition, bonus points will be awarded to the player below certain positions.</div>
-          <div>
-            <q-markup-table class="q-ma-sm">
-              <thead>
-              <tr>
-                <th class="text-center">Position</th>
-                <th class="text-center">Bonus Points</th>
-              </tr>
-              </thead>
-              <tbody class="text-center">
-              <tr>
-                <td>&lt;= 75</td>
-                <td>+5</td>
-              </tr>
-              <tr>
-                <td>&lt;= 50</td>
-                <td>+5</td>
-              </tr>
-              <tr>
-                <td>&lt;= 25</td>
-                <td>+5</td>
-              </tr>
-              <tr>
-                <td>&lt;= 10</td>
-                <td>+5</td>
-              </tr>
-              <tr>
-                <td>&lt;= 5</td>
-                <td>+5</td>
-              </tr>
-              <tr>
-                <td>&lt;= 3</td>
-                <td>+2</td>
-              </tr>
-              <tr>
-                <td>= 1</td>
-                <td>+2</td>
-              </tr>
-              </tbody>
-            </q-markup-table>
-          </div>
-          <span>The final score is then raised to the power of <b>1.1</b></span>
-          <div>Here are some examples:</div>
-          <div>
-            <q-markup-table class="q-ma-sm">
-              <thead>
-              <tr>
-                <th class="text-center">Position</th>
-                <th class="text-center">Points earned</th>
-              </tr>
-              </thead>
-              <tbody class="text-center">
-              <tr>
-                <td>1</td>
-                <td>(100 + 26)<sup>1.1</sup> = <b>204.365...</b></td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>(99 + 24)<sup>1.1</sup> = <b>199.019...</b></td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>(98 + 24)<sup>1.1</sup> = <b>197.240...</b></td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>(97 + 22)<sup>1.1</sup> = <b>191.911...</b></td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>(96 + 22)<sup>1.1</sup> = <b>190.138...</b></td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td>(91 + 20)<sup>1.1</sup> = <b>177.768...</b></td>
-              </tr>
-              <tr>
-                <td>25</td>
-                <td>(76 + 15)<sup>1.1</sup> = <b>142.871...</b></td>
-              </tr>
-              <tr>
-                <td>50</td>
-                <td>(51 + 10)<sup>1.1</sup> = <b>92.015...</b></td>
-              </tr>
-              <tr>
-                <td>75</td>
-                <td>(26 + 5)<sup>1.1</sup> = <b>43.701...</b></td>
-              </tr>
-              <tr>
-                <td>100</td>
-                <td>1<sup>1.1</sup> = <b>1</b></td>
-              </tr>
-              </tbody>
-            </q-markup-table>
-          </div>
-          <span>Points are rounded to a whole number for display purposes. However, the total points in the overall ranking is accurate to 14 digits and is only then rounded.</span>
-        </FAQCard>
+        title="How does the leaderboard track point system work?"
+        :msnry="msnry"
+        :initially-expanded="this.$router.currentRoute.value.query.card === 'pointSystem'"
+      >
+        <div>The number of points a player receives is calculated based on their position on the leaderboard using the formula</div>
+        <b><span>points = 101 - position</span></b>
+        <div>In addition, bonus points will be awarded to the player below certain positions.</div>
+        <div>
+          <q-markup-table class="q-ma-sm">
+            <thead>
+            <tr>
+              <th class="text-center">Position</th>
+              <th class="text-center">Bonus Points</th>
+            </tr>
+            </thead>
+            <tbody class="text-center">
+            <tr>
+              <td>&lt;= 75</td>
+              <td>+5</td>
+            </tr>
+            <tr>
+              <td>&lt;= 50</td>
+              <td>+5</td>
+            </tr>
+            <tr>
+              <td>&lt;= 25</td>
+              <td>+5</td>
+            </tr>
+            <tr>
+              <td>&lt;= 10</td>
+              <td>+5</td>
+            </tr>
+            <tr>
+              <td>&lt;= 5</td>
+              <td>+5</td>
+            </tr>
+            <tr>
+              <td>&lt;= 3</td>
+              <td>+2</td>
+            </tr>
+            <tr>
+              <td>= 1</td>
+              <td>+2</td>
+            </tr>
+            </tbody>
+          </q-markup-table>
+        </div>
+        <span>The final score is then raised to the power of <b>1.1</b></span>
+        <div>Here are some examples:</div>
+        <div>
+          <q-markup-table class="q-ma-sm">
+            <thead>
+            <tr>
+              <th class="text-center">Position</th>
+              <th class="text-center">Points earned</th>
+            </tr>
+            </thead>
+            <tbody class="text-center">
+            <tr>
+              <td>1</td>
+              <td>(100 + 26)<sup>1.1</sup> = <b>204.365...</b></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>(99 + 24)<sup>1.1</sup> = <b>199.019...</b></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>(98 + 24)<sup>1.1</sup> = <b>197.240...</b></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>(97 + 22)<sup>1.1</sup> = <b>191.911...</b></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>(96 + 22)<sup>1.1</sup> = <b>190.138...</b></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>(91 + 20)<sup>1.1</sup> = <b>177.768...</b></td>
+            </tr>
+            <tr>
+              <td>25</td>
+              <td>(76 + 15)<sup>1.1</sup> = <b>142.871...</b></td>
+            </tr>
+            <tr>
+              <td>50</td>
+              <td>(51 + 10)<sup>1.1</sup> = <b>92.015...</b></td>
+            </tr>
+            <tr>
+              <td>75</td>
+              <td>(26 + 5)<sup>1.1</sup> = <b>43.701...</b></td>
+            </tr>
+            <tr>
+              <td>100</td>
+              <td>1<sup>1.1</sup> = <b>1</b></td>
+            </tr>
+            </tbody>
+          </q-markup-table>
+        </div>
+        <span>Points are rounded to a whole number for display purposes. However, the total points in the overall ranking is accurate to 14 digits and is only then rounded.</span>
+      </FAQCard>
       <FAQCard
         title="Invalid Runs"
         :msnry="msnry"
@@ -267,6 +267,69 @@
           </tbody>
         </q-markup-table>
 
+      </FAQCard>
+      <FAQCard
+        title="How does the tournament point system work?"
+        :msnry="msnry"
+        :initially-expanded="this.$router.currentRoute.value.query.card === 'tournamentPointSystem'"
+      >
+        The tournament points are based on the DRL irl point system and only the best 12 tournaments for each player are counted.
+        <div>
+          <q-markup-table class="q-ma-sm">
+            <thead>
+            <tr>
+              <th class="text-center">Position</th>
+              <th class="text-center">Points</th>
+            </tr>
+            </thead>
+            <tbody class="text-center">
+            <tr>
+              <td>1</td>
+              <td>25</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>20</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>16</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>13</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>11</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>9</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>1</td>
+            </tr>
+            </tbody>
+          </q-markup-table>
+        </div>
       </FAQCard>
     </div>
   </q-page>
