@@ -108,6 +108,15 @@ Webapp for displaying DRL Simulator leaderboards.
       * [ ] My placement doesn't match with the leadeboard
       * ??? More stuff
     * [ ] Tournaments
-      * [ ] Point system like Grim is doing
-    * [] A feature that would fetch the replay from DRL and display the raceline in 3D and compare it to other players for a track 
+      * [x] First POC
+      * ...
+    * [ ] Replay Viewer
+      * [x] First POC
+      * ...
+    * [ ] Stream Cards Creator
+      * [x] First POC
+      * [ ] Better design (CSS)
+      * [ ] More options 
+        * ...
+      * [ ] "Track Card"
 
