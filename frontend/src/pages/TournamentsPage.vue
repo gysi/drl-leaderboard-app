@@ -223,7 +223,7 @@ const fetchTournaments = async () => {
   tournamentTable.loading.value = true;
   const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/tournaments-current-season`);
   tournaments.value = response.data;
-  console.log(tournaments.value);
+  // console.log(tournaments.value);
   tournamentTable.loading.value = false;
 }
 
