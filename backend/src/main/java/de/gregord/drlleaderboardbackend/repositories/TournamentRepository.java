@@ -15,7 +15,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
 
     @Query("""
         SELECT t FROM Tournament t
-            WHERE t.isTestTournament = false AND t.status = 'complete'
+            WHERE t.isTestTournament = false AND t.isPrivate = false AND t.status = 'complete'
                 AND t.registrationEndAt >= :lowerBound AND t.registrationEndAt < :upperBound
             ORDER BY t.registrationEndAt ASC
     """)
@@ -31,7 +31,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
             t.registrationEndAt as startDate,
             t.status as status
          FROM Tournament t
-         WHERE t.isTestTournament = false
+         WHERE t.isTestTournament = false AND t.isPrivate = false
              AND t.registrationEndAt >= :lowerBound AND t.registrationEndAt < :upperBound
              AND t.status != 'canceled'
          ORDER BY t.registrationEndAt DESC
