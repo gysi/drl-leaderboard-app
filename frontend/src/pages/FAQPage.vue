@@ -168,6 +168,14 @@
           has not completed the course, resulting in a 1st place ranking and a huge time difference to the
           2nd place ranking.
         </p>
+        <div>
+          <b>WRONG_DRONE</b>
+        </div>
+        <p>
+          Any run that uses a drone other than the Racer4 is flagged as invalid.
+          There is currently a bug in the game that allows players to use other drones in the time trial mode.
+          This bug will be fixed by the game developers in the future.
+        </p>
       </FAQCard>
       <FAQCard
         :msnry="msnry"

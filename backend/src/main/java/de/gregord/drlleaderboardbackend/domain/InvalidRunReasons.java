@@ -6,4 +6,5 @@ public enum InvalidRunReasons {
     IMPOSSIBLE_TOP_SPEED,
     NO_REPLAY,
     EPIC_BUG,
+    WRONG_DRONE,
 }

@@ -41,6 +41,7 @@ public class LeaderboardEntry {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "track_id", nullable = false)
     private TrackMinimal track;
+    private String drlId;
     private String playerId;
     private String playerName;
     private Long score;
