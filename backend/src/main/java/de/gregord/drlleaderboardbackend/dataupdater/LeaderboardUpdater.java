@@ -39,6 +39,7 @@ public class LeaderboardUpdater {
     // <player_id, player_id>
     private static final Map<String, String> doubleAccountMatchingMap = new HashMap<>();
     private static final Map<String, Double> customTopSpeeds = new HashMap<>();
+    private static final Map<String, InvalidRunReasons> manualInvalidRuns = new HashMap<>();
 
     static {
         // pawelos -> p
@@ -74,6 +75,13 @@ public class LeaderboardUpdater {
 
         customTopSpeeds.put("MT-9eb", 104.6);
         customTopSpeeds.put("CMP-7ab877a2c62446a10c9316a0", 104.2);
+
+        // cloneno1 Moonlight #1
+        manualInvalidRuns.put("62a2459bd5155d003a982cd9", InvalidRunReasons.NO_REPLAY);
+        // emzies2010 Straight Line #1
+        manualInvalidRuns.put("649dee068116aa000a676b8f", InvalidRunReasons.WRONG_DRONE);
+        // hsufoundation5 Straight Line #2
+        manualInvalidRuns.put("64af0b982e81e5002839799a", InvalidRunReasons.WRONG_DRONE);
     }
 
     private static Long totalContentLength = 0L;
@@ -210,6 +218,7 @@ public class LeaderboardUpdater {
                     LeaderboardEntry leaderboardEntry;
                     Optional<LeaderboardEntry> existingEntry = Optional.ofNullable(existingLeaderboardEntriesForTrack.get((String) drlLeaderboardEntry.get("player-id")));
                     leaderboardEntry = existingEntry.orElseGet(LeaderboardEntry::new);
+                    leaderboardEntry.setDrlId((String) drlLeaderboardEntry.get("id"));
                     leaderboardEntry.setTrack(modelMapper.map(track, TrackMinimal.class));
                     leaderboardEntry.setPlayerId((String) drlLeaderboardEntry.get("player-id"));
                     if (alreadyFoundPlayerIds.containsKey(leaderboardEntry.getPlayerId())) {
@@ -296,6 +305,18 @@ public class LeaderboardUpdater {
                             );
                             leaderboardPosition--;
                         }
+                    }
+
+                    // Manual invalidation
+                    InvalidRunReasons invalidRunReasons = manualInvalidRuns.get(leaderboardEntry.getDrlId());
+                    if(invalidRunReasons != null){
+                        LOG.info("Player " + leaderboardEntry.getPlayerName() + " is manually invalidated");
+                        leaderboardEntry.setIsInvalidRun(true);
+                        leaderboardEntry.setInvalidRunReason(
+                                (leaderboardEntry.getInvalidRunReason() == null) ?
+                                        invalidRunReasons.toString() :
+                                        leaderboardEntry.getInvalidRunReason() + "," + invalidRunReasons
+                        );
                     }
 
                     leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
