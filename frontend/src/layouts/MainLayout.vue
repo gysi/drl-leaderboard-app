@@ -55,6 +55,12 @@
             <q-item-label caption>Releases and stuff</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item href="https://discord.gg/sgps" target="_blank">
+          <q-item-section style="position: relative">
+            <section id="glitch-image-1"></section>
+            <section id="glitch-image-2"></section>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -190,6 +196,30 @@ export default defineComponent({
     return {
       version: version,
     }
+  },
+  mounted() {
+    var mySection = document.getElementById('glitch-image-2');
+
+    function randomizeVariables() {
+      // Randomize each position variable
+      for (let i = 1; i <= 14; i++) {
+        var randomPos = Math.floor(Math.random() * 30) - 15;
+        mySection.style.setProperty(`--pos-${i}`, `${randomPos}px`);
+      }
+    }
+
+    function startAnimation() {
+      randomizeVariables();
+      mySection.classList.add('glitch-animate'); // Start the animation
+    }
+
+    mySection.addEventListener('animationend', function() {
+      mySection.classList.remove('glitch-animate');
+      var delay = Math.floor(Math.random() * 4 + 4) * 1000;
+      setTimeout(startAnimation, delay);
+    });
+
+    startAnimation(); // Start the first animation
   },
   methods: {
     toggleDarkMode() {
@@ -551,6 +581,82 @@ tbody .td-borders-font-size16 {
 @media (min-width: 600px) {
   .q-dialog__inner--minimized > div {
     max-width: 700px !important;
+  }
+}
+
+#glitch-image-1{
+  position:relative;
+  width:100%;
+  height:474px;
+  background: url(assets/sgpsflyer916.png);
+  background-size:100%;
+}
+#glitch-image-2{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:474px;
+  background: url(assets/sgpsflyer916.png);
+  background-size:100%;
+  opacity:.5;
+  mix-blend-mode:hard-light;
+  //animation:glitch-animate 0.4s linear infinite;
+  --pos-1: 0px;
+  --pos-2: 0px;
+  --pos-3: 0px;
+  --pos-4: 0px;
+  --pos-5: 0px;
+  --pos-6: 0px;
+  --pos-7: 0;
+  --pos-8: 0px;
+  --pos-9: 0px;
+  --pos-10: 0px;
+  --pos-11: 0px;
+  --pos-12: 0px;
+  --pos-13: 0px;
+  --pos-14: 0px;
+}
+
+.glitch-animate {
+  animation:glitch-animate 0.5s linear;
+}
+
+@keyframes glitch-animate{
+  0%{
+    background-position: 0 0;
+    filter:hue-rotate(0deg);
+  }
+  10%{
+    background-position: var(--pos-1) var(--pos-2);
+  }
+  20%{
+    background-position: var(--pos-3) var(--pos-4);
+  }
+  30%{
+    background-position: var(--pos-5) var(--pos-6);
+  }
+  40%{
+    background-position: var(--pos-7) var(--pos-8);
+  }
+  50%{
+    background-position: var(--pos-9) var(--pos-10);
+  }
+  60%{
+    background-position: var(--pos-11) var(--pos-12);
+  }
+  70%{
+    background-position: var(--pos-13) var(--pos-14);
+  }
+  80%{
+    background-position: var(--pos-1) var(--pos-2);
+  }
+  81%{
+    background-position: 0 0;
+  }
+  100%{
+    background-position: 0 0;
+    filter:hue-rotate(360deg);
   }
 }
 </style>
