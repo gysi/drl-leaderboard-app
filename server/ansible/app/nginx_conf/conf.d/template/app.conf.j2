@@ -71,14 +71,6 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    # CSS and Javascript
-    location ~* \.(?:css|js|woff|woff2|svg|png)$ {
-        expires 1M;
-        access_log off;
-        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-        add_header Cache-Control "public";
-    }
-
     location ~* ^/thumbor/((x500|50x50).*(\Q.amazonaws.com/drl-game-dashboard\E|\Q.steamstatic.com\E|\Qdrl-sim-cup.s3.amazonaws.com\E|\Qapi.drlgame.com\E|\Qsteamcdn-a.akamaihd.net\E|\Qdrl-sim-virtual-season.s3.amazonaws.com\E).*)$ {
         limit_req zone=imglimit burst=500 nodelay;
         limit_req_status 429;
@@ -96,6 +88,14 @@ server {
         proxy_set_header X-Real-IP          $remote_addr;
         proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto  $scheme;
+    }
+
+    # CSS and Javascript
+    location ~* \.(?:css|js|woff|woff2|svg|png)$ {
+        expires 1M;
+        access_log off;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header Cache-Control "public";
     }
 
     location /proxy {
