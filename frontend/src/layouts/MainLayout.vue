@@ -55,12 +55,16 @@
             <q-item-label caption>Releases and stuff</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item href="https://discord.gg/sgps" target="_blank">
-          <q-item-section style="position: relative">
-            <section id="glitch-image-1"></section>
-            <section id="glitch-image-2"></section>
-          </q-item-section>
-        </q-item>
+<!--        AD Banner-->
+<!--        <q-item href=
+
+
+"https://discord.gg/sgps" target="_blank">-->
+<!--          <q-item-section style="position: relative">-->
+<!--            <section id="glitch-image-1"></section>-->
+<!--            <section id="glitch-image-2"></section>-->
+<!--          </q-item-section>-->
+<!--        </q-item>-->
       </q-list>
     </q-drawer>
 
@@ -198,28 +202,29 @@ export default defineComponent({
     }
   },
   mounted() {
-    var mySection = document.getElementById('glitch-image-2');
-
-    function randomizeVariables() {
-      // Randomize each position variable
-      for (let i = 1; i <= 14; i++) {
-        var randomPos = Math.floor(Math.random() * 30) - 15;
-        mySection.style.setProperty(`--pos-${i}`, `${randomPos}px`);
-      }
-    }
-
-    function startAnimation() {
-      randomizeVariables();
-      mySection.classList.add('glitch-animate'); // Start the animation
-    }
-
-    mySection.addEventListener('animationend', function() {
-      mySection.classList.remove('glitch-animate');
-      var delay = Math.floor(Math.random() * 4 + 4) * 1000;
-      setTimeout(startAnimation, delay);
-    });
-
-    startAnimation(); // Start the first animation
+    // AD BANNER
+    // var mySection = document.getElementById('glitch-image-2');
+    //
+    // function randomizeVariables() {
+    //   // Randomize each position variable
+    //   for (let i = 1; i <= 14; i++) {
+    //     var randomPos = Math.floor(Math.random() * 30) - 15;
+    //     mySection.style.setProperty(`--pos-${i}`, `${randomPos}px`);
+    //   }
+    // }
+    //
+    // function startAnimation() {
+    //   randomizeVariables();
+    //   mySection.classList.add('glitch-animate'); // Start the animation
+    // }
+    //
+    // mySection.addEventListener('animationend', function() {
+    //   mySection.classList.remove('glitch-animate');
+    //   var delay = Math.floor(Math.random() * 4 + 4) * 1000;
+    //   setTimeout(startAnimation, delay);
+    // });
+    //
+    // startAnimation(); // Start the first animation
   },
   methods: {
     toggleDarkMode() {
