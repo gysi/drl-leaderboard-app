@@ -21,6 +21,9 @@ services:
       POSTGRES_DB: drl
     networks:
       - local_network
+    logging:
+      options:
+        max-size: 5m
   backend:
     build: ./backend
     env_file:
@@ -35,11 +38,14 @@ services:
     deploy:
       resources:
         limits:
-          memory: 900M
+          memory: 1G
     networks:
       - local_network
     depends_on:
       - postgres
+    logging:
+      options:
+        max-size: 5m
   nginx:
     image: nginx:latest
     pull_policy: always
@@ -76,6 +82,9 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
       - local_network
+    logging:
+      options:
+        max-size: 5m
   thumbor:
     image: thumbororg/thumbor:7.5-py-3.11
     ports:
@@ -94,6 +103,9 @@ services:
       resources:
         limits:
           memory: 200M
+    logging:
+      options:
+        max-size: 5m
 
 networks:
   local_network:
