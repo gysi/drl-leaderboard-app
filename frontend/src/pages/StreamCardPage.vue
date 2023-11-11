@@ -138,6 +138,10 @@ const fetchRankings = debounce(async () => {
 }, 300);
 // ---------------------------------------------Rankings Card END
 
+// ---------------------------------------------Worst Track Card
+
+// ---------------------------------------------Worst Track Card END
+
 if (props.compressedJson != null) {
   applySettings(decompressJSON(props.compressedJson));
 } else if (settingsFromUrl) {
