@@ -82,6 +82,8 @@ public class LeaderboardUpdater {
         manualInvalidRuns.put("649dee068116aa000a676b8f", InvalidRunReasons.WRONG_DRONE);
         // hsufoundation5 Straight Line #2
         manualInvalidRuns.put("64af0b982e81e5002839799a", InvalidRunReasons.WRONG_DRONE);
+        // filthy radish Straight Line #1
+        manualInvalidRuns.put("655c78c6f5f438000a237dae", InvalidRunReasons.WRONG_DRONE);
     }
 
     private static Long totalContentLength = 0L;
