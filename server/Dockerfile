@@ -5,7 +5,7 @@ COPY backend/mvnw backend/pom.xml ./
 RUN ./mvnw dependency:resolve
 COPY backend/src/main ./src/main
 COPY backend/src/test ./src/test
-RUN ./mvnw install spring-boot:repackage
+RUN ./mvnw package
 
 
 #FROM alpine:3 as native-image-backend-builder

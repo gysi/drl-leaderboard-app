@@ -136,6 +136,18 @@ const settings = reactive({
       },
     },
   },
+  worstTracksCard: {
+    name: "Worst Tracks Card",
+    type: "card",
+    content: {
+      general: {
+        name: "General",
+        content: {
+
+        }
+      },
+    }
+  },
   trackCard: {
     name: "Track Card",
     type: "card",
