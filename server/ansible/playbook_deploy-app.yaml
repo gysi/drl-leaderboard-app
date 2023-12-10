@@ -24,6 +24,11 @@
         state: present
         update_cache: true
 
+    - name: "Set UFW default to deny incoming connections"
+      community.general.ufw:
+        direction: incoming
+        policy: deny
+
     - name: "Allow incoming traffic for SSH"
       community.general.ufw:
         rule: limit
