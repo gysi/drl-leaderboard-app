@@ -38,11 +38,11 @@ public class TournamentSeason {
                 case TUESDAY:
                 case THURSDAY:
                 case SUNDAY:
-                    tournaments.add(new Tournament(date.withHour(19).withMinute(0), TournamentStatus.UPCOMING));
+                    tournaments.add(new Tournament(date.withHour(18).withMinute(30), TournamentStatus.UPCOMING));
                     break;
                 case WEDNESDAY:
                 case FRIDAY:
-                    tournaments.add(new Tournament(date.withHour(0).withMinute(0), TournamentStatus.UPCOMING));
+                    tournaments.add(new Tournament(date.withHour(1).withMinute(0), TournamentStatus.UPCOMING));
                     break;
             }
         }
@@ -53,7 +53,11 @@ public class TournamentSeason {
         for (Tournament pastTournament : pastTournaments) {
             for (Tournament upcomingTournament : tournaments) {
                 if (upcomingTournament.startTime.toLocalDate().equals(pastTournament.startTime.toLocalDate()) &&
-                        upcomingTournament.startTime.getHour() == pastTournament.startTime.getHour()) {
+                        (upcomingTournament.startTime.getHour() == pastTournament.startTime.getHour()
+                        || upcomingTournament.startTime.getHour()-1 == pastTournament.startTime.getHour()
+                        || upcomingTournament.startTime.getHour()+1 == pastTournament.startTime.getHour()
+                        )
+                ) {
                     upcomingTournament.status = pastTournament.status;
                 } else if (upcomingTournament.startTime.isBefore(pastTournament.startTime) &&
                         upcomingTournament.status == TournamentStatus.UPCOMING) {

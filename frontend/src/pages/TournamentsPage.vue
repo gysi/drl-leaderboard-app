@@ -50,13 +50,46 @@
             flat
           >
             <template v-slot:header-cell-pointsBest12Tournaments="props">
-              <th :class="props.col.__thClass">
+              <q-th :props="props">
                 {{ props.col.label }}
                 <q-btn type="a" icon="help" size="1.3rem"
                        fab flat padding="5px"
                        :to="{ name: 'faq', query: { card: 'tournamentPointSystem' } }"
                 />
-              </th>
+              </q-th>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td key="position" :props="props"
+                      :style="{
+                        backgroundColor: calcBackgroundColorByPosition(props.row.position)
+                      }"
+                      :class="[
+                        props.row.position === 1 ? 'first-place' :
+                        props.row.position === 2 ? 'second-place' :
+                        props.row.position === 3 ? 'third-place' : '', 'leaderboard-position-column']"
+                >
+                  {{ props.cols[0].value }}
+                </q-td>
+                <q-td key="player" :props="props">
+                  {{ props.cols[1].value }}
+                </q-td>
+                <q-td key="pointsBest12Tournaments" :props="props">
+                  {{ props.cols[2].value }}
+                </q-td>
+                <q-td key="numberOfTournamentsPlayed" :props="props">
+                  {{ props.cols[3].value }}
+                </q-td>
+                <q-td key="best12Positions" :props="props">
+                  <q-badge v-for="(position, index) in props.row.best12Positions" :key="index" :label="position" :style="{
+                           backgroundColor: calcBackgroundColorByPosition(position),
+                           textShadow: '1px 0px 1px black, -1px 0px 1px black, 0px 1px 1px black, 0px -1px 1px black',
+                           fontSize: '16px',
+                           lineHeight: '16px',
+                           fontWeight: '900'
+                           }" rounded class="q-ml-xs" />
+                </q-td>
+              </q-tr>
             </template>
           </q-table>
         </q-tab-panel>
@@ -82,8 +115,8 @@
                     <q-card-section class="absolute-top" style="background: rgba(0,0,0,70%)">
                         <div class="" style="font-size: 20px">{{props.row.title}}</div>
                         <div class="text-subtitle2 text-grey-5">{{ toLocalDateformat(props.row.startDate) }}</div>
-                        <q-separator v-if="props.row.top3.length !== 0" class="bg-grey-6" />
-                        <div v-for="(player, i) in props.row.top3" v-bind:key="player">{{i+1}}. {{player}}</div>
+                        <q-separator v-if="props.row.top10.length !== 0" class="bg-grey-6 q-mb-xs" />
+                        <div v-for="(player, i) in props.row.top10" v-bind:key="player">{{i+1}}. {{player}}</div>
                     </q-card-section>
                     <q-card-section v-if="props.row.status === 'idle'" class="absolute-bottom" style="background: rgba(255,0,0,80%)">
                       <div style="text-align: center; font-weight: 900; font-size: 16px">Starts in</div>
@@ -112,8 +145,9 @@ import axios from 'axios';
 import {computed, ref, shallowRef, watch} from "vue";
 import {format, parseISO, formatDuration, intervalToDuration} from 'date-fns'
 import {utcToZonedTime} from "date-fns-tz";
-import {getDateDifference} from 'src/modules/LeaderboardFunctions'
+import { backGroundColorByPosition } from 'src/modules/LeaderboardFunctions'
 
+const calcBackgroundColorByPosition = backGroundColorByPosition;
 const tournamentRanking = shallowRef([]);
 
 const seasonTitle = computed(() => {
@@ -143,13 +177,14 @@ watch(currentTab, (val) => {
 const tabsList = ["rankings", "tournaments"]
 const rankingsTable = {
   columns: [
-    { name: 'position', label: '#', field: 'position', align: 'left' },
+    { name: 'position', label: '#', field: 'position', align: 'right' },
     { name: 'player', label: 'Player', field: 'commonPlayerName', align: 'left' },
-    { name: 'pointsBest12Tournaments', label: 'Points', field: 'pointsBest12Tournaments', align: 'right' },
-    { name: 'numberOfTournamentsPlayed', label: 'Tournaments played', 'field': 'numberOfTournamentsPlayed', align: 'right' },
-    { name: 'best12Positions', label: 'Best 12 positions', 'field': 'best12Positions', align: 'center',
+    { name: 'pointsBest12Tournaments', label: 'Points', field: 'pointsBest12Tournaments', align: 'center' },
+    { name: 'numberOfTournamentsPlayed', label: 'Tournaments played', field: 'numberOfTournamentsPlayed', align: 'center' },
+    { name: 'best12Positions', label: 'Best 12 positions', field: 'best12Positions', align: 'left',
       format: (val, row) => {
-        if (val) return val.join(', ');
+        console.log("test");
+        return val.join(', ');
       }
     }
   ],
@@ -169,7 +204,7 @@ const tournamentTable = {
   columns: [
     // { name: 'guid', label: 'GUID', field: 'guid' },
     { name: 'title', label: 'Title', field: 'title' },
-    { name: 'top3', label: 'Top 3', field: 'top3' },
+    { name: 'top10', label: 'Top 10', field: 'top10' },
     { name: 'startDate', label: 'Start Date', field: 'startDate' },
     { name: 'imgUrl', label:'Img Url', field: 'imgUrl' }
   ],
@@ -238,6 +273,16 @@ fetchTournamentRankings();
 </script>
 
 <style lang="sass" scoped>
+tbody td
+  //color: black
+  border-left: 1px solid rgb(0, 0, 0, 0.4)
+  border-right: 0
+  border-top: 1px solid rgb(0, 0, 0, 0.4)
+  border-bottom: 0
+  font-weight: normal
+  font-size: 16px
+
+
 #streamcard-info
   font-size: 18px
   margin: 0px 0px 0px 8px

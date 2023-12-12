@@ -27,7 +27,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
             t.title as title,
             t.customMapTitle as trackName,
             t.imageUrl as imgUrl,
-            jsonb_path_query_array(t.rankings, '$[0 to 2].profileName') AS top3,
+            jsonb_path_query_array(t.rankings, '$[0 to 9].profileName') AS top10,
             t.registrationEndAt as startDate,
             t.status as status
          FROM Tournament t

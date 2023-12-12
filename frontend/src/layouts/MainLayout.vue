@@ -106,8 +106,7 @@ const linksList = [
     title: 'Tournaments',
     caption: 'Overview of all tournaments',
     icon: 'emoji_events',
-    link: '/tournaments',
-    badge: 'PREVIEW'
+    link: '/tournaments'
   },
   {
     title: 'Track Leaderboard',
@@ -132,14 +131,14 @@ const linksList = [
     caption: 'Analyse and compare replays',
     icon: 'visibility',
     link: '/replay-viewer',
-    badge: 'PREVIEW'
+    // badge: 'PREVIEW'
   },
   {
     title: 'Stream Card Creator',
     caption: 'Create stream cards for your stream',
     link: '/stream-card-creator',
     icon: 'movie_filter',
-    badge: 'PREVIEW'
+    // badge: 'PREVIEW'
   },
   {
     title: 'FAQ',
@@ -313,9 +312,9 @@ tbody .td-borders-font-size16 {
 .leaderboard-position-column {
   max-width: 65px;
   width: 65px;
-  font-weight: bolder;
+  font-weight: 900 !important;
   color: #f6f6f6;
-  text-shadow: 1px 0px 0.2px black, -1px 0px 0.2px black, 0px 1px 0.2px black, 0px -1px 0.2px black;
+  text-shadow: 1px 0px 1px black, -1px 0px 1px black, 0px 1px 1px black, 0px -1px 1px black;
 }
 
 .button-fills-whole-td {
