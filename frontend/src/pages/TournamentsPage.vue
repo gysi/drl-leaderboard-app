@@ -214,6 +214,16 @@ const rankingsTable = {
 const fetchTournamentRankings = async () => {
   rankingsTable.loading.value = true;
   const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/rankings-current-season`);
+  if(response.data.rankings){
+    response.data.rankings = response.data.rankings.map((row) => {
+      if (row['profileThumb'].includes('placeholder.png')) {
+        row['profileThumb'] = placeholder;
+      }else{
+        row['profileThumb'] = buildImgCacheUrlForThumbs(row['profileThumb']);
+      }
+      return row;
+    });
+  }
   tournamentRanking.value = response.data;
   rankingsTable.loading.value = false;
 }
@@ -285,14 +295,7 @@ const getDateDifferenceToNow = (dateString) => {
 const fetchTournaments = async () => {
   tournamentTable.loading.value = true;
   const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/tournaments-current-season`);
-  tournaments.value = response.data.map((row) => {
-    if (row['profileThumb'].includes('placeholder.png')) {
-      row['profileThumb'] = placeholder;
-    }else{
-      row['profileThumb'] = this.buildImgCacheUrlForThumbs(row['profileThumb']);
-    }
-    return row;
-  });
+  tournaments.value = response.data;
   // console.log(tournaments.value);
   tournamentTable.loading.value = false;
 }
