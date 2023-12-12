@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,9 +55,15 @@ public class TournamentService {
                     TournamentRankings.PlayerRanking playerRanking = playerRankingMap.computeIfAbsent(ranking.getPlayerId(), playerId -> {
                         TournamentRankings.PlayerRanking newPlayerRanking = new TournamentRankings.PlayerRanking();
                         newPlayerRanking.setCommonPlayerName(ranking.getProfileName());
+                        newPlayerRanking.setProfileThumb(ranking.getProfileThumb());
+                        newPlayerRanking.setFlagUrl(extractCountryIdentifier(ranking.getFlagUrl()));
+                        newPlayerRanking.setPlatform(ranking.getPlatform());
                         return newPlayerRanking;
                     });
                     playerRanking.setCommonPlayerName(ranking.getProfileName());
+                        playerRanking.setProfileThumb(ranking.getProfileThumb());
+                        playerRanking.setFlagUrl(extractCountryIdentifier(ranking.getFlagUrl()));
+                        playerRanking.setPlatform(ranking.getPlatform());
                     playerRanking.incrementNumberOfTournamentsPlayed();
                     if (ranking.getGoldenPos() != null && ranking.getGoldenPos() != 0) {
                         playerRanking.incrementNumberOfGoldenHeats();
@@ -197,5 +205,22 @@ public class TournamentService {
             tournamentSeason.checkStatusOfTournaments(transformedTournaments);
         }
         return tournamentSeason;
+    }
+
+    // Compile the pattern only once to improve performance
+    private static final Pattern FLAG_PATH_PATTERN = Pattern.compile("4x3/(\\w{2})-");
+
+    /**
+     * Extracts the country identifier from a flag path.
+     *
+     * @param path The path string.
+     * @return The country identifier or null if not found.
+     */
+    private static String extractCountryIdentifier(String path) {
+        Matcher matcher = FLAG_PATH_PATTERN.matcher(path);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null; // Return null if the pattern is not found
     }
 }

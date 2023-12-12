@@ -11,6 +11,9 @@ public class TournamentRankings {
     @Data
     public static class PlayerRanking {
         String commonPlayerName;
+        String profileThumb;
+        String flagUrl;
+        String platform;
         Integer numberOfTournamentsPlayed = 0;
         Integer numberOfGoldenHeats = 0;
         Integer totalPoints = 0;

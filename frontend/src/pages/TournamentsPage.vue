@@ -69,16 +69,35 @@
                         props.row.position === 2 ? 'second-place' :
                         props.row.position === 3 ? 'third-place' : '', 'leaderboard-position-column']"
                 >
-                  {{ props.cols[0].value }}
+                  {{ props.row.position }}
                 </q-td>
                 <q-td key="player" :props="props">
-                  {{ props.cols[1].value }}
+                  <q-item class="q-item-player-region"
+                  >
+                    <q-item-section avatar side>
+                      <q-avatar rounded size="50px">
+                        <img :src="props.row.profileThumb" loading="eager" alt="Avatar"/>
+                        <!--                  <q-img loading="lazy" :src="props.row.profileThumb" />-->
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label class="player-item-label">{{ props.row.commonPlayerName }}</q-item-label>
+                      <q-item-label caption>
+                        <span :class="`fi fi-${props.row.flagUrl}`"></span>
+                        <!--                    <q-img loading="lazy" :src="props.row.flagUrl" class="player-avatar-img"/>-->
+                        <q-badge
+                          :class="`badge-platform q-batch-${props.row.platform}`"
+                        >{{ props.row.platform }}
+                        </q-badge>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
                 </q-td>
                 <q-td key="pointsBest12Tournaments" :props="props">
-                  {{ props.cols[2].value }}
+                  {{ props.row.pointsBest12Tournaments }}
                 </q-td>
                 <q-td key="numberOfTournamentsPlayed" :props="props">
-                  {{ props.cols[3].value }}
+                  {{ props.row.numberOfTournamentsPlayed }}
                 </q-td>
                 <q-td key="best12Positions" :props="props">
                   <q-badge v-for="(position, index) in props.row.best12Positions" :key="index" :label="position" :style="{
@@ -146,6 +165,7 @@ import {computed, ref, shallowRef, watch} from "vue";
 import {format, parseISO, formatDuration, intervalToDuration} from 'date-fns'
 import {utcToZonedTime} from "date-fns-tz";
 import { backGroundColorByPosition } from 'src/modules/LeaderboardFunctions'
+import placeholder from 'src/assets/placeholder.png'
 
 const calcBackgroundColorByPosition = backGroundColorByPosition;
 const tournamentRanking = shallowRef([]);
@@ -230,6 +250,14 @@ const buildImgCacheUrl = (url) => {
   }
 }
 
+const buildImgCacheUrlForThumbs = (url) => {
+  if (url) {
+    if(url.includes('placeholder.png')) return url;
+    let encodedUrl = encodeURIComponent(url);
+    return computed(() => `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`).value;
+  }
+}
+
 const getDateDifferenceToNow = (dateString) => {
     if(!dateString) return '';
     let duration = intervalToDuration({
@@ -257,7 +285,14 @@ const getDateDifferenceToNow = (dateString) => {
 const fetchTournaments = async () => {
   tournamentTable.loading.value = true;
   const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/tournaments-current-season`);
-  tournaments.value = response.data;
+  tournaments.value = response.data.map((row) => {
+    if (row['profileThumb'].includes('placeholder.png')) {
+      row['profileThumb'] = placeholder;
+    }else{
+      row['profileThumb'] = this.buildImgCacheUrlForThumbs(row['profileThumb']);
+    }
+    return row;
+  });
   // console.log(tournaments.value);
   tournamentTable.loading.value = false;
 }
@@ -282,6 +317,43 @@ tbody td
   font-weight: normal
   font-size: 16px
 
+tbody .q-item
+  padding: 0
+  padding-right: 10px
+
+.player-item-label
+  font-size: 20px
+
+.player-avatar-img
+  width: 25px
+  height: 13px
+
+.q-item-player-region
+  background: rgba(0, 0, 0, 0.05)
+  min-width: 200px
+
+.fi
+  height: 14px
+  width: 19px
+
+.badge-platform
+  margin-left: 5px
+  font-size: 10px
+  line-height: 10px
+  padding-right: 2px
+  padding-left: 2px
+
+.q-batch-Steam
+  background-color: rgb(25, 91, 127)
+
+.q-batch-Epic
+  background-color: black
+
+.q-batch-Playstation
+  background-color: rgb(0, 65, 151)
+
+.q-batch-Xbox
+  background-color: rgb(16, 120, 15)
 
 #streamcard-info
   font-size: 18px
