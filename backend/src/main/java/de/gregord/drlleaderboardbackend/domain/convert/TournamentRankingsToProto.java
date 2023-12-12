@@ -26,6 +26,9 @@ public class TournamentRankingsToProto {
             TournamentRankingsOuterClass.TournamentRankings.PlayerRanking.Builder playerRankingBuilder = TournamentRankingsOuterClass.TournamentRankings.PlayerRanking.newBuilder();
 
             playerRankingBuilder.setCommonPlayerName(playerRanking.getCommonPlayerName());
+            playerRankingBuilder.setProfileThumb(playerRanking.getProfileThumb());
+            playerRankingBuilder.setFlagUrl(playerRanking.getFlagUrl());
+            playerRankingBuilder.setPlatform(playerRanking.getPlatform());
             playerRankingBuilder.setNumberOfTournamentsPlayed(playerRanking.getNumberOfTournamentsPlayed());
             playerRankingBuilder.setNumberOfGoldenHeats(playerRanking.getNumberOfGoldenHeats());
             playerRankingBuilder.setTotalPoints(playerRanking.getTotalPoints());
