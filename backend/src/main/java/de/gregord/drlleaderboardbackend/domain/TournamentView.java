@@ -8,7 +8,7 @@ public interface TournamentView {
     String getTitle();
     String getTrackName();
     String getImgUrl();
-    List<String> getTop3();
+    List<String> getTop10();
     LocalDateTime getStartDate();
     String getStatus();
 }
