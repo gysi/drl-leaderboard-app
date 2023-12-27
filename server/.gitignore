@@ -3,6 +3,7 @@ terraform/config.tfvars
 .ssh/id*
 docker_state/terraform.tfstate
 *.jar
+ansible/env/
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,intellij+all,intellij+iml
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,intellij+all,intellij+iml
