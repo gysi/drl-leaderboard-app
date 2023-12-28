@@ -40,6 +40,7 @@ public class TournamentSeason {
                 case SUNDAY:
                     tournaments.add(new Tournament(date.withHour(18).withMinute(30), TournamentStatus.UPCOMING));
                     break;
+                case MONDAY:
                 case WEDNESDAY:
                 case FRIDAY:
                     tournaments.add(new Tournament(date.withHour(1).withMinute(0), TournamentStatus.UPCOMING));
