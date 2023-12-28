@@ -1,26 +1,24 @@
 package de.gregord.drlleaderboardbackend.dataupdater;
 
 import de.gregord.drlleaderboardbackend.domain.InvalidRunReasons;
+import de.gregord.drlleaderboardbackend.domain.PlayerImprovement;
 import de.gregord.drlleaderboardbackend.domain.PointsCalculation;
 import de.gregord.drlleaderboardbackend.entities.LeaderboardEntry;
 import de.gregord.drlleaderboardbackend.entities.Track;
 import de.gregord.drlleaderboardbackend.entities.TrackMinimal;
 import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
 import de.gregord.drlleaderboardbackend.repositories.TracksRepository;
+import de.gregord.drlleaderboardbackend.services.DiscordService;
 import de.gregord.drlleaderboardbackend.services.LeaderboardService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -97,7 +95,7 @@ public class LeaderboardUpdater {
     private final LeaderboardService leaderboardService;
     private final ModelMapper modelMapper;
     private final CacheManager cacheManager;
-
+    private final DiscordService discordService;
 
     public LeaderboardUpdater(
             @Value("${app.drl-api.token}") String token,
@@ -107,7 +105,8 @@ public class LeaderboardUpdater {
             TracksRepository tracksRepository,
             LeaderboardService leaderboardService,
             ModelMapper modelMapper,
-            CacheManager cacheManager
+            CacheManager cacheManager,
+            DiscordService discordService
     ) {
         this.token = token;
         this.leaderboardEndpoint = leaderboardEndpoint;
@@ -117,6 +116,7 @@ public class LeaderboardUpdater {
         this.leaderboardService = leaderboardService;
         this.modelMapper = modelMapper;
         this.cacheManager = cacheManager;
+        this.discordService = discordService;
     }
 
     @Caching(evict = {
@@ -150,17 +150,21 @@ public class LeaderboardUpdater {
     public void updateLeaderboard() {
         totalContentLength = 0L;
         totalRequestCount = 0L;
+        List<PlayerImprovement> improvements = new ArrayList<>();
         List<Track> allTracks = tracksRepository.findAll();
         for (Track track : allTracks) {
-            updateLeaderboardForTrack(track);
+            updateLeaderboardForTrack(track, improvements);
             Optional.ofNullable(cacheManager.getCache("leaderboardbytrack"))
                     .ifPresent(cache -> cache.evictIfPresent(track.getId()));
+        }
+        if (!improvements.isEmpty()) {
+            discordService.sendMessageToLeaderboardPostsChannels(improvements);
         }
         LOG.info("Total content length: " + totalContentLength.doubleValue() / 1024 / 1024 + " MB");
         LOG.info("Total request count: " + totalRequestCount);
     }
 
-    public void updateLeaderboardForTrack(Track track) {
+    public void updateLeaderboardForTrack(Track track, List<PlayerImprovement> improvements) {
         try {
             LOG.info("Updating leaderboard for track " + track.getName());
             // <PlayerId, LeaderboardDto>
@@ -322,7 +326,22 @@ public class LeaderboardUpdater {
                     }
 
                     leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
-                    leaderboardEntry.setPosition(leaderboardPosition);
+                        leaderboardEntry.setPosition(leaderboardPosition);
+
+                    LeaderboardEntry existingEntryInDB = currentLeaderboardEntries.get(leaderboardEntry.getPlayerId());
+                    if (leaderboardPosition <= 50
+                            && (existingEntryInDB == null || leaderboardPosition < existingEntryInDB.getPosition())
+                            && !leaderboardEntry.getIsInvalidRun()) {
+                        PlayerImprovement improvement = new PlayerImprovement();
+                        improvement.setPlayerName(leaderboardEntry.getPlayerName());
+                        improvement.setPreviousPosition(existingEntryInDB != null ? existingEntryInDB.getPosition() : null);
+                        improvement.setCurrentPosition(leaderboardPosition);
+                        improvement.setCreatedAt(leaderboardEntry.getCreatedAt());
+                        improvement.setTrack(leaderboardEntry.getTrack());
+                        improvement.setProfilePicture(leaderboardEntry.getProfileThumb());
+                        improvements.add(improvement);
+                    }
+
                     if (!leaderboardEntry.getIsInvalidRun()) {
                         leaderboardPosition++;
                     }

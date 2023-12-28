@@ -42,6 +42,7 @@ app:
   name: DRLLeaderboardBackend
   version: 1.0.0
   description: DRLLeaderboardBackend
+  frontend-url: https://drl-leaderboards.miau.io
   drl-api:
     token: "[PASTE YOUR TOKEN HERE]"
     leaderboard-endpoint: "https://api.drlgame.com/leaderboards/?limit=20&game-type=Race&score-type=TimeMin&page={page}&token={token}&diameter=7&custom-physics=false&drl-official=true"
