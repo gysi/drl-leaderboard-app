@@ -106,12 +106,16 @@ public class DiscordService {
     private Mono<Void> handleGuildCreateEvents() {
         return this.gateway.on(GuildCreateEvent.class, event -> {
             Snowflake guildId = event.getGuild().getId();
+            String guildName = event.getGuild().getName();
+            LOG.info("Received GuildCreateEvent for guild: {} ({})", guildName, guildId.asString());
             // Register commands for the new guild
             registerSlashCommandForGuild(guildId, "drl-leaderboard-posts-activate", "Activate leaderboard posts");
             registerSlashCommandForGuild(guildId, "drl-leaderboard-posts-deactivate", "Deactivate leaderboard posts");
 
             // Check and create server in database
-            return checkAndCreateServer(guildId.asString(), event.getGuild().getName());
+            return checkAndCreateServer(guildId.asString(), guildName)
+                    .doOnSuccess(unused -> LOG.info("Successfully processed GuildCreateEvent for guild: {} ({})", guildName, guildId.asString()))
+                    .doOnError(error -> LOG.error("Error processing GuildCreateEvent for guild: {} ({}): {}", guildName, guildId.asString(), error.getMessage()));
         }).then();
     }
 
@@ -159,6 +163,12 @@ public class DiscordService {
     private Mono<Void> handleChatInputInteractionEvents() {
         return this.gateway.on(ChatInputInteractionEvent.class, event -> {
             String commandName = event.getCommandName();
+            String guildId = event.getInteraction().getGuildId().map(Snowflake::asString).orElse("Unknown Guild");
+            String channelId = event.getInteraction().getChannelId().asString();
+
+            LOG.info("Received ChatInputInteractionEvent: Command = '{}', Guild ID = '{}', Channel ID = '{}'",
+                    commandName, guildId, channelId);
+
             if ("drl-leaderboard-posts-activate".equals(commandName)) {
                 return handleActivateCommand(event);
             } else if ("drl-leaderboard-posts-deactivate".equals(commandName)) {
@@ -320,12 +330,17 @@ public class DiscordService {
                                 channel.getChannelId(),
                                 "### \uD83C\uDFC6 Leaderboard Updates (Top50) \uD83C\uDFC6",
                                 createEmbedsForPlayerImprovements(relevantImprovements));
+                    } else {
+                        // Logging improvements not posted to the channel
+                        playerImprovements.stream()
+                                .filter(imp -> !imp.getForcePost() && !channel.getLastPostAt().isBefore(imp.getCreatedAt()))
+                                .forEach(imp -> LOG.info("Improvement not posted \n {} \n in channel: {} ({}) ", imp, channel.getChannelName(), channel.getChannelId()));
+                        return Mono.empty();
                     }
-                    return Mono.empty();
                 })
                 .subscribe(
-                        result -> LOG.info("Message sent successfully"),
-                        error -> LOG.error("Error sending message", error)
+                        result -> LOG.info("Message sent successfully to channel"),
+                        error -> LOG.error("Error sending message to channel: {}", error.getMessage())
                 );
     }
 
