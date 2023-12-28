@@ -223,6 +223,7 @@ public class LeaderboardUpdater {
                 for (Map<String, Object> drlLeaderboardEntry : leaderboard) {
                     LeaderboardEntry leaderboardEntry;
                     Optional<LeaderboardEntry> existingEntry = Optional.ofNullable(existingLeaderboardEntriesForTrack.get((String) drlLeaderboardEntry.get("player-id")));
+                    Boolean isExistingEntryInvalid = existingEntry.map(LeaderboardEntry::getIsInvalidRun).orElse(null);
                     leaderboardEntry = existingEntry.orElseGet(LeaderboardEntry::new);
                     leaderboardEntry.setDrlId((String) drlLeaderboardEntry.get("id"));
                     leaderboardEntry.setTrack(modelMapper.map(track, TrackMinimal.class));
@@ -330,7 +331,19 @@ public class LeaderboardUpdater {
 
                     LeaderboardEntry existingEntryInDB = currentLeaderboardEntries.get(leaderboardEntry.getPlayerId());
                     if (leaderboardPosition <= 50
-                            && (existingEntryInDB == null || leaderboardPosition < existingEntryInDB.getPosition())
+                            && (existingEntryInDB == null
+                                || leaderboardPosition < existingEntryInDB.getPosition()
+                                /* When the DRL Api doesn't give me a replay URL I flag the run as invalid. But it happens often
+                                   that the replay is there later on because the DRL System is slow to upload it and save it
+                                   within the player pb. Until thats happened my site reports that PB as invalid.
+                                   Now my DRL Bot goes through all new pbs that have a new position for all tracks every ~10Minutes.
+                                   If there are any then it sends them to discord (But not invalid ones). It then saves the creation
+                                   time from the latest PB it posted and saves it. This way I know what I already posted so that I
+                                   don't post twice..
+                                   Now if your run then later gets a replay attached to it, I will update your PB, but I won't post it
+                                   because its creation time is before the time my bot last posted.
+                                   This next condition fixes this: */
+                                || (Objects.equals(isExistingEntryInvalid, Boolean.TRUE) && !leaderboardEntry.getIsInvalidRun()))
                             && !leaderboardEntry.getIsInvalidRun()) {
                         PlayerImprovement improvement = new PlayerImprovement();
                         improvement.setPlayerName(leaderboardEntry.getPlayerName());
@@ -339,6 +352,9 @@ public class LeaderboardUpdater {
                         improvement.setCreatedAt(leaderboardEntry.getCreatedAt());
                         improvement.setTrack(leaderboardEntry.getTrack());
                         improvement.setProfilePicture(leaderboardEntry.getProfileThumb());
+                        if (Objects.equals(isExistingEntryInvalid, Boolean.TRUE)) {
+                            improvement.setForcePost(true);
+                        }
                         improvements.add(improvement);
                     }
 

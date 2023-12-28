@@ -299,26 +299,36 @@ public class DiscordService {
     }
 
     public void sendMessageToLeaderboardPostsChannels(List<PlayerImprovement> playerImprovements) {
-        LocalDateTime latestCreatedAt = playerImprovements.stream()
+        Optional<LocalDateTime> latestCreatedAtOpt = playerImprovements.stream()
+                .filter(imp -> !imp.getForcePost())
                 .map(PlayerImprovement::getCreatedAt)
-                .max(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.now());
+                .max(LocalDateTime::compareTo);
+
         Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType("LEADERBOARD_POSTS"))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMapIterable(Function.identity())
-                .filter(channel -> channel.getLastPostAt().isBefore(latestCreatedAt))
                 .flatMap(channel -> {
-                    updateLastPostAt(channel, latestCreatedAt);
-                    return sendMessageWithEmbedsToChannel(
-                            channel.getChannelId(),
-                            "### \uD83C\uDFC6 Leaderboard Updates (Top50) \uD83C\uDFC6",
-                            createEmbedsForPlayerImprovements(playerImprovements));
+                    List<PlayerImprovement> relevantImprovements = playerImprovements.stream()
+                            .filter(imp -> imp.getForcePost() || channel.getLastPostAt().isBefore(imp.getCreatedAt()))
+                            .collect(Collectors.toList());
+
+                    if (!relevantImprovements.isEmpty()) {
+                        latestCreatedAtOpt.ifPresent(latestCreatedAt ->
+                                updateLastPostAt(channel, latestCreatedAt));
+
+                        return sendMessageWithEmbedsToChannel(
+                                channel.getChannelId(),
+                                "### \uD83C\uDFC6 Leaderboard Updates (Top50) \uD83C\uDFC6",
+                                createEmbedsForPlayerImprovements(relevantImprovements));
+                    }
+                    return Mono.empty();
                 })
                 .subscribe(
                         result -> LOG.info("Message sent successfully"),
                         error -> LOG.error("Error sending message", error)
                 );
     }
+
 
     private List<EmbedCreateSpec> createEmbedsForPlayerImprovements(List<PlayerImprovement> playerImprovements) {
         return playerImprovements.stream()

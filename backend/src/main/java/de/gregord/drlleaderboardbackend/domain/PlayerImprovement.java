@@ -15,4 +15,5 @@ public class PlayerImprovement {
     private LocalDateTime createdAt;
     private TrackMinimal track;
     private String profilePicture;
+    private Boolean forcePost = false;
 }
