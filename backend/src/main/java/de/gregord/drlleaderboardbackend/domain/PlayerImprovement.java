@@ -3,11 +3,13 @@ package de.gregord.drlleaderboardbackend.domain;
 import de.gregord.drlleaderboardbackend.entities.TrackMinimal;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 public class PlayerImprovement {
     private String playerName;
     private Long previousPosition;
