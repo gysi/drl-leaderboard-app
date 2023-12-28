@@ -357,21 +357,42 @@ public class DiscordService {
                 );
     }
 
-
     private List<EmbedCreateSpec> createEmbedsForPlayerImprovements(List<PlayerImprovement> playerImprovements) {
         return playerImprovements.stream()
                 .map(imp -> {
                     Color color = backgroundColorByPosition(imp.getCurrentPosition());
+
+                    String formattedCurrentScore = PlayerImprovement.formatScore(imp.getCurrentScore());
+                    String scoreImprovementPart = "";
+                    String leaderScorePart = "";
+
+                    if (imp.getPreviousPosition() != null) {
+                        String scoreDifference = PlayerImprovement.getScoreDifference(imp.getPreviousScore(), imp.getCurrentScore());
+                        scoreImprovementPart = String.format("Faster by: %s\n", scoreDifference);
+                    }
+
+                    if (imp.getCurrentPosition() == 1) {
+                        leaderScorePart = "This time secures the top position as the current track leader!";
+                    } else if (imp.getLeaderScore() != null) {
+                        String leaderScoreDifference = PlayerImprovement.getScoreDifference(imp.getCurrentScore(), imp.getLeaderScore());
+                        String formattedLeaderScore = PlayerImprovement.formatScore(imp.getLeaderScore());
+                        leaderScorePart = String.format("Behind the track leader by: %s (%s)", leaderScoreDifference, formattedLeaderScore);
+                    }
+
+                    String description = (imp.getPreviousPosition() == null ?
+                            String.format("Improved from position >100 to **%d** on\n**%s - %s - %s**\n",
+                                    imp.getCurrentPosition(), imp.getTrack().getName(), imp.getTrack().getMapName(),
+                                    imp.getTrack().getParentCategory()) :
+                            String.format("Improved from position **%d** to **%d** on\n**%s - %s - %s**\n",
+                                    imp.getPreviousPosition(), imp.getCurrentPosition(), imp.getTrack().getName(),
+                                    imp.getTrack().getMapName(), imp.getTrack().getParentCategory()))
+                            + scoreImprovementPart
+                            + String.format("New Time: %s\n", formattedCurrentScore)
+                            + leaderScorePart;
+
                     return EmbedCreateSpec.builder()
-                            .title(String.format("%s #%d", imp.getPlayerName(),imp.getCurrentPosition()))
-                            .description(imp.getPreviousPosition() == null ?
-                                    String.format("improved from position >100 to **%d** on\n**%s - %s - %s**",
-                                            imp.getCurrentPosition(), imp.getTrack().getName(), imp.getTrack().getMapName(),
-                                            imp.getTrack().getParentCategory())
-                                    :
-                                    String.format("improved from position **%d** to **%d** on\n**%s - %s - %s**",
-                                            imp.getPreviousPosition(), imp.getCurrentPosition(), imp.getTrack().getName(),
-                                            imp.getTrack().getMapName(), imp.getTrack().getParentCategory()))
+                            .title(String.format("%s #%d", imp.getPlayerName(), imp.getCurrentPosition()))
+                            .description(description)
                             .color(color)
                             .thumbnail(imp.getProfilePicture())
                             .url(String.format("%s/track-lb?trackId=%d", frontendUrl, imp.getTrack().getId()))

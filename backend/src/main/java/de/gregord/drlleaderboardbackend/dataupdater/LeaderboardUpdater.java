@@ -194,6 +194,7 @@ public class LeaderboardUpdater {
             Map<String, LeaderboardEntry> alreadyFoundPlayerIds = new HashMap<>();
             // <player_name, leaderboard>
             Map<String, LeaderboardEntry> alreadyFoundPlayerNames = new HashMap<>();
+            Long leaderScore = null;
             do {
                 String requestUrl = mapsEndpointBuilder.buildAndExpand(Map.of("token", token, "page", page)).toUriString();
                 LOG.info("requestUrl: {}", requestUrl);
@@ -327,7 +328,11 @@ public class LeaderboardUpdater {
                     }
 
                     leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
-                        leaderboardEntry.setPosition(leaderboardPosition);
+                    leaderboardEntry.setPosition(leaderboardPosition);
+
+                    if (!leaderboardEntry.getIsInvalidRun() && leaderboardEntry.getPosition().equals(1L)) {
+                        leaderScore = leaderboardEntry.getScore();
+                    }
 
                     LeaderboardEntry existingEntryInDB = currentLeaderboardEntries.get(leaderboardEntry.getPlayerId());
                     if (leaderboardPosition <= 50
@@ -349,9 +354,12 @@ public class LeaderboardUpdater {
                         improvement.setPlayerName(leaderboardEntry.getPlayerName());
                         improvement.setPreviousPosition(existingEntryInDB != null ? existingEntryInDB.getPosition() : null);
                         improvement.setCurrentPosition(leaderboardPosition);
+                        improvement.setPreviousScore(existingEntryInDB != null ? existingEntryInDB.getScore() : null);
+                        improvement.setCurrentScore(leaderboardEntry.getScore());
                         improvement.setCreatedAt(leaderboardEntry.getCreatedAt());
                         improvement.setTrack(leaderboardEntry.getTrack());
                         improvement.setProfilePicture(leaderboardEntry.getProfileThumb());
+                        improvement.setLeaderScore(leaderScore);
                         if (Objects.equals(isExistingEntryInvalid, Boolean.TRUE)) {
                             improvement.setForcePost(true);
                         }
