@@ -10,16 +10,23 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
+import discord4j.core.event.domain.interaction.AutoCompleteInteractionEvent;
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.object.command.ApplicationCommand;
+import discord4j.core.object.command.ApplicationCommandInteractionOption;
+import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
+import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.spec.*;
+import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
+import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.util.Color;
 import jakarta.annotation.PostConstruct;
@@ -37,6 +44,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static de.gregord.drlleaderboardbackend.util.discord.ColorHelper.backgroundColorByPosition;
 
 @Service
 public class DiscordService {
@@ -73,7 +82,7 @@ public class DiscordService {
                 handleGuildCreateEvents(),
                 handleGuildDeleteEvents(),
                 handleChatInputInteractionEvents(),
-                handleSelectMenuInteractionEvents()
+                handleAutoCompleteInteractionEvents()
         );
     }
 
@@ -88,6 +97,14 @@ public class DiscordService {
     }
 
     private void registerSlashCommandForGuild(Snowflake guildId, String commandName, String description) {
+        ApplicationCommandOptionData channelOption = ApplicationCommandOptionData.builder()
+                .name("channel")
+                .description("Select a channel")
+                .type(ApplicationCommandOption.Type.STRING.getValue())
+                .required(true)
+                .autocomplete(true)
+                .build();
+
         this.gateway.getRestClient().getApplicationService()
                 .createGuildApplicationCommand(this.gateway.getRestClient().getApplicationId().block(), guildId.asLong(),
                         ApplicationCommandRequest.builder()
@@ -96,6 +113,7 @@ public class DiscordService {
                                 .dmPermission(false)
                                 .defaultMemberPermissions("0")
                                 .type(ApplicationCommand.Type.CHAT_INPUT.getValue())
+                                .addOption(channelOption)
                                 .build())
                 .subscribe(
                         result -> LOG.info("Slash command '{}' registered for guild: {}", commandName, guildId.asString()),
@@ -178,105 +196,94 @@ public class DiscordService {
         }).then();
     }
 
+    private Mono<Void> handleAutoCompleteInteractionEvents() {
+        return this.gateway.on(ChatInputAutoCompleteEvent.class, event -> {
+            if (Arrays.asList("drl-leaderboard-posts-activate", "drl-leaderboard-posts-deactivate").contains(event.getCommandName())
+                    && event.getFocusedOption().getName().equals("channel")) {
+                String input = event.getFocusedOption().getValue().map(ApplicationCommandInteractionOptionValue::asString).orElse("");
+                return provideChannelSuggestions(event, input);
+            }
+            return Mono.empty();
+        }).then();
+    }
+
+    private Mono<Void> provideChannelSuggestions(ChatInputAutoCompleteEvent event, String input) {
+        Mono<Set<String>> activatedChannelIds = (event.getCommandName().equals("drl-leaderboard-posts-deactivate"))
+                ? getActivatedChannelIds(event.getInteraction().getGuildId().orElse(null))
+                : Mono.just(Collections.emptySet());
+
+        return activatedChannelIds.flatMap(activatedIds -> event.getInteraction().getGuild().flatMapMany(Guild::getChannels)
+                        .filter(channel -> channel.getName().toLowerCase().contains(input.toLowerCase()) &&
+                                (activatedIds.isEmpty() || activatedIds.contains(channel.getId().asString())) && channel instanceof TextChannel)
+                        .take(25) // Limit to 25 suggestions
+                        .map(channel -> ApplicationCommandOptionChoiceData.builder()
+                                .name(channel.getName())
+                                .value(channel.getId().asString())
+                                .build())
+                        .collectList()
+                        .flatMap(choices -> {
+                            List<ApplicationCommandOptionChoiceData> convertedChoices = choices.stream()
+                                    .map(choice -> ApplicationCommandOptionChoiceData.builder()
+                                            .name(choice.name())
+                                            .value(choice.value())
+                                            .build())
+                                    .collect(Collectors.toList());
+                            return event.respondWithSuggestions(convertedChoices);
+                        }))
+                .then();
+    }
+
     private Mono<Void> handleActivateCommand(ChatInputInteractionEvent event) {
         String guildId = event.getInteraction().getGuildId().orElseThrow().asString();
+        String channelId = event.getOption("channel")
+                .flatMap(ApplicationCommandInteractionOption::getValue)
+                .map(ApplicationCommandInteractionOptionValue::asString)
+                .orElse(null);
 
-        return Mono.fromCallable(() -> discordServerRepository.findByServerId(guildId))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(optionalDiscordServer -> {
-                    if (!optionalDiscordServer.isPresent()) {
-                        throw new IllegalStateException("Server not found: " + guildId);
-                    }
-                    return Mono.fromCallable(() -> discordActiveChannelsRepository.findByDiscordServerAndPostType(optionalDiscordServer.get(), "LEADERBOARD_POSTS"))
-                            .subscribeOn(Schedulers.boundedElastic());
-                })
-                .flatMap(existingChannels -> {
-                    Set<String> existingChannelIds = existingChannels.stream()
-                            .map(DiscordActiveChannels::getChannelId)
-                            .collect(Collectors.toSet());
+        if (channelId == null) {
+            return event.reply("No channel selected").withEphemeral(true);
+        }
 
-                    return event.getInteraction().getGuild()
-                            .flatMapMany(guild -> guild.getChannels())
-                            .filter(channel -> channel instanceof TextChannel && !existingChannelIds.contains(channel.getId().asString()))
-                            .collectList()
-                            .flatMap(channels -> {
-                                List<SelectMenu.Option> options = channels.stream()
-                                        .map(channel -> SelectMenu.Option.of(channel.getName(), channel.getId().asString()))
-                                        .collect(Collectors.toList());
-
-                                SelectMenu selectMenu = SelectMenu.of("activate-channel", options);
-
-                                return event.reply("Please select a channel:")
-                                        .withEphemeral(true)
-                                        .withComponents(ActionRow.of(selectMenu));
-                            });
+        return saveSelectedChannel(guildId, channelId, "LEADERBOARD_POSTS")
+                .then(Mono.defer(() -> event.reply("Channel activated for leaderboard posts").withEphemeral(true)))
+                .onErrorResume(e -> {
+                    LOG.error("Error activating channel: {}", e.getMessage());
+                    return event.reply("Failed to activate channel due to an error").withEphemeral(true);
                 });
     }
+
 
     private Mono<Void> handleDeactivateCommand(ChatInputInteractionEvent event) {
-        String guildId = event.getInteraction().getGuildId().orElseThrow().asString();
+        String channelId = event.getOption("channel")
+                .flatMap(ApplicationCommandInteractionOption::getValue)
+                .map(ApplicationCommandInteractionOptionValue::asString)
+                .orElse(null);
 
-        return listChannels(guildId, true)
-                .flatMap(channels -> {
-                    List<SelectMenu.Option> options = channels.stream()
-                            .map(channel -> SelectMenu.Option.of(channel.getName(), channel.getId().asString()))
-                            .collect(Collectors.toList());
+        if (channelId == null) {
+            return event.reply("No channel selected").withEphemeral(true);
+        }
 
-                    SelectMenu selectMenu = SelectMenu.of("deactivate-channel", options);
-
-                    return event.reply("Please select a channel to deactivate:")
-                            .withEphemeral(true)
-                            .withComponents(ActionRow.of(selectMenu));
+        return removeSelectedChannel(channelId)
+                .then(Mono.defer(() -> event.reply("Channel deactivated for leaderboard posts").withEphemeral(true)))
+                .onErrorResume(e -> {
+                    LOG.error("Error deactivating channel: {}", e.getMessage());
+                    return event.reply("Failed to deactivate channel due to an error").withEphemeral(true);
                 });
     }
 
-    private Mono<List<GuildChannel>> listChannels(String guildId, boolean onlyActivated) {
-        Mono<Set<String>> existingChannelIdsMono = onlyActivated
-                ? Mono.fromCallable(() -> discordServerRepository.findByServerId(guildId))
+    private Mono<Set<String>> getActivatedChannelIds(Snowflake guildId) {
+        if (guildId == null) {
+            return Mono.just(Collections.emptySet());
+        }
+        return Mono.fromCallable(() -> discordServerRepository.findByServerId(guildId.asString()))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(optionalDiscordServer -> optionalDiscordServer
                         .map(discordServer -> Mono.fromCallable(() -> discordActiveChannelsRepository.findByDiscordServerAndPostType(discordServer, "LEADERBOARD_POSTS"))
                                 .subscribeOn(Schedulers.boundedElastic())
-                                .flatMapIterable(channels -> channels)
+                                .flatMapIterable(Function.identity())
                                 .map(DiscordActiveChannels::getChannelId)
                                 .collect(Collectors.toSet()))
-                        .orElseGet(Mono::empty))
-                : Mono.just(Collections.emptySet());
-
-        return existingChannelIdsMono.flatMapMany(existingChannelIds -> this.gateway.getGuildById(Snowflake.of(guildId))
-                        .flatMapMany(Guild::getChannels)
-                        .filter(channel -> channel instanceof TextChannel && (!onlyActivated || existingChannelIds.contains(channel.getId().asString()))))
-                .collectList();
-    }
-
-    private Mono<Void> handleSelectMenuInteractionEvents() {
-        return this.gateway.on(SelectMenuInteractionEvent.class, event -> {
-            String selectedChannelId = event.getValues().get(0);
-            String guildId = event.getInteraction().getGuildId().get().asString();
-            String customId = event.getCustomId();
-
-            Mono<Void> actionMono;
-            if ("activate-channel".equals(customId)) {
-                actionMono = saveSelectedChannel(guildId, selectedChannelId, "LEADERBOARD_POSTS");
-            } else if ("deactivate-channel".equals(customId)) {
-                actionMono = removeSelectedChannel(selectedChannelId);
-            } else {
-                actionMono = Mono.empty();
-            }
-
-            return event.deferReply(InteractionCallbackSpec.builder()
-                            .ephemeral(true)
-                            .build())
-                    .then(actionMono)
-                    .then(Mono.defer(() ->
-                            event.createFollowup(
-                                    InteractionFollowupCreateSpec.builder()
-                                            .content("Action performed successfully!")
-                                            .ephemeral(true)
-                                            .build()
-                            )
-                    ));
-        }).then();
+                        .orElseGet(Mono::empty));
     }
 
     private Mono<Void> saveSelectedChannel(String guildId, String channelId, String postType) {
@@ -299,12 +306,18 @@ public class DiscordService {
             activeChannel.setLastPostAt(LocalDateTime.now()); // Set the current time as the last post time
 
             discordActiveChannelsRepository.save(activeChannel);
+        }).onErrorResume(e -> {
+            LOG.error("Error saving selected channel: {}", e.getMessage());
+            return Mono.empty(); // continue the stream without terminating
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 
     private Mono<Void> removeSelectedChannel(String channelId) {
         return Mono.fromRunnable(() -> {
             discordActiveChannelsRepository.findByChannelId(channelId).ifPresent(discordActiveChannelsRepository::delete);
+        }).onErrorResume(e -> {
+            LOG.error("Error removing selected channel: {}", e.getMessage());
+            return Mono.empty(); // continue the stream without terminating
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 
@@ -391,25 +404,5 @@ public class DiscordService {
                             .ofType(TextChannel.class)
                             .flatMap(channel -> channel.createMessage(messageBuilder.build()));
                 }).then();
-    }
-
-    private Color backgroundColorByPosition(Long position) {
-        if (position > 75) {
-            return Color.of(75, 75, 75); // #4B4B4B
-        } else if (position > 50) {
-            return Color.of(35, 73, 24); // #234918
-        } else if (position > 25) {
-            return Color.of(50, 103, 34); // #326722
-        } else if (position > 10) {
-            return Color.of(64, 131, 45); // #40832d
-        } else if (position > 3) {
-            return Color.of(89, 180, 61); // #59b43d
-        } else if (position > 2) {
-            return Color.of(187, 107, 33); // rgb(187,107,33) for 3
-        } else if (position > 1) {
-            return Color.of(138, 135, 141); // rgb(138,135,141) for 2
-        } else {
-            return Color.of(180, 135, 22); // rgba(180,135,22) for 1
-        }
     }
 }
