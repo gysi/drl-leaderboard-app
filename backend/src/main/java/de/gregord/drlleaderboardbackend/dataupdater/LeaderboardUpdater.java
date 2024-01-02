@@ -73,6 +73,7 @@ public class LeaderboardUpdater {
 
         customTopSpeeds.put("MT-9eb", 104.6);
         customTopSpeeds.put("CMP-7ab877a2c62446a10c9316a0", 104.2);
+        customTopSpeeds.put("MT-fb1", 102.0); // Straight line
 
         // cloneno1 Moonlight #1
         manualInvalidRuns.put("62a2459bd5155d003a982cd9", InvalidRunReasons.NO_REPLAY);
@@ -258,17 +259,17 @@ public class LeaderboardUpdater {
                             );
                         }
                     }
-                    if (leaderboardEntry.getTopSpeed() > 104) {
-                        Double customTopSpeed = customTopSpeeds.get(track.getGuid());
-                        if(customTopSpeed == null || leaderboardEntry.getTopSpeed() > customTopSpeed) {
-                            LOG.warn("Player " + leaderboardEntry.getPlayerName() + " has impossible top speed " + leaderboardEntry.getTopSpeed() + ", DRL BUG!");
-                            leaderboardEntry.setIsInvalidRun(true);
-                            leaderboardEntry.setInvalidRunReason(
-                                    (leaderboardEntry.getInvalidRunReason() == null) ?
-                                            InvalidRunReasons.IMPOSSIBLE_TOP_SPEED.toString() :
-                                            leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.IMPOSSIBLE_TOP_SPEED
-                            );
-                        }
+                    Double customTopSpeed = customTopSpeeds.get(track.getGuid());
+                    boolean isInvalidSpeed = (customTopSpeed != null && leaderboardEntry.getTopSpeed() > customTopSpeed) ||
+                            (customTopSpeed == null && leaderboardEntry.getTopSpeed() > 104);
+                    if (isInvalidSpeed) {
+                        LOG.warn("Player " + leaderboardEntry.getPlayerName() + " has impossible top speed " + leaderboardEntry.getTopSpeed() + ", DRL BUG!");
+                        leaderboardEntry.setIsInvalidRun(true);
+                        leaderboardEntry.setInvalidRunReason(
+                                (leaderboardEntry.getInvalidRunReason() == null) ?
+                                        InvalidRunReasons.IMPOSSIBLE_TOP_SPEED.toString() :
+                                        leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.IMPOSSIBLE_TOP_SPEED
+                        );
                     }
                     if (leaderboardEntry.getReplayUrl() == null) {
                         LOG.warn("Player " + leaderboardEntry.getPlayerName() + " has no replay url, DRL BUG (Or intended)!");
