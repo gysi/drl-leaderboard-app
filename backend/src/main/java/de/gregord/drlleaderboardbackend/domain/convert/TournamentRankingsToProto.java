@@ -12,16 +12,10 @@ public class TournamentRankingsToProto {
     // TODO LOOK AT THIS LIBRARY!
     // https://gitlab.com/protobuf-tools/proto_domain_converter#getting-the-library
     public static TournamentRankingsOuterClass.TournamentRankings convertDomainToProto(TournamentRankings tournamentRankings) {
-        // Convert TournamentRankings object to TournamentRankingsOuterClass
         TournamentRankingsOuterClass.TournamentRankings.Builder builder = TournamentRankingsOuterClass.TournamentRankings.newBuilder();
-
-        // Convert each field
         builder.setSeasonName(tournamentRankings.getSeasonName());
-        // For the LocalDateTime fields, you would use your conversion method to go from LocalDateTime to Protobuf's Timestamp
         builder.setSeasonStartDate(convertToProtoTimestamp(tournamentRankings.getSeasonStartDate()));
         builder.setSeasonEndDate(convertToProtoTimestamp(tournamentRankings.getSeasonEndDate()));
-
-        // For the List<PlayerRanking>, you need to loop over the list and convert each PlayerRanking to PlayerRankingProtos.PlayerRanking
         for (TournamentRankings.PlayerRanking playerRanking : tournamentRankings.getRankings()) {
             TournamentRankingsOuterClass.TournamentRankings.PlayerRanking.Builder playerRankingBuilder = TournamentRankingsOuterClass.TournamentRankings.PlayerRanking.newBuilder();
 
@@ -47,8 +41,6 @@ public class TournamentRankingsToProto {
 
                 playerRankingBuilder.addPlayedTournaments(tournamentBuilder.build());
             }
-
-            // Add to the list in TournamentRankings
             builder.addRankings(playerRankingBuilder.build());
         }
 
