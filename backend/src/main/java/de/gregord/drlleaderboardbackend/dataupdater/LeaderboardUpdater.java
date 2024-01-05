@@ -8,7 +8,7 @@ import de.gregord.drlleaderboardbackend.entities.Track;
 import de.gregord.drlleaderboardbackend.entities.TrackMinimal;
 import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
 import de.gregord.drlleaderboardbackend.repositories.TracksRepository;
-import de.gregord.drlleaderboardbackend.services.DiscordService;
+import de.gregord.drlleaderboardbackend.services.discord.DiscordMessageService;
 import de.gregord.drlleaderboardbackend.services.LeaderboardService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ public class LeaderboardUpdater {
     private final LeaderboardService leaderboardService;
     private final ModelMapper modelMapper;
     private final CacheManager cacheManager;
-    private final DiscordService discordService;
+    private final DiscordMessageService discordService;
 
     public LeaderboardUpdater(
             @Value("${app.drl-api.token}") String token,
@@ -107,7 +107,7 @@ public class LeaderboardUpdater {
             LeaderboardService leaderboardService,
             ModelMapper modelMapper,
             CacheManager cacheManager,
-            DiscordService discordService
+            DiscordMessageService discordService
     ) {
         this.token = token;
         this.leaderboardEndpoint = leaderboardEndpoint;
