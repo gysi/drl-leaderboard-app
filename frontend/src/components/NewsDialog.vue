@@ -36,7 +36,7 @@
               <ul class="q-my-sm" style="font-size: 1rem">
                 <li>The leaderboard discord bot commands were renamed:
                   <br/>
-                  <a href="https://discord.com/api/oauth2/authorize?client_id=1192998273594708058&permissions=2064&scope=bot+applications.commands" target="_blank">Bot Link</a>
+                  <a href="https://discord.com/api/oauth2/authorize?client_id=1189335274422009978&permissions=2064&scope=bot+applications.commands" target="_blank">Bot Link</a>
                   <br/>Commands:
                   <ul><li>/leaderboard-posts-activate [channel]</li><li>/leaderboard-posts-deactivate [channel]</li>
                   </ul>
