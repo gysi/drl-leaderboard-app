@@ -1,5 +1,6 @@
 package de.gregord.drlleaderboardbackend.entities;
 
+import de.gregord.drlleaderboardbackend.services.discord.DiscordPostType;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,7 +29,8 @@ public class DiscordActiveChannels {
     private DiscordServer discordServer;
     private String channelId;
     private String channelName;
-    private String postType;
+    @Enumerated(EnumType.STRING)
+    private DiscordPostType postType;
     private LocalDateTime lastPostAt;
 
     public DiscordActiveChannels() {

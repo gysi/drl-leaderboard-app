@@ -1,9 +1,7 @@
 package de.gregord.drlleaderboardbackend.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import de.gregord.drlleaderboardbackend.services.discord.DiscordBotType;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +24,9 @@ public class DiscordServer {
 
     private String serverId;
     private String serverName;
+
+    @Enumerated(EnumType.STRING)
+    private DiscordBotType botType;
 
     public DiscordServer() {
 

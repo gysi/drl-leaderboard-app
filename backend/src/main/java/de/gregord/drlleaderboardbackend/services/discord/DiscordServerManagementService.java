@@ -37,27 +37,31 @@ public class DiscordServerManagementService {
 
     @PostConstruct
     public void init() {
-        discordInitializationService.getGateway().thenAccept(gateway -> {
-            handleGuildCreateEvents(gateway).subscribe();
-            handleGuildDeleteEvents(gateway).subscribe();
+        discordInitializationService.getLeaderboardGateway().thenAccept(gateway -> {
+            handleGuildCreateEvents(gateway, DiscordBotType.LEADERBOARD).subscribe();
+            handleGuildDeleteEvents(gateway, DiscordBotType.LEADERBOARD).subscribe();
+        });
+        discordInitializationService.getTournamentGateway().thenAccept(gateway -> {
+            handleGuildCreateEvents(gateway, DiscordBotType.TOURNAMENT).subscribe();
+            handleGuildDeleteEvents(gateway, DiscordBotType.TOURNAMENT).subscribe();
         });
     }
 
-    private Mono<Void> handleGuildCreateEvents(GatewayDiscordClient gateway) {
+    private Mono<Void> handleGuildCreateEvents(GatewayDiscordClient gateway, DiscordBotType botType) {
         return gateway.on(GuildCreateEvent.class, event -> {
             Snowflake guildId = event.getGuild().getId();
             String guildName = event.getGuild().getName();
-            LOG.info("Received GuildCreateEvent for guild: {} ({})", guildName, guildId.asString());
-            return checkAndCreateServer(guildId.asString(), guildName);
+            LOG.info("Received GuildCreateEvent from {} bot for guild: {} ({})", botType, guildName, guildId.asString());
+            return checkAndCreateServer(botType, guildId.asString(), guildName);
         }).then();
     }
 
-    private Mono<Void> checkAndCreateServer(String guildId, String guildName) {
-        return Mono.fromCallable(() -> discordServerRepository.findByServerId(guildId))
+    private Mono<Void> checkAndCreateServer(DiscordBotType botType, String guildId, String guildName) {
+        return Mono.fromCallable(() -> discordServerRepository.findByServerIdAndBotType(guildId, botType))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(optionalDiscordServer -> {
                     if (optionalDiscordServer.isEmpty()) {
-                        return createNewServer(guildId, guildName)
+                        return createNewServer(botType, guildId, guildName)
                                 .doOnSuccess(unused -> LOG.info("Successfully created new Server on GuildCreateEvent for guild: {} ({})", guildName, guildId))
                                 .doOnError(error -> LOG.error("Error creating new Server while processing GuildCreateEvent for guild: {} ({}): {}", guildName, guildId, error.getMessage()));
                     }
@@ -66,21 +70,22 @@ public class DiscordServerManagementService {
                 });
     }
 
-    private Mono<Void> createNewServer(String guildId, String guildName) {
+    private Mono<Void> createNewServer(DiscordBotType botType, String guildId, String guildName) {
         return Mono.fromRunnable(() -> {
             DiscordServer newServer = new DiscordServer();
             newServer.setServerId(guildId);
             newServer.setServerName(guildName);
+            newServer.setBotType(botType);
             discordServerRepository.save(newServer);
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 
-    private Mono<Void> handleGuildDeleteEvents(GatewayDiscordClient gateway) {
+    private Mono<Void> handleGuildDeleteEvents(GatewayDiscordClient gateway, DiscordBotType botType) {
         return gateway.on(GuildDeleteEvent.class, event -> {
             if (!event.isUnavailable()) {
                 String guildId = event.getGuildId().asString();
                 String guildName = event.getGuild().map(Guild::getName).orElse("Unknown");
-                return removeServer(guildId)
+                return removeServer(guildId, botType)
                         .doOnSuccess(unused -> LOG.info("Successfully removed Server on GuildDeleteEvent for guild: {} ({})", guildName, guildId))
                         .doOnError(error -> LOG.error("Error removing Server while processing GuildDeleteEvent for guild: {} ({}): {}", guildName, guildId, error.getMessage()));
             }
@@ -88,9 +93,9 @@ public class DiscordServerManagementService {
         }).then();
     }
 
-    private Mono<Void> removeServer(String guildId) {
+    private Mono<Void> removeServer(String guildId, DiscordBotType botType) {
         return Mono.fromRunnable(() -> {
-            discordServerRepository.findByServerId(guildId).ifPresent(server -> {
+            discordServerRepository.findByServerIdAndBotType(guildId, botType).ifPresent(server -> {
                 List<DiscordActiveChannels> activeChannels = discordActiveChannelsRepository.findByDiscordServer(server);
                 discordActiveChannelsRepository.deleteAll(activeChannels);
                 discordServerRepository.delete(server);

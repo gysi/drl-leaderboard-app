@@ -3,7 +3,6 @@ package de.gregord.drlleaderboardbackend.services.discord;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
-import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.object.command.ApplicationCommand;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
@@ -25,9 +24,14 @@ public class DiscordCommandRegistrationService {
 
     @PostConstruct
     public void init() {
-        discordInitializationService.getGateway().thenAccept(gateway -> {
+        discordInitializationService.getLeaderboardGateway().thenAccept(gateway -> {
 //            registerSlashCommandsOnReady(gateway).subscribe();
-            handleGuildCreateEvents(gateway).subscribe();
+            handleGuildCreateEvents(gateway, DiscordBotType.LEADERBOARD).subscribe();
+        });
+
+        discordInitializationService.getTournamentGateway().thenAccept(gateway -> {
+//            registerSlashCommandsOnReady(gateway).subscribe();
+            handleGuildCreateEvents(gateway, DiscordBotType.TOURNAMENT).subscribe();
         });
     }
 
@@ -42,22 +46,33 @@ public class DiscordCommandRegistrationService {
 //        }).then();
 //    }
 
-    private Mono<Void> handleGuildCreateEvents(GatewayDiscordClient gateway) {
+    private Mono<Void> handleGuildCreateEvents(GatewayDiscordClient gateway, DiscordBotType botType) {
         return gateway.on(GuildCreateEvent.class, event -> {
             Snowflake guildId = event.getGuild().getId();
-            String guildName = event.getGuild().getName();
-            LOG.info("Received GuildCreateEvent for guild: {} ({})", guildName, guildId.asString());
-            // Register commands for the new guild
-            registerSlashCommandForGuild(gateway, guildId, "drl-leaderboard-posts-activate", "Activate leaderboard posts");
-            registerSlashCommandForGuild(gateway,guildId, "drl-leaderboard-posts-deactivate", "Deactivate leaderboard posts");
-            return Mono.empty();
+            long applicationId = gateway.getRestClient().getApplicationId().block();
+
+            // Delete all existing commands
+            return gateway.getRestClient().getApplicationService()
+                    .getGuildApplicationCommands(applicationId, guildId.asLong())
+                    .flatMap(command -> {
+                        String commandName = command.name();
+                        return gateway.getRestClient().getApplicationService()
+                                .deleteGuildApplicationCommand(applicationId, guildId.asLong(), command.id().asLong())
+                                .doOnSuccess(unused -> LOG.info("Deleted old command: {}", commandName))
+                                .doOnError(error -> LOG.error("Error deleting old command: {}", commandName, error));
+                    })
+                    .doOnComplete(() -> {
+                        botType.getCommands().forEach(command -> {
+                            registerSlashCommandForGuild(gateway, guildId, command.getCommandName(), command.getDescription());
+                        });
+                    }).then();
         }).then();
     }
 
     private void registerSlashCommandForGuild(GatewayDiscordClient gateway, Snowflake guildId, String commandName, String description) {
         ApplicationCommandOptionData channelOption = ApplicationCommandOptionData.builder()
                 .name("channel")
-                .description("Select a channel")
+                .description("Select a channel to which the bot should post the messages")
                 .type(ApplicationCommandOption.Type.STRING.getValue())
                 .required(true)
                 .autocomplete(true)
