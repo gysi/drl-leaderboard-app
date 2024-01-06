@@ -28,7 +28,7 @@
                   <a href="https://discord.com/api/oauth2/authorize?client_id=1192998273594708058&permissions=2064&scope=bot+applications.commands" target="_blank">Bot Link</a>
                   <br/>Commands:
                   <ul><li>/tourney-reminder-activate [channel]</li><li>/tourney-reminder-deactivate [channel]</li>
-                    <li>/tourney-results-activate [channel]</li><li>/tourney-results-activate [channel]</li>
+                    <li>/tourney-results-activate [channel]</li><li>/tourney-results-deactivate [channel]</li>
                   </ul>
                 </li>
               </ul>
