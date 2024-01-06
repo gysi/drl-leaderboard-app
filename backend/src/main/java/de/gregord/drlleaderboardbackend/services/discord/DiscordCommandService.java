@@ -39,12 +39,16 @@ public class DiscordCommandService {
 
     @PostConstruct
     public void init() {
-        discordInitializationService.getGateway().thenAccept(gateway -> {
-            handleChatInputInteractionEvents(gateway).subscribe();
+        discordInitializationService.getLeaderboardGateway().thenAccept(gateway -> {
+            handleChatInputInteractionEvents(gateway, DiscordBotType.LEADERBOARD).subscribe();
+        });
+
+        discordInitializationService.getTournamentGateway().thenAccept(gateway -> {
+            handleChatInputInteractionEvents(gateway, DiscordBotType.TOURNAMENT).subscribe();
         });
     }
 
-    private Mono<Void> handleChatInputInteractionEvents(GatewayDiscordClient gateway) {
+    private Mono<Void> handleChatInputInteractionEvents(GatewayDiscordClient gateway, DiscordBotType botType) {
         return gateway.on(ChatInputInteractionEvent.class, event -> {
             String commandName = event.getCommandName();
             String guildId = event.getInteraction().getGuildId().map(Snowflake::asString).orElse("Unknown Guild");
@@ -53,16 +57,22 @@ public class DiscordCommandService {
             LOG.info("Received ChatInputInteractionEvent: Command = '{}', Guild ID = '{}', Channel ID = '{}'",
                     commandName, guildId, channelId);
 
-            if ("drl-leaderboard-posts-activate".equals(commandName)) {
-                return handleActivateCommand(gateway, event);
-            } else if ("drl-leaderboard-posts-deactivate".equals(commandName)) {
-                return handleDeactivateCommand(event);
+            DiscordCommand discordCommand = DiscordCommand.fromCommandName(commandName);
+            if (discordCommand == null || !botType.getCommands().contains(discordCommand)) {
+                LOG.info("Command '{}' is not supported by this bot type: {}", commandName, botType);
+                return Mono.empty();
+            }
+            if (discordCommand.activatesChannel()) {
+                return handleActivateCommand(gateway, botType, event, discordCommand.getPostType());
+            } else if (discordCommand.deactivatesChannel()) {
+                return handleDeactivateCommand(event, discordCommand.getPostType());
             }
             return Mono.empty();
         }).then();
     }
 
-    private Mono<Void> handleActivateCommand(GatewayDiscordClient gateway, ChatInputInteractionEvent event) {
+    private Mono<Void> handleActivateCommand(GatewayDiscordClient gateway, DiscordBotType botType,
+                                             ChatInputInteractionEvent event, DiscordPostType postType) {
         String guildId = event.getInteraction().getGuildId().orElseThrow().asString();
         String channelId = event.getOption("channel")
                 .flatMap(ApplicationCommandInteractionOption::getValue)
@@ -73,7 +83,7 @@ public class DiscordCommandService {
             return event.reply("No channel selected").withEphemeral(true);
         }
 
-        return saveSelectedChannel(gateway, guildId, channelId, "LEADERBOARD_POSTS")
+        return saveSelectedChannel(gateway, botType, guildId, channelId, postType)
                 .then(Mono.defer(() -> event.reply("Channel activated for leaderboard posts").withEphemeral(true)))
                 .onErrorResume(e -> {
                     LOG.error("Error activating channel: {}", e.getMessage());
@@ -81,8 +91,7 @@ public class DiscordCommandService {
                 });
     }
 
-
-    private Mono<Void> handleDeactivateCommand(ChatInputInteractionEvent event) {
+    private Mono<Void> handleDeactivateCommand(ChatInputInteractionEvent event, DiscordPostType postType) {
         String channelId = event.getOption("channel")
                 .flatMap(ApplicationCommandInteractionOption::getValue)
                 .map(ApplicationCommandInteractionOptionValue::asString)
@@ -92,17 +101,18 @@ public class DiscordCommandService {
             return event.reply("No channel selected").withEphemeral(true);
         }
 
-        return removeSelectedChannel(channelId)
-                .then(Mono.defer(() -> event.reply("Channel deactivated for leaderboard posts").withEphemeral(true)))
+        return removeSelectedChannel(channelId, postType)
+                .then(Mono.defer(() -> event.reply("Channel deactivated for posts").withEphemeral(true)))
                 .onErrorResume(e -> {
                     LOG.error("Error deactivating channel: {}", e.getMessage());
                     return event.reply("Failed to deactivate channel due to an error").withEphemeral(true);
                 });
     }
 
-    private Mono<Void> saveSelectedChannel(GatewayDiscordClient gateway, String guildId, String channelId, String postType) {
+    private Mono<Void> saveSelectedChannel(GatewayDiscordClient gateway, DiscordBotType botType, String guildId,
+                                           String channelId, DiscordPostType postType) {
         return Mono.fromRunnable(() -> {
-            DiscordServer server = discordServerRepository.findByServerId(guildId)
+            DiscordServer server = discordServerRepository.findByServerIdAndBotType(guildId, botType)
                     .orElseThrow(() -> new IllegalStateException("Server not found: " + guildId));
 
             // Fetch the channel name
@@ -120,18 +130,12 @@ public class DiscordCommandService {
             activeChannel.setLastPostAt(LocalDateTime.now()); // Set the current time as the last post time
 
             discordActiveChannelsRepository.save(activeChannel);
-        }).onErrorResume(e -> {
-            LOG.error("Error saving selected channel: {}", e.getMessage());
-            return Mono.empty(); // continue the stream without terminating
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 
-    private Mono<Void> removeSelectedChannel(String channelId) {
+    private Mono<Void> removeSelectedChannel(String channelId, DiscordPostType postType) {
         return Mono.fromRunnable(() -> {
-            discordActiveChannelsRepository.findByChannelId(channelId).ifPresent(discordActiveChannelsRepository::delete);
-        }).onErrorResume(e -> {
-            LOG.error("Error removing selected channel: {}", e.getMessage());
-            return Mono.empty(); // continue the stream without terminating
+            discordActiveChannelsRepository.findByChannelIdAndPostType(channelId, postType).ifPresent(discordActiveChannelsRepository::delete);
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 }

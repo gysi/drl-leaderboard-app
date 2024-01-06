@@ -2,10 +2,14 @@ package de.gregord.drlleaderboardbackend.services.discord;
 
 import de.gregord.drlleaderboardbackend.domain.PlayerImprovement;
 import de.gregord.drlleaderboardbackend.entities.DiscordActiveChannels;
+import de.gregord.drlleaderboardbackend.entities.Tournament;
+import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;
+import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRound;
 import de.gregord.drlleaderboardbackend.repositories.DiscordActiveChannelsRepository;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.spec.EmbedCreateFields;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.rest.util.Color;
@@ -18,8 +22,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,7 +54,7 @@ public class DiscordMessageService {
                 .map(PlayerImprovement::getCreatedAt)
                 .max(LocalDateTime::compareTo);
 
-        Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType("LEADERBOARD_POSTS"))
+        Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType(DiscordPostType.LEADERBOARD_POSTS))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMapIterable(Function.identity())
                 .flatMap(channel -> {
@@ -64,6 +67,7 @@ public class DiscordMessageService {
                                 updateLastPostAt(channel, latestCreatedAt));
 
                         return sendMessageWithEmbedsToChannel(
+                                discordInitializationService.getLeaderboardGateway(),
                                 channel.getChannelId(),
                                 "### \uD83C\uDFC6 Leaderboard Updates (Top50) \uD83C\uDFC6",
                                 createEmbedsForPlayerImprovements(relevantImprovements));
@@ -130,26 +134,176 @@ public class DiscordMessageService {
         discordActiveChannelsRepository.save(channel);
     }
 
-    private Mono<Void> sendMessageWithEmbedsToChannel(String channelId, String message, List<EmbedCreateSpec> embeds) {
+    private Mono<Void> sendMessageWithEmbedsToChannel(CompletableFuture<GatewayDiscordClient> gatewayFuture,
+                                                      String channelId, String message, List<EmbedCreateSpec> embeds) {
         final int chunkSize = 10;
         AtomicInteger counter = new AtomicInteger();
 
         // Flag to identify the first chunk
         AtomicBoolean isFirstChunk = new AtomicBoolean(true);
-        CompletableFuture<GatewayDiscordClient> gatewayFuture = discordInitializationService.getGateway();
         return Mono.fromFuture(gatewayFuture)
                 .flatMapMany(gateway -> Flux.fromIterable(embeds.stream()
                                 .collect(Collectors.groupingBy(it -> counter.getAndIncrement() / chunkSize))
                                 .values())
-                                .flatMap(embedChunk -> {
-                                    MessageCreateSpec.Builder messageBuilder = MessageCreateSpec.builder().addAllEmbeds(embedChunk);
-                                    if (isFirstChunk.getAndSet(false)) {
-                                        messageBuilder.content(message);
-                                    }
-                                    return gateway.getChannelById(Snowflake.of(channelId))
-                                            .ofType(TextChannel.class)
-                                            .flatMap(channel -> channel.createMessage(messageBuilder.build()));
-                                })
+                        .flatMap(embedChunk -> {
+                            MessageCreateSpec.Builder messageBuilder = MessageCreateSpec.builder().addAllEmbeds(embedChunk);
+                            if (isFirstChunk.getAndSet(false)) {
+                                messageBuilder.content(message);
+                            }
+                            return gateway.getChannelById(Snowflake.of(channelId))
+                                    .ofType(TextChannel.class)
+                                    .flatMap(channel -> channel.createMessage(messageBuilder.build()));
+                        })
                 ).then();
     }
+
+    public void sendMessageToTournamentReminderChannel(Tournament tournament, Boolean justStarted) {
+        Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType(DiscordPostType.TOURNAMENT_REMINDER))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMapIterable(Function.identity())
+                .flatMap(channel -> {
+                    // Calculate the adjusted registration end date
+                    LocalDateTime adjustedRegistrationEndDate = tournament.getRegistrationEndAt().minusMinutes(30);
+                    // Compare lastPostAt with the adjusted registration end date
+                    if (justStarted || (channel.getLastPostAt() != null && channel.getLastPostAt().isBefore(adjustedRegistrationEndDate))) {
+                        updateLastPostAt(channel, LocalDateTime.now());
+                        return sendMessageWithEmbedsToChannel(
+                                discordInitializationService.getTournamentGateway(),
+                                channel.getChannelId(),
+                                "",
+                                justStarted ? createEmbedsForTournamentStart(tournament) :
+                                        createEmbedsForTournamentReminder(tournament));
+                    } else {
+                        return Mono.empty(); // Skip sending message if condition not met
+                    }
+                })
+                .subscribe(
+                        result -> LOG.info("Message sent successfully to channel"),
+                        error -> LOG.error("Error sending message to channel: {}", error.getMessage())
+                );
+    }
+
+    private List<EmbedCreateSpec> createEmbedsForTournamentReminder(Tournament tournament) {
+        Optional<TournamentRound> qualifyingRound = tournament.getRounds().stream().min(Comparator.comparing(TournamentRound::getNOrder));
+        List<TournamentRound.Player> players = qualifyingRound.flatMap(rounds -> rounds.getMatches().stream().findFirst())
+                .map(TournamentRound.Match::getPlayers).orElse(Collections.emptyList());
+        List<EmbedCreateFields.Field> participantsEmbedFields = createEmbedFieldsForParticipants(
+                players.stream().map(TournamentRound.Player::getProfileName).collect(Collectors.toList()));
+        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Reminder \uD83C\uDFC6", null, null))
+                .title(String.format("%s\nis about to start in 30min!", tournament.getTitle()))
+                .url(String.format("%s/tournaments", frontendUrl))
+                .thumbnail(tournament.getImageUrl())
+                .addField(EmbedCreateFields.Field.of("", "Participants:", false))
+                .addFields(participantsEmbedFields.toArray(EmbedCreateFields.Field[]::new))
+                .addField(EmbedCreateFields.Field.of("Go start the SIM and get warmed up!", "", false))
+                .footer("HAVE FUN!", null)
+                .color(Color.of(67, 214, 214))
+                .build();
+        return List.of(embed);
+    }
+
+    private List<EmbedCreateSpec> createEmbedsForTournamentStart(Tournament tournament) {
+        Optional<TournamentRound> qualifyingRound = tournament.getRounds().stream().min(Comparator.comparing(TournamentRound::getNOrder));
+        List<TournamentRound.Player> players = qualifyingRound.flatMap(rounds -> rounds.getMatches().stream().findFirst())
+                .map(TournamentRound.Match::getPlayers).orElse(Collections.emptyList());
+        List<EmbedCreateFields.Field> participantsEmbedFields = createEmbedFieldsForParticipants(
+                players.stream().map(TournamentRound.Player::getProfileName).collect(Collectors.toList()));
+        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Started \uD83C\uDFC6", null, null))
+                .title(String.format("%s", tournament.getTitle()))
+                .url(String.format("%s/tournaments", frontendUrl))
+                .thumbnail(tournament.getImageUrl())
+                .addField(EmbedCreateFields.Field.of(String.format("Track: %s", tournament.getCustomMapTitle()), "", false))
+                .addField(EmbedCreateFields.Field.of("", "Participants:", false))
+                .addFields(participantsEmbedFields.toArray(EmbedCreateFields.Field[]::new))
+                .addField(EmbedCreateFields.Field.of("You have 20min to qualify!", "", false))
+                .footer("HAVE FUN!", null)
+                .color(Color.of(0, 255, 0))
+                .build();
+        return List.of(embed);
+    }
+
+    public void sendMessageToTournamentResultChannel(Tournament tournament) {
+        Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType(DiscordPostType.TOURNAMENT_RESULTS))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMapIterable(Function.identity())
+                .flatMap(channel -> {
+                    return sendMessageWithEmbedsToChannel(
+                            discordInitializationService.getTournamentGateway(),
+                            channel.getChannelId(),
+                            "",
+                            createEmbedsForTournamentResult(tournament));
+                })
+                .subscribe(
+                        result -> LOG.info("Message sent successfully to channel"),
+                        error -> LOG.error("Error sending message to channel: {}", error.getMessage())
+                );
+    }
+
+    private List<EmbedCreateSpec> createEmbedsForTournamentResult(Tournament tournament) {
+        String winner = "\uD83C\uDFC6";
+        String goldenheat = "\uD83C\uDF1F";
+        List<TournamentRanking> rankings = tournament.getRankings();
+        AtomicInteger counter = new AtomicInteger(1);
+        List<String> players = rankings.stream().map(playerRanking -> {
+            String playerName = playerRanking.getProfileName();
+            String score = PlayerImprovement.formatScore(playerRanking.getScore());
+            if (counter.get() == 1) {
+                playerName = String.format("%d. %s %s %s  (%s)", counter.get(), playerName, winner, goldenheat, score);
+            } else {
+                playerName = playerRanking.getGoldenPos() != null && playerRanking.getGoldenPos() > 0 ?
+                        String.format("%d. %s %s  (%s)", counter.get(), playerName, goldenheat, score) :
+                        String.format("%d. %s ", counter.get(), playerName);
+            }
+            counter.getAndIncrement();
+            return playerName;
+        }).limit(10).collect(Collectors.toList());
+        List<EmbedCreateFields.Field> participantsEmbedFields = createEmbedFieldsForParticipants(players);
+        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Finished \uD83C\uDFC6", null, null))
+                .title(String.format("%s", tournament.getTitle()))
+                .url(String.format("%s/tournaments", frontendUrl))
+                .thumbnail(tournament.getImageUrl())
+                .addField(EmbedCreateFields.Field.of(String.format("Track: %s", tournament.getCustomMapTitle()), "", false))
+                .addField(EmbedCreateFields.Field.of("", "Results:", false))
+                .addFields(participantsEmbedFields.toArray(new EmbedCreateFields.Field[0]))
+                .addField(EmbedCreateFields.Field.of("GGs to everyone!", "", false))
+                .footer("Seeya at the next one..", null)
+                .color(Color.of(255, 255, 0))
+                .build();
+        return List.of(embed);
+    }
+
+    private List<EmbedCreateFields.Field> createEmbedFieldsForParticipants(List<String> players) {
+        List<EmbedCreateFields.Field> fields = new ArrayList<>();
+        String allPlayers = String.join("\n", players);
+
+        // Check if the total length exceeds 1021 characters
+        if (allPlayers.length() > 1021) {
+            // Truncate the list of players to fit within the character limit
+            while (allPlayers.length() > 1021 && !players.isEmpty()) {
+                players.remove(players.size() - 1); // Remove players from the end
+                allPlayers = String.join("\n", players);
+            }
+            allPlayers += "..."; // Add ellipsis to indicate truncation
+        }
+
+        // Now split the list into two fields if there are more than 5 players
+        if (players.size() > 5) {
+            int splitPoint = players.size() / 2;
+            if (players.size() % 2 != 0) {
+                splitPoint++;
+            }
+            List<String> participants1 = players.subList(0, splitPoint);
+            List<String> participants2 = players.subList(splitPoint, players.size());
+
+            fields.add(EmbedCreateFields.Field.of("", String.join("\n", participants1), true));
+            fields.add(EmbedCreateFields.Field.of("", String.join("\n", participants2), true));
+        } else {
+            fields.add(EmbedCreateFields.Field.of("", allPlayers, true));
+        }
+        return fields;
+    }
+
 }

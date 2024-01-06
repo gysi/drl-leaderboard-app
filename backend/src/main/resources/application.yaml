@@ -52,7 +52,7 @@ app:
     tournament-detail-endpoint: "https://api.drlgame.com/tournaments/{guid}?token={token}"
     # To finish within 10 minutes I need at least 1 request every 0.7 seconds = ~1.43 requests/s
 #    duration-between-requests: 666ms # ~1.5 requests/s # Took 17 Minutes, because prod server is slower than my local machine
-    duration-between-requests: 200ms # ~3 requests/s, which isn't really 3 requests/s, because the requests are not parallel and we need to process the data
+    duration-between-requests: 150ms # ~3 requests/s, which isn't really 3 requests/s, because the requests are not parallel and we need to process the data
 
   data-updater:
     leaderboards:
@@ -78,13 +78,15 @@ springdoc:
 logging:
   logback:
     rollingpolicy:
-      file-name-pattern: /var/log/drl-api-crawler-%d{yyyy-MM-dd}.%i
+      file-name-pattern: /var/log/backend/drl-api-crawler-%d{yyyy-MM-dd}.%i
       max-file-size: 2MB
       total-size-cap: 10MB
       max-history: 10
   level:
     root: info
     de.gregord.drlleaderboardbackend: info
+#    org.cache2k: debug
+#    org.springframework.cache: debug
 #    org.hibernate.SQL: debug
 #    org.hibernate.orm.jdbc.bind: trace
 #    ch.qos.logback: trace
