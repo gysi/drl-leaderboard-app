@@ -89,12 +89,14 @@ public class TournamentService {
 
             playerRankingMap.values().forEach(playerRanking -> {
                 // get and set best 12 positions in the player ranking
-                List<Integer> best12Positions = playerRanking.getPlayedTournaments().stream()
+                List<Integer> allPositions = playerRanking.getPlayedTournaments().stream()
                         .map(TournamentRankings.Tournament::getPosition)
-                        .sorted()
+                        .sorted().toList();
+                playerRanking.setAllPositions(allPositions);
+                List<Integer> best12Positions = allPositions.stream()
                         .limit(12).toList();
                 playerRanking.setBest12Positions(best12Positions);
-                // set points for each seasion based on the tournamentWeeks
+                // set points for each season based on the tournamentWeeks
                 int points = playerRanking.getPlayedTournaments().stream()
                         .mapToInt(TournamentRankings.Tournament::getPoints)
                         .boxed()
@@ -107,7 +109,30 @@ public class TournamentService {
 
             // Sort PlayerRankings by points
             List<TournamentRankings.PlayerRanking> sortedPlayerRankings = playerRankingMap.values().stream()
-                    .sorted((o1, o2) -> o2.getPointsBest12Tournaments().compareTo(o1.getPointsBest12Tournaments()))
+                    .sorted((player1, player2) -> {
+                        // First compare by pointsBest12Tournaments
+                        int pointsComparison = player2.getPointsBest12Tournaments().compareTo(player1.getPointsBest12Tournaments());
+                        if (pointsComparison != 0) {
+                            return pointsComparison;
+                        }
+
+                        // If points are equal, compare by allPositions
+                        List<Integer> allPositions1 = player1.getAllPositions();
+                        List<Integer> allPositions2 = player2.getAllPositions();
+                        for (int i = 0; i < Math.min(allPositions1.size(), allPositions2.size()); i++) {
+                            int pos1 = allPositions1.get(i);
+                            int pos2 = allPositions2.get(i);
+                            if (pos1 != pos2) {
+                                // Lower position number is better, so if pos1 is less, player1 is ranked higher
+                                return Integer.compare(pos1, pos2);
+                            }
+                        }
+
+                        // If all compared positions are equal, or we've reached the end of one list, the one with fewer positions is considered worse
+                        // because it means they participated in fewer tournaments or did not place in as many.
+                        // If you prefer a different approach for tie-breakers, adjust here.
+                        return Integer.compare(allPositions1.size(), allPositions2.size());
+                    })
                     .collect(Collectors.toList());
 
             for (int i = 0; i < sortedPlayerRankings.size(); i++) {

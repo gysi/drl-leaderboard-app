@@ -20,6 +20,7 @@ public class TournamentRankings {
         Integer position;
         Integer pointsBest12Tournaments = 0;
         List<Integer> best12Positions = new ArrayList<>();
+        List<Integer> allPositions = new ArrayList<>();
         LinkedList<Tournament> playedTournaments = new LinkedList<>();
 
         public void incrementNumberOfTournamentsPlayed() {

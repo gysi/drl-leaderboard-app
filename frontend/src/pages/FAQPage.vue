@@ -281,7 +281,7 @@
         :msnry="msnry"
         :initially-expanded="this.$router.currentRoute.value.query.card === 'tournamentPointSystem'"
       >
-        The tournament points are based on the DRL irl point system and only the best 12 tournaments for each player are counted.
+        The tournament points are based on the DRL irl point system and only the best 12 tournaments for each player are counted. In cases where players have equal points from their best 12 tournaments, rankings are determined based on their overall positions across all tournaments played. The player with more lower (better) positions will rank higher. This ensures that consistent top performance across events is rewarded in the final rankings.
         <div>
           <q-markup-table class="q-ma-sm">
             <thead>
