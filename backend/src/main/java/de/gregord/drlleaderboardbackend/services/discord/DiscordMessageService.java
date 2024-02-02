@@ -189,18 +189,19 @@ public class DiscordMessageService {
                 .map(TournamentRound.Match::getPlayers).orElse(Collections.emptyList());
         List<EmbedCreateFields.Field> participantsEmbedFields = createEmbedFieldsForParticipants(
                 players.stream().map(TournamentRound.Player::getProfileName).collect(Collectors.toList()));
-        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
                 .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Reminder \uD83C\uDFC6", null, null))
                 .title(String.format("%s\nis about to start in 30min!", tournament.getTitle()))
                 .url(String.format("%s/tournaments", frontendUrl))
-                .thumbnail(tournament.getImageUrl())
                 .addField(EmbedCreateFields.Field.of("", "Participants:", false))
                 .addFields(participantsEmbedFields.toArray(EmbedCreateFields.Field[]::new))
                 .addField(EmbedCreateFields.Field.of("Go start the SIM and get warmed up!", "", false))
                 .footer("HAVE FUN!", null)
-                .color(Color.of(67, 214, 214))
-                .build();
-        return List.of(embed);
+                .color(Color.of(67, 214, 214));
+        if(tournament.getImageUrl() != null){
+            builder.thumbnail(tournament.getImageUrl());
+        }
+        return List.of(builder.build());
     }
 
     private List<EmbedCreateSpec> createEmbedsForTournamentStart(Tournament tournament) {
@@ -209,19 +210,20 @@ public class DiscordMessageService {
                 .map(TournamentRound.Match::getPlayers).orElse(Collections.emptyList());
         List<EmbedCreateFields.Field> participantsEmbedFields = createEmbedFieldsForParticipants(
                 players.stream().map(TournamentRound.Player::getProfileName).collect(Collectors.toList()));
-        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
                 .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Started \uD83C\uDFC6", null, null))
                 .title(String.format("%s", tournament.getTitle()))
                 .url(String.format("%s/tournaments", frontendUrl))
-                .thumbnail(tournament.getImageUrl())
                 .addField(EmbedCreateFields.Field.of(String.format("Track: %s", tournament.getCustomMapTitle()), "", false))
                 .addField(EmbedCreateFields.Field.of("", "Participants:", false))
                 .addFields(participantsEmbedFields.toArray(EmbedCreateFields.Field[]::new))
                 .addField(EmbedCreateFields.Field.of("You have 20min to qualify!", "", false))
                 .footer("HAVE FUN!", null)
-                .color(Color.of(0, 255, 0))
-                .build();
-        return List.of(embed);
+                .color(Color.of(0, 255, 0));
+        if(tournament.getImageUrl() != null){
+            builder.thumbnail(tournament.getImageUrl());
+        }
+        return List.of(builder.build());
     }
 
     public void sendMessageToTournamentResultChannel(Tournament tournament) {
@@ -260,19 +262,20 @@ public class DiscordMessageService {
             return playerName;
         }).limit(10).collect(Collectors.toList());
         List<EmbedCreateFields.Field> participantsEmbedFields = createEmbedFieldsForParticipants(players);
-        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
                 .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Finished \uD83C\uDFC6", null, null))
                 .title(String.format("%s", tournament.getTitle()))
                 .url(String.format("%s/tournaments", frontendUrl))
-                .thumbnail(tournament.getImageUrl())
                 .addField(EmbedCreateFields.Field.of(String.format("Track: %s", tournament.getCustomMapTitle()), "", false))
                 .addField(EmbedCreateFields.Field.of("", "Results:", false))
                 .addFields(participantsEmbedFields.toArray(new EmbedCreateFields.Field[0]))
                 .addField(EmbedCreateFields.Field.of("GGs to everyone!", "", false))
                 .footer("Seeya at the next one..", null)
-                .color(Color.of(255, 255, 0))
-                .build();
-        return List.of(embed);
+                .color(Color.of(255, 255, 0));
+        if(tournament.getImageUrl() != null){
+            builder.thumbnail(tournament.getImageUrl());
+        }
+        return List.of(builder.build());
     }
 
     private List<EmbedCreateFields.Field> createEmbedFieldsForParticipants(List<String> players) {
