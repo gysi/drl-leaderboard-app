@@ -29,6 +29,7 @@ public class TournamentRankingsToProto {
             playerRankingBuilder.setPosition(playerRanking.getPosition());
             playerRankingBuilder.setPointsBest12Tournaments(playerRanking.getPointsBest12Tournaments());
             playerRanking.getBest12Positions().forEach(playerRankingBuilder::addBest12Positions);
+            playerRanking.getAllPositions().forEach(playerRankingBuilder::addAllPositions);
 
             for (TournamentRankings.Tournament tournament : playerRanking.getPlayedTournaments()) {
                 TournamentRankingsOuterClass.TournamentRankings.Tournament.Builder tournamentBuilder = TournamentRankingsOuterClass.TournamentRankings.Tournament.newBuilder();

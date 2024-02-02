@@ -108,6 +108,17 @@
                            fontWeight: '900'
                            }" rounded class="q-ml-xs" />
                 </q-td>
+                <q-td key="allPositions" :props="props">
+                  <div class="flex-wrap-container">
+                  <q-badge v-for="(position, index) in props.row.allPositions" :key="index" :style="{
+                           backgroundColor: calcBackgroundColorByPosition(position),
+                           textShadow: '1px 0px 1px black, -1px 0px 1px black, 0px 1px 1px black, 0px -1px 1px black',
+                           fontSize: '10px',
+                           lineHeight: '11px',
+                           fontWeight: '900'
+                           }" rounded class="q-ml-xs all-position-badge" />
+                  </div>
+                </q-td>
               </q-tr>
             </template>
           </q-table>
@@ -203,10 +214,14 @@ const rankingsTable = {
     { name: 'numberOfTournamentsPlayed', label: 'Tournaments played', field: 'numberOfTournamentsPlayed', align: 'center' },
     { name: 'best12Positions', label: 'Best 12 positions', field: 'best12Positions', align: 'left',
       format: (val, row) => {
-        console.log("test");
         return val.join(', ');
       }
-    }
+    },
+    { name: 'allPositions', label: 'All Positions', field: 'allPositions', align: 'left',
+      format: (val, row) => {
+        return val.join(', ');
+      }
+    },
   ],
   loading: ref(false),
 }
@@ -357,6 +372,19 @@ tbody .q-item
 
 .q-batch-Xbox
   background-color: rgb(16, 120, 15)
+
+.flex-wrap-container
+  display: flex
+  flex-wrap: wrap
+  /* Adjust the max-width to control when the items should wrap */
+  max-width: calc(10 * (17.8px + 4px)) /* This will make the container take full width of its parent, adjust as needed */
+
+
+.all-position-badge
+  flex-basis: calc(10% - 10px)
+  margin: 2px
+
+
 
 #streamcard-info
   font-size: 18px

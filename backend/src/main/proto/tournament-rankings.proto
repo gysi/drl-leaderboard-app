@@ -20,7 +20,8 @@ message TournamentRankings {
     int32 position = 8;
     int32 pointsBest12Tournaments = 9;
     repeated int32 best12Positions = 10;
-    repeated Tournament playedTournaments = 11;
+    repeated int32 allPositions = 11;
+    repeated Tournament playedTournaments = 12;
   }
 
   message Tournament {
