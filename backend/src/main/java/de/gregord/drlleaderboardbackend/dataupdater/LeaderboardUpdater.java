@@ -35,41 +35,43 @@ public class LeaderboardUpdater {
     public static Logger LOG = LoggerFactory.getLogger(LeaderboardUpdater.class);
 
     // <player_id, player_id>
-    private static final Map<String, String> doubleAccountMatchingMap = new HashMap<>();
+    private static final Map<String, List<String>> doubleAccountMatchingMap = new HashMap<>();
     private static final Map<String, Double> customTopSpeeds = new HashMap<>();
     private static final Map<String, InvalidRunReasons> manualInvalidRuns = new HashMap<>();
 
     static {
         // pawelos -> p
-        doubleAccountMatchingMap.put("6376865daa4f489bfc97a2a6", "5a47746373f050000fb2e47d");
-        doubleAccountMatchingMap.put("5a47746373f050000fb2e47d", "6376865daa4f489bfc97a2a6");
+        doubleAccountMatchingMap.put("6376865daa4f489bfc97a2a6", List.of("5a47746373f050000fb2e47d"));
+        doubleAccountMatchingMap.put("5a47746373f050000fb2e47d", List.of("6376865daa4f489bfc97a2a6"));
         // srgmajordangle
-        doubleAccountMatchingMap.put("609231f81903f7802cf35459", "622d49e1a542747a374699e3");
-        doubleAccountMatchingMap.put("622d49e1a542747a374699e3", "609231f81903f7802cf35459");
+        doubleAccountMatchingMap.put("609231f81903f7802cf35459", List.of("622d49e1a542747a374699e3"));
+        doubleAccountMatchingMap.put("622d49e1a542747a374699e3", List.of("609231f81903f7802cf35459"));
         // syl
-        doubleAccountMatchingMap.put("628e51b31a9d7664deaa3cf3", "5c78aebaba3bdc580efdcaa0");
-        doubleAccountMatchingMap.put("5c78aebaba3bdc580efdcaa0", "628e51b31a9d7664deaa3cf3");
+        doubleAccountMatchingMap.put("628e51b31a9d7664deaa3cf3", List.of("5c78aebaba3bdc580efdcaa0"));
+        doubleAccountMatchingMap.put("5c78aebaba3bdc580efdcaa0", List.of("628e51b31a9d7664deaa3cf3"));
         // cakefpv
-        doubleAccountMatchingMap.put("5d5d99a7b6b937c08cbb5443", "6347b22828c01d57b57a62f1");
-        doubleAccountMatchingMap.put("6347b22828c01d57b57a62f1", "5d5d99a7b6b937c08cbb5443");
+        doubleAccountMatchingMap.put("5d5d99a7b6b937c08cbb5443", List.of("6347b22828c01d57b57a62f1"));
+        doubleAccountMatchingMap.put("6347b22828c01d57b57a62f1", List.of("5d5d99a7b6b937c08cbb5443"));
         // mckfpv
-        doubleAccountMatchingMap.put("5e3969116ef085dae1fd1247", "6387411d6bb427f37cc73253");
-        doubleAccountMatchingMap.put("6387411d6bb427f37cc73253", "5e3969116ef085dae1fd1247");
+        doubleAccountMatchingMap.put("5e3969116ef085dae1fd1247", List.of("6387411d6bb427f37cc73253", "64f32b0c91cf4c08c243cf55"));
+        doubleAccountMatchingMap.put("6387411d6bb427f37cc73253", List.of("5e3969116ef085dae1fd1247", "64f32b0c91cf4c08c243cf55"));
+        doubleAccountMatchingMap.put("64f32b0c91cf4c08c243cf55", List.of("5e3969116ef085dae1fd1247", "6387411d6bb427f37cc73253"));
+
         // halowalker
-        doubleAccountMatchingMap.put("5d9c2a106ef085dae105f1e2", "6373e60eaa4f489bfc306d3d");
-        doubleAccountMatchingMap.put("6373e60eaa4f489bfc306d3d", "5d9c2a106ef085dae105f1e2");
+        doubleAccountMatchingMap.put("5d9c2a106ef085dae105f1e2", List.of("6373e60eaa4f489bfc306d3d"));
+        doubleAccountMatchingMap.put("6373e60eaa4f489bfc306d3d", List.of("5d9c2a106ef085dae105f1e2"));
         // killian
-        doubleAccountMatchingMap.put("637d4834b060342b17397788", "5988cd58d229c2460761a234");
-        doubleAccountMatchingMap.put("5988cd58d229c2460761a234", "637d4834b060342b17397788");
+        doubleAccountMatchingMap.put("637d4834b060342b17397788", List.of("5988cd58d229c2460761a234"));
+        doubleAccountMatchingMap.put("5988cd58d229c2460761a234", List.of("637d4834b060342b17397788"));
         // alexfpv
-        doubleAccountMatchingMap.put("5a0f173ecd270d000fb02b5d", "6375d300aa4f489bfcf8f9db");
-        doubleAccountMatchingMap.put("6375d300aa4f489bfcf8f9db", "5a0f173ecd270d000fb02b5d");
+        doubleAccountMatchingMap.put("5a0f173ecd270d000fb02b5d", List.of("6375d300aa4f489bfcf8f9db"));
+        doubleAccountMatchingMap.put("6375d300aa4f489bfcf8f9db", List.of("5a0f173ecd270d000fb02b5d"));
         // animositee
-        doubleAccountMatchingMap.put("638d60f86bb427f37c0c212b", "59c3b379d229c2460761c484");
-        doubleAccountMatchingMap.put("59c3b379d229c2460761c484", "638d60f86bb427f37c0c212b");
+        doubleAccountMatchingMap.put("638d60f86bb427f37c0c212b", List.of("59c3b379d229c2460761c484"));
+        doubleAccountMatchingMap.put("59c3b379d229c2460761c484", List.of("638d60f86bb427f37c0c212b"));
         // im back :)
-        doubleAccountMatchingMap.put("5a0cecc2bad69d0014b7a8fe", "634462ec28c01d57b50bee92");
-        doubleAccountMatchingMap.put("634462ec28c01d57b50bee92", "5a0cecc2bad69d0014b7a8fe");
+        doubleAccountMatchingMap.put("5a0cecc2bad69d0014b7a8fe", List.of("634462ec28c01d57b50bee92"));
+        doubleAccountMatchingMap.put("634462ec28c01d57b50bee92", List.of("5a0cecc2bad69d0014b7a8fe"));
 
         customTopSpeeds.put("MT-9eb", 104.6);
         customTopSpeeds.put("CMP-7ab877a2c62446a10c9316a0", 104.2);
@@ -83,6 +85,8 @@ public class LeaderboardUpdater {
         manualInvalidRuns.put("64af0b982e81e5002839799a", InvalidRunReasons.WRONG_DRONE);
         // filthy radish Straight Line #1
         manualInvalidRuns.put("655c78c6f5f438000a237dae", InvalidRunReasons.WRONG_DRONE);
+        // mckfpv Atlanta #2
+        manualInvalidRuns.put("63a16b5e667fbd0022521f9f", InvalidRunReasons.NO_REPLAY);
     }
 
     private static Long totalContentLength = 0L;
@@ -281,16 +285,20 @@ public class LeaderboardUpdater {
                         );
                     }
                     if (doubleAccountMatchingMap.containsKey(leaderboardEntry.getPlayerId())) {
-                        if (alreadyFoundPlayerIds.containsKey(doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId()))) {
-                            LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerIds.get(doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId()));
-                            if(!alreadyExistingEntry.getIsInvalidRun()) {
-                                LOG.warn("Player " + leaderboardEntry.getPlayerId() + " is a double account of " + doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId()) + " and already exists in this leaderboard");
-                                leaderboardEntry.setIsInvalidRun(true);
-                                leaderboardEntry.setInvalidRunReason(
-                                        (leaderboardEntry.getInvalidRunReason() == null) ?
-                                                InvalidRunReasons.BETTER_ENTRY_WITH_KNOWN_DOUBLE_ACCOUNT.toString() :
-                                                leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.BETTER_ENTRY_WITH_KNOWN_DOUBLE_ACCOUNT
-                                );
+                        List<String> doubleAccs = doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId());
+                        for (String doubleAcc : doubleAccs) {
+                            if (alreadyFoundPlayerIds.containsKey(doubleAcc)) {
+                                LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerIds.get(doubleAcc);
+                                if(!alreadyExistingEntry.getIsInvalidRun()) {
+                                    LOG.warn("Player " + leaderboardEntry.getPlayerId() + " is a double account of " + doubleAcc + " and already exists in this leaderboard");
+                                    leaderboardEntry.setIsInvalidRun(true);
+                                    leaderboardEntry.setInvalidRunReason(
+                                            (leaderboardEntry.getInvalidRunReason() == null) ?
+                                                    InvalidRunReasons.BETTER_ENTRY_WITH_KNOWN_DOUBLE_ACCOUNT.toString() :
+                                                    leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.BETTER_ENTRY_WITH_KNOWN_DOUBLE_ACCOUNT
+                                    );
+                                    break;
+                                }
                             }
                         }
                     }
