@@ -48,7 +48,7 @@
           >
             <q-item v-if="col.name === 'playerName'"
                     clickable
-                    :to="`/player-lb?playerName=${props.row.playerName}`"
+                    :to="`/player-lb?playerName=${encodeURIComponent(props.row.player.playerName)}`"
                     class="q-item-player-region"
             >
               <q-item-section avatar side>
