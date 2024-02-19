@@ -25,15 +25,16 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
             SELECT l
             FROM LeaderboardEntry l
                 JOIN FETCH l.track track
+                JOIN FETCH l.player player
                 LEFT JOIN FETCH l.beatenBy beatenBy
-            WHERE l.playerName = :playerName
+            WHERE player.playerName = :playerName
             """)
     @Cacheable(value = "leaderboardbyplayername", key = "#playerName")
     List<LeaderboardByPlayerView> findByPlayerName(String playerName, Sort sort);
 
-    Optional<LeaderboardEntry> findByTrackIdAndPlayerId(Long trackId, String playerId);
+    Optional<LeaderboardEntry> findByTrackIdAndPlayerIdDrl(Long trackId, String playerId);
 
-    Collection<LeaderboardEntry> findByTrackIdAndPlayerIdIn(Long trackId, Collection<String> playerIds);
+    Collection<LeaderboardEntry> findByTrackIdAndPlayerIdDrlIn(Long trackId, Collection<String> playerIds);
 
     List<ReplaysByTrackView> findByTrackIdAndIsInvalidRunFalse(Long trackId, Sort sort);
 
@@ -58,20 +59,23 @@ WITH overall_ranking as (SELECT player_name              as playerName,
                                 min(flag_url)            as flagUrl,
                                 min(profile_platform) as profilePlatform,
                                 min(profile_thumb)       as profileThumb
-                         FROM leaderboards l left join tracks t on t.id = l.track_id
+                         FROM leaderboards l
+                            INNER JOIN tracks t ON t.id = l.track_id
+                            INNER JOIN players p on p.id = l.player_id
                          where is_invalid_run = false and
                             (:parentcategory is null or t.parent_category = :parentcategory)
                          group by player_name
                          order by sum(points) desc
                          limit :limit OFFSET :offset),
-     invalid_runs AS (SELECT l.player_name,
+     invalid_runs AS (SELECT p.player_name,
                         COALESCE(count(*), 0) as invalid_runs
-                      FROM leaderboards l 
-                        left join tracks t on t.id = l.track_id
-                        left join overall_ranking ovr on l.player_name = ovr.playerName
+                      FROM leaderboards l
+                        INNER JOIN tracks t ON t.id = l.track_id
+                        INNER JOIN players p ON p.id = l.player_id
+                        INNER JOIN overall_ranking ovr ON p.player_name = ovr.playerName
                       WHERE l.is_invalid_run = true and
                         (:parentcategory is null or t.parent_category = :parentcategory)
-                      GROUP BY l.player_name)
+                      GROUP BY p.player_name)
 SELECT ROW_NUMBER() OVER (ORDER BY totalPoints DESC)                                                 as position,
        playerName,
        totalPoints,
@@ -96,17 +100,10 @@ from overall_ranking ovr;
     @Cacheable(value = "leaderboardbytrack", key = "#guid")
     List<LeaderboardByTrackView> findByTrackId(Long guid, Pageable pageable);
 
-    @Query("""
-            SELECT DISTINCT l.playerName
-            FROM LeaderboardEntry l
-            WHERE l.playerName like :playerName
-            """)
-    List<String> findDistinctPlayerNames(String playerName, Pageable pageable);
-
     @Cacheable("latestLeaderboardActivity")
     @Query(value = """
             SELECT
-                l.player_name as playerName,
+                p.player_name as playerName,
                 l.position,
                 l.created_at as createdAt,
                 t.id as trackId,
@@ -114,7 +111,8 @@ from overall_ranking ovr;
                 t.map_name as mapName,
                 t.parent_category as parentCategory
             FROM leaderboards l
-                     LEFT JOIN tracks t ON t.id = l.track_id
+                     INNER JOIN tracks t ON t.id = l.track_id
+                     INNER JOIN players p ON p.id = l.player_id
             WHERE l.is_invalid_run = false
             ORDER BY l.created_at DESC
             LIMIT 10
@@ -124,7 +122,7 @@ from overall_ranking ovr;
     @Cacheable("latestLeaderboardActivityTop10")
     @Query(value = """
             SELECT
-                l.player_name as playerName,
+                p.player_name as playerName,
                 l.position,
                 l.created_at as createdAt,
                 t.id as trackId,
@@ -132,7 +130,8 @@ from overall_ranking ovr;
                 t.map_name as mapName,
                 t.parent_category as parentCategory
             FROM leaderboards l
-                     LEFT JOIN tracks t ON t.id = l.track_id
+                     INNER JOIN tracks t ON t.id = l.track_id
+                     INNER JOIN players p ON p.id = l.player_id
             WHERE l.position <= 10 and l.is_invalid_run = false
             ORDER BY l.created_at DESC
             LIMIT 10
@@ -142,15 +141,16 @@ from overall_ranking ovr;
     @Cacheable("mostPbsLast7Days")
     @Query(value = """
             SELECT
-                l.player_name as playerName,
+                p.player_name as playerName,
                 count(*) as entries,
                 min(l.position) as bestPosition,
                 round(avg(l.position)) as avgPosition
             FROM leaderboards l
-                     LEFT JOIN tracks t ON t.id = l.track_id
+                     INNER JOIN tracks t ON t.id = l.track_id
+                     INNER JOIN players p ON p.id = l.player_id
             WHERE l.created_at > (now() - INTERVAL '7' DAY)
               AND l.is_invalid_run = false
-            GROUP BY l.player_name
+            GROUP BY p.player_name
             ORDER BY count(*) DESC
             LIMIT 10
             """, nativeQuery = true)
@@ -159,15 +159,16 @@ from overall_ranking ovr;
     @Cacheable("mostPbsLastMonth")
     @Query(value = """
             SELECT
-                l.player_name as playerName,
+                p.player_name as playerName,
                 count(*) as entries,
                 min(l.position) as bestPosition,
                 round(avg(l.position)) as avgPosition
             FROM leaderboards l
-                     LEFT JOIN tracks t ON t.id = l.track_id
+                     INNER JOIN tracks t ON t.id = l.track_id
+                     INNER JOIN players p ON p.id = l.player_id
             WHERE l.created_at > (now() - INTERVAL '1' MONTH)
               AND l.is_invalid_run = false
-            GROUP BY l.player_name
+            GROUP BY p.player_name
             ORDER BY count(*) DESC
             LIMIT 10
             """, nativeQuery = true)
@@ -211,19 +212,26 @@ from overall_ranking ovr;
 
 //    @Cacheable("worstTrackByPlayer")
     @Query(value = """
-        WITH main as (SELECT t.id as track_id,
-                             t.name as track_name,
-                             t.map_name as track_map_name,
-                             t.parent_category as track_parent_category,
-                             l.id as player_id,
-                             l.player_name as player_name,
-                             l.position as player_position,
-                             l.score as player_score,
-                             l.created_at as player_created_at,
-                             l.is_invalid_run as player_is_invalid_run
-                      FROM tracks t
-                        LEFT JOIN leaderboards l ON t.id = l.track_id AND l.player_name = :playerName
-                      WHERE (:excludedTrackIds is null or t.id not in (:excludedTrackIds)))
+        WITH main as (
+            SELECT t.id              as track_id,
+                t.name            as track_name,
+                t.map_name        as track_map_name,
+                t.parent_category as track_parent_category,
+                l.id              as leaderboard_id,
+                l.position        as player_position,
+                l.score           as player_score,
+                l.created_at      as player_created_at,
+                l.is_invalid_run  as player_is_invalid_run
+            FROM tracks t
+                LEFT JOIN (SELECT id,
+                                track_id,
+                                position,
+                                score,
+                                created_at,
+                                is_invalid_run
+                            FROM leaderboards
+                            WHERE player_id = (SELECT id FROM players WHERE player_name = :playerName)) l ON t.id = l.track_id
+            WHERE (:excludedTrackIds is null or t.id not in (:excludedTrackIds)))
         SELECT trackId,
                trackName,
                trackMapName,
@@ -239,7 +247,7 @@ from overall_ranking ovr;
                       m.track_parent_category  as trackParentCategory,
                       'IMPROVEMENT_IS_LONG_AGO' as reason
                FROM main m
-               WHERE m.player_is_invalid_run = false AND m.player_id is not null AND :includeImprovementIsLongAgo
+               WHERE m.player_is_invalid_run = false AND m.leaderboard_id is not null AND :includeImprovementIsLongAgo
                ORDER BY m.player_created_at
                LIMIT 10)
               UNION
@@ -255,7 +263,7 @@ from overall_ranking ovr;
                FROM main m
                WHERE m.player_position > 1
                  AND m.player_is_invalid_run = false
-                 AND m.player_id is not null AND :includeWorstPosition
+                 AND m.leaderboard_id is not null AND :includeWorstPosition
                ORDER BY m.player_position DESC
                LIMIT 10)
               UNION
@@ -268,10 +276,10 @@ from overall_ranking ovr;
                       min(m.track_parent_category) as trackParentCategory,
                       'MOST_BEATEN_BY_ENTRIES'     as reason
                FROM main m
-                 INNER JOIN leaderboards_beaten_by b ON b.leaderboard_id = m.player_id
+                 INNER JOIN leaderboards_beaten_by b ON b.leaderboard_id = m.leaderboard_id
                  INNER JOIN leaderboards l ON l.id = b.beaten_by_leaderboard_id
-               WHERE m.player_is_invalid_run = false and m.player_id is not null AND :includeMostBeatenByEntries
-               GROUP BY m.player_id
+               WHERE m.player_is_invalid_run = false and m.leaderboard_id is not null AND :includeMostBeatenByEntries
+               GROUP BY m.leaderboard_id
                ORDER BY count(l.player_id) desc, min(l.created_at)
                limit 10)
               UNION
@@ -288,7 +296,7 @@ from overall_ranking ovr;
                             FROM leaderboards l
                             WHERE l.position = 1
                               AND l.is_invalid_run = false) l ON l.track_id = m.track_id
-               WHERE m.player_id is not null AND :includeFarthestBehindLeader
+               WHERE m.leaderboard_id is not null AND :includeFarthestBehindLeader
                ORDER BY m.player_score - l.score DESC
                LIMIT 10)
               UNION
@@ -307,7 +315,7 @@ from overall_ranking ovr;
                             FROM leaderboards l
                             WHERE l.position = 1
                               AND l.is_invalid_run = false) l ON l.track_id = m.track_id
-               WHERE m.player_id is not null AND :includePotentiallyEasyToAdvance
+               WHERE m.leaderboard_id is not null AND :includePotentiallyEasyToAdvance
                ORDER BY (m.player_score - l.score) / m.player_position DESC
                LIMIT 10)
               UNION
@@ -320,7 +328,7 @@ from overall_ranking ovr;
                       m.track_parent_category as trackParentCategory,
                       'INVALID_RUN'           as reason
                FROM main m
-               WHERE m.player_is_invalid_run = true AND m.player_id is not null AND :includeInvalidRuns
+               WHERE m.player_is_invalid_run = true AND m.leaderboard_id is not null AND :includeInvalidRuns
                ORDER BY m.player_position DESC
                LIMIT 10)
               UNION
@@ -333,7 +341,7 @@ from overall_ranking ovr;
                       m.track_parent_category as trackParentCategory,
                       'NOT_COMPLETED'           as reason
                FROM main m
-               WHERE m.player_id IS NULL AND :includeNotCompleted
+               WHERE m.leaderboard_id IS NULL AND :includeNotCompleted
                LIMIT 10)
         ) unioned
         GROUP BY trackId, trackName, trackMapName, trackParentCategory

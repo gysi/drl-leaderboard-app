@@ -23,7 +23,7 @@
         :key="props.selected"
         :value="props.selected"
         removable
-        @remove="() => { state.searchText = null }">{{ props.opt.playerName }}</q-chip>
+        @remove="() => { state.searchText = null }">{{ props.opt.player.playerName }}</q-chip>
     </template>
     <template v-slot:option="props">
       <q-item
@@ -37,7 +37,7 @@
           <q-badge color="accent" align="middle" :label="props.opt.position" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ props.opt.playerName }}</q-item-label>
+          <q-item-label>{{ props.opt.player.playerName }}</q-item-label>
         </q-item-section>
       </q-item>
     </template>
@@ -109,7 +109,7 @@ const search = (val, update, abort) => {
   state.replays.filter((replay) => {
     let found = true;
     val.forEach((v) => {
-      if(!replay.playerName.toLowerCase().includes(v)){
+      if(!replay.player.playerName.toLowerCase().includes(v)){
         found = false;
       }
     });

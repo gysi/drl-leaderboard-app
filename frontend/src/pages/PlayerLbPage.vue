@@ -281,7 +281,7 @@ export default defineComponent({
       },
       beatenByTable: {
         columns: [
-          {name: "playerName", label: 'Player', field: 'playerName', align: 'left', required: true},
+          {name: "playerName", label: 'Player', field: row => row.player.playerName, align: 'left', required: true},
           {name: "position", label: 'Position', field: 'position', align: 'right', required: true},
           {
             name: 'score', label: 'Time', field: 'score',

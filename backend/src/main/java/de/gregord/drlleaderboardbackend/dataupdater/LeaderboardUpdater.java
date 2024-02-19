@@ -4,10 +4,12 @@ import de.gregord.drlleaderboardbackend.domain.InvalidRunReasons;
 import de.gregord.drlleaderboardbackend.domain.PlayerImprovement;
 import de.gregord.drlleaderboardbackend.domain.PointsCalculation;
 import de.gregord.drlleaderboardbackend.entities.LeaderboardEntry;
+import de.gregord.drlleaderboardbackend.entities.Player;
 import de.gregord.drlleaderboardbackend.entities.Track;
 import de.gregord.drlleaderboardbackend.entities.TrackMinimal;
 import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
 import de.gregord.drlleaderboardbackend.repositories.TracksRepository;
+import de.gregord.drlleaderboardbackend.services.PlayerService;
 import de.gregord.drlleaderboardbackend.services.discord.DiscordMessageService;
 import de.gregord.drlleaderboardbackend.services.LeaderboardService;
 import org.modelmapper.ModelMapper;
@@ -101,6 +103,7 @@ public class LeaderboardUpdater {
     private final ModelMapper modelMapper;
     private final CacheManager cacheManager;
     private final DiscordMessageService discordService;
+    private final PlayerService playerService;
 
     public LeaderboardUpdater(
             @Value("${app.drl-api.token}") String token,
@@ -111,7 +114,8 @@ public class LeaderboardUpdater {
             LeaderboardService leaderboardService,
             ModelMapper modelMapper,
             CacheManager cacheManager,
-            DiscordMessageService discordService
+            DiscordMessageService discordService,
+            PlayerService playerService
     ) {
         this.token = token;
         this.leaderboardEndpoint = leaderboardEndpoint;
@@ -122,6 +126,7 @@ public class LeaderboardUpdater {
         this.modelMapper = modelMapper;
         this.cacheManager = cacheManager;
         this.discordService = discordService;
+        this.playerService = playerService;
     }
 
     @Caching(evict = {
@@ -174,9 +179,10 @@ public class LeaderboardUpdater {
             LOG.info("Updating leaderboard for track " + track.getName());
             // <PlayerId, LeaderboardDto>
             Map<String, LeaderboardEntry> currentLeaderboardEntries = new HashMap<>();
+            List<Player> playersToBeSaved = new ArrayList<>();
             List<LeaderboardEntry> leaderboardEntryEntriesToBeSaved = new ArrayList<>();
             leaderboardRepository.findByTrack(modelMapper.map(track, TrackMinimal.class)).forEach(leaderboard -> {
-                currentLeaderboardEntries.put(leaderboard.getPlayerId(), leaderboard);
+                currentLeaderboardEntries.put(leaderboard.getPlayer().getPlayerId(), leaderboard);
             });
 
             UriComponentsBuilder mapsEndpointBuilder = UriComponentsBuilder.fromUriString(leaderboardEndpoint);
@@ -223,38 +229,54 @@ public class LeaderboardUpdater {
 
                 // Collect by trackid and playerids as HashMap for faster lookup
                 List<String> playerIdsFromApiPage = leaderboard.stream().map(entry -> (String) entry.get("player-id")).toList();
-                Collection<LeaderboardEntry> byTrackIdAndPlayerIdIn = leaderboardRepository.findByTrackIdAndPlayerIdIn(track.getId(), playerIdsFromApiPage);
-                Map<String, LeaderboardEntry> existingLeaderboardEntriesForTrack = byTrackIdAndPlayerIdIn.stream().collect(Collectors.toMap(LeaderboardEntry::getPlayerId, Function.identity()));
+                Collection<LeaderboardEntry> byTrackIdAndPlayerIdIn = leaderboardRepository.findByTrackIdAndPlayerIdDrlIn(track.getId(), playerIdsFromApiPage);
+                Map<String, LeaderboardEntry> existingLeaderboardEntriesForTrack = byTrackIdAndPlayerIdIn.stream().collect(Collectors.toMap(leaderboardEntry -> leaderboardEntry.getPlayer().getPlayerId(), Function.identity()));
+                Map<String, Player> existingPlayersForDrlPlayerIdsOfTrack = playerService.getPlayersByDrlIdAsMap(playerIdsFromApiPage);
 
                 for (Map<String, Object> drlLeaderboardEntry : leaderboard) {
                     LeaderboardEntry leaderboardEntry;
                     Optional<LeaderboardEntry> existingEntry = Optional.ofNullable(existingLeaderboardEntriesForTrack.get((String) drlLeaderboardEntry.get("player-id")));
                     Boolean isExistingEntryInvalid = existingEntry.map(LeaderboardEntry::getIsInvalidRun).orElse(null);
                     leaderboardEntry = existingEntry.orElseGet(LeaderboardEntry::new);
+                    Player playerForEntry;
+                    if(existingEntry.isPresent()) {
+                        playerForEntry = leaderboardEntry.getPlayer();
+                    } else {
+                        Player existingPlayer = existingPlayersForDrlPlayerIdsOfTrack.get((String) drlLeaderboardEntry.get("player-id"));
+                        if (existingPlayer != null) {
+                            playerForEntry = existingPlayer;
+                        } else {
+                            playerForEntry = new Player();
+                        }
+                        leaderboardEntry.setPlayer(playerForEntry);
+                    }
                     leaderboardEntry.setDrlId((String) drlLeaderboardEntry.get("id"));
                     leaderboardEntry.setTrack(modelMapper.map(track, TrackMinimal.class));
-                    leaderboardEntry.setPlayerId((String) drlLeaderboardEntry.get("player-id"));
-                    if (alreadyFoundPlayerIds.containsKey(leaderboardEntry.getPlayerId())) {
-                        LOG.warn("Player " + leaderboardEntry.getPlayerId() + " already exists in this leaderboard, DRL BUG!");
+                    playerForEntry.setPlayerId((String) drlLeaderboardEntry.get("player-id"));
+                    leaderboardEntry.setPlayerIdDrl((String) drlLeaderboardEntry.get("player-id"));
+                    if (alreadyFoundPlayerIds.containsKey(playerForEntry.getPlayerId())) {
+                        LOG.warn("Player " + playerForEntry.getPlayerId() + " already exists in this leaderboard, DRL BUG!");
                         continue;
                     }
-                    leaderboardEntry.setPlayerName((String) drlLeaderboardEntry.get("profile-name"));
+                    playerForEntry.setPlayerName((String) drlLeaderboardEntry.get("username"));
+//                    playerForEntry.setPlayerName((String) drlLeaderboardEntry.get("profile-name"));
                     leaderboardEntry.setCrashCount((Integer) drlLeaderboardEntry.get("crash-count"));
                     leaderboardEntry.setScore(Long.valueOf((Integer) drlLeaderboardEntry.get("score")));
-                    leaderboardEntry.setFlagUrl((String) drlLeaderboardEntry.get("flag-url"));
+                    playerForEntry.setFlagUrl((String) drlLeaderboardEntry.get("flag-url"));
                     leaderboardEntry.setDroneName((String) drlLeaderboardEntry.get("drone-name"));
-                    leaderboardEntry.setProfilePlatform((String) drlLeaderboardEntry.get("profile-platform"));
-                    leaderboardEntry.setProfilePlatformId((String) drlLeaderboardEntry.get("profile-platform-id"));
-                    leaderboardEntry.setProfileThumb((String) drlLeaderboardEntry.get("profile-thumb"));
+                    playerForEntry.setProfilePlatform((String) drlLeaderboardEntry.get("profile-platform"));
+                    playerForEntry.setProfilePlatformId((String) drlLeaderboardEntry.get("profile-platform-id"));
+                    playerForEntry.setProfileThumb((String) drlLeaderboardEntry.get("profile-thumb"));
                     leaderboardEntry.setTopSpeed((Double) drlLeaderboardEntry.get("top-speed"));
                     leaderboardEntry.setReplayUrl((String) drlLeaderboardEntry.get("replay-url"));
                     leaderboardEntry.setCreatedAt(LocalDateTime.from(ZonedDateTime.parse((String) drlLeaderboardEntry.get("created-at"))));
+                    leaderboardEntry.setUpdatedAt(LocalDateTime.from(ZonedDateTime.parse((String) drlLeaderboardEntry.get("updated-at"))));
                     leaderboardEntry.setInvalidRunReason(null);
                     leaderboardEntry.setIsInvalidRun(false);
-                    if (alreadyFoundPlayerNames.containsKey(leaderboardEntry.getPlayerName())) {
-                        LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerNames.get(leaderboardEntry.getPlayerName());
+                    if (alreadyFoundPlayerNames.containsKey(playerForEntry.getPlayerName())) {
+                        LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerNames.get(playerForEntry.getPlayerName());
                         if(!alreadyExistingEntry.getIsInvalidRun()) {
-                            LOG.warn("Playername " + leaderboardEntry.getPlayerName() + " (" + leaderboardEntry.getPlayerId() + ") already exists in this leaderboard (" + alreadyExistingEntry.getPlayerId() + ")");
+                            LOG.warn("Playername " + playerForEntry.getPlayerName() + " (" + playerForEntry.getPlayerId() + ") already exists in this leaderboard (id: " + alreadyExistingEntry.getId() + ")");
                             leaderboardEntry.setIsInvalidRun(true);
                             leaderboardEntry.setInvalidRunReason(
                                     (leaderboardEntry.getInvalidRunReason() == null) ?
@@ -267,7 +289,7 @@ public class LeaderboardUpdater {
                     boolean isInvalidSpeed = (customTopSpeed != null && leaderboardEntry.getTopSpeed() > customTopSpeed) ||
                             (customTopSpeed == null && leaderboardEntry.getTopSpeed() > 104);
                     if (isInvalidSpeed) {
-                        LOG.warn("Player " + leaderboardEntry.getPlayerName() + " has impossible top speed " + leaderboardEntry.getTopSpeed() + ", DRL BUG!");
+                        LOG.warn("Player " + playerForEntry.getPlayerName() + " has impossible top speed " + leaderboardEntry.getTopSpeed() + ", DRL BUG!");
                         leaderboardEntry.setIsInvalidRun(true);
                         leaderboardEntry.setInvalidRunReason(
                                 (leaderboardEntry.getInvalidRunReason() == null) ?
@@ -276,7 +298,7 @@ public class LeaderboardUpdater {
                         );
                     }
                     if (leaderboardEntry.getReplayUrl() == null) {
-                        LOG.warn("Player " + leaderboardEntry.getPlayerName() + " has no replay url, DRL BUG (Or intended)!");
+                        LOG.warn("Player " + playerForEntry.getPlayerName() + " has no replay url, DRL BUG (Or intended)!");
                         leaderboardEntry.setIsInvalidRun(true);
                         leaderboardEntry.setInvalidRunReason(
                                 (leaderboardEntry.getInvalidRunReason() == null) ?
@@ -284,13 +306,13 @@ public class LeaderboardUpdater {
                                         leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.NO_REPLAY
                         );
                     }
-                    if (doubleAccountMatchingMap.containsKey(leaderboardEntry.getPlayerId())) {
-                        List<String> doubleAccs = doubleAccountMatchingMap.get(leaderboardEntry.getPlayerId());
+                    if (doubleAccountMatchingMap.containsKey(playerForEntry.getPlayerId())) {
+                        List<String> doubleAccs = doubleAccountMatchingMap.get(playerForEntry.getPlayerId());
                         for (String doubleAcc : doubleAccs) {
                             if (alreadyFoundPlayerIds.containsKey(doubleAcc)) {
                                 LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerIds.get(doubleAcc);
                                 if(!alreadyExistingEntry.getIsInvalidRun()) {
-                                    LOG.warn("Player " + leaderboardEntry.getPlayerId() + " is a double account of " + doubleAcc + " and already exists in this leaderboard");
+                                    LOG.warn("Player " + playerForEntry.getPlayerId() + " is a double account of " + doubleAcc + " and already exists in this leaderboard");
                                     leaderboardEntry.setIsInvalidRun(true);
                                     leaderboardEntry.setInvalidRunReason(
                                             (leaderboardEntry.getInvalidRunReason() == null) ?
@@ -306,13 +328,13 @@ public class LeaderboardUpdater {
                     // Epic bug
                     if(leaderboardPosition == 2){
                         Optional<LeaderboardEntry> invalidEntryOpt = leaderboardEntryEntriesToBeSaved.stream()
-                                .filter(lbe -> lbe.getProfilePlatform().equals("Epic"))
+                                .filter(lbe -> lbe.getPlayer().getProfilePlatform().equals("Epic"))
                                 .filter(lbe -> lbe.getPosition() == 1)
                                 .filter(lbe -> !lbe.getIsInvalidRun())
                                 .filter(lbe -> leaderboardEntry.getScore() - lbe.getScore() >= 3000).findAny();
                         if(invalidEntryOpt.isPresent()) {
                             LeaderboardEntry invalidEntry = invalidEntryOpt.get();
-                            LOG.warn("Player " + invalidEntry.getPlayerName()
+                            LOG.warn("Player " + invalidEntry.getPlayer().getPlayerName()
                                 + " has the strange epic bug (position 1 and very low time compared to position 2");
                             invalidEntry.setIsInvalidRun(true);
                             invalidEntry.setInvalidRunReason(
@@ -327,7 +349,7 @@ public class LeaderboardUpdater {
                     // Manual invalidation
                     InvalidRunReasons invalidRunReasons = manualInvalidRuns.get(leaderboardEntry.getDrlId());
                     if(invalidRunReasons != null){
-                        LOG.info("Player " + leaderboardEntry.getPlayerName() + " is manually invalidated");
+                        LOG.info("Player " + playerForEntry.getPlayerName() + " is manually invalidated");
                         leaderboardEntry.setIsInvalidRun(true);
                         leaderboardEntry.setInvalidRunReason(
                                 (leaderboardEntry.getInvalidRunReason() == null) ?
@@ -343,7 +365,7 @@ public class LeaderboardUpdater {
                         leaderScore = leaderboardEntry.getScore();
                     }
 
-                    LeaderboardEntry existingEntryInDB = currentLeaderboardEntries.get(leaderboardEntry.getPlayerId());
+                    LeaderboardEntry existingEntryInDB = currentLeaderboardEntries.get(playerForEntry.getPlayerId());
                     if (leaderboardPosition <= 50
                             && (existingEntryInDB == null
                                 || leaderboardPosition < existingEntryInDB.getPosition()
@@ -360,14 +382,14 @@ public class LeaderboardUpdater {
                                 || (Objects.equals(isExistingEntryInvalid, Boolean.TRUE) && !leaderboardEntry.getIsInvalidRun()))
                             && !leaderboardEntry.getIsInvalidRun()) {
                         PlayerImprovement improvement = new PlayerImprovement();
-                        improvement.setPlayerName(leaderboardEntry.getPlayerName());
+                        improvement.setPlayerName(playerForEntry.getPlayerName());
                         improvement.setPreviousPosition(existingEntryInDB != null ? existingEntryInDB.getPosition() : null);
                         improvement.setCurrentPosition(leaderboardPosition);
                         improvement.setPreviousScore(existingEntryInDB != null ? existingEntryInDB.getScore() : null);
                         improvement.setCurrentScore(leaderboardEntry.getScore());
                         improvement.setCreatedAt(leaderboardEntry.getCreatedAt());
                         improvement.setTrack(leaderboardEntry.getTrack());
-                        improvement.setProfilePicture(leaderboardEntry.getProfileThumb());
+                        improvement.setProfilePicture(playerForEntry.getProfileThumb());
                         improvement.setLeaderScore(leaderScore);
                         if (Objects.equals(isExistingEntryInvalid, Boolean.TRUE)) {
                             improvement.setForcePost(true);
@@ -381,9 +403,17 @@ public class LeaderboardUpdater {
 
                     LOG.trace(leaderboardEntry.toString());
                     leaderboardEntryEntriesToBeSaved.add(leaderboardEntry);
-                    alreadyFoundPlayerIds.put(leaderboardEntry.getPlayerId(), leaderboardEntry);
-                    alreadyFoundPlayerNames.put(leaderboardEntry.getPlayerName(), leaderboardEntry);
-                    currentLeaderboardEntries.remove(leaderboardEntry.getPlayerId());
+                    if (playerForEntry.getId() == null) {
+                        playerForEntry.setCreatedAt(leaderboardEntry.getCreatedAt());
+                        playerForEntry.setUpdatedAt(leaderboardEntry.getCreatedAt());
+                        playersToBeSaved.add(playerForEntry);
+                    } else if (playerForEntry.getUpdatedAt().isBefore(leaderboardEntry.getUpdatedAt())) {
+                        playerForEntry.setUpdatedAt(leaderboardEntry.getUpdatedAt());
+                        playersToBeSaved.add(playerForEntry);
+                    }
+                    alreadyFoundPlayerIds.put(playerForEntry.getPlayerId(), leaderboardEntry);
+                    alreadyFoundPlayerNames.put(playerForEntry.getPlayerName(), leaderboardEntry);
+                    currentLeaderboardEntries.remove(playerForEntry.getPlayerId());
                     if(leaderboardPosition > maxEntries){
                         break;
                     }
@@ -395,6 +425,7 @@ public class LeaderboardUpdater {
             } while (leaderboardPosition <= maxEntries && nextPageUrl != null);
 
             LOG.info("Saving leaderboard entries for track " + track.getName() + " with map id " + track.getMapId() + " and map name " + track.getMapName());
+            playerService.savePlayers(playersToBeSaved);
             leaderboardService.saveAndDeleteLeaderboardEntries(leaderboardEntryEntriesToBeSaved, currentLeaderboardEntries.values());
         } catch (Exception e) {
             LOG.error("Error while updating leaderboard entry", e);

@@ -53,16 +53,16 @@
             >
               <q-item-section avatar side>
                 <q-avatar rounded size="50px">
-                  <img loading="lazy" :src="props.row.profileThumb" />
+                  <img loading="lazy" :src="props.row.player.profileThumb" />
                 </q-avatar>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="player-item-label">{{ props.row.playerName }}</q-item-label>
+                <q-item-label class="player-item-label">{{ props.row.player.playerName }}</q-item-label>
                 <q-item-label caption>
-                  <span :class="`fi fi-${this.formatFlagUrl(props.row.flagUrl)}`"></span>
+                  <span :class="`fi fi-${this.formatFlagUrl(props.row.player.flagUrl)}`"></span>
                   <q-badge
-                    :class="`badge-platform q-batch-${props.row.profilePlatform}`"
-                  >{{ props.row.profilePlatform }}</q-badge>
+                    :class="`badge-platform q-batch-${props.row.player.profilePlatform}`"
+                  >{{ props.row.player.profilePlatform }}</q-badge>
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -99,7 +99,7 @@ export default defineComponent({
       selectedTrack: null,
       columns: [
         { name: 'position', label: '#', field: 'position' },
-        { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
+        { name: 'playerName', label: 'Player', field: row => row.player.playerName, align: 'left' },
         { name: 'score', label: 'Time', field: 'score', format: (val, row) => this.formatMilliSeconds(val), align: 'left' },
         { name: 'crashes', label: 'Crashes', field: 'crashCount' },
         { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed', format: (val, row) => (Math.round(val*10)/10) },

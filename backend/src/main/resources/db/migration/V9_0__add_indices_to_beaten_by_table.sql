@@ -1,0 +1,2 @@
+create index if not exists i_leaderboards_beaten_by_leaderboard_id on leaderboards_beaten_by (leaderboard_id);
+create index if not exists i_leaderboards_beaten_by_beaten_by_leaderboard_id on leaderboards_beaten_by (beaten_by_leaderboard_id);
