@@ -29,7 +29,7 @@
               <ul class="q-my-sm" style="font-size: 1rem">
                 <li><b>Updated FAQs:</b> The FAQ section has been updated to reflect the new points calculation system. Check it out for a more extensive understanding of how points are awarded.</li>
               </ul>
-              <div class="text-h6">Bug Fixs</div>
+              <div class="text-h6">Bug Fixes</div>
               <ul class="q-my-sm" style="font-size: 1rem">
                 <li><b>Duration Display Correction:</b> A bug in the news section where the duration was displayed incorrectly has been fixed. Now the duration values should represent time periods accurately.</li>
                 <li><b>Improved Player Name Encoding:</b> A fix was introduced to handle special characters in player names. This will ensure that the player names are transmitted correctly. This was especially an issue for some players that had a "|" in their name.</li>
