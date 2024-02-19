@@ -59,7 +59,7 @@ export default {
         return;
       }
       this.loadingState = true;
-      const response = await axios.get(process.env.DLAPP_API_URL + '/leaderboards/find-players?playerName=' + val);
+      const response = await axios.get(`${process.env.DLAPP_API_URL}/players/search?playerName=${encodeURIComponent(val)}`);
       this.searchResults = response.data;
       this.loadingState = false;
       update();

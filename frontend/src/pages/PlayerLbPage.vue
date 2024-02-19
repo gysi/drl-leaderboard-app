@@ -330,7 +330,7 @@ export default defineComponent({
       update();
     },
     async searchPlayer(val, update, abort) {
-      return axios.get(process.env.DLAPP_API_URL + '/leaderboards/find-players?playerName=' + val);
+      return axios.get(`${process.env.DLAPP_API_URL}/players/search?playerName=${encodeURIComponent(val)}`);
     },
     async onSelectPlayer(player) {
       if (!player) {
@@ -359,8 +359,8 @@ export default defineComponent({
       try {
         const [responseFinishedTracks, responseMissingTracks] =
           await Promise.all([
-            axios.get(process.env.DLAPP_API_URL + '/leaderboards/byplayername?playerName=' + player),
-            axios.get(process.env.DLAPP_API_URL + '/tracks/missing-tracks-by-playername?playerName=' + player)
+            axios.get(`${process.env.DLAPP_API_URL}/leaderboards/byplayername?playerName=${encodeURIComponent(player)}`),
+            axios.get(`${process.env.DLAPP_API_URL}/tracks/missing-tracks-by-playername?playerName=${encodeURIComponent(player)}`)
           ]);
         const finishedTracks = responseFinishedTracks.data;
         const missingTracks = responseMissingTracks.data;
