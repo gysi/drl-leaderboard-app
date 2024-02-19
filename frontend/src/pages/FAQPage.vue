@@ -7,99 +7,72 @@
         :msnry="msnry"
         :initially-expanded="this.$router.currentRoute.value.query.card === 'pointSystem'"
       >
-        <div>The number of points a player receives is calculated based on their position on the leaderboard using the formula</div>
-        <b><span>points = 101 - position</span></b>
-        <div>In addition, bonus points will be awarded to the player below certain positions.</div>
-        <div>
-          <q-markup-table class="q-ma-sm">
-            <thead>
-            <tr>
-              <th class="text-center">Position</th>
-              <th class="text-center">Bonus Points</th>
-            </tr>
-            </thead>
-            <tbody class="text-center">
-            <tr>
-              <td>&lt;= 75</td>
-              <td>+5</td>
-            </tr>
-            <tr>
-              <td>&lt;= 50</td>
-              <td>+5</td>
-            </tr>
-            <tr>
-              <td>&lt;= 25</td>
-              <td>+5</td>
-            </tr>
-            <tr>
-              <td>&lt;= 10</td>
-              <td>+5</td>
-            </tr>
-            <tr>
-              <td>&lt;= 5</td>
-              <td>+5</td>
-            </tr>
-            <tr>
-              <td>&lt;= 3</td>
-              <td>+2</td>
-            </tr>
-            <tr>
-              <td>= 1</td>
-              <td>+2</td>
-            </tr>
-            </tbody>
-          </q-markup-table>
-        </div>
-        <span>The final score is then raised to the power of <b>1.1</b></span>
+        <div>The new points system has been refined to offer a better competitive balance and reward consistent, high-level play. Here's how:</div>
+
+        <div>The number of points a player receives is now calculated based on a logarithmic relationship between their milliseconds (positionMS) and the first position milliseconds (firstPositionMS). This offers several key benefits:</div>
+
+        <ul>
+          <li>Getting a #1 ranking on easier tracks won't result in you having a disproportionate advantage, as it's easier for other players to log a time close to the #1.</li>
+          <li>Achieving an excellent #1 ranking on harder tracks gets appropriately rewarded.</li>
+          <li>Spending a significant amount of time on one track to improve your time will net you greater rewards. Even if you are already #1, you can still advance your position further and comparatively push down others.</li>
+          <li>It alleviates the frustration of being just 1ms behind the leader as you will still earn an estimable amount of points.</li>
+          <li>If you are highly skilled, you don’t need to grind all 200 tracks to get into the top 10 — you only need about 35-40 #1 rankings to reach the current top 10 in the overall ranking.</li>
+        </ul>
+
+        <div>The only downside of this point system change is that it becomes a bit more challenging to guess what points you will get from a particular position or time.</div>
+        <br/>
+        <div>Formular:</div>
+        <b><span>Points = min(100000, 670000000 / (15 ^ (log<sub>10</sub>(positionMS - firstPositionMS + 400) / 0.8) </span></b>
+        <br/><br/>
         <div>Here are some examples:</div>
         <div>
           <q-markup-table class="q-ma-sm">
             <thead>
             <tr>
-              <th class="text-center">Position</th>
+              <th class="text-center">Time Diff to #1</th>
               <th class="text-center">Points earned</th>
             </tr>
             </thead>
             <tbody class="text-center">
             <tr>
-              <td>1</td>
-              <td>(100 + 26)<sup>1.1</sup> = <b>204.365...</b></td>
+              <td>0ms</td>
+              <td>100,000</td>
             </tr>
             <tr>
-              <td>2</td>
-              <td>(99 + 24)<sup>1.1</sup> = <b>199.019...</b></td>
+              <td>10ms</td>
+              <td>96,601.636</td>
             </tr>
             <tr>
-              <td>3</td>
-              <td>(98 + 24)<sup>1.1</sup> = <b>197.240...</b></td>
+              <td>25ms</td>
+              <td>91,631.172</td>
             </tr>
             <tr>
-              <td>4</td>
-              <td>(97 + 22)<sup>1.1</sup> = <b>191.911...</b></td>
+              <td>50ms</td>
+              <td>84,246.088</td>
             </tr>
             <tr>
-              <td>5</td>
-              <td>(96 + 22)<sup>1.1</sup> = <b>190.138...</b></td>
+              <td>100ms</td>
+              <td>72,157.422</td>
             </tr>
             <tr>
-              <td>10</td>
-              <td>(91 + 20)<sup>1.1</sup> = <b>177.768...</b></td>
+              <td>200ms</td>
+              <td>55,191.926</td>
             </tr>
             <tr>
-              <td>25</td>
-              <td>(76 + 15)<sup>1.1</sup> = <b>142.871...</b></td>
+              <td>500ms</td>
+              <td>30,408.942</td>
             </tr>
             <tr>
-              <td>50</td>
-              <td>(51 + 10)<sup>1.1</sup> = <b>92.015...</b></td>
+              <td>1s</td>
+              <td>15,882.091</td>
             </tr>
             <tr>
-              <td>75</td>
-              <td>(26 + 5)<sup>1.1</sup> = <b>43.701...</b></td>
+              <td>5s</td>
+              <td>2,182.881</td>
             </tr>
             <tr>
-              <td>100</td>
-              <td>1<sup>1.1</sup> = <b>1</b></td>
+              <td>10s</td>
+              <td>832.870</td>
             </tr>
             </tbody>
           </q-markup-table>
