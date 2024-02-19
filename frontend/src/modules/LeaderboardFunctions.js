@@ -78,7 +78,9 @@ function getDateDifferenceToNowByGermanTimezone(dateString) {
     end: new Date()
   });
   let units = [];
-  if(duration.months > 0 ){
+  if(duration.years > 0) {
+    units.push('years')
+  } else if(duration.months > 0 ){
     units.push('months');
   } else if(duration.days > 0 ){
     units.push('days');
