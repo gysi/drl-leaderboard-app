@@ -1,6 +1,10 @@
 package de.gregord.drlleaderboardbackend.domain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PointsCalculation {
+    public static final Logger LOG = LoggerFactory.getLogger(PointsCalculation.class);
     public static Double calculatePointsByPosition(Double position) {
         Double points = 0.;
         points = 101 - position;
@@ -32,12 +36,34 @@ public class PointsCalculation {
         return points;
     }
 
+    public static Double calculatePointsByPositionV2(Long firstPositionMS, Long positionMS) {
+        if(positionMS < firstPositionMS){
+            positionMS = firstPositionMS;
+        }
+        Double result = Math.min(100_000, 670_000_000. / Math.pow(15., (Math.log10((positionMS - firstPositionMS) + 400.) / 0.8)));
+        if(result > 100_000 || result < 0) {
+            LOG.error("WTF? positionMS:{} firstPositionMS:{} result:{}", positionMS, firstPositionMS, result);
+        }
+        return result;
+    }
+
+    private static double customLog(double base, double logNumber) {
+        return Math.log(logNumber) / Math.log(base);
+    }
+
     public static void main(String[] args) {
         for (int i = 1; i <= 100; i++) {
             System.out.println(
                     i + " " + calculatePointsByPosition((double) i)
                             + " (" + (calculatePointsByPosition((double) i) - calculatePointsByPosition((double) (i + 1))) + ")"
             );
+        }
+
+        // some samples for calculatePointsByPositionV2 using for the first parameter always 0 and for the 2nd the values:
+        // 0, 10, 25, 50, 100, 200, 500, 1000, 5000, 10000, 15000, 20000
+        long[] values = {0, 10, 25, 50, 100, 200, 500, 1000, 5000, 10000, 15000, 20000};
+        for(long value : values){
+            System.out.println("Position 0, Value: "+value+" Points: "+calculatePointsByPositionV2(0L, value));
         }
     }
 }

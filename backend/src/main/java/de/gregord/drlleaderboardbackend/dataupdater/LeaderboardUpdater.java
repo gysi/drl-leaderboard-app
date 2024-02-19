@@ -201,6 +201,7 @@ public class LeaderboardUpdater {
             int maxEntries = 100;
             String nextPageUrl = null;
             long leaderboardPosition = 1;
+            long firstPositionScore = 0;
             // <player_id, leaderboard>
             Map<String, LeaderboardEntry> alreadyFoundPlayerIds = new HashMap<>();
             // <player_name, leaderboard>
@@ -358,7 +359,10 @@ public class LeaderboardUpdater {
                         );
                     }
 
-                    leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPosition((double) leaderboardPosition));
+                    if(leaderboardPosition == 1){
+                        firstPositionScore = leaderboardEntry.getScore();
+                    }
+                    leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPositionV2(firstPositionScore, leaderboardEntry.getScore()));
                     leaderboardEntry.setPosition(leaderboardPosition);
 
                     if (!leaderboardEntry.getIsInvalidRun() && leaderboardEntry.getPosition().equals(1L)) {
