@@ -1,12 +1,10 @@
 package de.gregord.drlleaderboardbackend.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,10 +12,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "leaderboards", indexes = {
-        @Index(columnList = "track_id, playerId", unique = true),
+        @Index(columnList = "track_id, player_id", unique = true),
         @Index(columnList = "track_id"),
-        @Index(columnList = "playerId"),
-        @Index(columnList = "playerName"),
+        @Index(columnList = "player_id"),
+        @Index(columnList = "playerIdDrl"),
         @Index(columnList = "score"),
         @Index(columnList = "position"),
         @Index(columnList = "createdAt"),
@@ -27,7 +25,6 @@ import java.util.List;
 })
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
@@ -42,8 +39,12 @@ public class LeaderboardEntry {
     @JoinColumn(name = "track_id", nullable = false)
     private TrackMinimal track;
     private String drlId;
-    private String playerId;
-    private String playerName;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "player_id", nullable = false)
+    @Fetch(FetchMode.JOIN)
+    private Player player;
+    private String playerIdDrl;
     private Long score;
     private Integer crashCount;
     private Double topSpeed;
@@ -51,15 +52,10 @@ public class LeaderboardEntry {
     private Double points;
     // from drl api
     private LocalDateTime createdAt;
-    private String profileThumb;
-    private String profilePlatform;
-    private String profilePlatformId;
-    private String flagUrl;
     private String droneName;
     private String replayUrl;
     private Boolean isInvalidRun = false;
     private String invalidRunReason = null;
-    @LastModifiedDate
     private LocalDateTime updatedAt;
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY)

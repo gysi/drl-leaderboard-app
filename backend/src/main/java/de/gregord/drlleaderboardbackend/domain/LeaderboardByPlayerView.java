@@ -5,7 +5,6 @@ import java.util.List;
 
 public interface LeaderboardByPlayerView {
     String getId();
-    String getPlayerName();
     Long getPosition();
     Long getScore();
     Double getPoints();
@@ -18,6 +17,10 @@ public interface LeaderboardByPlayerView {
     LeaderboardByPlayerView_Track getTrack();
     List<LeaderboardByPlayerView_LeaderboardEntryMinimal> getBeatenBy();
 
+    interface LeaderboardByPlayerView_Player {
+        String getPlayerName();
+    }
+
     interface LeaderboardByPlayerView_Track {
         String getId();
         String getName();
@@ -27,7 +30,7 @@ public interface LeaderboardByPlayerView {
 
     interface LeaderboardByPlayerView_LeaderboardEntryMinimal {
         String getId();
-        String getPlayerName();
+        LeaderboardByPlayerView_Player getPlayer();
         Long getPosition();
         Long getScore();
         Double getPoints();

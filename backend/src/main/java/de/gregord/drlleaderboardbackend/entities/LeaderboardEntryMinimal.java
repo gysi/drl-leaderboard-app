@@ -2,8 +2,9 @@ package de.gregord.drlleaderboardbackend.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +12,6 @@ import java.time.LocalDateTime;
 @Table(name = "leaderboards")
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
@@ -22,8 +22,11 @@ public class LeaderboardEntryMinimal {
     @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, strategy = TsidGenerator.STRATEGY_NAME)
     @EqualsAndHashCode.Include
     private Long id;
-    private String playerId;
-    private String playerName;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "player_id", nullable = false)
+    @Fetch(FetchMode.JOIN)
+    private Player player;
+    private String playerIdDrl;
     private Long score;
     private Long position;
     private Double points;

@@ -78,17 +78,6 @@ public class LeaderboardController {
         return ResponseEntity.ok(replays);
     }
 
-    @GetMapping("/find-players")
-    public ResponseEntity<List<String>> findPlayers(@RequestParam String playerName) {
-        List<String> players = leaderboardRepository
-                .findDistinctPlayerNames(
-                        playerName.toLowerCase().trim() + '%',
-                        PageRequest.of(0, 50)
-                                .withSort(Sort.by(Sort.Order.asc("playerName")))
-                );
-        return ResponseEntity.ok(players);
-    }
-
     @GetMapping("/latest-activity")
     public ResponseEntity<List<LeaderboardActivityView>> latestActivity() {
         List<LeaderboardActivityView> players = leaderboardRepository.latestLeaderboardActivity();
