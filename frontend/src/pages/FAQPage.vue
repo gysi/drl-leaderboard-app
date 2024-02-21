@@ -7,77 +7,115 @@
         :msnry="msnry"
         :initially-expanded="this.$router.currentRoute.value.query.card === 'pointSystem'"
       >
-        <div>The new points system has been refined to offer a better competitive balance and reward consistent, high-level play. Here's how:</div>
-
-        <div>The number of points a player receives is now calculated based on a logarithmic relationship between their milliseconds (positionMS) and the first position milliseconds (firstPositionMS). This offers several key benefits:</div>
-
-        <ul>
-          <li>Getting a #1 ranking on easier tracks won't result in you having a disproportionate advantage, as it's easier for other players to log a time close to the #1.</li>
-          <li>Achieving an excellent #1 ranking on harder tracks gets appropriately rewarded.</li>
-          <li>Spending a significant amount of time on one track to improve your time will net you greater rewards. Even if you are already #1, you can still advance your position further and comparatively push down others.</li>
-          <li>It alleviates the frustration of being just 1ms behind the leader as you will still earn an estimable amount of points.</li>
-          <li>If you are highly skilled, you don’t need to grind all 200 tracks to get into the top 10 — you only need about 35-40 #1 rankings to reach the current top 10 in the overall ranking.</li>
-        </ul>
-
-        <div>The only downside of this point system change is that it becomes a bit more challenging to guess what points you will get from a particular position or time.</div>
-        <br/>
-        <div>Formular:</div>
-        <b><span>Points = min(100000, 670000000 / (15 ^ (log<sub>10</sub>(positionMS - firstPositionMS + 400) / 0.8) </span></b>
-        <br/><br/>
+        <div>The number of points a player receives is calculated based on their position on the leaderboard using the formula</div>
+        <b><span>base points = 1046.1 - 515.88 * log(position + 2)</span></b>
+        <div>In addition, bonus points will be awarded to the player below certain positions.</div>
+        <div>
+          <q-markup-table class="q-ma-sm">
+            <thead>
+            <tr>
+              <th class="text-center">Position</th>
+              <th class="text-center">Bonus Points</th>
+            </tr>
+            </thead>
+            <tbody class="text-center">
+            <tr>
+              <td>&lt;= 75</td>
+              <td>+20</td>
+            </tr>
+            <tr>
+              <td>&lt;= 50</td>
+              <td>+20</td>
+            </tr>
+            <tr>
+              <td>&lt;= 25</td>
+              <td>+20</td>
+            </tr>
+            <tr>
+              <td>&lt;= 10</td>
+              <td>+40</td>
+            </tr>
+            <tr>
+              <td>&lt;= 5</td>
+              <td>+20</td>
+            </tr>
+            <tr>
+              <td>&lt;= 4</td>
+              <td>+5</td>
+            </tr>
+            <tr>
+              <td>&lt;= 3</td>
+              <td>+9</td>
+            </tr>
+            <tr>
+              <td>&lt;= 2</td>
+              <td>+30</td>
+            </tr>
+            <tr>
+              <td>= 1</td>
+              <td>+36</td>
+            </tr>
+            </tbody>
+          </q-markup-table>
+        </div>
         <div>Here are some examples:</div>
         <div>
           <q-markup-table class="q-ma-sm">
             <thead>
             <tr>
-              <th class="text-center">Time Diff to #1</th>
+              <th class="text-center">Position</th>
               <th class="text-center">Points earned</th>
             </tr>
             </thead>
             <tbody class="text-center">
             <tr>
-              <td>0ms</td>
-              <td>100,000</td>
+              <td>1</td>
+              <td>1000</td>
             </tr>
             <tr>
-              <td>10ms</td>
-              <td>96,601.636</td>
+              <td>2</td>
+              <td>900</td>
             </tr>
             <tr>
-              <td>25ms</td>
-              <td>91,631.172</td>
+              <td>3</td>
+              <td>820</td>
             </tr>
             <tr>
-              <td>50ms</td>
-              <td>84,246.088</td>
+              <td>4</td>
+              <td>770</td>
             </tr>
             <tr>
-              <td>100ms</td>
-              <td>72,157.422</td>
+              <td>5</td>
+              <td>730</td>
             </tr>
             <tr>
-              <td>200ms</td>
-              <td>55,191.926</td>
+              <td>10</td>
+              <td>589</td>
             </tr>
             <tr>
-              <td>500ms</td>
-              <td>30,408.942</td>
+              <td>25</td>
+              <td>368</td>
             </tr>
             <tr>
-              <td>1s</td>
-              <td>15,882.091</td>
+              <td>50</td>
+              <td>201</td>
             </tr>
             <tr>
-              <td>5s</td>
-              <td>2,182.881</td>
+              <td>75</td>
+              <td>93</td>
             </tr>
             <tr>
-              <td>10s</td>
-              <td>832.870</td>
+              <td>100</td>
+              <td>10</td>
             </tr>
             </tbody>
           </q-markup-table>
         </div>
         <span>Points are rounded to a whole number for display purposes. However, the total points in the overall ranking is accurate to 14 digits and is only then rounded.</span>
+        <q-img
+          src="~assets/pointssystem.png"
+          spinner-color="white"
+        />
       </FAQCard>
       <FAQCard
         title="Invalid Runs"
