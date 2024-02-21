@@ -47,6 +47,49 @@ public class PointsCalculation {
         return result;
     }
 
+    public static Double calculatePointsByPositionV3(Long position) {
+//        Double points = 1561.5 - 761.5 * Math.log10(position + 9);
+        //Round(1046.1  - 515.88 * log(position + 2, 10))
+        Double points = 1046.1 - 515.88 * Math.log10(position + 2);
+        if(position == 1L){
+            points = 800.;
+        }
+        if(position == 100L){
+            points = 10.;
+        }
+        if (position > 100) {
+            return 0.;
+        }
+        if (position <= 75) {
+            points += 20;
+        }
+        if (position <= 50) {
+            points += 20;
+        }
+        if (position <= 25) {
+            points += 20;
+        }
+        if (position <= 10) {
+            points += 40;
+        }
+        if (position <= 5) {
+            points += 20;
+        }
+        if (position <= 4) {
+            points += 5;
+        }
+        if (position <= 3) {
+            points += 9;
+        }
+        if (position <= 2) {
+            points += 30;
+        }
+        if (position <= 1) {
+            points += 36;
+        }
+        return points;
+    }
+
     private static double customLog(double base, double logNumber) {
         return Math.log(logNumber) / Math.log(base);
     }
@@ -64,6 +107,11 @@ public class PointsCalculation {
         long[] values = {0, 10, 25, 50, 100, 200, 500, 1000, 5000, 10000, 15000, 20000};
         for(long value : values){
             System.out.println("Position 0, Value: "+value+" Points: "+calculatePointsByPositionV2(0L, value));
+        }
+
+        long[] values2 = {1, 2, 3, 4, 5, 10, 25, 50, 75, 100};
+        for(long value : values2){
+            System.out.println("Position 0, Value: "+value+" Points: "+Math.round(calculatePointsByPositionV3(value)));
         }
     }
 }

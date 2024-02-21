@@ -362,7 +362,7 @@ public class LeaderboardUpdater {
                     if(leaderboardPosition == 1){
                         firstPositionScore = leaderboardEntry.getScore();
                     }
-                    leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPositionV2(firstPositionScore, leaderboardEntry.getScore()));
+                    leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPositionV3(leaderboardPosition));
                     leaderboardEntry.setPosition(leaderboardPosition);
 
                     if (!leaderboardEntry.getIsInvalidRun() && leaderboardEntry.getPosition().equals(1L)) {
