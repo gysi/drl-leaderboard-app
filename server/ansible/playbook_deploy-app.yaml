@@ -4,6 +4,10 @@
   user: root
 
   tasks:
+    - name: Print all available facts
+      ansible.builtin.debug:
+        var: ansible_facts
+
     - name: "SSHD configuration"
       ansible.builtin.blockinfile:
         path: /etc/ssh/sshd_config
@@ -51,6 +55,11 @@
       community.general.ufw:
         state: enabled
 
+    - name: Set correct architecture for apt repos in case of arm
+      ansible.builtin.set_fact:
+        docker_architecture: "arm64"
+      when: ansible_architecture == "aarch64"
+
     - name: "Add packages necessary for docker to work"
       ansible.builtin.apt:
         name:
@@ -60,15 +69,30 @@
         state: present
         update_cache: true
 
-    - name: "Add Docker GPG apt Key"
-      ansible.builtin.apt_key:
-        url: https://download.docker.com/linux/debian/gpg
-        state: present
+    - name: Ensure /etc/apt/keyrings directory exists
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
 
-    - name: "Add Docker to apt Repo"
+    - name: Download Docker GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: 'a+r'
+
+    - name: Define Docker repository components
+      ansible.builtin.set_fact:
+        docker_repo_base: "deb [arch={{ docker_architecture | default(ansible_architecture) }} signed-by=/etc/apt/keyrings/docker.asc]"
+        docker_repo_url: "https://download.docker.com/linux/debian"
+        docker_repo_dist: "{{ ansible_lsb.codename }}"
+        docker_repo_component: "stable"
+
+    - name: Add Docker apt repository
       ansible.builtin.apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable
+        repo: "{{ docker_repo_base }} {{ docker_repo_url }} {{ docker_repo_dist }} {{ docker_repo_component }}"
         state: present
+        update_cache: true
 
     - name: "Install Docker"
       ansible.builtin.apt:
