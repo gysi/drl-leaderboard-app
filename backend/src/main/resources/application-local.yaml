@@ -15,7 +15,7 @@ app:
   data-updater:
     leaderboards:
       cron: "-" # disabled
-#      cron: "*/20 * * * * *" # every 10 Minutes
+#      cron: "*/1 * * * * *" # every 1 second
     tracks:
       cron: "-" # disabled
     tournaments:
