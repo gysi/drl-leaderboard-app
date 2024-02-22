@@ -142,23 +142,25 @@
               <div class="q-table__grid-item col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
                 <q-card class="bg-black">
                 <q-img :src="buildImgCacheUrl(props.row.imgUrl)" height="450px" fit="cover" style="height: 450px">
-                    <q-card-section class="absolute-top" style="background: rgba(0,0,0,70%)">
-                        <div class="" style="font-size: 20px">{{props.row.title}}</div>
-                        <div class="text-subtitle2 text-grey-5">{{ toLocalDateformat(props.row.startDate) }}</div>
-                        <q-separator v-if="props.row.top10.length !== 0" class="bg-grey-6 q-mb-xs" />
-                        <div v-for="(player, i) in props.row.top10" v-bind:key="player">{{i+1}}. {{player}}</div>
-                    </q-card-section>
-                    <q-card-section v-if="props.row.status === 'idle'" class="absolute-bottom" style="background: rgba(255,0,0,80%)">
-                      <div style="text-align: center; font-weight: 900; font-size: 16px">Starts in</div>
-                      <div style="text-align: center; font-weight: 900; font-size: 16px">{{getDateDifferenceToNow(props.row.startDate)}}</div>
-                    </q-card-section>
-                    <q-card-section v-if="props.row.status === 'active'" class="absolute-bottom" style="background: rgba(197,197,63,0.95)">
-                        <div style="text-align: center; font-weight: 900; font-size: 16px">RUNNING</div>
-                    </q-card-section>
-                    <q-card-section v-if="props.row.status === 'complete'" class="absolute-bottom" style="background: rgba(64,169,60,0.8)">
-                        <div style="text-align: center; font-weight: 900; font-size: 16px">COMPLETED</div>
-                    </q-card-section>
                 </q-img>
+                <div class="q-img__content absolute-full q-anchor--skip">
+                  <q-card-section class="absolute-top" style="background: rgba(0,0,0,70%)">
+                    <div class="" style="font-size: 20px">{{props.row.title}}</div>
+                    <div class="text-subtitle2 text-grey-5">{{ toLocalDateformat(props.row.startDate) }}</div>
+                    <q-separator v-if="props.row.top10.length !== 0" class="bg-grey-6 q-mb-xs" />
+                    <div v-for="(player, i) in props.row.top10" v-bind:key="player">{{i+1}}. {{player}}</div>
+                  </q-card-section>
+                  <q-card-section v-if="props.row.status === 'idle'" class="absolute-bottom" style="background: rgba(255,0,0,80%)">
+                    <div style="text-align: center; font-weight: 900; font-size: 16px">Starts in</div>
+                    <div style="text-align: center; font-weight: 900; font-size: 16px">{{getDateDifferenceToNow(props.row.startDate)}}</div>
+                  </q-card-section>
+                  <q-card-section v-if="props.row.status === 'active'" class="absolute-bottom" style="background: rgba(197,197,63,0.95)">
+                    <div style="text-align: center; font-weight: 900; font-size: 16px">RUNNING</div>
+                  </q-card-section>
+                  <q-card-section v-if="props.row.status === 'complete'" class="absolute-bottom" style="background: rgba(64,169,60,0.8)">
+                    <div style="text-align: center; font-weight: 900; font-size: 16px">COMPLETED</div>
+                  </q-card-section>
+                </div>
                 </q-card>
 
               </div>
