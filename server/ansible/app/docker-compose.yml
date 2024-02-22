@@ -38,7 +38,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1.1G
+          memory: 1.5G
     networks:
       - local_network
     depends_on:

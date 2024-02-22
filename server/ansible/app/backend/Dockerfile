@@ -3,7 +3,7 @@ RUN mkdir /opt/app
 COPY app.jar /opt/app
 ENV JAVA_TOOL_OPTIONS="\
     -Xms300m \
-    -Xmx600m \
+    -Xmx1G \
     -XX:MaxMetaspaceSize=200m \
     -XX:+UseStringDeduplication \
     -XX:+HeapDumpOnOutOfMemoryError \
