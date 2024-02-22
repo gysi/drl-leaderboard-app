@@ -48,6 +48,7 @@ app:
     leaderboard-endpoint: "https://api.drlgame.com/leaderboards/?limit=20&game-type=Race&score-type=TimeMin&page={page}&token={token}&diameter=7&custom-physics=false&drl-official=true"
     maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&map-category=MapDRL&map-category=MapMultiGP&map-category=MapDRLSimCup&map-category=MapVirtualSeason&map-category=MapFeatured"
     map-detail-endpoint: "https://api.drlgame.com/maps/{guid}?token={token}&guid={guid}&root=true"
+    community-maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&sort=created-at&order=desc&is-race-allowed=true&root=false&limit=200"
     tournament-endpoint: "https://api.drlgame.com/tournaments?token={token}&limit=12&minimum-skill=0"
     tournament-detail-endpoint: "https://api.drlgame.com/tournaments/{guid}?token={token}"
     # To finish within 10 minutes I need at least 1 request every 0.7 seconds = ~1.43 requests/s
