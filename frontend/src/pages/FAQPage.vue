@@ -113,7 +113,7 @@
         </div>
         <span>Points are rounded to a whole number for display purposes. However, the total points in the overall ranking is accurate to 14 digits and is only then rounded.</span>
         <q-img
-          src="~assets/pointssystem.png"
+          src="~assets/pointsystem.png"
           spinner-color="white"
         />
       </FAQCard>
