@@ -30,7 +30,7 @@
                          :to="{ name: 'faq', query: { card: 'pointSystem' } }"
                   >Read more in the FAQ</q-btn>
                   <q-img
-                    src="~assets/pointssystem.png"
+                    src="~assets/pointsystem.png"
                     spinner-color="white"
                   />
                 </li>
