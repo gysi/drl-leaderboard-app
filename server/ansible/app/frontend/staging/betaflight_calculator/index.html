@@ -10,7 +10,8 @@
     <meta property="og:title" content="DRL Betaflight Calculator">
     <meta property="og:type" content="website">
     <meta property="og:description" content="1:1 Replica of the DRL Betaflight Calculation, play with it!">
-    <meta property="og:image" content="https://drl-betaflight-calculator-test.miau.io/drl-betaflight-calculator_small.png">
+    <meta property="og:image"
+          content="https://drl-betaflight-calculator-test.miau.io/drl-betaflight-calculator_small.png">
     <style>
         html, body {
             height: 100%;
@@ -31,15 +32,30 @@
             gap: 20px;
         }
 
+        .top-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
         .slider-set {
             display: flex;
             flex-direction: column;
             padding: 10px;
         }
 
-        .set1 { background-color: lightblue; }
-        .set2 { background-color: lightgreen; }
-        .set3 { background-color: lightcoral; }
+        .set1 {
+            background-color: lightblue;
+        }
+
+        .set2 {
+            background-color: lightgreen;
+        }
+
+        .set3 {
+            background-color: lightcoral;
+        }
 
         .slider-container {
             margin: 10px 0;
@@ -68,6 +84,37 @@
             text-align: left;
         }
 
+        .axis-sliders {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .axis-slider {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .axis-slider-container {
+            position: relative;
+        }
+
+        .axis-slider-container input {
+            width: 100%;
+            margin: 0;
+            pointer-events: none;
+        }
+
+        .slider-value {
+            position: absolute;
+            left: 0%;
+            width: 100%;
+            text-align: center;
+            font-weight: bolder;
+            font-size: 1.1em;
+            top: -0.1em;
+            background: rgba(0, 0, 0, 0)
+        }
+
         #plot-canvas {
             margin: auto;
             flex-grow: 1;
@@ -84,7 +131,37 @@
 </head>
 <body>
 <div class="content-container">
-    <div class="slider-sets-container">
+    <div class="top-row">
+        <div class="slider-sets-container">
+        </div>
+        <div class="axis-sliders">
+            <p style="width: 220px; margin: 5px 0px 5px 0px;">Plugin in your Controller to see your inputs on the
+                graphs!</p>
+            <div class="axis-slider"><label for="axis0">Axis 0:</label>
+                <div class="axis-slider-container"><input type="range" id="axis0" min="0" max="1" step="0.001"
+                                                          disabled="true" value="0"><span class="slider-value"
+                                                                                          id="axis0-value">N/A</span>
+                </div>
+            </div>
+            <div class="axis-slider"><label for="axis1">Axis 1:</label>
+                <div class="axis-slider-container"><input type="range" id="axis1" min="0" max="1" step="0.001"
+                                                          disabled="true" value="0"><span class="slider-value"
+                                                                                          id="axis1-value">N/A</span>
+                </div>
+            </div>
+            <div class="axis-slider"><label for="axis2">Axis 2:</label>
+                <div class="axis-slider-container"><input type="range" id="axis2" min="0" max="1" step="0.001"
+                                                          disabled="true" value="0"><span class="slider-value"
+                                                                                          id="axis2-value">N/A</span>
+                </div>
+            </div>
+            <div class="axis-slider"><label for="axis3">Axis 3:</label>
+                <div class="axis-slider-container"><input type="range" id="axis3" min="0" max="1" step="0.001"
+                                                          disabled="true" value="0"><span class="slider-value"
+                                                                                          id="axis3-value">N/A</span>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="checkbox-container">
         <input type="checkbox" id="toggleAnnotations" checked>
@@ -95,7 +172,7 @@
 
 <script>
     const BetaflightRates = {
-        calculateDegPerSec: function(p_rcCommand, p_superRate, p_rcRate, p_rcExpo) {
+        calculateDegPerSec: function (p_rcCommand, p_superRate, p_rcRate, p_rcExpo) {
             let num = p_rcRate;
             if (num > 2) {
                 num += 14.54 * (num - 2);
@@ -147,9 +224,9 @@
             },
         },
         initialData: [
-            { x: [], y: [], mode: 'lines', name: 'Set 1', line: { color: 'blue', width: 2 } },
-            { x: [], y: [], mode: 'lines', name: 'Set 2', line: { color: 'green', width: 2 } },
-            { x: [], y: [], mode: 'lines', name: 'Set 3', line: { color: 'red', width: 2 } }
+            {x: [], y: [], mode: 'lines', name: 'Set 1', line: {color: 'blue', width: 2}},
+            {x: [], y: [], mode: 'lines', name: 'Set 2', line: {color: 'green', width: 2}},
+            {x: [], y: [], mode: 'lines', name: 'Set 3', line: {color: 'red', width: 2}}
         ]
     };
 
@@ -161,28 +238,33 @@
         "Set 3": true,
     }
 
+    let getRateElements;
+
     document.addEventListener('DOMContentLoaded', () => {
-        window.addEventListener('resize', function() {
+        // ###################################
+        // ###### PLOTLY INITIALIZATION ######
+        // ###################################
+        window.addEventListener('resize', function () {
             Plotly.Plots.resize(document.getElementById('plot-canvas'));
         });
 
-        document.getElementById('toggleAnnotations').addEventListener('change', function() {
+        document.getElementById('toggleAnnotations').addEventListener('change', function () {
             toggleAnnotations(this.checked);
         });
 
         function toggleAnnotations(showAnnotations) {
             annotationsVisible = showAnnotations;
             if (showAnnotations) {
-                Plotly.relayout('plot-canvas', { 'annotations': globalAnnotations });
+                Plotly.relayout('plot-canvas', {'annotations': globalAnnotations});
             } else {
-                Plotly.relayout('plot-canvas', { 'annotations': [] });
+                Plotly.relayout('plot-canvas', {'annotations': []});
             }
         }
 
         const sliderSets = [
-            { color: 'lightblue', values: [0.7, 0.7, 0.7] },
-            { color: 'lightgreen', values: [0.8, 0.8, 0.8] },
-            { color: 'lightcoral', values: [0.9, 0.9, 0.9] },
+            {color: 'lightblue', values: [0.7, 0.7, 0.7]},
+            {color: 'lightgreen', values: [0.8, 0.8, 0.8]},
+            {color: 'lightcoral', values: [0.9, 0.9, 0.9]},
         ];
 
         const sliderTypes = ['RC Rate', 'Super Rate', 'Expo Rate'];
@@ -190,7 +272,7 @@
 
         sliderSets.forEach((set, setIndex) => {
             const setDiv = document.createElement('div');
-            setDiv.className = `slider-set set${setIndex+1}`;
+            setDiv.className = `slider-set set${setIndex + 1}`;
             setDiv.style.backgroundColor = set.color;
 
             sliderTypes.forEach((type, typeIndex) => {
@@ -208,16 +290,109 @@
             }
         }
 
+        getRateElements = (function () {
+            const cache = [];
+            for (let setNumber = 1; setNumber <= 3; setNumber++) {
+                cache[setNumber] = {
+                    'rc-rate': document.getElementById(`rc-rate-${setNumber}`),
+                    'super-rate': document.getElementById(`super-rate-${setNumber}`),
+                    'expo-rate': document.getElementById(`expo-rate-${setNumber}`)
+                };
+            }
+            return function (setNumber) {
+                return cache[setNumber];
+            };
+        })();
+
         container.addEventListener('input', (event) => {
             if (event.target.type === 'range') {
-                const sliderId = event.target.id; // Get full ID
+                const sliderId = event.target.id;
                 const setId = event.target.id.split('-')[2];
                 updateSliderValueLabel(sliderId, event.target.value);
                 throttledUpdatePlot(parseInt(setId, 10));
             }
         });
 
-        initializePlots();
+        let plotlyPromise = initializePlots();
+
+        // ###################################
+        // #### CONTROLLER INITIALIZATION ####
+        // ###################################
+        let axisElems = []
+        let axisValueElems = []
+        for (var i = 0; i < 4; i++) {
+            axisElems.push(document.getElementById("axis" + i));
+            axisValueElems.push(document.getElementById(`axis${i}-value`));
+        }
+
+        plotlyPromise.then(() => {
+            const gamepadController = new GamepadController(
+                () => { // enabled callback
+                    for (let element of axisElems) {
+                        element.disabled = false;
+                    }
+                    for (let element of axisValueElems) {
+                        element.textContent = "0";
+                    }
+
+                },
+                () => { // disabled callback
+                    for (let element of axisElems) {
+                        element.disabled = true;
+                    }
+                    for (let element of axisValueElems) {
+                        element.textContent = "N/A";
+                    }
+                },
+                (inputs) => { // update callback
+                    const absInputAxis0 = Math.abs(inputs.axis0)
+                    axisElems[0].value = absInputAxis0;
+                    axisValueElems[0].textContent = absInputAxis0.toFixed(6);
+                    const absInputAxis1 = Math.abs(inputs.axis1)
+                    axisElems[1].value = absInputAxis1;
+                    axisValueElems[1].textContent = absInputAxis1.toFixed(6);
+                    const absInputAxis2 = Math.abs(inputs.axis2)
+                    axisElems[2].value = absInputAxis2;
+                    axisValueElems[2].textContent = absInputAxis2.toFixed(6);
+                    const absInputAxis3 = Math.abs(inputs.axis3)
+                    axisElems[3].value = absInputAxis3;
+                    axisValueElems[3].textContent = absInputAxis3.toFixed(6);
+                    const maxInputValue = Math.max(absInputAxis0, absInputAxis1, absInputAxis2, absInputAxis3);
+
+                    plotConfig.initialData.forEach((dataSet, index) => {
+                        if (dataSet.name == null || !dataSet.name.startsWith("Set")) {
+                            return;
+                        }
+                        const dataSetIndex = dataSet.name.split(' ')[1];
+                        const markerIndex = parseInt(dataSetIndex) + 2;
+                        const rates = getRateElements(dataSetIndex);
+                        const rcRate = parseFloat(getRateElements(dataSetIndex)['rc-rate'].value);
+                        const superRate = parseFloat(getRateElements(dataSetIndex)['super-rate'].value);
+                        const expo = parseFloat(getRateElements(dataSetIndex)['expo-rate'].value);
+                        const yValue = BetaflightRates.calculateDegPerSec(maxInputValue, superRate, rcRate, expo);
+
+                        if (!dataSet.controllerMarker) {
+                            dataSet.controllerMarker = true;
+                            plotConfig.initialData[markerIndex] = {
+                                x: [maxInputValue],
+                                y: [yValue],
+                                mode: 'markers',
+                                type: 'scatter',
+                                showlegend: false,
+                                hoverinfo: 'skip',
+                                marker: {color: dataSet.line.color, size: 15}
+                            };
+                        } else {
+                            plotConfig.initialData[markerIndex].x = [maxInputValue];
+                            plotConfig.initialData[markerIndex].y = [yValue];
+                        }
+                    });
+                    Plotly.react('plot-canvas', plotConfig.initialData, plotConfig.layout);
+                }
+            );
+        }).catch(error => {
+            console.error("Error initializing Plotly plots:", error);
+        });
     });
 
     function createSliderContainer(type, setIndex, initialValue) {
@@ -225,9 +400,9 @@
         sliderContainer.className = 'slider-container';
 
         const label = document.createElement('label');
-        const sliderId = `${type.toLowerCase().replace(' ', '-')}-${setIndex+1}`;
+        const sliderId = `${type.toLowerCase().replace(' ', '-')}-${setIndex + 1}`;
         label.htmlFor = sliderId;
-        label.textContent = `${type} ${setIndex+1}:`;
+        label.textContent = `${type} ${setIndex + 1}:`;
 
         const input = document.createElement('input');
         input.type = 'range';
@@ -247,9 +422,9 @@
     }
 
     function generatePlotData(setNumber) {
-        const rcRate = parseFloat(document.getElementById(`rc-rate-${setNumber}`).value);
-        const superRate = parseFloat(document.getElementById(`super-rate-${setNumber}`).value);
-        const expo = parseFloat(document.getElementById(`expo-rate-${setNumber}`).value);
+        const rcRate = parseFloat(getRateElements(setNumber)['rc-rate'].value);
+        const superRate = parseFloat(getRateElements(setNumber)['super-rate'].value);
+        const expo = parseFloat(getRateElements(setNumber)['expo-rate'].value);
         const xValues = [];
         const yValues = [];
         const hoverText = [];
@@ -260,7 +435,7 @@
             yValues.push(rate);
             hoverText.push(`${Math.round(rate)} deg/s`);
         }
-        return { x: xValues, y: yValues, text: hoverText, hoverinfo: 'text', name: `Set ${setNumber}` };
+        return {x: xValues, y: yValues, text: hoverText, hoverinfo: 'text', name: `Set ${setNumber}`};
     }
 
     function updatePlot(setNumber) {
@@ -268,48 +443,61 @@
 
         plotConfig.initialData = plotConfig.initialData.map((dataSet, index) => {
             return (index === setNumber - 1) ?
-                { ...dataSet, x: plotData.x, y: plotData.y } :
+                {...dataSet, x: plotData.x, y: plotData.y, text: plotData.text} :
                 dataSet;
         });
 
         const updatedAnnotationsForSet = generateAnnotations([plotData], setNumber);
         globalAnnotations = globalAnnotations.filter(ann => !ann.setName.includes(`Set ${setNumber}`));
         globalAnnotations.push(...updatedAnnotationsForSet);
-        const updatedLayout = {
+        plotConfig.layout = {
             ...plotConfig.layout,
             annotations: annotationsVisible ? globalAnnotations : []
         };
-
-        Plotly.react('plot-canvas', plotConfig.initialData, updatedLayout);
+        Plotly.react('plot-canvas', plotConfig.initialData, plotConfig.layout);
     }
 
     function initializePlots() {
-        plotConfig.initialData = plotConfig.initialData.map((data, index) => {
-            const plotData = generatePlotData(index + 1);
-            return { ...data, x: plotData.x, y: plotData.y, text: plotData.text, hoverinfo: plotData.hoverinfo };
-        });
-        globalAnnotations = generateAnnotations(plotConfig.initialData);
-        const updatedLayout = { ...plotConfig.layout, annotations: globalAnnotations };
-        Plotly.newPlot('plot-canvas', plotConfig.initialData, updatedLayout).then(function() {
-            const plotDiv = document.getElementById('plot-canvas');
-            plotDiv.on('plotly_legendclick', function(eventData) {
-                let annotationState = eventData.node?.__data__?.[0].trace?.visible || false;
-                let setName = eventData.node?.__data__?.[0].trace?.name || undefined;
-                let annotationVisible = true;
-                if(annotationState == true){
-                    annotationVisible = false;
-                } else if (annotationState == 'legendonly') {
-                    annotationVisible = true;
-                }
-                if(setName && annotationState) {
-                    annotationLegendVisibility[setName] = annotationVisible;
-                    const setId = setName.split(' ')[1];
-                    updatePlot(parseInt(setId, 10));
-                }
+        return new Promise((resolve, reject) => {
+            plotConfig.initialData = plotConfig.initialData.map((data, index) => {
+                const plotData = generatePlotData(index + 1);
+                return {...data, ...plotData};
+            });
+            globalAnnotations = generateAnnotations(plotConfig.initialData);
+            plotConfig.layout = {...plotConfig.layout, annotations: globalAnnotations};
 
+            Plotly.newPlot('plot-canvas', plotConfig.initialData, plotConfig.layout).then(() => {
+                const plotDiv = document.getElementById('plot-canvas');
+                plotDiv.on('plotly_legendclick', function (eventData) {
+                    let annotationState = eventData.node?.__data__?.[0].trace?.visible || false;
+                    let setName = eventData.node?.__data__?.[0].trace?.name || undefined;
+                    let annotationVisible = true;
+                    if (annotationState == true) {
+                        annotationVisible = false;
+                    } else if (annotationState == 'legendonly') {
+                        annotationVisible = true;
+                    }
+                    let setId = undefined;
+                    if (setName) {
+                        setId = parseInt(setName.split(' ')[1]);
+                        const marker = plotConfig.initialData[setId + 2];
+                        if (marker) {
+                            marker.visible = annotationVisible;
+                        }
+                    }
+                    if (setName && annotationState) {
+                        annotationLegendVisibility[setName] = annotationVisible;
+                        const setId = setName.split(' ')[1];
+                        updatePlot(setId);
+                    }
+                });
+                resolve();
+            }).catch(error => {
+                reject(error);
             });
         });
     }
+
 
     let annotationStyle = {
         'Set 1': {
@@ -340,7 +528,7 @@
         const offset = 40;
         plotDataArray.forEach((dataset, datasetIndex) => {
             let prevYValue = 0;
-            let dataSetNumber = plotNumber-1 || datasetIndex
+            let dataSetNumber = plotNumber - 1 || datasetIndex
 
             dataset.x.forEach((xVal, index) => {
                 if (Math.abs(xVal * 100 % 10) < 0.1 && xVal != 0) {
@@ -353,7 +541,7 @@
                         yref: 'y',
                         ax: -offset + (offset * dataSetNumber),
                         // ay: -30,
-                        text: `${yValue.toFixed(0)} <br>(+${(yValue-prevYValue).toFixed(0)})`,
+                        text: `${yValue.toFixed(0)} <br>(+${(yValue - prevYValue).toFixed(0)})`,
                         showarrow: true,
                         setName: dataset.name,
                         visible: annotationLegendVisibility[dataset.name],
@@ -373,6 +561,87 @@
             cancelAnimationFrame(animationFrameId);
         }
         animationFrameId = requestAnimationFrame(() => updatePlot(setNumber));
+    }
+
+    class GamepadController {
+        constructor(enabledCallback, disabledCallback, updateCallback) {
+            this.gamepads = [];
+            this.updateCallback = updateCallback;
+            this.enabledCallback = enabledCallback;
+            this.disabledCallback = disabledCallback
+            this.init();
+            this.processGamepadInput = this.throttle(this.processGamepadInput.bind(this), 60);
+        }
+
+        init() {
+            window.addEventListener("gamepadconnected", this.onConnect.bind(this));
+            window.addEventListener("gamepaddisconnected", this.onDisconnect.bind(this));
+            this.startPolling();
+        }
+
+        onConnect(e) {
+            console.log(`Gamepad connected at index ${e.gamepad.index}: ${e.gamepad.id}.`);
+            this.gamepads[e.gamepad.index] = e.gamepad;
+            this.enabledCallback();
+        }
+
+        onDisconnect(e) {
+            console.log(`Gamepad disconnected from index ${e.gamepad.index}: ${e.gamepad.id}`);
+            delete this.gamepads[e.gamepad.index];
+            this.disabledCallback();
+        }
+
+        startPolling() {
+            const loop = () => {
+                this.pollGamepads();
+                requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+        }
+
+        pollGamepads() {
+            const gamepads = navigator.getGamepads();
+            for (let i = 0; i < gamepads.length; i++) {
+                const gamepad = gamepads[i];
+                if (gamepad) {
+                    this.processGamepadInput(gamepad);
+                }
+            }
+        }
+
+        processGamepadInput(gamepad) {
+            if (!gamepad) {
+                return;
+            }
+            const axis0 = gamepad.axes[0];
+            const axis1 = gamepad.axes[1];
+            const axis2 = gamepad.axes[2];
+            const axis3 = gamepad.axes[3];
+            if (this.updateCallback) {
+                this.updateCallback({axis0, axis1, axis2, axis3});
+            }
+        }
+
+        throttle(func, limit) {
+            let lastFunc;
+            let lastRan;
+            return function () {
+                const context = this;
+                const args = arguments;
+                if (!lastRan) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                } else {
+                    clearTimeout(lastFunc);
+                    lastFunc = setTimeout(function () {
+                        if ((Date.now() - lastRan) >= limit) {
+                            func.apply(context, args);
+                            lastRan = Date.now();
+                        }
+                    }, limit - (Date.now() - lastRan));
+                }
+            }
+        }
     }
 </script>
 </body>
