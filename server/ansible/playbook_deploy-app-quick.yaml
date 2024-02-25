@@ -35,6 +35,12 @@
         dest: app/nginx_conf/conf.d/transmitters.conf
         mode: '644'
 
+    - name: "Apply Jinja2 templating to app/nginx_conf/conf.d/template/betaflight_calculator.conf.j2"
+      ansible.builtin.template:
+        src: app/nginx_conf/conf.d/template/betaflight_calculator.conf.j2
+        dest: app/nginx_conf/conf.d/betaflight_calculator.conf
+        mode: '644'
+
     - name: "Apply Jinja2 templating to app/template/init-letsencrypt.sh.j2"
       ansible.builtin.template:
         src: app/template/init-letsencrypt.sh.j2
@@ -55,6 +61,13 @@
         hidden: true
       register: certdir_transmitters
 
+    - name: "Check if certificates directory is empty"
+      ansible.builtin.find:
+        paths: "app/data/certbot/conf/live/{{ server.hostname_betaflight_calculator }}"
+        file_type: any
+        hidden: true
+      register: certdir_betaflight_calculator
+
     - name: "Tear down existing services"
       ansible.builtin.command:
         chdir: /root/app
@@ -64,7 +77,7 @@
 
     - name: "Create certificates"
       ansible.builtin.command: app/init-letsencrypt.sh
-      when: certdir_leaderboard.matched == 0 or certdir_transmitters.matched == 0
+      when: certdir_leaderboard.matched == 0 or certdir_transmitters.matched == 0 or certdir_betaflight_calculator.matched == 0
       changed_when: true
 
     - name: "Create and start services"

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DRL Betaflight Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="1:1 Replica of the DRL Betaflight Calculation, play with it!">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="DRL Betaflight Calculator">
+    <meta property="og:title" content="DRL Betaflight Calculator">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="1:1 Replica of the DRL Betaflight Calculation, play with it!">
+    <meta property="og:image" content="https://drl-betaflight-calculator.miau.io/drl-betaflight-calculator_small.png">
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+        }
+
+        .content-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .slider-sets-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .slider-set {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .set1 { background-color: lightblue; }
+        .set2 { background-color: lightgreen; }
+        .set3 { background-color: lightcoral; }
+
+        .slider-container {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider-container label {
+            white-space: nowrap;
+            flex-shrink: 0;
+            width: 100px;
+            text-align: right;
+        }
+
+        .slider-container input[type="range"] {
+            flex-grow: 1;
+            margin: 0 10px;
+            width: auto;
+            min-width: 240px;
+        }
+
+        .slider-container span {
+            flex-shrink: 0;
+            min-width: 50px;
+            text-align: left;
+        }
+
+        #plot-canvas {
+            margin: auto;
+            flex-grow: 1;
+            width: calc(100vw - 10%);
+        }
+
+        .checkbox-container {
+            display: flex;
+            justify-content: center;
+        }
+
+    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<div class="content-container">
+    <div class="slider-sets-container">
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="toggleAnnotations" checked>
+        <label for="toggleAnnotations">Show Annotations</label>
+    </div>
+    <div id="plot-canvas"></div>
+</div>
+
+<script>
+    const BetaflightRates = {
+        calculateDegPerSec: function(p_rcCommand, p_superRate, p_rcRate, p_rcExpo) {
+            let num = p_rcRate;
+            if (num > 2) {
+                num += 14.54 * (num - 2);
+            }
+            let num2 = p_rcCommand;
+            let num3 = Math.abs(num2);
+            if (p_rcExpo > 0) {
+                num2 = num2 * Math.pow(num3, 3) * p_rcExpo + num2 * (1 - p_rcExpo);
+            }
+
+            let num4 = 200 * num * num2;
+            if (p_superRate > 0) {
+                let num5 = 1 / Math.max(0.01, Math.min(1, 1 - num3 * p_superRate));
+                num4 *= num5;
+            }
+            return Math.max(-1998, Math.min(1998, num4));
+        }
+    };
+
+    const plotConfig = {
+        layout: {
+            showline: true,
+            title: 'Betaflight Rate Plot',
+            xaxis: {
+                title: 'RC Input',
+                dtick: 0.1,
+                tickvals: [...Array(21).keys()].map(i => (i / 10) - 1),
+                ticktext: [...Array(21).keys()].map(i => ((i / 10) - 1).toFixed(1)),
+                showgrid: true,
+                gridcolor: '#ccc',
+                zeroline: false,
+                range: [0, 1]
+            },
+            yaxis: {
+                title: 'Deg/s',
+                side: 'left',
+                dtick: 50,
+                ticklabelposition: 'inside',
+                range: [null, 2000],
+                autorange: 'true',
+                autorangeoptions: {
+                    maxallowed: 2000,
+                    minallowed: 0,
+                },
+                rangemode: 'nonnegative',
+                minor: {
+                    nticks: 5
+                }
+            },
+        },
+        initialData: [
+            { x: [], y: [], mode: 'lines', name: 'Set 1', line: { color: 'blue', width: 2 } },
+            { x: [], y: [], mode: 'lines', name: 'Set 2', line: { color: 'green', width: 2 } },
+            { x: [], y: [], mode: 'lines', name: 'Set 3', line: { color: 'red', width: 2 } }
+        ]
+    };
+
+    let globalAnnotations = [];
+    let annotationsVisible = true;
+    let annotationLegendVisibility = {
+        "Set 1": true,
+        "Set 2": true,
+        "Set 3": true,
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('resize', function() {
+            Plotly.Plots.resize(document.getElementById('plot-canvas'));
+        });
+
+        document.getElementById('toggleAnnotations').addEventListener('change', function() {
+            toggleAnnotations(this.checked);
+        });
+
+        function toggleAnnotations(showAnnotations) {
+            annotationsVisible = showAnnotations;
+            if (showAnnotations) {
+                Plotly.relayout('plot-canvas', { 'annotations': globalAnnotations });
+            } else {
+                Plotly.relayout('plot-canvas', { 'annotations': [] });
+            }
+        }
+
+        const sliderSets = [
+            { color: 'lightblue', values: [0.7, 0.7, 0.7] },
+            { color: 'lightgreen', values: [0.8, 0.8, 0.8] },
+            { color: 'lightcoral', values: [0.9, 0.9, 0.9] },
+        ];
+
+        const sliderTypes = ['RC Rate', 'Super Rate', 'Expo Rate'];
+        const container = document.querySelector('.slider-sets-container');
+
+        sliderSets.forEach((set, setIndex) => {
+            const setDiv = document.createElement('div');
+            setDiv.className = `slider-set set${setIndex+1}`;
+            setDiv.style.backgroundColor = set.color;
+
+            sliderTypes.forEach((type, typeIndex) => {
+                const sliderContainer = createSliderContainer(type, setIndex, set.values[typeIndex]);
+                setDiv.appendChild(sliderContainer);
+            });
+
+            container.appendChild(setDiv);
+        });
+
+        function updateSliderValueLabel(sliderId, value) {
+            const valueLabel = document.getElementById(`${sliderId}-value`);
+            if (valueLabel) {
+                valueLabel.textContent = parseFloat(value).toFixed(2);
+            }
+        }
+
+        container.addEventListener('input', (event) => {
+            if (event.target.type === 'range') {
+                const sliderId = event.target.id; // Get full ID
+                const setId = event.target.id.split('-')[2];
+                updateSliderValueLabel(sliderId, event.target.value);
+                throttledUpdatePlot(parseInt(setId, 10));
+            }
+        });
+
+        initializePlots();
+    });
+
+    function createSliderContainer(type, setIndex, initialValue) {
+        const sliderContainer = document.createElement('div');
+        sliderContainer.className = 'slider-container';
+
+        const label = document.createElement('label');
+        const sliderId = `${type.toLowerCase().replace(' ', '-')}-${setIndex+1}`;
+        label.htmlFor = sliderId;
+        label.textContent = `${type} ${setIndex+1}:`;
+
+        const input = document.createElement('input');
+        input.type = 'range';
+        input.id = sliderId;
+        input.min = '0';
+        input.max = type === 'RC Rate' ? '2.5' : '1';
+        input.step = '0.01';
+        input.value = initialValue;
+
+        const span = document.createElement('span');
+        span.id = `${sliderId}-value`;
+        span.textContent = parseFloat(initialValue).toFixed(2);
+
+        [label, input, span].forEach(element => sliderContainer.appendChild(element));
+
+        return sliderContainer;
+    }
+
+    function generatePlotData(setNumber) {
+        const rcRate = parseFloat(document.getElementById(`rc-rate-${setNumber}`).value);
+        const superRate = parseFloat(document.getElementById(`super-rate-${setNumber}`).value);
+        const expo = parseFloat(document.getElementById(`expo-rate-${setNumber}`).value);
+        const xValues = [];
+        const yValues = [];
+        const hoverText = [];
+        for (let i = 0; i <= 100; i += 2) {
+            const scaledI = i / 100; // Scale i back to the desired range (-1 to 1)
+            const rate = BetaflightRates.calculateDegPerSec(scaledI, superRate, rcRate, expo);
+            xValues.push(scaledI);
+            yValues.push(rate);
+            hoverText.push(`${Math.round(rate)} deg/s`);
+        }
+        return { x: xValues, y: yValues, text: hoverText, hoverinfo: 'text', name: `Set ${setNumber}` };
+    }
+
+    function updatePlot(setNumber) {
+        const plotData = generatePlotData(setNumber);
+
+        plotConfig.initialData = plotConfig.initialData.map((dataSet, index) => {
+            return (index === setNumber - 1) ?
+                { ...dataSet, x: plotData.x, y: plotData.y } :
+                dataSet;
+        });
+
+        const updatedAnnotationsForSet = generateAnnotations([plotData], setNumber);
+        globalAnnotations = globalAnnotations.filter(ann => !ann.setName.includes(`Set ${setNumber}`));
+        globalAnnotations.push(...updatedAnnotationsForSet);
+        const updatedLayout = {
+            ...plotConfig.layout,
+            annotations: annotationsVisible ? globalAnnotations : []
+        };
+
+        Plotly.react('plot-canvas', plotConfig.initialData, updatedLayout);
+    }
+
+    function initializePlots() {
+        plotConfig.initialData = plotConfig.initialData.map((data, index) => {
+            const plotData = generatePlotData(index + 1);
+            return { ...data, x: plotData.x, y: plotData.y, text: plotData.text, hoverinfo: plotData.hoverinfo };
+        });
+        globalAnnotations = generateAnnotations(plotConfig.initialData);
+        const updatedLayout = { ...plotConfig.layout, annotations: globalAnnotations };
+        Plotly.newPlot('plot-canvas', plotConfig.initialData, updatedLayout).then(function() {
+            const plotDiv = document.getElementById('plot-canvas');
+            plotDiv.on('plotly_legendclick', function(eventData) {
+                let annotationState = eventData.node?.__data__?.[0].trace?.visible || false;
+                let setName = eventData.node?.__data__?.[0].trace?.name || undefined;
+                let annotationVisible = true;
+                if(annotationState == true){
+                    annotationVisible = false;
+                } else if (annotationState == 'legendonly') {
+                    annotationVisible = true;
+                }
+                if(setName && annotationState) {
+                    annotationLegendVisibility[setName] = annotationVisible;
+                    const setId = setName.split(' ')[1];
+                    updatePlot(parseInt(setId, 10));
+                }
+
+            });
+        });
+    }
+
+    let annotationStyle = {
+        'Set 1': {
+            font: {
+                size: 11,
+                color: 'black'
+            },
+            bgcolor: 'rgba(100,100,255,1)',
+        },
+        'Set 2': {
+            font: {
+                size: 11,
+                color: 'black'
+            },
+            bgcolor: 'rgba(100,255,100,1)',
+        },
+        'Set 3': {
+            font: {
+                size: 11,
+                color: 'black'
+            },
+            bgcolor: 'rgba(255,100,100,1)',
+        }
+    }
+
+    function generateAnnotations(plotDataArray, plotNumber = undefined) {
+        const annotations = [];
+        const offset = 40;
+        plotDataArray.forEach((dataset, datasetIndex) => {
+            let prevYValue = 0;
+            let dataSetNumber = plotNumber-1 || datasetIndex
+
+            dataset.x.forEach((xVal, index) => {
+                if (Math.abs(xVal * 100 % 10) < 0.1 && xVal != 0) {
+                    const yValue = dataset.y[index];
+                    annotations.push({
+                        x: xVal,
+                        y: yValue,
+                        // y: 100 + (offset * dataSetNumber),
+                        xref: 'x',
+                        yref: 'y',
+                        ax: -offset + (offset * dataSetNumber),
+                        // ay: -30,
+                        text: `${yValue.toFixed(0)} <br>(+${(yValue-prevYValue).toFixed(0)})`,
+                        showarrow: true,
+                        setName: dataset.name,
+                        visible: annotationLegendVisibility[dataset.name],
+                        ...annotationStyle[dataset.name]
+                    });
+                    prevYValue = yValue.toFixed(2);
+                }
+            });
+        });
+        return annotations;
+    }
+
+    let animationFrameId = null;
+
+    function throttledUpdatePlot(setNumber) {
+        if (animationFrameId !== null) {
+            cancelAnimationFrame(animationFrameId);
+        }
+        animationFrameId = requestAnimationFrame(() => updatePlot(setNumber));
+    }
+</script>
+</body>
+</html>
