@@ -2,5 +2,6 @@ env: 'test'
 server:
   hostname: "drl-leaderboards-test.miau.io"
   hostname_transmitters: "transmitters-test.miau.io"
+  hostname_betaflight_calculator: "drl-betaflight-calculator-test.miau.io"
   certificate:
     mail: "drl-leaderboards-test.miau.io@i337.de"

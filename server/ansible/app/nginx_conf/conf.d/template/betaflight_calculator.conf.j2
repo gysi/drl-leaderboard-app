@@ -1,0 +1,33 @@
+server {
+    listen 80;
+    server_name {{ server.hostname_betaflight_calculator }};
+
+    access_log  /var/log/nginx/http-{{ server.hostname_betaflight_calculator }}.access.log main;
+    error_log  /var/log/nginx/http-{{ server.hostname_betaflight_calculator }}.error.log warn;
+
+    location / {
+        return 302 https://$host$request_uri;
+    }
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name {{ server.hostname_betaflight_calculator }};
+    ssl_certificate /etc/letsencrypt/live/{{ server.hostname_betaflight_calculator }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ server.hostname_betaflight_calculator }}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    access_log  /var/log/nginx/https-{{ server.hostname_betaflight_calculator }}.access.log main;
+    error_log  /var/log/nginx/https-{{ server.hostname_betaflight_calculator }}.error.log warn;
+
+    root /www/{{ 'prod' if env == 'prod' else 'staging' }}/betaflight_calculator;
+
+    location / {
+        charset utf-8;
+    }
+}

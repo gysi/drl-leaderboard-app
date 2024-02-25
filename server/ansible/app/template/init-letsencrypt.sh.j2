@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 #  exit 1
 #fi
 # when specifing multiple domains just add a space between them
-domains=({{ server.hostname }} {{ server.hostname_transmitters }})
+domains=({{ server.hostname }} {{ server.hostname_transmitters }} {{ server.hostname_betaflight_calculator }})
 rsa_key_size=4096
 data_path="./data/certbot"
 email="{{ server.certificate.mail }}" # Adding a valid address is strongly recommended

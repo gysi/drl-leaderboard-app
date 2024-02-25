@@ -141,6 +141,13 @@ const linksList = [
     // badge: 'PREVIEW'
   },
   {
+    title: 'DRL Betaflight Calculator',
+    caption: '1:1 Replica, play with it!',
+    icon: 'calculate',
+    link: process.env.DLAPP_BETAFLIGHT_CALCULATOR,
+    external: true
+  },
+  {
     title: 'FAQ',
     caption: 'Frequently asked questions',
     icon: 'help',
