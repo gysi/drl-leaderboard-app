@@ -59,7 +59,7 @@ app:
     leaderboards:
       cron: "0 */2 * * * *" # every 2 Minutes (But waits for the previous run to finish)
     tracks:
-      cron: "0 0 0 * * *" # every day at 0:00
+      cron: "0 0 * * * *" # every hour at 0 minutes
     tournaments:
       cron: "0 */2 * * * *" # every 2 Minutes (But waits for the previous run to finish)
 
