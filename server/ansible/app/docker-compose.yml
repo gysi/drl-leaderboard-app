@@ -1,14 +1,4 @@
 services:
-#  web:
-#    build: ./flask_test
-#    ports:
-#      - "8080:5000"
-#    networks:
-#      - local_network
-#  redis:
-#    image: "redis:alpine"
-#    networks:
-#      - local_network
   postgres:
     image: postgres:15
     ports:

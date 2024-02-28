@@ -120,3 +120,7 @@ Webapp for displaying DRL Simulator leaderboards.
         * ...
       * [ ] "Track Card"
 
+## Misc
+Count lines of code:
+
+cloc --fullpath --not-match-d="(node_modules|dist|.gradle|.idea|.yarn|.vscode|.quasar|native-image|.mvn|target)" --not-match-f="(yarn\.lock|package\-lock\.json|\.svg|\.pnp\.cjs|\.pnp\.loader\.mjs)" .
