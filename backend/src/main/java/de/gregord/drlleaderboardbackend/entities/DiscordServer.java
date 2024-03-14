@@ -18,7 +18,7 @@ public class DiscordServer {
 
     @Id
     @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, strategy = TsidGenerator.STRATEGY_NAME)
+    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
     @EqualsAndHashCode.Include
     private Long id;
 

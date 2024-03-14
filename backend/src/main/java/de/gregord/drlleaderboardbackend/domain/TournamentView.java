@@ -1,14 +1,16 @@
 package de.gregord.drlleaderboardbackend.domain;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface TournamentView {
     String getGuid();
     String getTitle();
     String getTrackName();
     String getImgUrl();
-    List<String> getTop10();
+    @JsonRawValue
+    String getTop10();
     LocalDateTime getStartDate();
     String getStatus();
 }
