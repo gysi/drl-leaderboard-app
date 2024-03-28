@@ -310,6 +310,17 @@ public class DRLApiService {
                     );
                 }
 
+                if (track.getDrlTrackId() != null && !track.getDrlTrackId().equals(drlLeaderboardEntry.get("track"))) {
+                    LOG.warn("Player " + playerForEntry.getPlayerName() + " has a replay that doesn't match the track, DRL BUG (Or " +
+                            "intended)!");
+                    leaderboardEntry.setIsInvalidRun(true);
+                    leaderboardEntry.setInvalidRunReason(
+                            (leaderboardEntry.getInvalidRunReason() == null) ?
+                                    InvalidRunReasons.WRONG_REPLAY.toString() :
+                                    leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.WRONG_REPLAY
+                    );
+                }
+
                 leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPositionV3(leaderboardPosition));
                 leaderboardEntry.setPosition(leaderboardPosition);
 
@@ -324,17 +335,6 @@ public class DRLApiService {
                             currentLeaderboardEntries,
                             leaderScore,
                             isExistingEntryInvalid
-                    );
-                }
-
-                if (track.getDrlTrackId() != null && !track.getDrlTrackId().equals(drlLeaderboardEntry.get("track"))) {
-                    LOG.warn("Player " + playerForEntry.getPlayerName() + " has a replay that doesn't match the track, DRL BUG (Or " +
-                            "intended)!");
-                    leaderboardEntry.setIsInvalidRun(true);
-                    leaderboardEntry.setInvalidRunReason(
-                            (leaderboardEntry.getInvalidRunReason() == null) ?
-                                    InvalidRunReasons.WRONG_REPLAY.toString() :
-                                    leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.WRONG_REPLAY
                     );
                 }
 
