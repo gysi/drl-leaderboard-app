@@ -64,9 +64,9 @@
                 </q-item-label>
               </q-item-section>
             </q-item>
-            <q-list v-if="twitchStreams.length" style="max-height: 300px; overflow: auto">
+            <q-list v-if="twitchStreams.length" class="q-pa-sm" style="max-height: 300px; overflow: auto">
               <q-item clickable :href="`https://twitch.tv/${stream.userLogin}`" target="_blank" v-for="(stream, index) in twitchStreams" :key="index"
-                      class="q-mt-none q-px-sm q-pb-sm q-pt-none">
+                      class="q-mt-none q-pa-none q-mb-sm">
                 <q-item-section style="max-width: 90px">
                   <q-avatar size="3rem" class="self-center" style="box-shadow: 4px 4px 8px rgba(0, 0, 0, 1);">
                     <img :src="stream.userThumbnail" loading="eager" />
