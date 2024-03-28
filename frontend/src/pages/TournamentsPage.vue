@@ -4,28 +4,28 @@
             style="height: 100%; max-height: 100%; display: grid; grid-template-rows: auto auto auto auto 1fr;"
     >
       <!--      Header-->
-      <div class="header-toolbar row items-center q-pr-sm">
+      <div class="tournament-header-top header-toolbar row items-center q-pr-sm">
         <div class="doc-card-title q-my-xs q-mr-sm ">{{ seasonTitle }}</div>
         <div id="streamcard-info">
           <q-icon name="event"></q-icon>
-          {{ seasonStartDate }} - {{ seasonEndDate }}
+          {{ seasonStartDate }} - {{ seasonEndDate }} UTC
         </div>
       </div>
-      <div class="row q-ma-xs">
-      <div v-for="tournament in seasonStatus.tournaments"
-            :key="tournament.startTime"
-           :class="tournament.status === 'CANCELLED' ? 'bg-red' : tournament.status === 'COMPLETED' ? 'bg-green' : 'bg-yellow'"
-           style="width: 12px; height: 12px; margin: 1px"
-      >
-        <q-tooltip>
-          <div>{{ tournament.status }}</div>
-          <div>{{ toLocalDateformat(tournament.startTime) }}</div>
-        </q-tooltip>
-      </div>
+      <div class="tournament-header-middle row q-pa-xs">
+        <div v-for="tournament in seasonStatus.tournaments"
+              :key="tournament.startTime"
+             :class="tournament.status === 'CANCELLED' ? 'bg-red' : tournament.status === 'COMPLETED' ? 'bg-green' : 'bg-yellow'"
+             style="width: 12px; height: 12px; margin: 1px"
+        >
+          <q-tooltip>
+            <div>{{ tournament.status }}</div>
+            <div>{{ toLocalDateformat(tournament.startTime) }}</div>
+          </q-tooltip>
+        </div>
       </div>
 
       <!--      Tabs-->
-      <q-tabs class="header-tabs" v-model="currentTab" active-color="brand-primary" indicator-color="brand-primary" align="left" :breakpoint="0">
+      <q-tabs class="tournament-header-bottom header-tabs" v-model="currentTab" active-color="brand-primary" indicator-color="brand-primary" align="left" :breakpoint="0">
         <q-tab v-for="tab in tabsList" :key="`api-tab-${tab}`" :name="tab" class="header-btn">
           <div class="row no-wrap items-center">
             <span class="q-mr-xs text-capitalize">{{ tab }}</span>
@@ -175,8 +175,8 @@
 <script setup>
 import axios from 'axios';
 import {computed, ref, shallowRef, watch} from "vue";
-import {format, parseISO, formatDuration, intervalToDuration} from 'date-fns'
-import {utcToZonedTime} from "date-fns-tz";
+import { format, parseISO, formatDuration, intervalToDuration } from 'date-fns'
+import { utcToZonedTime } from "date-fns-tz";
 import { backGroundColorByPosition } from 'src/modules/LeaderboardFunctions'
 import placeholder from 'src/assets/placeholder.png'
 
@@ -381,12 +381,9 @@ tbody .q-item
   /* Adjust the max-width to control when the items should wrap */
   max-width: calc(10 * (17.8px + 4px)) /* This will make the container take full width of its parent, adjust as needed */
 
-
 .all-position-badge
   flex-basis: calc(10% - 10px)
   margin: 2px
-
-
 
 #streamcard-info
   font-size: 18px
@@ -395,33 +392,6 @@ tbody .q-item
     margin: 0 0 2px
 
 ///// DOC CARD /////
-.doc-card-title
-  margin-left: -12px
-  padding: 4px 8px 4px 28px
-  position: relative
-  border-radius: 3px 5px 5px 0
-  background: #D8E1E5
-  color: #757575
-  font-size: 20px
-  letter-spacing: .7px
-
-  &:after
-    content: ''
-    position: absolute
-    top: 100%
-    left: 0
-    width: 0
-    height: 0
-    border: 0 solid transparent
-    border-width: 9px 0 0 11px
-    border-top-color: scale-color(#D8E1E5, $lightness: -15%)
-
-body.body--dark .doc-card-title
-  background: #475D66
-  color: #cbcbcb
-  &:after
-    border-top-color: scale-color(#475D66, $lightness: -30%)
-
 .doc-api
   &__subtabs .q-tabs__content
     padding: 8px 0

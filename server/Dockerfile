@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine as backend-builder
+FROM eclipse-temurin:21-jdk-alpine as backend-builder
 WORKDIR /app
 COPY backend/.mvn .mvn
 COPY backend/mvnw backend/pom.xml ./
@@ -30,22 +30,24 @@ COPY frontend/.yarnrc.yml frontend/package.json frontend/yarn.lock ./
 RUN yarn install
 COPY frontend/public public/
 COPY frontend/src src/
-COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
+COPY frontend/env/ env/
+COPY frontend/.eslintignore frontend/.eslintrc.cjs frontend/.npmrc \
     frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/index.html frontend/jsconfig.json \
-    frontend/postcss.config.js frontend/quasar.config.js frontend/purgecss.config.js ./
+    frontend/postcss.config.cjs frontend/quasar.config.js frontend/purgecss.config.cjs ./
 
 
 FROM frontend-builder as frontend-builder-staging
 WORKDIR /app
 # TODO deactivate purge for now, because it removes too much
-#RUN DLAPP_ENV=STAGING yarn quasar build && yarn purgecss --config ./purgecss.config.js
-RUN DLAPP_ENV=STAGING yarn quasar build
+#RUN yarn quasar build && yarn purgecss --config ./purgecss.config.cjs
+RUN rm env/.env.prod && mv env/.env.staging env/.env.prod
+RUN yarn quasar build
 
 FROM frontend-builder as frontend-builder-prod
 WORKDIR /app
 # TODO deactivate purge for now, because it removes too much
-#RUN DLAPP_ENV=PROD yarn quasar build && yarn purgecss --config ./purgecss.config.js
-RUN DLAPP_ENV=PROD yarn quasar build
+#RUN yarn quasar build && yarn purgecss --config ./purgecss.config.cjs
+RUN yarn quasar build
 
 FROM python:3.11-bullseye as runner
 WORKDIR /

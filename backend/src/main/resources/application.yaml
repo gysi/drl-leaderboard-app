@@ -1,4 +1,7 @@
 spring:
+  threads:
+    virtual:
+      enabled: true
   jackson:
     time-zone: UTC
 #    serialization:
@@ -8,29 +11,29 @@ spring:
     url: jdbc:postgresql://postgres:5432/drl?reWriteBatchedInserts=true
     username: admin
     password: admin
-  jpa:
-    hibernate:
-      ddl-auto: none # update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: false
-    properties:
+    jpa:
       hibernate:
-        format_sql: true
-        jdbc:
-          batch_size: 100
-        order_updates: true
-        order_inserts: true
-        type:
-          json_format_mapper: de.gregord.drlleaderboardbackend.config.CustomHibernateJsonFormatter
-    generate-ddl: false # true
-    database: postgresql
-  flyway:
-    validateMigrationNaming: true
-    locations: classpath:db/migration
-  task:
-    scheduling:
-      pool:
-        size: 3
+        ddl-auto: none # update
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      show-sql: false
+      properties:
+        hibernate:
+          format_sql: true
+          jdbc:
+            batch_size: 100
+          order_updates: true
+          order_inserts: true
+          type:
+            json_format_mapper: de.gregord.drlleaderboardbackend.config.CustomHibernateJsonFormatter
+      generate-ddl: false # true
+      database: postgresql
+    flyway:
+      validateMigrationNaming: true
+      locations: classpath:db/migration
+    task:
+      scheduling:
+        pool:
+          size: 3
 
 management:
   endpoints:
@@ -44,24 +47,25 @@ app:
   description: DRLLeaderboardBackend
   frontend-url: https://drl-leaderboards.miau.io
   drl-api:
-    token: "[PASTE YOUR TOKEN HERE]"
-    leaderboard-endpoint: "https://api.drlgame.com/leaderboards/?limit=20&game-type=Race&score-type=TimeMin&page={page}&token={token}&diameter=7&custom-physics=false&drl-official=true"
-    maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&map-category=MapDRL&map-category=MapMultiGP&map-category=MapDRLSimCup&map-category=MapVirtualSeason&map-category=MapFeatured"
+    leaderboard-endpoint: "https://api.drlgame.com/leaderboards/?limit={limit}&game-type=Race&score-type=TimeMin&page={page}&token={token}&diameter=7&custom-physics=false&drl-official=true"
+    maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&map-category=MapDRL&map-category=MapMultiGP&map-category=MapDRLSimCup&map-category=MapVirtualSeason&map-category=MapFeatured&limit=25"
     map-detail-endpoint: "https://api.drlgame.com/maps/{guid}?token={token}&guid={guid}&root=true"
-    community-maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&sort=created-at&order=desc&is-race-allowed=true&root=false&limit=200"
+    # In theory the limit is 200 for the map endpoint, but currently some track data is buggy
+    # and then the drl api will throw an error, so we are crawling in smaller batches
+    community-maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&sort=updated-at&order=desc&is-race-allowed=true&root=false&map-category=MapCommon&is-public=true&limit=25"
     tournament-endpoint: "https://api.drlgame.com/tournaments?token={token}&limit=12&minimum-skill=0"
     tournament-detail-endpoint: "https://api.drlgame.com/tournaments/{guid}?token={token}"
-    # To finish within 10 minutes I need at least 1 request every 0.7 seconds = ~1.43 requests/s
-#    duration-between-requests: 666ms # ~1.5 requests/s # Took 17 Minutes, because prod server is slower than my local machine
-    duration-between-requests: 150ms # ~3 requests/s, which isn't really 3 requests/s, because the requests are not parallel and we need to process the data
+    duration-between-requests: 200ms
 
   data-updater:
     leaderboards:
-      cron: "0 */2 * * * *" # every 2 Minutes (But waits for the previous run to finish)
+      enabled: true
     tracks:
-      cron: "0 0 * * * *" # every hour at 0 minutes
+      cron: "0 0 */3 * * *" # every 3 hours
     tournaments:
-      cron: "0 */2 * * * *" # every 2 Minutes (But waits for the previous run to finish)
+      cron: "0 */1 * * * *" # every Minute (But waits for the previous run to finish)
+    season:
+      cron: "0 0 0 * * *"
 
 server:
   error:
@@ -72,9 +76,6 @@ server:
   forward-headers-strategy: framework
   servlet:
     context-path: /api
-
-springdoc:
-  enable-native-support: true
 
 logging:
   logback:

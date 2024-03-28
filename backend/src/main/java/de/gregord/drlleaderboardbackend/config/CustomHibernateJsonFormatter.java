@@ -3,10 +3,11 @@ package de.gregord.drlleaderboardbackend.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.hibernate.type.FormatMapper;
+import org.hibernate.type.format.FormatMapper;
 import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.type.descriptor.java.JavaType;
-import org.hibernate.type.jackson.JacksonJsonFormatMapper;
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper;
+
 
 /**
  * The default Hibernate json_formatter does not support Java 8 time types.

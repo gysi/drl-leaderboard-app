@@ -49,6 +49,9 @@ public class DiscordMessageService {
     }
 
     public void sendMessageToLeaderboardPostsChannels(List<PlayerImprovement> playerImprovements) {
+        if (playerImprovements == null || playerImprovements.isEmpty()) {
+            return;
+        }
         Optional<LocalDateTime> latestCreatedAtOpt = playerImprovements.stream()
                 .filter(imp -> !imp.getForcePost())
                 .map(PlayerImprovement::getCreatedAt)
@@ -75,7 +78,8 @@ public class DiscordMessageService {
                         // Logging improvements not posted to the channel
                         playerImprovements.stream()
                                 .filter(imp -> !imp.getForcePost() && !channel.getLastPostAt().isBefore(imp.getCreatedAt()))
-                                .forEach(imp -> LOG.info("Improvement not posted \n {} \n in channel: {} ({}) ", imp, channel.getChannelName(), channel.getChannelId()));
+                                .forEach(imp -> LOG.info("Improvement not posted \n {} \n in channel: {} ({}) ", imp,
+                                        channel.getChannelName(), channel.getChannelId()));
                         return Mono.empty();
                     }
                 })
@@ -198,7 +202,7 @@ public class DiscordMessageService {
                 .addField(EmbedCreateFields.Field.of("Go start the SIM and get warmed up!", "", false))
                 .footer("HAVE FUN!", null)
                 .color(Color.of(67, 214, 214));
-        if(tournament.getImageUrl() != null){
+        if (tournament.getImageUrl() != null) {
             builder.thumbnail(tournament.getImageUrl());
         }
         return List.of(builder.build());
@@ -220,7 +224,7 @@ public class DiscordMessageService {
                 .addField(EmbedCreateFields.Field.of("You have 20min to qualify!", "", false))
                 .footer("HAVE FUN!", null)
                 .color(Color.of(0, 255, 0));
-        if(tournament.getImageUrl() != null){
+        if (tournament.getImageUrl() != null) {
             builder.thumbnail(tournament.getImageUrl());
         }
         return List.of(builder.build());
@@ -231,6 +235,7 @@ public class DiscordMessageService {
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMapIterable(Function.identity())
                 .flatMap(channel -> {
+                    updateLastPostAt(channel, LocalDateTime.now());
                     return sendMessageWithEmbedsToChannel(
                             discordInitializationService.getTournamentGateway(),
                             channel.getChannelId(),
@@ -272,7 +277,7 @@ public class DiscordMessageService {
                 .addField(EmbedCreateFields.Field.of("GGs to everyone!", "", false))
                 .footer("Seeya at the next one..", null)
                 .color(Color.of(255, 255, 0));
-        if(tournament.getImageUrl() != null){
+        if (tournament.getImageUrl() != null) {
             builder.thumbnail(tournament.getImageUrl());
         }
         return List.of(builder.build());

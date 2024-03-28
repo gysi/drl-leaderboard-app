@@ -1,9 +1,10 @@
 package de.gregord.drlleaderboardbackend.entities;
 
-import jakarta.persistence.*;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
@@ -32,7 +33,7 @@ import java.util.List;
 public class LeaderboardEntry {
     @Id
     @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, strategy = TsidGenerator.STRATEGY_NAME)
+    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
     @EqualsAndHashCode.Include
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,4 +65,45 @@ public class LeaderboardEntry {
             inverseJoinColumns = {@JoinColumn(name = "beaten_by_leaderboard_id", referencedColumnName = "id")})
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<LeaderboardEntryMinimal> beatenBy = new ArrayList<>();
+
+    public static boolean equalsForUpdate(LeaderboardEntry thiz, LeaderboardEntry that) {
+        if (thiz == that) return true;
+
+        if (thiz == null || that == null) return false;
+
+        return new EqualsBuilder()
+                .append(thiz.id, that.id)
+                .append(thiz.drlId, that.drlId)
+                .append(thiz.playerIdDrl, that.playerIdDrl)
+                .append(thiz.score, that.score)
+                .append(thiz.crashCount, that.crashCount)
+                .append(thiz.topSpeed, that.topSpeed)
+                .append(thiz.position, that.position)
+                .append(thiz.points, that.points)
+                .append(thiz.createdAt, that.createdAt)
+                .append(thiz.droneName, that.droneName)
+                .append(thiz.replayUrl, that.replayUrl)
+                .append(thiz.isInvalidRun, that.isInvalidRun)
+                .append(thiz.invalidRunReason, that.invalidRunReason)
+                .append(thiz.updatedAt, that.updatedAt).isEquals();
+    }
+
+    public static LeaderboardEntry simpleCopy(LeaderboardEntry toCopy) {
+        LeaderboardEntry leaderboardEntry = new LeaderboardEntry();
+        leaderboardEntry.id = toCopy.id;
+        leaderboardEntry.drlId = toCopy.drlId;
+        leaderboardEntry.playerIdDrl = toCopy.playerIdDrl;
+        leaderboardEntry.score = toCopy.score;
+        leaderboardEntry.crashCount = toCopy.crashCount;
+        leaderboardEntry.topSpeed = toCopy.topSpeed;
+        leaderboardEntry.position = toCopy.position;
+        leaderboardEntry.points = toCopy.points;
+        leaderboardEntry.createdAt = toCopy.createdAt;
+        leaderboardEntry.droneName = toCopy.droneName;
+        leaderboardEntry.replayUrl = toCopy.replayUrl;
+        leaderboardEntry.isInvalidRun = toCopy.isInvalidRun;
+        leaderboardEntry.invalidRunReason = toCopy.invalidRunReason;
+        leaderboardEntry.updatedAt = toCopy.updatedAt;
+        return leaderboardEntry;
+    }
 }

@@ -28,24 +28,19 @@ public class TournamentController {
 
     @GetMapping("/season-status")
     public TournamentSeason seasonStatus() {
-        return tournamentService.getSeasonStatus(SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue().getSeasonId());
+        return tournamentService.getSeasonStatus(SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue().getSeasonIdName());
     }
 
     @GetMapping("/rankings-for-season")
-    public TournamentRankings rankingsForSeason(String seasonId) {
-        return tournamentService.getTournamentRankingForSeason(seasonId);
+    public TournamentRankings rankingsForSeason(String seasonIdName) {
+        return tournamentService.getTournamentRankingForSeason(Season.SEASON_MAPPING_BY_SEASON_ID_NAME.get(seasonIdName));
     }
 
     @GetMapping(path = "/rankings-current-season", produces = {"application/json", "application/x-protobuf"})
     public TournamentRankingsOuterClass.TournamentRankings rankingsCurrentSeason() {
-        return TournamentRankingsToProto.convertDomainToProto(tournamentService.getTournamentRankingForSeason(SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue().getSeasonId()));
-    }
-
-    @GetMapping("/seasons")
-    public String[] seasons() {
-        //TODO
-//        return tournamentService.getSeasons();
-        return new String[]{"TODO"};
+        return TournamentRankingsToProto.convertDomainToProto(
+                tournamentService.getTournamentRankingForSeason(Season.getCurrentSeason())
+        );
     }
 
     @GetMapping("/tournaments-current-season")

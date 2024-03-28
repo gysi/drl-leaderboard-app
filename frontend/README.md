@@ -8,17 +8,6 @@
 ```bash
 yarn quasar dev
 ```
-#### Picking an environment
-```bash
-# local
-yarn quasar dev
-or
-DLAPP_ENV=LOCAL yarn quasar dev
-# staging
-DLAPP_ENV=STAGING yarn quasar dev
-# prod
-DLAPP_ENV=PROD yarn quasar dev
-```
 
 ### Lint the files
 ```bash
@@ -33,17 +22,6 @@ yarn format
 ### Build the app for production
 ```bash
 yarn quasar build
-```
-#### Picking an environment
-```bash
-# local
-yarn quasar build
-or
-DLAPP_ENV=LOCAL yarn quasar build
-# staging
-DLAPP_ENV=STAGING yarn quasar build
-# prod
-DLAPP_ENV=PROD yarn quasar build
 ```
 
 ### Customize the configuration

@@ -5,9 +5,9 @@ WORKDIR /app
 COPY frontend/.yarn .yarn/
 COPY frontend/public public/
 COPY frontend/src src/
-COPY frontend/.eslintignore frontend/.eslintrc.js frontend/.npmrc \
+COPY frontend/.eslintignore frontend/.eslintrc.cjs frontend/.npmrc \
     frontend/.pnp.cjs frontend/.pnp.loader.mjs frontend/.yarnrc.yml frontend/index.html frontend/jsconfig.json \
-    frontend/package.json frontend/postcss.config.js frontend/quasar.config.js frontend/yarn.lock ./
+    frontend/package.json frontend/postcss.config.cjs frontend/quasar.config.js frontend/yarn.lock ./
 
 
 RUN ls -lah && yarn quasar build

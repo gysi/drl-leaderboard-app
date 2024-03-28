@@ -14,7 +14,7 @@
     style="width: 250px"
     class="q-ml-md"
     use-chips
-    label="Enter player name"
+    :label="label"
     popup-content-class="q-menu-dropdown"
   >
     <template v-slot:no-option>
@@ -38,6 +38,10 @@ export default {
     initialSelection: {
       type: String,
       default: null
+    },
+    label: {
+      type: String,
+      default: 'Enter player name'
     }
   },
   emits: ['onPlayerSelected'],

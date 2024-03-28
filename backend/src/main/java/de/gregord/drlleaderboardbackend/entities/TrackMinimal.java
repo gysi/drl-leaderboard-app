@@ -17,10 +17,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class TrackMinimal {
     @Id
     @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, strategy = TsidGenerator.STRATEGY_NAME)
+    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
     @EqualsAndHashCode.Include
     private Long id;
     private String mapName;
     private String parentCategory;
     private String name;
+    private Integer mapCategoryId;
 }
