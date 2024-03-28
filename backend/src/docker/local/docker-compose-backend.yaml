@@ -10,9 +10,9 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ../../../logs/backend:/var/log/backend
-      - ../../../logs/gc_backend:/var/log/gc_backend
-      - ../../../logs/heapdumps_backend:/var/log/heapdumps_backend
+      - ../../../../logs/backend:/var/log/backend
+      - ../../../../logs/gc_backend:/var/log/gc_backend
+      - ../../../../logs/heapdumps_backend:/var/log/heapdumps_backend
     networks:
       - local_network
     deploy:

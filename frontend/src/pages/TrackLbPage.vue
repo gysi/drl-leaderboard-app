@@ -14,7 +14,12 @@
       bordered
     >
       <template v-slot:top-left>
-        <img v-if="selectedTrack?.mapName != null"
+        <img v-if="selectedTrack?.mapThumb != null"
+             loading="lazy"
+             class="animated-background-image"
+             style="mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 160px, rgba(0,0,0,1));"
+             :src="buildImgCacheUrl(selectedTrack.mapThumb)" />
+        <img v-else-if="selectedTrack?.mapName != null"
              loading="lazy"
              class="animated-background-image"
              style="mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 160px, rgba(0,0,0,1));"
@@ -46,11 +51,9 @@
                           props.row.position === 2 ? 'second-place' :
                           props.row.position === 3 ? 'third-place' : '' : '', col.name === 'position' ? 'leaderboard-position-column' : '']"
           >
-            <q-item v-if="col.name === 'playerName'"
-                    clickable
-                    :to="`/player-lb?playerName=${encodeURIComponent(props.row.player.playerName)}`"
-                    class="q-item-player-region"
-            >
+            <q-item v-if="col.name === 'playerName'" clickable
+                    :to="`/${targetProfileLink}?playerName=${encodeURIComponent(props.row.player.playerName)}`"
+                    class="q-item-player-region">
               <q-item-section avatar side>
                 <q-avatar rounded size="50px">
                   <img loading="lazy" :src="props.row.player.profileThumb" />
@@ -72,12 +75,14 @@
               fab padding="5px"
               :to="{ name: 'faq', query: { card: 'invalidRuns' } }"
               ripple
+              :label="props.row.position"
+              style="width: 52px; position: relative"
             >
               <q-tooltip>
                 <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>
               </q-tooltip>
             </q-btn>
-            {{ col.name !== 'playerName' ? col.value : '' }}
+            {{ col.name === 'playerName' || (col.name === 'position' && props.row.isInvalidRun) ? '' : col.value }}
           </q-td>
         </q-tr>
       </template>
@@ -86,7 +91,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import {computed, defineComponent} from 'vue'
 import axios from 'axios';
 import {backGroundColorByPosition, formatMilliSeconds, getDateDifference} from "src/modules/LeaderboardFunctions";
 import TracksSearchSelect from "components/TracksSearchSelect.vue";
@@ -97,6 +102,7 @@ export default defineComponent({
   data(){
     return {
       selectedTrack: null,
+      targetProfileLink: null,
       columns: [
         { name: 'position', label: '#', field: 'position' },
         { name: 'playerName', label: 'Player', field: row => row.player.playerName, align: 'left' },
@@ -117,6 +123,11 @@ export default defineComponent({
   methods: {
     onTrackSelection(track) {
       this.selectedTrack = track;
+      if (this.selectedTrack?.parentCategory === 'Community') {
+        this.targetProfileLink = 'player-lb-communtiy'
+      } else {
+        this.targetProfileLink = 'player-lb'
+      }
       this.fetchData(track);
     },
     async fetchData(track) {
@@ -126,7 +137,7 @@ export default defineComponent({
       }
       this.loading = true;
       try {
-        const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/bytrack/${track.id}?page=1&limit=150`);
+        const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/bytrack/${track.id}?page=1&limit=250`);
         this.rows = response.data;
       } catch (error) {
         console.error(error);
@@ -136,6 +147,12 @@ export default defineComponent({
     },
     formatFlagUrl(flagUrl){
       return flagUrl.substring(flagUrl.length-6, flagUrl.length-4);
+    },
+    buildImgCacheUrl (url) {
+      if (url) {
+        let encodedUrl = encodeURIComponent(url);
+        return computed(() => `${process.env.DLAPP_THUMBOR_URL}/${encodedUrl}`).value;
+      }
     },
     formatMilliSeconds,
     backGroundColorByPosition,

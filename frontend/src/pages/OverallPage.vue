@@ -17,17 +17,19 @@
       :rows-per-page-options="[0]"
       hide-bottom
       virtual-scroll-item-size="65"
-      virtual-scroll-slice-ratio-before="2"
-      virtual-scroll-slice-ratio-after="2"
+      virtual-scroll-slice-ratio-before="50"
+      virtual-scroll-slice-ratio-after="50"
       virtual-scroll-sticky-size-start="49"
     >
       <template v-slot:top-left>
         <div class="row">
           <div class="q-table__title">Rankings</div>
-          <q-select v-model="selectedParentCategory" :options="parentCategories"
+          <q-select v-model="selectedParentCategory"
+                    :options="parentCategories"
+                    option-label="description"
                     filled label="Category" class="q-ml-md" popup-content-class="q-menu-dropdown"
                     style="width: 250px"></q-select>
-          <PlayerSearchSelect @onPlayerSelected="onPlayerSelected"/>
+          <PlayerSearchSelect @onPlayerSelected="onPlayerSelected" label="Jump to player name" />
         </div>
       </template>
       <template v-slot:header-cell-invalidRuns="props">
@@ -91,9 +93,9 @@
 </template>
 
 <script>
-import {computed, defineComponent} from 'vue'
+import { computed, defineComponent} from 'vue'
 import axios from 'axios';
-import {backGroundColorByPosition, formatMilliSeconds } from 'src/modules/LeaderboardFunctions'
+import { backGroundColorByPosition, formatMilliSeconds, getDateDifference } from 'src/modules/LeaderboardFunctions'
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
 import placeholder from 'src/assets/placeholder.png'
 
@@ -133,13 +135,14 @@ export default defineComponent({
           format: (val, row) => (Math.round(val * 10) / 10),
           required: true
         },
-        {name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb'}
+        {name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb'},
+        { name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', format: (val, row) => this.getDateDifference(val), required: true }
       ],
       rows: [],
       loading: false,
       selectedPlayer: null,
-      parentCategories: [],
-      selectedParentCategory: 'Overall',
+      parentCategories: [{id: null, name: 'Overall', description: 'Overall'}],
+      selectedParentCategory: {id: null, name: 'Overall', description: 'Overall'},
     }
   },
   watch: {
@@ -151,8 +154,8 @@ export default defineComponent({
     async fetchData(parentCategory) {
       this.loading = true;
       try {
-        const response = await axios.get(process.env.DLAPP_API_URL + '/leaderboards/overall-ranking?page=1&limit=500'
-          + (parentCategory !== 'Overall' && parentCategory != null ? `&parentCategory=${parentCategory.toUpperCase()}` : '')
+        const response = await axios.get(process.env.DLAPP_API_URL + '/leaderboards/official/overall-ranking?page=1&limit=500'
+          + (parentCategory != null && parentCategory.name !== 'Overall' ? `&parentCategory=${parentCategory.name}` : '')
         );
         this.rows = response.data.map((row) => {
           if (row['profileThumb'].includes('placeholder.png')) {
@@ -169,15 +172,14 @@ export default defineComponent({
       }
     },
     onPlayerSelected(playerName) {
-      console.log("Player selected", playerName);
       this.selectedPlayer = playerName;
       const row = this.rows.find(row => row['playerName'] === playerName);
-      this.$refs.overallTable.scrollTo(row['position'], 'center-force');
+      if(row) this.$refs.overallTable.scrollTo(row['position'], 'center-force');
     },
     async fetchParentCategories() {
       const response = await axios.get(process.env.DLAPP_API_URL + '/tracks/parent-categories')
-      this.parentCategories = ['Overall', ...response.data.map((category) => {
-        return this.convertParentCategoryString(category);
+      this.parentCategories = [{id: null, name: 'Overall', description: 'Overall'}, ...response.data.map((category) => {
+        return category;
       })];
     },
     convertParentCategoryString(str) {
@@ -196,7 +198,7 @@ export default defineComponent({
         return computed(() => `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`).value;
       }
     },
-    formatMilliSeconds, backGroundColorByPosition
+    formatMilliSeconds, backGroundColorByPosition, getDateDifference
   },
   created() {
     this.fetchData();

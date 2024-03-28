@@ -1,180 +1,72 @@
 package de.gregord.drlleaderboardbackend.dataupdater;
 
+import de.gregord.drlleaderboardbackend.domain.convert.DRLTrackToTrackEntity;
+import de.gregord.drlleaderboardbackend.entities.MapCategory;
 import de.gregord.drlleaderboardbackend.entities.Track;
-import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
-import de.gregord.drlleaderboardbackend.repositories.TracksRepository;
-import jakarta.transaction.Transactional;
-import org.aspectj.lang.annotation.Aspect;
+import de.gregord.drlleaderboardbackend.services.DRLApiService;
+import de.gregord.drlleaderboardbackend.services.TracksService;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.annotation.Order;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.cache.CacheManager;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Component
-public class TracksDataUpdater {
-    public static Logger LOG = LoggerFactory.getLogger(TracksDataUpdater.class);
-//    public static String endpointMaps = "https://api.drlgame.com/progression/maps?token={token}";
-//    public static String endpointMapDetail = "https://api.drlgame.com/maps/{guid}?token={token}";
+import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_INTERNAL_MAPID_TRACKID_MAPPING;
 
-    private static final List<String> excludedMapsByName = List.of(
-            "FREESTYLE"
-    );
-
-    private static final Map<String, String> mapIdToMapName = new HashMap<>();
-    private static final Map<String, String> mapIdToParentCategory = new HashMap<>();
-    private static final Map<String, String> mapCategoryToParentCategory = new HashMap<>();
-    private static final Set<String> mappableMapCategories = Set.of(
-            "MapMultiGP",
-            "MapDRLSimCup",
-            "MapFeatured",
-            "MapVirtualSeason"
-    );
-
-    private static final List<Track> manualTracksToBeAdded = new ArrayList<>();
-
-    static {
-        mapIdToMapName.put("MP-3fd", "HARD ROCK STADIUM");
-        mapIdToMapName.put("MP-693", "CHAMPIONSHIP KINGDOM");
-        mapIdToMapName.put("MP-2e1", "ALLIANZ RIVIERA");
-        mapIdToMapName.put("MP-3c7", "BMW WELT");
-        mapIdToMapName.put("MP-8e5", "ADVENTUREDOME");
-        mapIdToMapName.put("MP-0a3", "BIOSPHERE 2");
-        mapIdToMapName.put("MP-639", "SKATEPARK LA");
-        mapIdToMapName.put("MP-46c", "CALIFORNIA NIGHTS");
-        mapIdToMapName.put("MP-342", "2017 WORLD CHAMPIONSHIP");
-        mapIdToMapName.put("MP-669", "MUNICH PLAYOFFS");
-        mapIdToMapName.put("MP-0b3", "BOSTON FOUNDRY");
-        mapIdToMapName.put("MP-df5", "MARDI GRAS WORLD");
-        mapIdToMapName.put("MP-ed5", "DETROIT");
-        mapIdToMapName.put("MP-7ed", "ATLANTA AFTERMATH");
-        mapIdToMapName.put("MP-a35", "OHIO CRASHSITE");
-        mapIdToMapName.put("MP-92e", "PROJECT MANHATTAN");
-        mapIdToMapName.put("MP-ad9", "MIAMI LIGHTS");
-        mapIdToMapName.put("MP-bf7", "L.A.POCALYPSE");
-
-        mapIdToMapName.put("MP-2cb", "MEGA CITY");
-        mapIdToMapName.put("MP-f95", "U.S. AIR FORCE BONEYARD");
-        mapIdToMapName.put("MP-19c", "U.S. AIR FORCE NIGHT MODE");
-        mapIdToMapName.put("MP-95a", "GATES OF NEW YORK");
-        mapIdToMapName.put("MP-50c", "CAMPGROUND");
-        mapIdToMapName.put("MP-615", "DRONE PARK");
-        mapIdToMapName.put("MP-103", "OUT OF SERVICE");
-        mapIdToMapName.put("MP-409", "THE HOUSE");
-        mapIdToMapName.put("MP-23c", "DRL SANDBOX");
-        mapIdToMapName.put("MP-b59", "BRIDGE");
-
-        mapIdToMapName.put("MP-0c6", "MULTIGP");
-
-        mapIdToMapName.put("MP-cb7", "SILICON VALLEY");
-
-        mapIdToParentCategory.put("MP-3fd", "DRL MAPS");
-        mapIdToParentCategory.put("MP-693", "DRL MAPS");
-        mapIdToParentCategory.put("MP-2e1", "DRL MAPS");
-        mapIdToParentCategory.put("MP-3c7", "DRL MAPS");
-        mapIdToParentCategory.put("MP-8e5", "DRL MAPS");
-        mapIdToParentCategory.put("MP-0a3", "DRL MAPS");
-        mapIdToParentCategory.put("MP-639", "DRL MAPS");
-        mapIdToParentCategory.put("MP-46c", "DRL MAPS");
-        mapIdToParentCategory.put("MP-342", "DRL MAPS");
-        mapIdToParentCategory.put("MP-669", "DRL MAPS");
-        mapIdToParentCategory.put("MP-0b3", "DRL MAPS");
-        mapIdToParentCategory.put("MP-df5", "DRL MAPS");
-        mapIdToParentCategory.put("MP-ed5", "DRL MAPS");
-        mapIdToParentCategory.put("MP-7ed", "DRL MAPS");
-        mapIdToParentCategory.put("MP-a35", "DRL MAPS");
-        mapIdToParentCategory.put("MP-92e", "DRL MAPS");
-        mapIdToParentCategory.put("MP-ad9", "DRL MAPS");
-        mapIdToParentCategory.put("MP-bf7", "DRL MAPS");
-        mapIdToParentCategory.put("MP-cb7", "DRL MAPS");
-
-        mapIdToParentCategory.put("MP-2cb", "ORIGINALS");
-        mapIdToParentCategory.put("MP-f95", "ORIGINALS");
-        mapIdToParentCategory.put("MP-19c", "ORIGINALS");
-        mapIdToParentCategory.put("MP-95a", "ORIGINALS");
-        mapIdToParentCategory.put("MP-50c", "ORIGINALS");
-        mapIdToParentCategory.put("MP-615", "ORIGINALS");
-        mapIdToParentCategory.put("MP-103", "ORIGINALS");
-        mapIdToParentCategory.put("MP-409", "ORIGINALS");
-        mapIdToParentCategory.put("MP-23c", "ORIGINALS");
-        mapIdToParentCategory.put("MP-b59", "ORIGINALS");
-
-        mapIdToParentCategory.put("MP-0c6", "MULTIGP");
-
-        mapCategoryToParentCategory.put("MapMultiGP", "MULTIGP");
-        mapCategoryToParentCategory.put("MapDRLSimCup", "DRL SIM RACING CUP");
-        mapCategoryToParentCategory.put("MapFeatured", "FEATURED TRACKS");
-        mapCategoryToParentCategory.put("MapVirtualSeason", "VIRTUAL SEASON");
-
-        manualTracksToBeAdded.add(new Track("MP-ed5", "MT-418", "MT-418", "DRL 2016"));
-        manualTracksToBeAdded.add(new Track("MP-a35", "MT-a72", "MT-a72", "CONFIRM NOR DENY"));
-        manualTracksToBeAdded.add(new Track("MP-a35", "MT-3dd", "MT-3dd", "RESTRICTED AREA"));
-        manualTracksToBeAdded.add(new Track("MP-a35", "MT-1e7", "MT-1e7", "DRL 2016"));
-        manualTracksToBeAdded.add(new Track("MP-92e", "MT-2a7", "MT-2a7", "PROJECT NOOB"));
-        manualTracksToBeAdded.add(new Track("MP-92e", "MT-39f", "MT-39f", "THE TRINITY TEST"));
-        manualTracksToBeAdded.add(new Track("MP-92e", "MT-5db", "MT-5db", "DRL 2016"));
-        manualTracksToBeAdded.add(new Track("MP-ad9", "MT-ccd", "MT-ccd", "MIAMI SUNSET"));
-        manualTracksToBeAdded.add(new Track("MP-ad9", "MT-cee", "MT-cee", "THE END ZONE"));
-        manualTracksToBeAdded.add(new Track("MP-ad9", "MT-9c8", "MT-9c8", "DRL 2016"));
-        manualTracksToBeAdded.add(new Track("MP-bf7", "MT-f7c", "MT-f7c", "DRL 2016"));
-        manualTracksToBeAdded.add(new Track("MP-95a", "MT-9eb", "MT-9eb", "CITY"));
-        manualTracksToBeAdded.add(new Track("MP-95a", "MT-6b7", "MT-6b7", "SHIPYARD"));
-        manualTracksToBeAdded.add(new Track("MP-95a", "MT-964", "MT-964", "DRL 2016"));
-        manualTracksToBeAdded.add(new Track("MP-95a", "MT-46e", "MT-46e", "WOODS"));
-        manualTracksToBeAdded.add(new Track("MP-23c", "MT-513", "MT-513", "DRL")); // sandbox
-        manualTracksToBeAdded.add(new Track("MP-23c", "MT-fb1", "MT-fb1", "STRAIGHT LINE"));
-        manualTracksToBeAdded.add(new Track("MP-ad9", "CMP-501cb857a4c399073d33d324", "race-03", "CTG / 07: TREEHOUSE TANGO"));
-    }
-
-    public final String token;
-    public final String mapsEndpoint;
-    private final Duration durationBetweenRequests;
-    private final TracksRepository tracksRepository;
-    private final LeaderboardRepository leaderboardRepository;
+public abstract class TracksDataUpdater {
+    protected final Logger LOG;
+    private final String token;
+    private final String mapsEndpoint;
+    private final DRLApiService drlApiService;
+    private final TracksService tracksService;
+    private final CacheManager cacheManager;
+    private final Set<String> mappableMapCategories;
+    private final Map<String, MapCategory> mapCategoryToParentCategory;
+    private final Set<Integer> mapCategoryIdsForDB;
+    @Setter
+    private List<String> excludedMapsByName = new ArrayList<>();
+    @Setter
+    private Map<String, MapCategory> mapIdToParentCategory = new HashMap<>();
+    @Setter
+    private List<Track> manualTracksToBeAdded = new ArrayList<>();
 
     public TracksDataUpdater(
-            @Value("${app.drl-api.token}") String token,
-            @Value("${app.drl-api.maps-endpoint}") String mapsEndpoint,
-            @Value("${app.drl-api.duration-between-requests}") Duration durationBetweenRequests,
-            TracksRepository tracksRepository,
-            LeaderboardRepository leaderboardRepository
+            String token,
+            String mapsEndpoint,
+            DRLApiService drlApiService,
+            TracksService tracksService,
+            CacheManager cacheManager,
+            Set<String> mappableMapCategories,
+            Map<String, MapCategory> mapCategoryToParentCategory,
+            Set<Integer> mapCategoryIdsForDB
     ) {
         this.token = token;
         this.mapsEndpoint = mapsEndpoint;
-        this.durationBetweenRequests = durationBetweenRequests;
-        this.tracksRepository = tracksRepository;
-        this.leaderboardRepository = leaderboardRepository;
+        this.drlApiService = drlApiService;
+        this.tracksService = tracksService;
+        this.cacheManager = cacheManager;
+        this.mappableMapCategories = mappableMapCategories;
+        this.mapCategoryToParentCategory = mapCategoryToParentCategory;
+        this.mapCategoryIdsForDB = mapCategoryIdsForDB;
+        LOG = LoggerFactory.getLogger(this.getClass());
     }
 
-    @Transactional
-    @CacheEvict(value = "tracks", allEntries = true)
     public void initialize() {
-        long count = tracksRepository.count();
-        if(count <= 0) {
+        long count = tracksService.countByMapCategoryIdIn(mapCategoryIdsForDB);
+        if (count <= 0) {
             LOG.info("No tracks found in database, initializing...");
             updateMapsData();
         }
     }
 
-    @Transactional
-    @Caching(evict = {
-        @CacheEvict(value = "tracks", allEntries = true),
-        @CacheEvict(value = "parentCategories", allEntries = true)
-    })
     public void updateMapsData() {
         LOG.info("Updating maps data");
         List<Track> tracksToBeSaved = new ArrayList<>();
@@ -186,29 +78,25 @@ public class TracksDataUpdater {
             do {
                 LOG.info("Requesting page " + pageCount);
                 UriComponentsBuilder mapsEndpointBuilder = UriComponentsBuilder.fromUriString(mapsEndpoint);
-                String requestUrl = mapsEndpointBuilder.buildAndExpand(Map.of("token", token, "page", pageCount)).toUriString();
+                final String requestUrl = mapsEndpointBuilder.buildAndExpand(Map.of("token", token, "page", pageCount)).toUriString();
                 LOG.info("requestUrl: " + requestUrl);
                 try {
-                    Map<String, Object> response = restTemplate.getForObject(
-                            requestUrl,
-                            Map.class
-                    );
-                    requestUrl = null;
+                    ResponseEntity<Map> exchange = drlApiService.waitForApiLimitAndExecuteRequest(() -> restTemplate.exchange(requestUrl,
+                            HttpMethod.GET, null, Map.class));
+                    Map<String, Object> response = exchange.getBody();
 
-                    // Check if the API call was successful
                     if ((boolean) response.get("success")) {
-                        // Get the data from the response
                         Map<String, Object> data = (Map<String, Object>) response.get("data");
                         Map<String, Object> paging = (Map<String, Object>) data.get("pagging");
                         List<Map<String, Object>> mapsData = (List<Map<String, Object>>) data.get("data");
 
-                        // Collect byGuidIn as HashMap for faster lookup
                         List<String> guidsFromApiPage = mapsData.stream().map(track -> (String) track.get("guid")).toList();
-                        Collection<Track> byGuidIn = tracksRepository.findByGuidIn(guidsFromApiPage);
-                        Map<String, Track> existingTracksByGuid = byGuidIn.stream().collect(Collectors.toMap(Track::getGuid, Function.identity()));
+                        Collection<Track> byGuidIn = tracksService.findByGuidIn(guidsFromApiPage);
+                        Map<String, Track> existingTracksByGuid = byGuidIn.stream().collect(Collectors.toMap(Track::getGuid,
+                                Function.identity()));
 
-                        // Loop through the data and create a MapDto for each entry
                         for (Map<String, Object> entry : mapsData) {
+                            LOG.info("Processing Track: {}", entry.get("map-title"));
                             if (excludedMapsByName.contains(((String) entry.get("map-title")).trim().toUpperCase())) {
                                 continue;
                             }
@@ -219,31 +107,32 @@ public class TracksDataUpdater {
                                 LOG.info("New Track: " + entry.get("guid"));
                             }
                             Track track = existingTrack.orElseGet(Track::new);
-                            track.setGuid((String) entry.get("guid"));
-                            track.setName(((String) entry.get("map-title")).trim().toUpperCase());
-                            track.setDrlTrackId((String) entry.get("track-id"));
-                            track.setMapId((String) entry.get("map-id"));
-                            track.setMapCategory((String) entry.get("map-category"));
+                            DRLTrackToTrackEntity.setValuesToTrack(entry, track);
+                            findAndSetDrlTrackIdForTrack(track);
+
+                            MapCategory parentCategory;
                             if (mappableMapCategories.contains(track.getMapCategory())) {
-                                track.setParentCategory(mapCategoryToParentCategory.get(track.getMapCategory()));
+                                parentCategory = mapCategoryToParentCategory.get(track.getMapCategory());
+                                track.setParentCategory(parentCategory.getDescription());
                             } else if (mapIdToParentCategory.containsKey(track.getMapId())) {
-                                track.setParentCategory(mapIdToParentCategory.get(track.getMapId()));
+                                parentCategory = mapIdToParentCategory.get(track.getMapId());
+                                track.setParentCategory(parentCategory.getDescription());
+                            } else {
+                                LOG.error("This map category isn't registered yet, look into it. mapCategory: {} mapId: {} track: {}",
+                                        track.getMapCategory(),
+                                        track.getMapId(),
+                                        track.getName());
+                                continue;
                             }
-                            track.setMapName(mapIdToMapName.get(track.getMapId()));
-                            track.setIsDrlOfficial((Boolean) entry.get("is-drl-official"));
-                            track.setIsPublic((Boolean) entry.get("is-public"));
-                            track.setMapDifficulty((Integer) entry.get("map-difficulty"));
-                            track.setMapLaps((Integer) entry.get("map-laps"));
-                            if (entry.get("map-distance") instanceof Double) {
-                                track.setMapDistance((Double) entry.get("map-distance"));
-                            } else if (entry.get("map-distance") instanceof Integer) {
-                                track.setMapDistance(Double.valueOf((Integer) entry.get("map-distance")));
-                            } else if (entry.get("map-distance") instanceof Long) {
-                                track.setMapDistance(Double.valueOf((Long) entry.get("map-distance")));
-                            }
-                            List<String> categories = (List<String>) entry.get("categories");
-                            if (categories.size() > 0) {
-                                track.setCategories(categories.get(0));
+                            track.setMapCategoryId(parentCategory.ordinal());
+                            {
+                                Integer mapLaps = Optional.ofNullable(track.getMapLaps()).orElse(1);
+                                Double mapDistance = Optional.ofNullable(track.getMapDistance()).orElse(1000.);
+                                double calculatedDistance = mapLaps * mapDistance;
+                                if (calculatedDistance > 11000.) {
+                                    LOG.info("Map distance is too huge, we don't want it: {} track: {}", mapDistance, track);
+                                    continue;
+                                }
                             }
                             tracksToBeSaved.add(track);
                         }
@@ -252,43 +141,74 @@ public class TracksDataUpdater {
                 } catch (HttpServerErrorException.InternalServerError e) {
                     LOG.error("Error while requesting page " + pageCount + ": " + e.getMessage());
                     LOG.error("requestUrl: " + requestUrl);
-                    e.printStackTrace();
                     preventDeletion = true;
                 }
                 pageCount++;
-                Thread.sleep(durationBetweenRequests.toMillis());
             } while (nextPageUrl != null);
 
             for (Track track : manualTracksToBeAdded) {
-                Optional<Track> existingTrack = tracksRepository.findByGuid(track.getGuid());
+                Optional<Track> existingTrack = tracksService.findByGuid(track.getGuid());
                 Track manualTrack = existingTrack.orElse(track);
                 manualTrack.setDrlTrackId(track.getDrlTrackId());
                 manualTrack.setGuid(track.getGuid());
                 manualTrack.setName(track.getName());
                 manualTrack.setMapId(track.getMapId());
-                manualTrack.setMapName(mapIdToMapName.get(track.getMapId()));
-                manualTrack.setParentCategory(mapIdToParentCategory.get(track.getMapId()));
+                manualTrack.setMapName(DRLTrackToTrackEntity.getMapNameFromMapId(track.getMapId()));
+                manualTrack.setParentCategory(mapIdToParentCategory.get(track.getMapId()).getDescription());
+                manualTrack.setMapCategoryId(track.getMapCategoryId());
                 tracksToBeSaved.add(manualTrack);
             }
 
             // Could be optimized by applying distinct only on the guid field because the API returns a specific track two times.
             // And distinct executes the equals/hashCode method and it includes the id field as well.
             // But for new tracks its null and for existing its then on both objects the id from the database
-            List<Track> tracks = tracksRepository.saveAll(tracksToBeSaved.stream().distinct().collect(Collectors.toList()));
-
-            // Only run deletion if no error occurred, otherwise we might delete tracks that are still active
-            if(!preventDeletion) {
-                Collection<Track> byTrackNotIn = tracksRepository.findByIdNotIn(tracks.stream().map(Track::getId).collect(Collectors.toList()));
-                LOG.info("Deleting " + byTrackNotIn.size() + " tracks");
-                LOG.info(byTrackNotIn.stream().map(Track::getName).collect(Collectors.joining(", ")));
-                byTrackNotIn.stream().forEach(track -> leaderboardRepository.findByTrackId(track.getId()).forEach( entry -> {
-                    leaderboardRepository.deleteBeatenByEntriesByLeaderboardId(entry.getId());
-                    leaderboardRepository.delete(entry);
-                }));
-                tracksRepository.deleteAll(byTrackNotIn);
-            }
+            tracksService.saveAllAndDeleteMissing(tracksToBeSaved, mapCategoryIdsForDB, preventDeletion);
         } catch (Exception e) {
             LOG.error("Error updating maps data", e);
+        }
+    }
+
+    private void findAndSetDrlTrackIdForTrack(Track track) throws Exception {
+        // We can only get the real drl_track_id from the leaderboard entry.
+        // And it can happen that this is wrong and then we later want to flag a replay as invalid if this is the case.
+        // But to make sure to set it to the right value we want to record the "track" value from the api entry
+        // multiple times to make sure that there isn't a invalid replay entry within it and we save a wrong
+        // drl_track_id to our track entity
+        if (track.getDrlTrackId() == null) {
+            {
+                Map<String, String> drlTrackIdByMapId = tracksService.getDrlTrackIdByMapIdMap();
+                String drlTrackId = drlTrackIdByMapId.get(track.getMapId());
+                if (drlTrackId != null) {
+                    track.setDrlTrackId(drlTrackId);
+                    return;
+                }
+            }
+            Map<String, Integer> trackIdOccurrences = new HashMap<>();
+            drlApiService.getAndProcessLeaderboardEntries(track, 10, 5,
+                    (drlLeaderboardEntry, newOrUpdatedLeaderboardEntry, currentLeaderboardEntriesByPlayerId, leaderScore,
+                     isExistingEntryInvalid) ->
+                    {
+                        // this is just to make sure the run is not flagged as invalid and the loop goes too much longer than
+                        // maxEntriesToProcess
+                        track.setDrlTrackId((String) drlLeaderboardEntry.get("track"));
+                        // Record each occurrence of the track ID
+                        String currentTrackId = (String) drlLeaderboardEntry.get("track");
+                        trackIdOccurrences.merge(currentTrackId, 1, Integer::sum);
+                    }
+            );
+            // After collecting all occurrences, find the most common track ID and set it to the track entity
+            trackIdOccurrences.entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey).ifPresent(drlTrackId -> {
+                        track.setDrlTrackId(drlTrackId);
+                        Map<String, String> drlTrackIdByMapIdMap = tracksService.getDrlTrackIdByMapIdMap();
+                        drlTrackIdByMapIdMap.put(track.getMapId(), drlTrackId);
+                        Optional.ofNullable(cacheManager.getCache(CACHE_INTERNAL_MAPID_TRACKID_MAPPING))
+                                .ifPresent(cache -> cache.put(
+                                        CACHE_INTERNAL_MAPID_TRACKID_MAPPING,
+                                        drlTrackIdByMapIdMap)
+                                );
+                    });
         }
     }
 }

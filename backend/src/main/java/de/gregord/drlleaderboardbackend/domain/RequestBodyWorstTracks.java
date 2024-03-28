@@ -18,5 +18,4 @@ public class RequestBodyWorstTracks {
    private Boolean includeInvalidRuns = false;
    private Boolean includeNotCompleted = false;
    private List<@Pattern(regexp = "\\d+", message = "excludedTrack must be a number") String> excludedTracks;
-
 }

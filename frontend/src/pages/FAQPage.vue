@@ -3,6 +3,43 @@
     <div class="grid">
       <div class="grid-sizer"></div>
       <FAQCard
+        title="My time is not on the leaderboard but I just put up a time"
+        :msnry="msnry"
+        :initially-expanded="this.$router.currentRoute.value.query.card === 'no-time'"
+      >
+        <p>The timing of when your new personal best (PB) appears on the leaderboard can vary due
+          to the way our website updates its data. Our system periodically scans all the tracks through
+          the game's API to fetch the latest times. This process means there's a delay between achieving
+          a new PB and its appearance on the website.
+        </p>
+
+        <p>Tracks that see a lot of recent activity are updated more frequently than those with less.
+          Generally, you can expect your new time to be reflected on the leaderboard within 2 to 10 minutes
+          after you've set it.
+        </p>
+        <p>We appreciate your patience as our system works to bring you the most up-to-date rankings.
+        </p>
+        <ul>
+          <li>Active Tracks: ~1min</li>
+          <li>Inactive Tracks: ~5min</li>
+          <li>Tournaments: ~30s</li>
+        </ul>
+      </FAQCard>
+      <FAQCard
+        title="My placement doesn't match with the in-game leadeboard"
+        :msnry="msnry"
+        :initially-expanded="this.$router.currentRoute.value.query.card === 'ingame-mismatch'"
+      >
+        <p>If you notice discrepancies between your placement on our website and the in-game
+          leaderboard, it may be due to the game occasionally recording times that are considered
+          invalid due to bugs. While the game might still include these placements, our website
+          excludes them to ensure fairness and accuracy in our rankings. For a detailed explanation
+          of what constitutes an invalid time and how these are identified by our system, please
+          refer to the "Invalid Runs" FAQ card. This will give you a clearer understanding of our
+          validation process and why certain times may not be counted in our leaderboard.
+        </p>
+      </FAQCard>
+      <FAQCard
         title="How does the leaderboard track point system work?"
         :msnry="msnry"
         :initially-expanded="this.$router.currentRoute.value.query.card === 'pointSystem'"
@@ -187,6 +224,12 @@
           There is currently a bug in the game that allows players to use other drones in the time trial mode.
           This bug will be fixed by the game developers in the future.
         </p>
+        <div>
+          <b>WRONG_REPLAY</b>
+        </div>
+        <p>
+          There is a bug in DRL were sometimes a wrong replay for another track is uploaded.
+        </p>
       </FAQCard>
       <FAQCard
         :msnry="msnry"
@@ -349,6 +392,79 @@
             </tbody>
           </q-markup-table>
         </div>
+      </FAQCard>
+      <FAQCard
+        title="What is a season?"
+        :msnry="msnry"
+        :initially-expanded="this.$router.currentRoute.value.query.card === 'season'"
+      >
+        <p>A season on this website brings together competition and community, framed within the four
+          seasons of the year: spring, summer, fall, and winter. Each three-month period launches a series
+          of engaging activities, offering a structured cadence to our community's involvement.
+        </p>
+        <p>The season's highlights are the Tournaments and Community Tracks. Weekly, players can dive into
+          up to six tournaments, with their outcomes and upcoming schedules illustrated on the leaderboard
+          through a simple color-coded system: green dots signal completed tournaments, yellow dots indicate
+          future competitions, and red dots denote missed ones. This intuitive indicator, complemented by hoverable
+          dates, simplifies tracking one's progress and planning for future engagements.
+        </p>
+
+        <p>For Community Tracks, each season unveils 30 new challenges, curated from the community's creative outputs.
+          These tracks are chosen through a blend of algorithmic selection and manual refinement, ensuring a diverse
+          and fair competition field every season. Crucially, the leaderboard for these tracks is exclusively shaped
+          by performances within the current season.
+        </p>
+        <p>Players must secure at least one top time on these tracks to be featured on the rankings, guaranteeing that
+          the leaderboard remains vibrant and current. This approach encourages continuous
+          participation, as there's always the potential to improve on at least one of the 30 tracks, offering
+          everyone—from newcomers to seasoned racers—a shot at bettering their standings. Moreover, this system naturally
+          phases out dated achievements, particularly from those no longer actively competing, by focusing on recent
+          contributions and successes. This ensures that even well-established tracks maintain their competitive edge,
+          keeping the leaderboard fresh and reflective of active community engagement.
+        </p>
+
+        <p>A heartfelt appreciation goes to Mr. Persister <3, whose boundless enthusiasm and meticulous testing of the
+          Community Tracks have greatly enriched our seasonal dynamics. The invaluable insights gained from our extensive
+          discussions and collaborations have directly influenced the seasonal offerings, enhancing the competitive spirit
+          and community involvement on the website.
+        </p>
+
+        <p>This iteration aims to more accurately represent the significance of current season performances in shaping
+          the leaderboard, emphasizing the ongoing opportunities for improvement and the dynamic nature of competition
+          on the website.
+        </p>
+      </FAQCard>
+      <FAQCard
+        title="Why do I see myself in the Community Rankings only when toggling 'Show Excluded Players'"
+        :msnry="msnry"
+        :initially-expanded="this.$router.currentRoute.value.query.card === 'excluded-from-season'"
+      >
+        <p>In the Community Season rankings, the primary focus is on highlighting the contributions of players
+          actively engaged with the current season. This means the leaderboard prominently displays players who
+          have secured at least one top time on the 30 designated tracks for the current season, crucially with
+          that time being achieved within the season itself. This method ensures the leaderboard is a reflection
+          of the current season's active competition, emphasizing recent efforts and achievements.
+        </p>
+
+        <p>The 'Show Excluded Players' toggle offers an expanded view, including all players who have logged
+          a time on these tracks, regardless of when. This broader view is particularly relevant for understanding
+          the entire scope of competition and for acknowledging all contributions to the community tracks over time.
+        </p>
+
+        <p>Importantly, once a player records a new top time on any of the current season's tracks within the
+          season's timeframe, not only is this new time considered, but all of their previous times on the season's
+          tracks are also counted in the rankings. This means that a player does not need to update every single
+          one of their times to be reflected in the current standings. A single new time within the season's parameters
+          is sufficient to validate and include all their past performances on the season's tracks in the leaderboard.
+          This approach is designed to encourage ongoing participation without necessitating the exhaustive effort of
+          surpassing every previous record a player holds.
+        </p>
+
+        <p>This system acknowledges and rewards both current season activity and past achievements, offering
+          a comprehensive and motivating view of each player's standing within the community. It underlines the
+          value of consistent participation across seasons, ensuring that the leaderboard captures the full spectrum
+          of engagement and success within the competitive landscape.
+        </p>
       </FAQCard>
     </div>
   </q-page>

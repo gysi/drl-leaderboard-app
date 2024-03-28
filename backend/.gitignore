@@ -247,7 +247,6 @@ modules.xml
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -261,3 +260,5 @@ replay_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+iml,java,intellij+all,intellij
 
+/src/docker/local/docker_compose_secrets.env
+/src/main/resources/application-local-secrets.yaml

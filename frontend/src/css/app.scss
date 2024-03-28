@@ -30,12 +30,19 @@ $dark-accent4-color: 217, 205, 205;
 
 // Dark mode
 @mixin dark-mode-colors {
+  --app-scrollbar-color1: #{$dark-accent2};
+  --app-scrollbar-color2: #{$dark-accent3};
+  --app-scrollbar-color3: #{$dark-primary};
   --app-text-color: #{$dark-dark};
   --app-background-color: #{$dark-accent3};
   --app-toolbar-background-color: #{$dark-primary};
   --app-nav-background-color: #{$dark-primary};
   --app-nav-active-text-color: #{$dark-accent3};
   --app-nav-caption-text-color: rgba(255, 255, 255, 0.54);
+  --app-nav-qcard-background-color: rgba(0, 0, 0, 0.54);
+
+  --app-tournament-header-background-color: #{$dark-primary};
+  --app-tournament-header-tabs-text-color: #{$dark-white};
 
   --app-table-body-background-color: #{$dark-dark};
   --app-table-top-bottom-text-color: #{$dark-white};
@@ -98,6 +105,9 @@ $dark-accent4-color: 217, 205, 205;
   --app-dialog-news-content-header-text-color: #{$dark-white};
   --app-dialog-news-content-background-color: #{$dark-secondary};
   --app-dialog-news-content-text-color: #{$dark-white};
+
+  --app-show-excluded-players-toggle-color: #{$dark-accent2};
+  --app-show-excluded-players-text-color: rgba(255, 255, 255, 0.54);
 }
 
 $light-primary: #491d5d;
@@ -116,7 +126,7 @@ $light-warning: #dacb2f;
 $light-warning-color: 218, 203, 47;
 $light-dark: #010803;
 $light-dark-color: 1, 8, 3;
-$light-white: #ffffff;
+$light-white: #fafafa;
 $light-white-color: 255, 255, 255;
 $light-light: #d9e5ed;
 $light-light-color: 217, 229, 237;
@@ -126,12 +136,19 @@ $light-accent3: #b0a2ad;
 $light-accent3-color: 176, 162, 173;
 
 body {
+  --app-scrollbar-color1: #{$light-secondary};
+  --app-scrollbar-color2: #{$light-primary};
+  --app-scrollbar-color3: #{$light-light};
   --app-text-color: #{$light-dark};
   --app-background-color: #{$light-accent3};
   --app-toolbar-background-color: #{$light-primary};
   --app-nav-background-color: #{$light-light};
   --app-nav-active-text-color: #{$light-secondary};
   --app-nav-caption-text-color: rgba(0, 0, 0, 0.54);
+  --app-nav-qcard-background-color: rgba(255, 255, 255, 0.54);
+
+  --app-tournament-header-background-color: #{$light-secondary};
+  --app-tournament-header-tabs-text-color: #{$light-white};
 
   --app-table-body-background-color: #{$light-light};
   --app-table-top-bottom-text-color: #{$light-white};
@@ -196,7 +213,20 @@ body {
   --app-dialog-news-content-text-color: #{$light-dark};
 
   background: var(--app-background-color);
-  color: var(--app-text-color);
+  color: var(--app-dark-color);
+
+  .tournament-header-top {
+    background: var(--app-tournament-header-background-color);
+  }
+
+  .tournament-header-middle {
+    background: var(--app-tournament-header-background-color);
+  }
+
+  .tournament-header-bottom {
+    background: var(--app-tournament-header-background-color);
+    color: var(--app-tournament-header-tabs-text-color);
+  }
 
   .q-toolbar {
     background: var(--app-toolbar-background-color);
@@ -213,6 +243,10 @@ body {
 
     .q-item__label--caption {
       color: var(--app-nav-caption-text-color);
+    }
+
+    .q-card {
+      background: var(--app-nav-qcard-background-color);
     }
   }
 
@@ -417,6 +451,124 @@ body {
       color: var(--app-dialog-news-content-text-color) !important;
     }
   }
+}
+
+body.q-scroll--lock .q-page {
+  > * {
+    overflow-anchor: none;
+  }
+
+  > .q-scroll--anchor {
+    overflow-anchor: auto;
+  }
+}
+
+// makes the scroll bar look better for the drop-down menus in the header
+::-webkit-scrollbar {
+  height: 16px;
+  width: 16px;
+  background: var(--app-scrollbar-color3);
+  z-index: 12;
+  overflow: visible;
+}
+
+::-webkit-scrollbar-thumb {
+  width: 16px;
+  background-color: var(--app-scrollbar-color1);
+  border-radius: 10px;
+  z-index: 12;
+  border: 3px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  transition: background-color .28s ease-in-out;
+  margin: 3px;
+  min-height: 100px;
+  min-width: 32px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  width: 10px;
+  background-color: var(--app-scrollbar-color1);
+  border: 1px solid rgba(0, 0, 0, 0);
+  margin: 1px;
+  border-radius: 10px;
+  z-index: 12;
+  min-height: 100px;
+  min-width: 32px;
+}
+
+/* Buttons */
+::-webkit-scrollbar-button:single-button {
+  display: block;
+  border-style: solid;
+  height: 17px;
+  width: 17px;
+}
+/* Up */
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  height: 17px;
+  border-top: transparent solid 0;
+  border-right: transparent solid 8px;
+  border-left: transparent solid 8px;
+  border-bottom: var(--app-scrollbar-color1) solid 16px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+  border-color: transparent transparent var(--app-scrollbar-color2) transparent;
+}
+/* Down */
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  height: 17px;
+  border-top: var(--app-scrollbar-color1) solid 16px;
+  border-right: transparent solid 8px;
+  border-left: transparent solid 8px;
+  border-bottom: transparent solid 0;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+  border-color: var(--app-scrollbar-color2) transparent transparent transparent;
+}
+
+/* Left */
+::-webkit-scrollbar-button:single-button:horizontal:decrement {
+  width: 17px;
+  border-top: transparent solid 8px;
+  border-right: var(--app-scrollbar-color1) solid 16px;
+  border-left: transparent solid 0;
+  border-bottom: transparent solid 8px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {
+  border-color: transparent var(--app-scrollbar-color2) transparent transparent;
+}
+/* Right */
+::-webkit-scrollbar-button:single-button:horizontal:increment {
+  height: 17px;
+  border-top: transparent solid 8px;
+  border-right: transparent solid 0;
+  border-left: var(--app-scrollbar-color1) solid 16px;
+  border-bottom: transparent solid 8px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
+  border-color: transparent transparent transparent var(--app-scrollbar-color2);
+}
+
+::-webkit-scrollbar-corner {
+  height: 17px;
+  width: 17px;
+  background: var(--app-scrollbar-color3);
 }
 
 // Dark mode (OS native)

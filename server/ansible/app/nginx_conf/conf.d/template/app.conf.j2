@@ -71,7 +71,7 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    location ~* ^/thumbor/((x500|50x50).*(\Q.amazonaws.com/drl-game-dashboard\E|\Q.steamstatic.com\E|\Qdrl-sim-cup.s3.amazonaws.com\E|\Qapi.drlgame.com\E|\Qsteamcdn-a.akamaihd.net\E|\Qdrl-sim-virtual-season.s3.amazonaws.com\E).*)$ {
+    location ~* ^/thumbor/(.*(\Q.amazonaws.com/drl-game-dashboard\E|\Q.steamstatic.com\E|\Qdrl-sim-cup.s3.amazonaws.com\E|\Qapi.drlgame.com\E|\Qsteamcdn-a.akamaihd.net\E|\Qdrl-sim-virtual-season.s3.amazonaws.com\E|\Qdrl-game-api.s3.amazonaws.com\E).*)$ {
         limit_req zone=imglimit burst=500 nodelay;
         limit_req_status 429;
         # Docker DNS Resolver, this is needed so that nginx doesn't crash when the upstream is not available

@@ -8,15 +8,14 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-const vue = require('@vitejs/plugin-vue');
-
-const { configure } = require('quasar/wrappers');
-const path = require('path');
-const { simpleSitemapAndIndex } = require('sitemap');
-const { sitemapRoutes } = require('./src/router/sitemapRoutes.js');
-const { Readable } = require('stream');
-const ejs = require('ejs');
-const fs = require('fs');
+import vue from '@vitejs/plugin-vue';
+import { configure } from 'quasar/wrappers';
+import path from 'node:path';
+import { simpleSitemapAndIndex } from 'sitemap';
+import { sitemapRoutes } from 'src/router/sitemapRoutes.cjs';
+import ejs from 'ejs';
+import fs from 'fs';
+import { fileURLToPath } from "node:url";
 
 const srcDir = path.join(__dirname, 'src');
 const pubDir = path.join(__dirname, 'public');
@@ -57,7 +56,7 @@ async function generateSitemap() {
   })
 }
 
-module.exports = configure(function (/* ctx */) {
+export default configure(function (/* ctx */) {
   return {
     eslint: {
       // fix: true,
@@ -65,7 +64,9 @@ module.exports = configure(function (/* ctx */) {
       // exclude = [],
       // rawOptions = {},
       warnings: true,
-      errors: true
+      errors: true,
+      cache: true,
+      // formatter: ESlist.Formatter
     },
 
     // https://v2.quasar.dev/quasar-cli/prefetch-feature
@@ -105,48 +106,9 @@ module.exports = configure(function (/* ctx */) {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
         node: 'node18'
       },
-
       minify: 'terser',
-
       vueRouterMode: 'history', // available values: 'hash', 'history'
-      // vueRouterBase,
-      // vueDevtools,
-      // vueOptionsAPI: false,
-
-      // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
-
-      // publicPath: '/',
-      // analyze: true,
-      env: (function () {
-        global_vars = {
-          DLAPP_ENV: process.env.DLAPP_ENV ? process.env.DLAPP_ENV : 'LOCAL',
-          DLAPP_SWAGGER_URL_PART: "/swagger-ui.html"
-        }
-        env_vars = {
-          LOCAL: {
-            // 192.168.178.31 for testing vm from host/phone
-            DLAPP_URL: 'http://localhost:9000',
-            DLAPP_API_URL: 'http://localhost:8080/api',
-            // DLAPP_THUMBOR_URL: 'http://localhost/thumbor' // if you run the docker-compose-full.yaml
-            DLAPP_THUMBOR_URL: 'http://localhost:8888/thumbor',
-            DLAPP_BETAFLIGHT_CALCULATOR: 'https://drl-betaflight-calculator.miau.io'
-          },
-          STAGING: {
-            DLAPP_URL: 'https://drl-leaderboards-test.miau.io',
-            DLAPP_API_URL: 'https://drl-leaderboards-test.miau.io/api',
-            DLAPP_THUMBOR_URL: 'https://drl-leaderboards-test.miau.io/thumbor',
-            DLAPP_BETAFLIGHT_CALCULATOR: 'https://drl-betaflight-calculator-test.miau.io'
-          },
-          PROD: {
-            DLAPP_URL: 'https://drl-leaderboards.miau.io',
-            DLAPP_API_URL: 'https://drl-leaderboards.miau.io/api',
-            DLAPP_THUMBOR_URL: 'https://drl-leaderboards.miau.io/thumbor',
-            DLAPP_BETAFLIGHT_CALCULATOR: 'https://drl-betaflight-calculator.miau.io'
-          }
-        };
-        console.log({ ...global_vars, ...env_vars[process.env.DLAPP_ENV ? process.env.DLAPP_ENV : 'LOCAL'] });
-        return { ...global_vars, ...env_vars[process.env.DLAPP_ENV ? process.env.DLAPP_ENV : 'LOCAL'] };
-      })(),
+      envFolder: './env',
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -168,12 +130,17 @@ module.exports = configure(function (/* ctx */) {
       },
 
       vitePlugins: [
-        ['@intlify/vite-plugin-vue-i18n', {
+        ['vite-plugin-checker', {
+          eslint: {
+            lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"'
+          }
+        }, { server: false }]
+        ['@intlify/unplugin-vue-i18n/vite', {
           // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
           // compositionOnly: false,
 
           // you need to set i18n resource including paths !
-          include: path.resolve(__dirname, './src/i18n/**')
+          include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ],
         },
         vue({
           template: {
@@ -181,7 +148,7 @@ module.exports = configure(function (/* ctx */) {
               // treat all tags with a dash as custom elements
               isCustomElement: (tag) => tag.includes('-')
             }
-          }}),
+          }})
       ]]
     },
 
@@ -253,12 +220,11 @@ module.exports = configure(function (/* ctx */) {
 
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: 'generateSW', // or 'injectManifest'
+      workboxMode: 'GenerateSW', // or 'injectManifest'
       injectPwaMetaTags: true,
       swFilename: 'sw.js',
       manifestFilename: 'manifest.json',
       useCredentialsForManifestTag: false,
-      // useFilenameHashes: true,
       // extendGenerateSWOptions (cfg) {}
       // extendInjectManifestOptions (cfg) {},
       // extendManifestJson (json) {}

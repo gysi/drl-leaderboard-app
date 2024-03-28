@@ -1,5 +1,7 @@
 package de.gregord.drlleaderboardbackend.domain;
 
+import java.time.LocalDateTime;
+
 public interface OverallRankingView {
     Long getPosition();
     String getPlayerName();
@@ -13,4 +15,5 @@ public interface OverallRankingView {
     String getFlagUrl();
     String getProfilePlatform();
     String getProfileThumb();
+    LocalDateTime getLatestActivity();
 }
