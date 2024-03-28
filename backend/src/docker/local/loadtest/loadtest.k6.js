@@ -11,11 +11,11 @@ export const options = {
 
 export default function () {
     sleep(1 + (Math.random() * 2));
-    // http.get('http://localhost:8080/api/leaderboards/overall-ranking?page=1&limit=500');
+    // http.get('http://localhost:8080/api/leaderboards/official/overall-ranking?page=1&limit=500');
 
     // ssh -N -L 8081:localhost:8080 root@drl-leaderboards-test.miau.io
-    http.get('http://localhost:8081/api/leaderboards/overall-ranking?page=1&limit=500');
-    // http.get('https://drl-leaderboards-test.miau.io/api/leaderboards/overall-ranking?page=1&limit=500');
+    http.get('http://localhost:8081/api/leaderboards/official/overall-ranking?page=1&limit=500');
+    // http.get('https://drl-leaderboards-test.miau.io/api/leaderboards/official/overall-ranking?page=1&limit=500');
 
  }
 

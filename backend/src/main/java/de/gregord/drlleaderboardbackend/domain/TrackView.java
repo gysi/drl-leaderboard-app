@@ -5,4 +5,5 @@ public interface TrackView {
     String getName();
     String getMapName();
     String getParentCategory();
+    String getMapThumb();
 }

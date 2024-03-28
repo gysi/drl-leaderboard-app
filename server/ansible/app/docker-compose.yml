@@ -24,7 +24,6 @@ services:
       - /var/log/backend:/var/log/backend
       - /var/log/gc_backend:/var/log/gc_backend
       - /var/log/heapdumps_backend:/var/log/heapdumps_backend
-      - ./data/backend/imgcache:/imgcache
     deploy:
       resources:
         limits:

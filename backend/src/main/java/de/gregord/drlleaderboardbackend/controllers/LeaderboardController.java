@@ -2,9 +2,12 @@ package de.gregord.drlleaderboardbackend.controllers;
 
 
 import de.gregord.drlleaderboardbackend.domain.*;
+import de.gregord.drlleaderboardbackend.entities.MapCategory;
 import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
 import de.gregord.drlleaderboardbackend.services.LeaderboardService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/leaderboards")
@@ -32,32 +36,37 @@ public class LeaderboardController {
         this.leaderboardService = leaderboardService;
     }
 
-    @GetMapping("/byplayername")
+    @GetMapping("/official/byplayername")
     public ResponseEntity<List<LeaderboardByPlayerView>> getLeaderboardByPlayerName(@RequestParam String playerName) {
-        Sort sorting = Sort.by(
-                Sort.Order.asc("track.mapName"),
-                Sort.Order.asc("track.parentCategory"),
-                Sort.Order.asc("track.name"),
-                Sort.Order.desc("createdAt"),
-                Sort.Order.desc("beatenBy.createdAt")
-        );
-        List<LeaderboardByPlayerView> byPlayerName = leaderboardRepository.findByPlayerName(playerName, sorting);
+        List<LeaderboardByPlayerView> byPlayerName =
+                leaderboardService.getOfficialTrackLeaderboardForPlayer(playerName);
 //        CacheInfo cacheInfo = CacheInfo.of(((SpringCache2kCache) cacheManager.getCache("leaderboardbyplayername")).getNativeCache());
         return ResponseEntity.ok(byPlayerName);
     }
 
-    @GetMapping("/overall-ranking")
+    @GetMapping("/community-season/by-playername/current-seasons")
+    public ResponseEntity<List<LeaderboardByPlayerView>> getLeaderboardByPlayerNameForCurrentSeason(
+            @RequestParam String playerName) {
+        List<LeaderboardByPlayerView> byPlayerName =
+                leaderboardService.getTrackLeaderboardForPlayerForCurrentSeason(playerName);
+        return ResponseEntity.ok(byPlayerName);
+    }
+
+    @GetMapping("/official/overall-ranking")
     public ResponseEntity<List<OverallRankingView>> getOverallRanking(
             @RequestParam(required = false) Optional<String> parentCategory,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "50") int limit
-    ) throws Exception {
-        List<OverallRankingView> overallRanking = leaderboardService.getOverallRanking(parentCategory, page, limit);
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "50") @Min(1) @Max(500) int limit
+    ) {
+        List<OverallRankingView> overallRanking = leaderboardService.getOverallRanking(
+                parentCategory.flatMap(MapCategory::fromString).map(p -> Set.of(p.ordinal())).orElse(MapCategory.getOfficialCategoriesIds()),
+                page,
+                limit);
         return ResponseEntity.ok(overallRanking);
     }
 
     @GetMapping("/bytrack/{trackId}")
-    public ResponseEntity<List<LeaderboardByTrackView>> getLeaderboardByPlayerName(
+    public ResponseEntity<List<LeaderboardByTrackView>> getLeaderboardByTrackId(
             @PathVariable Long trackId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "50") int limit
@@ -74,7 +83,8 @@ public class LeaderboardController {
     public ResponseEntity<List<ReplaysByTrackView>> getReplaysByTrackId(
             @PathVariable Long trackId
     ) {
-        List<ReplaysByTrackView> replays = leaderboardRepository.findByTrackIdAndIsInvalidRunFalse(trackId, Sort.by(Sort.Order.asc("position")));
+        List<ReplaysByTrackView> replays = leaderboardRepository.findByTrackIdAndIsInvalidRunFalse(trackId, Sort.by(Sort.Order.asc(
+                "position")));
         return ResponseEntity.ok(replays);
     }
 
@@ -116,7 +126,7 @@ public class LeaderboardController {
 
     @PostMapping("/worst-tracks")
     public ResponseEntity<List<WorstTracksView>> worstTracks(
-        @RequestBody @Valid RequestBodyWorstTracks requestBodyWorstTracks
+            @RequestBody @Valid RequestBodyWorstTracks requestBodyWorstTracks
     ) {
         List<WorstTracksView> worstTracksByPlayer = leaderboardRepository.worstTracksByPlayer(
                 requestBodyWorstTracks.getPlayerName(),
@@ -129,7 +139,10 @@ public class LeaderboardController {
                 requestBodyWorstTracks.getIncludeNotCompleted(),
                 Optional.ofNullable(requestBodyWorstTracks.getExcludedTracks()).orElse(List.of()).stream()
                         .filter(s -> s.chars().allMatch(Character::isDigit))
-                        .map(Long::parseLong).toList()
+                        .map(Long::parseLong).toList(),
+                MapCategory.getOfficialCategoriesIds(),
+                Season.getCurrentSeasonId(),
+                false // TODO let the user choose to only include community season tracks
         );
         return ResponseEntity.ok(worstTracksByPlayer);
     }

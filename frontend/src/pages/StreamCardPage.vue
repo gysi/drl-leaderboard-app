@@ -126,8 +126,7 @@ const topRankings = computed(() => {
 });
 
 const fetchRankings = debounce(async () => {
-  const response = await axios.get(process.env.DLAPP_API_URL + '/leaderboards/overall-ranking?page=1&limit=500');
-  // const response = await axios.get('http://192.168.178.31:8080/api/leaderboards/overall-ranking?page=1&limit=500');
+  const response = await axios.get(process.env.DLAPP_API_URL + '/leaderboards/official/overall-ranking?page=1&limit=500');
 
   rankings.value = response.data;
   rankingsTimer = setTimeout(() => {

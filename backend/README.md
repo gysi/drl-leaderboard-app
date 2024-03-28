@@ -44,14 +44,14 @@ Or as a json file at http://localhost:8080/v3/api-docs
 
 ## GraalVM Native Image META-INF configuration creation
 Install GRAALVM using sdkman.
-use 22.3.r17-nik or graalvm (sdk use)
+use 23.1.2.r21-nik or graalvm (sdk use)
 Make sure to have native-image installed (gu install native-image) only need when using graalvm not liberica
 ```bash
 /home/gregord/.sdkman/candidates/java/22.3.r17-grl/bin/gu install native-image 
 ```
 Build jar file, go to backend folder and run:
 ```bash
-java -Dspring.profiles.active=local -agentlib:native-image-agent=config-output-dir=META-INF/native-image -jar target/DRLLeaderboardBackend-1.3.0.jar
+java -Dspring.profiles.active=local -agentlib:native-image-agent=config-output-dir=META-INF/native-image -jar target/DRLLeaderboardBackend-1.4.0.jar
 ```
 
 Now test all features of the app as best as you can, by clicking through the app.

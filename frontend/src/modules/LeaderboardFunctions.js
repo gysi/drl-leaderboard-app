@@ -1,4 +1,4 @@
-import {formatDuration, intervalToDuration} from "date-fns";
+import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import { zonedTimeToUtc } from 'date-fns-tz';
 
 function backGroundColorByPosition(position){
@@ -94,4 +94,49 @@ function getDateDifferenceToNowByGermanTimezone(dateString) {
   return formatDuration(duration, { format: units }) + ' ago';
 }
 
-export { backGroundColorByPosition, formatMilliSeconds, getDateDifference, substractAndformatMilliSeconds, getDateDifferenceToNowByGermanTimezone }
+function formatISODateTimeToDate (isoDateTime) {
+  if (isoDateTime == null) return;
+  const date = parseISO(isoDateTime)
+  return format(date, 'MMM do, yyyy');
+}
+
+function sortByBeatenBy(a, b, rowa, rowb) {
+  // shouldn't happen, but just to make sure its not null
+  if (a == null && b == null) {
+    return 0;
+  } else if (a == null) {
+    return -1;
+  } else if (!b == null) {
+    return 1;
+  }
+  if (a.length === 0 && b.length === 0) {
+    const aDate = new Date(rowa.createdAt + 'Z');
+    const bDate = new Date(rowb.createdAt + 'Z');
+    if (aDate < bDate) {
+      return -1;
+    } else {
+      return 1;
+    }
+  } else if (a.length === 0) {
+    return -1;
+  } else if (b.length === 0) {
+    return 1;
+  }
+
+  if (a.length === b.length) {
+    const aDate = new Date(a[0].createdAt + 'Z');
+    const bDate = new Date(b[0].createdAt + 'Z');
+    if (aDate < bDate) {
+      return 1;
+    } else {
+      return -1;
+    }
+  } else if (a.length < b.length) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+export { backGroundColorByPosition, formatMilliSeconds, getDateDifference, substractAndformatMilliSeconds,
+  getDateDifferenceToNowByGermanTimezone, formatISODateTimeToDate, sortByBeatenBy }

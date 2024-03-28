@@ -9,13 +9,10 @@ spring:
 app:
   show-sql: false
   drl-api:
-    # To finish within 30 minutes I need at least 1 request every 2.1 seconds = 0.47 requests/s
-#    duration-between-requests: 2000ms # ~0.5 requests/s
-    duration-between-requests: 140ms # ~0.5 requests/s
+    duration-between-requests: 200ms
   data-updater:
     leaderboards:
-      cron: "-" # disabled
-#      cron: "*/1 * * * * *" # every 1 second
+      enabled: true
     tracks:
       cron: "-" # disabled
     tournaments:
@@ -30,6 +27,7 @@ logging:
   level:
     root: info
     de.gregord.drlleaderboardbackend: info
+#    de.gregord.drlleaderboardbackend.services: error
 #    org.hibernate.SQL: debug
 #    org.hibernate.orm.jdbc.bind: trace
 #    org.springframework: trace

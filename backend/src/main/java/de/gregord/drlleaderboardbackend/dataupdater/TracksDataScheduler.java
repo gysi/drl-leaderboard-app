@@ -11,20 +11,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class TracksDataScheduler {
 
-    TracksDataUpdater tracksDataUpdater;
+    TracksOfficialDataUpdater tracksOfficialDataUpdater;
+    TracksCommunityDataUpdater tracksCommunityDataUpdater;
 
-    public TracksDataScheduler(TracksDataUpdater tracksDataUpdater) {
-        this.tracksDataUpdater = tracksDataUpdater;
+    public TracksDataScheduler(TracksOfficialDataUpdater tracksOfficialDataUpdater,
+                               TracksCommunityDataUpdater tracksCommunityDataUpdater) {
+        this.tracksOfficialDataUpdater = tracksOfficialDataUpdater;
+        this.tracksCommunityDataUpdater = tracksCommunityDataUpdater;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     @Order(100)
-    public void initialize() {
-        tracksDataUpdater.initialize();
+    public void initialize() throws InterruptedException {
+        var thread1 = Thread.ofVirtual().name("OfficialTracksDataUpdater").start(() -> tracksOfficialDataUpdater.initialize());
+        var thread2 = Thread.ofVirtual().name("CommunityTracksDataUpdater").start(() -> tracksCommunityDataUpdater.initialize());
+        thread1.join();
+        thread2.join();
     }
 
     @Scheduled(cron = "${app.data-updater.tracks.cron}")
-    public void updateMapsData(){
-        tracksDataUpdater.updateMapsData();
+    public void updateMapsData() throws InterruptedException {
+        var thread1 = Thread.ofVirtual().name("OfficialTracksDataUpdater").start(() -> tracksOfficialDataUpdater.updateMapsData());
+        var thread2 = Thread.ofVirtual().name("CommunityTracksDataUpdater").start(() -> tracksCommunityDataUpdater.updateMapsData());
+        thread1.join();
+        thread2.join();
     }
 }
