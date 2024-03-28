@@ -8,10 +8,13 @@ const routes = [
     children: [
       { name: 'home', path: '', component: IndexPage },
       { name: 'overallrankings', path: 'overall-rankings', component: () => import('pages/OverallPage.vue') },
+      { name: 'community-rankings', path: 'community-rankings', component: () => import('pages/CommunityRankingPage.vue') },
       { name: 'tournaments', path: 'tournaments', component: () => import('pages/TournamentsPage.vue') },
       { name: 'tracks', path: 'tracks', component: () => import('pages/TracksPage.vue') },
+      { name: 'tracks-community', path: 'tracks-community', component: () => import('pages/TracksCommunityPage.vue') },
       { name: 'tracklb', path: 'track-lb', component: () => import('pages/TrackLbPage.vue'), props: route => ({ q: route.query.q }) },
       { name: 'playerlb', path: 'player-lb', component: () => import('pages/PlayerLbPage.vue'), props: route => ({ q: route.query.q }) },
+      { name: 'playerlb-community', path: 'player-lb-community', component: () => import('pages/PlayerLbCommunityPage.vue'), props: route => ({ q: route.query.q }) },
       { name: 'faq', path: 'faq', component: () => import('pages/FAQPage.vue') },
       { name: 'worstTracksPicker', path: 'worst-tracks-picker', component: () => import('pages/WorstTracksPickerPage.vue') },
       { name: 'replayviewer', path: 'replay-viewer', component: () => import('pages/ReplayPage.vue') },

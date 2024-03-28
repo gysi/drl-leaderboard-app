@@ -23,4 +23,5 @@ public class TrackMinimal {
     private String mapName;
     private String parentCategory;
     private String name;
+    private Integer mapCategoryId;
 }

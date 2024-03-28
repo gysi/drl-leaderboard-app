@@ -16,6 +16,8 @@
     label="Enter track name"
     :loading="state.loading"
     popup-content-class="q-menu-dropdown"
+    virtual-scroll-slice-ratio-before="50"
+    virtual-scroll-slice-ratio-after="50"
   >
     <template v-slot:selected-item="props">
       <q-chip

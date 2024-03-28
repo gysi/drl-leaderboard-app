@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine as backend-builder
+FROM eclipse-temurin:21-jdk-alpine as backend-builder
 WORKDIR /app
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
@@ -7,7 +7,7 @@ COPY src/main ./src/main
 COPY src/test ./src/test
 RUN ./mvnw install spring-boot:repackage
 
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre-alpine
 RUN mkdir /opt/app /var/log/backend /var/log/backend/gc
 COPY --from=backend-builder /app/target/*.jar /opt/app/app.jar
 ENV JAVA_TOOL_OPTIONS="\

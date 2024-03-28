@@ -5,7 +5,6 @@ import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRound;
 import de.gregord.drlleaderboardbackend.repositories.TournamentRepository;
 import de.gregord.drlleaderboardbackend.services.discord.DiscordMessageService;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,9 +12,11 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_TOURNAMENT_RANKINGS;
 
 @Component
 public class TournamentDataUpdater {
@@ -57,15 +60,10 @@ public class TournamentDataUpdater {
     @CacheEvict(value = "tournaments", allEntries = true)
     public void initialize() {
         long count = tournamentRepository.count();
-//        if(count <= 0) {
-        LOG.info("No tournaments found in database, initializing...");
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if (count <= 0) {
+            LOG.info("No tournaments found in database, initializing...");
+            updateData();
         }
-        updateData();
-//        }
     }
 
     @Transactional
@@ -78,13 +76,15 @@ public class TournamentDataUpdater {
         String requestUrl = tournamentEndpointBuilder.buildAndExpand(Map.of("token", token)).toUriString();
         LOG.info("Tournament requestUrl: " + requestUrl);
         try {
-            ResponseEntity<Map> exchange = (new RestTemplate()).exchange(requestUrl, HttpMethod.GET, null, Map.class);
+            ResponseEntity<Map<String, Object>> exchange = (new RestTemplate()).exchange(requestUrl, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<>() {
+            });
             Map<String, Object> body = exchange.getBody();
             if (body == null) {
                 LOG.error("Could not retrieve tournament data from DRL API, no body for request: {}", requestUrl);
                 return;
             }
-            List<Map<String, Object>> data = (List<Map<String, Object>>) body.get("data");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> data = (List<Map<String, Object>>) body.get("data");
             if (data == null) {
                 LOG.error("Could not retrieve tournament data from DRL API, no data for request: {}", requestUrl);
                 return;
@@ -93,21 +93,25 @@ public class TournamentDataUpdater {
                 String tournamentDrlId = (String) tournamentJSON.get("id");
                 String tournamentGuid = (String) tournamentJSON.get("guid");
                 Tournament tournament = tournamentRepository.findTournamentByDrlId(tournamentDrlId).orElseGet(Tournament::new);
-                Boolean tournamentAlreadyExists = tournament.getId() != null;
+                boolean tournamentAlreadyExists = tournament.getId() != null;
                 String oldStatus = tournament.getStatus();
                 if (tournamentAlreadyExists && tournament.getStatus().equals("complete")) {
                     LOG.info("Tournament {} is already completed and saved within the db, skipping...", tournamentGuid);
                     continue;
                 }
                 UriComponentsBuilder tournamentDetailEndpointBuilder = UriComponentsBuilder.fromUriString(tournamentDetailEndpoint);
-                String requestUrlDetail = tournamentDetailEndpointBuilder.buildAndExpand(Map.of("token", token, "guid", tournamentGuid)).toUriString();
-                ResponseEntity<Map> exchangeDetail = (new RestTemplate()).exchange(requestUrlDetail, HttpMethod.GET, null, Map.class);
+                String requestUrlDetail =
+                        tournamentDetailEndpointBuilder.buildAndExpand(Map.of("token", token, "guid", tournamentGuid)).toUriString();
+                ResponseEntity<Map<String, Object>> exchangeDetail = (new RestTemplate()).exchange(requestUrlDetail, HttpMethod.GET, null
+                        , new ParameterizedTypeReference<>() {
+                });
                 Map<String, Object> bodyDetail = exchangeDetail.getBody();
                 if (bodyDetail == null) {
                     LOG.error("Could not retrieve tournamentDetail from DRL API. guid: {}", tournamentGuid);
                     continue;
                 }
-                Map<String, Object> tournamentDetailJSON = ((List<Map<String, Object>>) bodyDetail.get("data")).get(0);
+                @SuppressWarnings("unchecked") Map<String, Object> tournamentDetailJSON = ((List<Map<String, Object>>) bodyDetail.get(
+                        "data")).get(0);
                 tournament.setStatus((String) tournamentJSON.get("status"));
                 tournament.setGuid(tournamentGuid);
                 tournament.setDrlId(tournamentDrlId);
@@ -135,9 +139,11 @@ public class TournamentDataUpdater {
                                 LocalDateTime.from(ZonedDateTime.parse((String) tournamentJSON.get("completed-at")))
                 );
 
+                //noinspection unchecked
                 tournament.setPlayerIds((List<String>) tournamentDetailJSON.get("player-ids"));
 
-                List<Map<String, Object>> rankingsJSON = (List<Map<String, Object>>) tournamentDetailJSON.get("ranking");
+                @SuppressWarnings("unchecked") List<Map<String, Object>> rankingsJSON =
+                        (List<Map<String, Object>>) tournamentDetailJSON.get("ranking");
                 List<TournamentRanking> tournamentRankings = new ArrayList<>();
                 for (Map<String, Object> rankingJSON : rankingsJSON) {
                     TournamentRanking tournamentRanking = new TournamentRanking();
@@ -165,7 +171,8 @@ public class TournamentDataUpdater {
                 }
                 tournament.setRankings(tournamentRankings);
 
-                List<Map<String, Object>> roundsJSON = (List<Map<String, Object>>) tournamentDetailJSON.get("rounds");
+                @SuppressWarnings("unchecked") List<Map<String, Object>> roundsJSON =
+                        (List<Map<String, Object>>) tournamentDetailJSON.get("rounds");
                 List<TournamentRound> tournamentRounds = new ArrayList<>();
                 boolean isMapSet = false;
                 for (Map<String, Object> roundJSON : roundsJSON) {
@@ -191,7 +198,8 @@ public class TournamentDataUpdater {
                                     LocalDateTime.from(ZonedDateTime.parse((String) roundJSON.get("end-at")))
                     );
                     tournamentRounds.add(tournamentRound);
-                    List<Map<String, Object>> matchesJSON = (List<Map<String, Object>>) roundJSON.get("matches");
+                    @SuppressWarnings("unchecked") List<Map<String, Object>> matchesJSON = (List<Map<String, Object>>) roundJSON.get(
+                            "matches");
                     List<TournamentRound.Match> tournamentMatches = new ArrayList<>();
                     for (Map<String, Object> matchJSON : matchesJSON) {
                         TournamentRound.Match tournamentMatch = new TournamentRound.Match();
@@ -203,8 +211,10 @@ public class TournamentDataUpdater {
                         tournamentMatch.setActiveHeat((Integer) matchJSON.get("active-heat"));
                         tournamentMatch.setCurrentHeat((Integer) matchJSON.get("current-heat"));
                         tournamentMatch.setPlayersSize((Integer) matchJSON.get("players-size"));
+                        //noinspection unchecked
                         tournamentMatch.setPlayerOrder((List<String>) matchJSON.get("player-order"));
-                        List<Map<String, Object>> playersJSON = (List<Map<String, Object>>) matchJSON.get("players");
+                        @SuppressWarnings("unchecked") List<Map<String, Object>> playersJSON = (List<Map<String, Object>>) matchJSON.get(
+                                "players");
                         List<TournamentRound.Player> players = new ArrayList<>();
                         for (Map<String, Object> playerJSON : playersJSON) {
                             TournamentRound.Player player = new TournamentRound.Player();
@@ -224,7 +234,7 @@ public class TournamentDataUpdater {
                 }
                 tournament.setRounds(tournamentRounds);
                 tournamentRepository.save(tournament);
-                Optional.ofNullable(cacheManager.getCache("tournamentRankings"))
+                Optional.ofNullable(cacheManager.getCache(CACHE_TOURNAMENT_RANKINGS))
                         .ifPresent(Cache::invalidate);
                 if (tournamentAlreadyExists && "idle".equals(tournament.getStatus()) &&
                         tournament.getRegistrationEndAt().minusMinutes(30).isBefore(LocalDateTime.now())

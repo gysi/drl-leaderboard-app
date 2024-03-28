@@ -1,12 +1,17 @@
 package de.gregord.drlleaderboardbackend.domain;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.stream.Collectors;
-import java.util.TreeMap;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.gregord.drlleaderboardbackend.domain.serializer.MapCategorySerializer;
+import de.gregord.drlleaderboardbackend.domain.serializer.SeasonSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.CheckForNull;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@JsonSerialize(using = SeasonSerializer.class)
 public enum Season {
 // 2023 no spring season because of to little tournaments because of DRL game release
 //        SEASON_2023_SPRING("2023-01-SPRING", "Spring Season 2023",
@@ -154,26 +159,31 @@ public enum Season {
             LocalDateTime.of(2034,12,1, 0, 0),
             LocalDateTime.of(2035,3,1, 0, 0));
 
-    private final String seasonId;
+    private static final Logger LOG = LoggerFactory.getLogger(Season.class);
+    private final String seasonIdName;
     private final String seasonName;
     private final LocalDateTime seasonStartDate; // inclusive
     private final LocalDateTime seasonEndDate; // exclusive
 
-    public static final Map<String, Season> SEASON_MAPPING_BY_SEASON_ID = Arrays.stream(Season.values())
-            .collect(Collectors.toMap(Season::getSeasonId, season -> season));
+    public static final Map<String, Season> SEASON_MAPPING_BY_SEASON_ID_NAME = Arrays.stream(Season.values())
+            .collect(Collectors.toMap(Season::getSeasonIdName, season -> season));
 
     public static final NavigableMap<LocalDateTime, Season> SEASON_MAPPING_BY_DATE = Arrays.stream(Season.values())
             .collect(Collectors.toMap(Season::getSeasonStartDate, season -> season, (oldValue, newValue) -> oldValue, TreeMap::new));
 
-    Season(String seasonId, String seasonName, LocalDateTime seasonStartDate, LocalDateTime seasonEndDate) {
-        this.seasonId = seasonId;
+    Season(String seasonIdName, String seasonName, LocalDateTime seasonStartDate, LocalDateTime seasonEndDate) {
+        this.seasonIdName = seasonIdName;
         this.seasonName = seasonName;
         this.seasonStartDate = seasonStartDate;
         this.seasonEndDate = seasonEndDate;
     }
 
-    public String getSeasonId() {
-        return seasonId;
+    public int getSeasonId(){
+        return this.ordinal();
+    }
+
+    public String getSeasonIdName() {
+        return seasonIdName;
     }
 
     public String getSeasonName() {
@@ -185,5 +195,51 @@ public enum Season {
     }
     public LocalDateTime getSeasonEndDate() {
         return seasonEndDate;
+    }
+
+    public static int getCurrentSeasonId() {
+        return getCurrentSeason().ordinal();
+    }
+
+    public static String getCurrentSeasonIdName() {
+        return getCurrentSeason().getSeasonIdName();
+    }
+
+    public static Season getCurrentSeason() {
+        return SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
+    }
+
+    @CheckForNull
+    public static Season getPreviousSeason(Season season) {
+        int seasonOrdinal = season.ordinal();
+        if(seasonOrdinal == 0){
+            LOG.warn("There is no previous season before season: {}", season);
+            return null;
+        }
+        return Season.values()[season.ordinal() - 1];
+    }
+
+    @CheckForNull
+    public static Season getNextSeason(Season season) {
+        int seasonOrdinal = season.ordinal();
+        if(seasonOrdinal == Season.SEASON_2034_SUMMER.ordinal()){
+            LOG.warn("There is no previous season after season: {}", season);
+            return null;
+        }
+        return Season.values()[season.ordinal() + 1];
+    }
+
+    @CheckForNull
+    public static Season getNextSeason() {
+        return getNextSeason(getCurrentSeason());
+    }
+
+    @CheckForNull
+    public static Season getBySeasionIdName(String seasonIdName) {
+        return SEASON_MAPPING_BY_SEASON_ID_NAME.get(seasonIdName);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Season.values()[0].ordinal());
     }
 }
