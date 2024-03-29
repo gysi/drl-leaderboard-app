@@ -26,6 +26,8 @@
                 </li>
                 <li>The profile links from the track leaderboard of community tracks to profile pages were broken.
                 </li>
+                <li>Fixes the cache for the latest top10 entries, it wasn't updated at all.
+                </li>
               </ul>
             </q-card-section>
           </q-card>

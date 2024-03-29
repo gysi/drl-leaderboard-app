@@ -49,7 +49,7 @@ public class CacheEventListener {
         boolean top10Entries = updatedLeaderboardEntries.stream()
                 .anyMatch(l -> l.getPosition() <= 10L);
         if (top10Entries) {
-            Optional.ofNullable(cacheManager.getCache(CACHE_LATEST_LEADERBOARD_ACTIVITY)).ifPresent(Cache::invalidate);
+            Optional.ofNullable(cacheManager.getCache(CACHE_LATEST_LEADERBOARD_ACTIVITY_TOP10)).ifPresent(Cache::invalidate);
         }
 
         if (MapCategory.getOfficialCategoriesIds().contains(track.getMapCategoryId())) {
