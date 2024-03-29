@@ -41,13 +41,13 @@ WORKDIR /app
 # TODO deactivate purge for now, because it removes too much
 #RUN yarn quasar build && yarn purgecss --config ./purgecss.config.cjs
 RUN rm env/.env.prod && mv env/.env.staging env/.env.prod
-RUN yarn quasar build
+RUN DLAPP_ENV=STAGING yarn quasar build
 
 FROM frontend-builder as frontend-builder-prod
 WORKDIR /app
 # TODO deactivate purge for now, because it removes too much
 #RUN yarn quasar build && yarn purgecss --config ./purgecss.config.cjs
-RUN yarn quasar build
+RUN DLAPP_ENV=PROD yarn quasar build
 
 FROM python:3.11-bullseye as runner
 WORKDIR /

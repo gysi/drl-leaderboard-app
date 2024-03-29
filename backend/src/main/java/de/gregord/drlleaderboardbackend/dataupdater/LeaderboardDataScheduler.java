@@ -72,7 +72,7 @@ public class LeaderboardDataScheduler {
     public Thread startTrackThread(Thread.Builder threadBuilder, Supplier<List<Long>> trackSupplier) {
         return threadBuilder.start(() -> {
             LOG.info("Starting Thread to process tracks... {}", Thread.currentThread().getName());
-//            while (running.get()) {
+            while (running.get()) {
                 List<Long> tracksToProcess = trackSupplier.get();
                 for (Long trackId : tracksToProcess) {
                     if (tracksProcessedNotSoLongAgo.contains(trackId)) {
@@ -85,7 +85,7 @@ public class LeaderboardDataScheduler {
                     }
                     tracksRepository.findById(trackId).ifPresent(leaderboardUpdater::updateLeaderboardForTrack);
                 }
-//            }
+            }
         });
     }
 
