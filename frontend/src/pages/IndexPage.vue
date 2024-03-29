@@ -28,7 +28,7 @@
           <template v-slot:body-cell-playerName="props">
             <td>
               {{ props.row.playerName }}
-              <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
+              <q-btn type="a" :to="{ name: props.row.parentCategory === 'Community' ? 'playerlb-community' : 'playerlb', query: { playerName: props.row.playerName } }"
                      rounded flat padding="0" dense class="button-fills-whole-td" :aria-label="props.row.playerName">
               </q-btn>
             </td>
@@ -60,7 +60,7 @@
           <template v-slot:body-cell-playerName="props">
             <td>
               {{ props.row.playerName }}
-              <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
+              <q-btn type="a" :to="{ name: props.row.parentCategory === 'Community' ? 'playerlb-community' : 'playerlb', query: { playerName: props.row.playerName } }"
                      rounded flat padding="0" dense class="button-fills-whole-td" :aria-label="props.row.playerName">
               </q-btn>
             </td>
