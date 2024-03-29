@@ -4,6 +4,33 @@ log_format postdata escape=none '$remote_addr - $remote_user [$time_local] '
 
 limit_req_zone $binary_remote_addr zone=imglimit:10m rate=100r/s;
 
+{% if server.hostname_old +%}
+server {
+    listen 80;
+    server_name {{ server.hostname_old }};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 302 $scheme://{{ server.hostname }}$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name {{ server.hostname_old }};
+    ssl_certificate /etc/letsencrypt/live/{{ server.hostname_old }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ server.hostname_old }}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    return 302 $scheme://{{ server.hostname }}$request_uri;
+}
+{% endif %}
+
 server {
     listen 80;
     server_name {{ server.hostname }};
@@ -30,7 +57,8 @@ server {
 }
 
 server {
-    listen 443 http2 ssl;
+    listen 443 ssl;
+    http2 on;
     server_name {{ server.hostname }};
     ssl_certificate /etc/letsencrypt/live/{{ server.hostname }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ server.hostname }}/privkey.pem;

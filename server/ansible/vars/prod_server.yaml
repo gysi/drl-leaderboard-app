@@ -1,7 +1,10 @@
 env: 'prod'
 server:
-  hostname: "drl-leaderboards.miau.io"
-  hostname_transmitters: "transmitters.miau.io"
-  hostname_betaflight_calculator: "drl-betaflight-calculator.miau.io"
+  hostname: "drl-leaderboards.com"
+  hostname_old: "drl-leaderboards.miau.io"
+  hostname_transmitters: "transmitters.drl-leaderboards.com"
+  hostname_transmitters_old: "transmitters.miau.io"
+  hostname_betaflight_calculator: "betaflight-calculator.drl-leaderboards.com"
+  hostname_betaflight_calculator_old: "drl-betaflight-calculator.miau.io"
   certificate:
-    mail: "drl-leaderboards.miau.io@i337.de"
+    mail: "drl-leaderboards@i337.de"

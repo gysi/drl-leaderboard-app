@@ -43,7 +43,7 @@ app:
   name: DRLLeaderboardBackend
   version: 1.0.0
   description: DRLLeaderboardBackend
-  frontend-url: https://drl-leaderboards.miau.io
+  frontend-url: https://drl-leaderboards.com
   drl-api:
     leaderboard-endpoint: "https://api.drlgame.com/leaderboards/?limit={limit}&game-type=Race&score-type=TimeMin&page={page}&token={token}&diameter=7&custom-physics=false&drl-official=true"
     maps-endpoint: "https://api.drlgame.com/maps?token={token}&page={page}&map-category=MapDRL&map-category=MapMultiGP&map-category=MapDRLSimCup&map-category=MapVirtualSeason&map-category=MapFeatured&limit=25"

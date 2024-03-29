@@ -1,7 +1,10 @@
 env: 'test'
 server:
-  hostname: "drl-leaderboards-test.miau.io"
-  hostname_transmitters: "transmitters-test.miau.io"
-  hostname_betaflight_calculator: "drl-betaflight-calculator-test.miau.io"
+  hostname: "test.drl-leaderboards.com"
+  hostname_old: "drl-leaderboards-test.miau.io"
+  hostname_transmitters: "transmitters.test.drl-leaderboards.com"
+  hostname_transmitters_old: "transmitters-test.miau.io"
+  hostname_betaflight_calculator: "betaflight-calculator.test.drl-leaderboards.com"
+  hostname_betaflight_calculator_old: "drl-betaflight-calculator-test.miau.io"
   certificate:
-    mail: "drl-leaderboards-test.miau.io@i337.de"
+    mail: "drl-leaderboards-test@i337.de"

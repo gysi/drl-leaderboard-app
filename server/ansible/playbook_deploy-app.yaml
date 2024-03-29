@@ -179,6 +179,27 @@
 
     - name: "Check if certificates directory is empty"
       ansible.builtin.find:
+        paths: "app/data/certbot/conf/live/{{ server.hostname_old }}"
+        file_type: any
+        hidden: true
+      register: certdir_leaderboard_old
+
+    - name: "Check if certificates directory is empty"
+      ansible.builtin.find:
+        paths: "app/data/certbot/conf/live/{{ server.hostname_transmitters_old }}"
+        file_type: any
+        hidden: true
+      register: certdir_transmitters_old
+
+    - name: "Check if certificates directory is empty"
+      ansible.builtin.find:
+        paths: "app/data/certbot/conf/live/{{ server.hostname_betaflight_calculator_old }}"
+        file_type: any
+        hidden: true
+      register: certdir_betaflight_calculator_old
+
+    - name: "Check if certificates directory is empty"
+      ansible.builtin.find:
         paths: "app/data/certbot/conf/live/{{ server.hostname }}"
         file_type: any
         hidden: true
@@ -207,7 +228,13 @@
 
     - name: "Create certificates"
       ansible.builtin.command: app/init-letsencrypt.sh
-      when: certdir_leaderboard.matched == 0 or certdir_transmitters.matched == 0 or certdir_betaflight_calculator.matched == 0
+      when: >-
+        certdir_leaderboard.matched == 0
+        or certdir_transmitters.matched == 0
+        or certdir_betaflight_calculator.matched == 0
+        or certdir_leaderboard_old.matched == 0
+        or certdir_transmitters_old.matched == 0
+        or certdir_betaflight_calculator_old.matched == 0
       changed_when: true
 
     - name: "Create and start services"
