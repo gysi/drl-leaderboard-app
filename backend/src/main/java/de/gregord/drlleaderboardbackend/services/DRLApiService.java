@@ -152,11 +152,13 @@ public class DRLApiService {
             LeaderboardProcessor leaderboardProcessor
     ) throws Exception {
         final LeaderboardProcessorResult leaderboardProcessorResult = new LeaderboardProcessorResult();
+
         // <PlayerId, LeaderboardDto>
         Map<String, LeaderboardEntry> currentLeaderboardEntries = new HashMap<>();
         if (track.getId() != null) {
             leaderboardRepository.findByTrack(modelMapper.map(track, TrackMinimal.class)).forEach(leaderboard -> currentLeaderboardEntries.put(leaderboard.getPlayer().getPlayerId(), leaderboard));
         }
+        boolean isNewTrack = currentLeaderboardEntries.isEmpty();
         UriComponentsBuilder mapsEndpointBuilder = UriComponentsBuilder.fromUriString(leaderboardEndpoint);
         if (track.getGuid().startsWith("CMP")) {
             mapsEndpointBuilder
@@ -246,7 +248,7 @@ public class DRLApiService {
                 leaderboardEntry.setIsInvalidRun(false);
                 if (alreadyFoundPlayerNames.containsKey(playerForEntry.getPlayerName())) {
                     LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerNames.get(playerForEntry.getPlayerName());
-                    if (!alreadyExistingEntry.getIsInvalidRun()) {
+                    if (Boolean.FALSE.equals(alreadyExistingEntry.getIsInvalidRun())) {
                         LOG.warn("Playername " + playerForEntry.getPlayerName() + " (" + playerForEntry.getPlayerId() + ") already exists" +
                                 " in this leaderboard (id: " + alreadyExistingEntry.getId() + ")");
                         leaderboardEntry.setIsInvalidRun(true);
@@ -283,7 +285,7 @@ public class DRLApiService {
                     for (String doubleAcc : doubleAccs) {
                         if (alreadyFoundPlayerIds.containsKey(doubleAcc)) {
                             LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerIds.get(doubleAcc);
-                            if (!alreadyExistingEntry.getIsInvalidRun()) {
+                            if (Boolean.FALSE.equals(alreadyExistingEntry.getIsInvalidRun())) {
                                 LOG.warn("Player " + playerForEntry.getPlayerId() + " is a double account of " + doubleAcc + " and " +
                                         "already exists in this leaderboard");
                                 leaderboardEntry.setIsInvalidRun(true);
@@ -322,19 +324,39 @@ public class DRLApiService {
                 }
 
                 leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPositionV3(leaderboardPosition));
+                // 1 p1 valid
+                // 2 p2 invalid prev = 10
+                // 2 p3 valid
+
+                // 1 p1 valid
+                // 2 p2 valid prev = 2
+                // 2 p3 valid
+
+                // DRL bug, that later adds a replay to the existing entry
+                if (existingEntry != null
+                    && leaderboardEntry.getDrlId().equals(existingEntry.getDrlId())
+                    && Boolean.TRUE.equals(existingEntry.getIsInvalidRun()))
+                {
+                    leaderboardEntry.setPreviousPosition(existingEntry.getPreviousPosition());
+                    leaderboardEntry.setPreviousScore(existingEntry.getPreviousScore());
+                } else if (existingEntry != null){
+                    leaderboardEntry.setPreviousPosition(existingEntry.getPosition());
+                    leaderboardEntry.setPreviousScore(existingEntry.getScore());
+                }
                 leaderboardEntry.setPosition(leaderboardPosition);
 
-                if (!leaderboardEntry.getIsInvalidRun() && leaderboardEntry.getPosition().equals(1L)) {
+                if (Boolean.FALSE.equals(leaderboardEntry.getIsInvalidRun()) && leaderboardEntry.getPosition().equals(1L)) {
                     leaderScore = leaderboardEntry.getScore();
                 }
 
                 if (leaderboardProcessor != null) {
                     leaderboardProcessor.process(
+                            isNewTrack,
                             drlLeaderboardEntry,
+                            existingEntry,
                             leaderboardEntry,
                             currentLeaderboardEntries,
-                            leaderScore,
-                            isExistingEntryInvalid
+                            leaderScore
                     );
                 }
 
@@ -358,7 +380,7 @@ public class DRLApiService {
                 alreadyFoundPlayerNames.put(playerForEntry.getPlayerName(), leaderboardEntry);
                 currentLeaderboardEntries.remove(playerForEntry.getPlayerId());
 
-                if (!leaderboardEntry.getIsInvalidRun()) {
+                if (Boolean.FALSE.equals(leaderboardEntry.getIsInvalidRun())) {
                     leaderboardPosition++;
                 }
 

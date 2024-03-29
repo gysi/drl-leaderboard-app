@@ -17,7 +17,7 @@
           <q-card>
             <q-card-section class="q-py-none q-px-sm row dialog-news-content-header">
               <div class="text-h5 q-py-sm">3.0.1 Release</div><q-space />
-              <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-02-29 13:30') }}</div>
+              <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-02-29 16:30') }}</div>
             </q-card-section>
             <q-card-section class="q-py-sm q-pl-lg dialog-news-content">
               <div class="text-h6">Bug fixes</div>
@@ -27,6 +27,12 @@
                 <li>The profile links from the track leaderboard of community tracks to profile pages were broken.
                 </li>
                 <li>Fixes the cache for the latest top10 entries, it wasn't updated at all.
+                </li>
+                <li>Fixed a bug in the leaderboard Discord bot where it incorrectly announced a player's improvement
+                  even though the player had not actually advanced in position. This issue occurred when an entry was
+                  initially submitted without a replay; as a result, the bot did not post an update due to the submission
+                  appearing invalid. Later, once a replay was added, the bot failed to recognize any position improvement
+                  because it had already recorded the player's standing, leading to a false notification of progress.
                 </li>
               </ul>
             </q-card-section>

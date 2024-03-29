@@ -48,40 +48,41 @@ public class LeaderboardUpdater {
             List<PlayerImprovement> improvements = new ArrayList<>();
             LeaderboardProcessorResult leaderboardProcessorResult = drlApiService.getAndProcessLeaderboardEntries(
                     track, PAGE_LIMIT, MAX_ENTRIES_PER_TRACK,
-                    (drlLeaderboardEntry,
+                    (isNewTrack,
+                     drlLeaderboardEntry,
+                     existingEntry,
                      newOrUpdatedLeaderboardEntry,
                      currentLeaderboardEntriesForTrack,
-                     leaderScore,
-                     isExistingEntryInvalid) -> {
+                     leaderScore) -> {
                         totalRequestCount++;
-                        LeaderboardEntry existingEntryInDB =
-                                currentLeaderboardEntriesForTrack.get(newOrUpdatedLeaderboardEntry.getPlayer().getPlayerId());
-                        if (newOrUpdatedLeaderboardEntry.getPosition() <= 50
-                                && (existingEntryInDB == null
-                                || newOrUpdatedLeaderboardEntry.getPosition() < existingEntryInDB.getPosition()
-                                /* When the DRL Api doesn't give me a replay URL I flag the run as invalid. But it happens often
-                                   that the replay is there later on because the DRL System is slow to upload it and save it
-                                   within the player pb. Until thats happened my site reports that PB as invalid.
-                                   Now my DRL Bot goes through all new pbs that have a new position for all tracks every ~10Minutes.
-                                   If there are any then it sends them to discord (But not invalid ones). It then saves the creation
-                                   time from the latest PB it posted and saves it. This way I know what I already posted so that I
-                                   don't post twice..
-                                   Now if your run then later gets a replay attached to it, I will update your PB, but I won't post it
-                                   because its creation time is before the time my bot last posted.
-                                   This next condition fixes this: */
-                                || (Objects.equals(isExistingEntryInvalid, Boolean.TRUE) && !newOrUpdatedLeaderboardEntry.getIsInvalidRun()))
-                                && !newOrUpdatedLeaderboardEntry.getIsInvalidRun()) {
+                        if (!isNewTrack
+                                && newOrUpdatedLeaderboardEntry.getPosition() <= 50
+                                && (existingEntry == null
+                                    || newOrUpdatedLeaderboardEntry.getPosition() < existingEntry.getPosition()
+                                    /* When the DRL Api doesn't give me a replay URL I flag the run as invalid. But it happens often
+                                       that the replay is there later on because the DRL System is slow to upload it and save it
+                                       within the player pb. Until thats happened my site reports that PB as invalid.
+                                       Now my DRL Bot goes through all new pbs that have a new position for all tracks every ~10Minutes.
+                                       If there are any then it sends them to discord (But not invalid ones). It then saves the creation
+                                       time from the latest PB it posted and saves it. This way I know what I already posted so that I
+                                       don't post twice..
+                                       Now if your run then later gets a replay attached to it, I will update your PB, but I won't post it
+                                       because its creation time is before the time my bot last posted.
+                                       This next condition fixes this: */
+                                    || (Boolean.TRUE.equals(existingEntry.getIsInvalidRun())
+                                        && Boolean.FALSE.equals(newOrUpdatedLeaderboardEntry.getIsInvalidRun())))
+                                && Boolean.FALSE.equals(newOrUpdatedLeaderboardEntry.getIsInvalidRun())) {
                             PlayerImprovement improvement = new PlayerImprovement();
                             improvement.setPlayerName(newOrUpdatedLeaderboardEntry.getPlayer().getPlayerName());
-                            improvement.setPreviousPosition(existingEntryInDB != null ? existingEntryInDB.getPosition() : null);
+                            improvement.setPreviousPosition(newOrUpdatedLeaderboardEntry.getPreviousPosition());
                             improvement.setCurrentPosition(newOrUpdatedLeaderboardEntry.getPosition());
-                            improvement.setPreviousScore(existingEntryInDB != null ? existingEntryInDB.getScore() : null);
+                            improvement.setPreviousScore(newOrUpdatedLeaderboardEntry.getPreviousScore());
                             improvement.setCurrentScore(newOrUpdatedLeaderboardEntry.getScore());
                             improvement.setCreatedAt(newOrUpdatedLeaderboardEntry.getCreatedAt());
                             improvement.setTrack(newOrUpdatedLeaderboardEntry.getTrack());
                             improvement.setProfilePicture(newOrUpdatedLeaderboardEntry.getPlayer().getProfileThumb());
                             improvement.setLeaderScore(leaderScore);
-                            if (Objects.equals(isExistingEntryInvalid, Boolean.TRUE)) {
+                            if (existingEntry != null && Boolean.TRUE.equals(existingEntry.getIsInvalidRun())) {
                                 improvement.setForcePost(true);
                             }
                             improvements.add(improvement);
