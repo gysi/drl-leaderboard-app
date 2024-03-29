@@ -14,7 +14,7 @@ server {
     }
 
     location / {
-        return 302 $scheme://{{ server.hostname }}$request_uri;
+        return 301 $scheme://{{ server.hostname }}$request_uri;
     }
 }
 
@@ -27,7 +27,7 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-    return 302 $scheme://{{ server.hostname }}$request_uri;
+    return 301 $scheme://{{ server.hostname }}$request_uri;
 }
 {% endif %}
 
