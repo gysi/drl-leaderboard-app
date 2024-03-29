@@ -11,10 +11,10 @@ FROM eclipse-temurin:21-jre-alpine
 RUN mkdir /opt/app /var/log/backend /var/log/backend/gc
 COPY --from=backend-builder /app/target/*.jar /opt/app/app.jar
 ENV JAVA_TOOL_OPTIONS="\
-    -Xms300m \
-    -Xmx550m \
+    -Xms300M \
+    -Xmx1500M \
     -XX:+UseStringDeduplication \
-    -XX:MaxMetaspaceSize=150m \
+    -XX:MaxMetaspaceSize=200M \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:HeapDumpPath=/var/log/heapdumps_backend/ \
     -XX:+UseG1GC \
