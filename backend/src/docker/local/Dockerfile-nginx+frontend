@@ -15,7 +15,7 @@ WORKDIR /app
 # TODO deactivate purge for now, because it removes too much
 #RUN yarn quasar build && yarn purgecss --config ./purgecss.config.cjs
 RUN rm env/.env.prod && mv env/.env.dev env/.env.prod
-RUN yarn quasar build
+RUN DLAPP_ENV=LOCAL yarn quasar build
 
 FROM nginx:latest
 RUN rm /etc/nginx/conf.d/default.conf

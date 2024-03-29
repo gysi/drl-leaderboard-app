@@ -10,4 +10,4 @@ COPY frontend/.eslintignore frontend/.eslintrc.cjs frontend/.npmrc \
     frontend/package.json frontend/postcss.config.cjs frontend/quasar.config.js frontend/yarn.lock ./
 
 
-RUN ls -lah && yarn quasar build
+RUN ls -lah && DLAPP_ENV=LOCAL yarn quasar build

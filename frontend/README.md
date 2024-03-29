@@ -21,7 +21,7 @@ yarn format
 
 ### Build the app for production
 ```bash
-yarn quasar build
+DLAPP_ENV=PROD yarn quasar build
 ```
 
 ### Customize the configuration
