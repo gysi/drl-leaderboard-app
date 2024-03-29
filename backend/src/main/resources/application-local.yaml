@@ -26,7 +26,7 @@ logging:
 
   level:
     root: info
-    de.gregord.drlleaderboardbackend: info
+    de.gregord.drlleaderboardbackend: debug
 #    de.gregord.drlleaderboardbackend.services: error
 #    org.hibernate.SQL: debug
 #    org.hibernate.orm.jdbc.bind: trace

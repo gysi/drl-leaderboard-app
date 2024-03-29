@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -39,7 +41,8 @@ public class DRLApiService {
     private final LeaderboardRepository leaderboardRepository;
     private final ModelMapper modelMapper;
     private final Duration durationBetweenRequests;
-    private LocalDateTime lastApiRequest;
+    private Long waitMillisToResetRequestLimit = null;
+    private LocalDateTime lastApiRequest = LocalDateTime.now();
     private final Object apiWaitLock = new Object();
     private static final Map<String, Double> customTopSpeeds = new HashMap<>();
     // <player_id, player_id>
@@ -119,29 +122,56 @@ public class DRLApiService {
 
     public <T> ResponseEntity<T> waitForApiLimitAndExecuteRequest(Supplier<ResponseEntity<T>> requestExecutor) throws RestClientException {
         synchronized (apiWaitLock) {
-            LocalDateTime now = LocalDateTime.now();
-            if (lastApiRequest == null) {
-                lastApiRequest = now;
-                return requestExecutor.get();
-            }
-            long millisBetweenRequest = durationBetweenRequests.toMillis();
-            long millisPassedSinceLastRequest =
-                    Duration.between(
-                            lastApiRequest.atZone(ZoneId.systemDefault()).toInstant(),
-                            now.atZone(ZoneId.systemDefault()).toInstant()
-                    ).toMillis();
+            do {
+                LocalDateTime now = LocalDateTime.now();
+                long millisBetweenRequest = durationBetweenRequests.toMillis();
+                long millisPassedSinceLastRequest =
+                        Duration.between(
+                                lastApiRequest.atZone(ZoneId.systemDefault()).toInstant(),
+                                now.atZone(ZoneId.systemDefault()).toInstant()
+                        ).toMillis();
 
-            if (millisPassedSinceLastRequest < millisBetweenRequest) {
-                try {
-                    Thread.sleep(millisBetweenRequest - millisPassedSinceLastRequest);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    LOG.error("Thread was interrupted while waiting to respect API limit", e);
+                if(waitMillisToResetRequestLimit != null){
+                    try {
+                        LOG.info("Waiting for api rate limit to reset {}ms", waitMillisToResetRequestLimit);
+                        Thread.sleep(waitMillisToResetRequestLimit);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        LOG.error("Thread was interrupted while waiting to respect API limit", e);
+                    }
+                    waitMillisToResetRequestLimit = null;
+                } else if (millisPassedSinceLastRequest < millisBetweenRequest) {
+                    try {
+                        Thread.sleep(millisBetweenRequest - millisPassedSinceLastRequest);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        LOG.error("Thread was interrupted while waiting to respect API limit", e);
+                    }
                 }
-            }
 
-            lastApiRequest = LocalDateTime.now();
-            return requestExecutor.get();
+                try {
+                    lastApiRequest = LocalDateTime.now();
+                    ResponseEntity<T> response = requestExecutor.get();
+                    HttpHeaders headers = response.getHeaders();
+                    String remaining = headers.getFirst("x-ratelimit-remaining");
+                    String reset = headers.getFirst("x-ratelimit-reset");
+                    if (remaining != null && reset != null) {
+                        long remainingRequests = Integer.parseInt(remaining);
+                        LOG.debug("Remaining api requests: {}", remainingRequests);
+                        long resetEpochSecond = Long.parseLong(reset);
+                        if(remainingRequests <= 30){
+                            LOG.info("Remaining api requests are <=30 ({}), set a wait time for the next request", remainingRequests);
+                            long millisToWait = (resetEpochSecond * 1000L) - System.currentTimeMillis();
+                            if(millisToWait > millisBetweenRequest) {
+                                waitMillisToResetRequestLimit = (resetEpochSecond * 1000L) - System.currentTimeMillis();
+                            }
+                        }
+                    }
+                    return response;
+                } catch (HttpClientErrorException.TooManyRequests tooManyRequestsError) {
+                    LOG.warn("Too many requests, this shouldn't really happen anymore", tooManyRequestsError);
+                }
+            } while (true);
         }
     }
 
