@@ -91,13 +91,6 @@ public class LeaderboardUpdater {
             );
             LOG.info("Saving leaderboard entries for track " + track.getName() + " with map id " + track.getMapId() + " and map name " + track.getMapName());
             playerService.savePlayers(leaderboardProcessorResult.getNewPlayers(), leaderboardProcessorResult.getUpdatedPlayers());
-            for (LeaderboardEntry newOrUpdatedLeaderboardEntry : leaderboardProcessorResult.getNewOrUpdatedLeaderboardEntries()) {
-                if (newOrUpdatedLeaderboardEntry.getPlayer() == null) {
-                    LOG.error("WAIT WHAT?");
-                } else if (newOrUpdatedLeaderboardEntry.getPlayer().getId() == null) {
-                    LOG.error("WAIT WHAT?");
-                }
-            }
             leaderboardService.saveAndDeleteLeaderboardEntriesForTrack(
                     track,
                     leaderboardProcessorResult.getNewOrUpdatedLeaderboardEntries(),

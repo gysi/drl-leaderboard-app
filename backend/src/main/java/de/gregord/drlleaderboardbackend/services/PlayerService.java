@@ -51,6 +51,10 @@ public class PlayerService {
     }
 
     public void savePlayers(List<Player> newPlayers, List<Player> updatedPlayers) {
+        if(newPlayers.isEmpty() && updatedPlayers.isEmpty()){
+            return;
+        }
+        LOG.debug("Updating/Saving Players...");
         Cache cache = cacheManager.getCache(CACHE_INTERNAL_LAST_SAVED_PLAYERS);
         boolean dataIntegrityViolationException = false;
         int retries = 0;

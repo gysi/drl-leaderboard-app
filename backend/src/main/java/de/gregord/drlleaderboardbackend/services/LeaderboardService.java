@@ -9,6 +9,8 @@ import de.gregord.drlleaderboardbackend.entities.Track;
 import de.gregord.drlleaderboardbackend.event.TrackLeaderboardUpdateEvent;
 import de.gregord.drlleaderboardbackend.repositories.LeaderboardRepository;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
@@ -24,7 +26,7 @@ import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_OFFICIAL
 @Service
 @Transactional(readOnly = true)
 public class LeaderboardService {
-
+    private static final Logger LOG = LoggerFactory.getLogger(LeaderboardService.class);
     private final ApplicationEventPublisher applicationEventPublisher;
     private final LeaderboardRepository leaderboardRepository;
     private final CommunitySeasonService communitySeasonService;
@@ -63,6 +65,10 @@ public class LeaderboardService {
             Collection<LeaderboardEntry> leaderboardEntriesUnchanged,
             Collection<LeaderboardEntry> leaderboardEntriesToBeDeleted
     ) {
+        if(leaderboardEntriesToBeSaved.isEmpty() && leaderboardEntriesToBeDeleted.isEmpty()){
+            return;
+        }
+        LOG.debug("Saving/Updating Leaderboard entries");
         List<LeaderboardEntry> leaderboardEntries = saveLeaderboardEntries(leaderboardEntriesToBeSaved);
         setBeatenByEntries(leaderboardEntries);
         deleteLeaderboardEntries(leaderboardEntriesToBeDeleted);
