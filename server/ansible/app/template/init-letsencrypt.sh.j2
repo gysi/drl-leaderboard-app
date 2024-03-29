@@ -10,7 +10,17 @@ cd "$(dirname "$0")"
 #  exit 1
 #fi
 # when specifing multiple domains just add a space between them
-domains=({{ server.hostname }} {{ server.hostname_transmitters }} {{ server.hostname_betaflight_calculator }})
+domains=(
+{{ server.hostname }}
+{% if server.hostname_old +%}{{ server.hostname_old }}
+{% endif %}
+{{ server.hostname_transmitters }}
+{% if server.hostname_transmitters_old +%}{{ server.hostname_transmitters_old }}
+{% endif %}
+{{ server.hostname_betaflight_calculator }}
+{% if server.hostname_betaflight_calculator_old +%}{{ server.hostname_betaflight_calculator_old }}
+{% endif %}
+)
 rsa_key_size=4096
 data_path="./data/certbot"
 email="{{ server.certificate.mail }}" # Adding a valid address is strongly recommended
@@ -33,6 +43,10 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
 fi
 
 for domain in "${domains[@]}"; do
+  if [ -e "$data_path/conf/live/$domain/cert.pem" ]; then
+    echo "### live certificate found for $domain, skipping dummy cert creation ..."
+    continue
+  fi
   echo "### Creating dummy certificate for $domain ..."
   path="/etc/letsencrypt/live/$domain"
   mkdir -p "$data_path/conf/live/$domain"
@@ -44,12 +58,15 @@ for domain in "${domains[@]}"; do
   echo
 done
 
-
 echo "### Starting nginx ..."
 docker compose up --force-recreate -d nginx
 echo
 
 for domain in "${domains[@]}"; do
+  if [ -e "$data_path/conf/live/$domain/cert.pem" ]; then
+    echo "### live certificate found for $domain, skipping dummy cert deletion..."
+    continue
+  fi
   echo "### Deleting dummy certificate for $domain ..."
   docker compose run --rm --entrypoint "\
     rm -Rf /etc/letsencrypt/live/$domain && \
@@ -58,14 +75,7 @@ for domain in "${domains[@]}"; do
   echo
 done
 
-
 echo "### Requesting Let's Encrypt certificate for domains ..."
-#Join $domains to -d args
-# multiple arguments doesn't seem to work anymore
-#domain_args=""
-#for domain in "${domains[@]}"; do
-#  domain_args="$domain_args -d $domain"
-#done
 
 # Select appropriate email arg
 case "$email" in
@@ -78,6 +88,10 @@ staging_arg=""
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
 for domain in "${domains[@]}"; do
+  if [ -e "$data_path/conf/live/$domain/cert.pem" ]; then
+    echo "### live certificate found for $domain, skipping letencrypt cert creation ..."
+    continue
+  fi
   docker compose run --rm --entrypoint "\
     certbot certonly --webroot -w /var/www/certbot \
       $staging_arg \

@@ -76,8 +76,8 @@ Or use the quick variant to just deploy the app and nothing else
 ### Connect to Postgres on the server
 Just port forward a local port to the postgres port on the server:
 ```bash
-ssh -N -L 5433:localhost:5432 root@drl-leaderboards-test.miau.io
-ssh -N -L 5434:localhost:5432 root@drl-leaderboards.miau.io
+ssh -N -L 5433:localhost:5432 root@test.drl-leaderboards.com
+ssh -N -L 5434:localhost:5432 root@drl-leaderboards.com
 ```
 Then just connect to localhost:5433/localhost:5434 with your favorite postgres client.
 ### Logs
@@ -98,5 +98,5 @@ fail2ban-client status [jailname]
 ### GoAccess
 Analyze logs:
 ```bash
-goaccess https-drl-leaderboards.miau.io.access.log* --log-format='%h - %^ [%d:%t %^] "%r" %s %b "%R" "%u" "%^"' --date-format='%d/%b/%Y' --time-format='%H:%M:%S'
+goaccess https-drl-leaderboards.com.access.log* --log-format='%h - %^ [%d:%t %^] "%r" %s %b "%R" "%u" "%^"' --date-format='%d/%b/%Y' --time-format='%H:%M:%S'
 ```

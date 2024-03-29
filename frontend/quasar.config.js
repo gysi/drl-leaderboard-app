@@ -46,7 +46,7 @@ processEJSFiles(srcDir);
 
 async function generateSitemap() {
   simpleSitemapAndIndex({
-    hostname: process.env.DLAPP_ENV === 'PROD' ? 'https://drl-leaderboards.miau.io' : 'https://drl-leaderboards-test.miau.io',
+    hostname: process.env.DLAPP_ENV === 'PROD' ? 'https://drl-leaderboards.com' : 'https://test.drl-leaderboards.com',
     destinationDir: './public',
     sourceData: sitemapRoutes,
     gzip: false,

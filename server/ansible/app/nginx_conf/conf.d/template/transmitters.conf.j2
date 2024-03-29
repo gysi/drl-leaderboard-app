@@ -1,3 +1,30 @@
+{% if server.hostname_transmitters_old +%}
+server {
+    listen 80;
+    server_name {{ server.hostname_transmitters_old }};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 302 $scheme://{{ server.hostname_transmitters }}$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name {{ server.hostname_transmitters_old }};
+    ssl_certificate /etc/letsencrypt/live/{{ server.hostname_transmitters_old }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ server.hostname_transmitters_old }}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    return 302 $scheme://{{ server.hostname_transmitters }}$request_uri;
+}
+{% endif %}
+
 server {
     listen 80;
     server_name {{ server.hostname_transmitters }};
