@@ -47,9 +47,11 @@ public class LeaderboardEntry {
     private Player player;
     private String playerIdDrl;
     private Long score;
+    private Long previousScore;
     private Integer crashCount;
     private Double topSpeed;
     private Long position;
+    private Long previousPosition;
     private Double points;
     // from drl api
     private LocalDateTime createdAt;
@@ -76,9 +78,11 @@ public class LeaderboardEntry {
                 .append(thiz.drlId, that.drlId)
                 .append(thiz.playerIdDrl, that.playerIdDrl)
                 .append(thiz.score, that.score)
+                .append(thiz.previousScore, that.previousScore)
                 .append(thiz.crashCount, that.crashCount)
                 .append(thiz.topSpeed, that.topSpeed)
                 .append(thiz.position, that.position)
+                .append(thiz.previousPosition, that.previousPosition)
                 .append(thiz.points, that.points)
                 .append(thiz.createdAt, that.createdAt)
                 .append(thiz.droneName, that.droneName)
@@ -94,9 +98,11 @@ public class LeaderboardEntry {
         leaderboardEntry.drlId = toCopy.drlId;
         leaderboardEntry.playerIdDrl = toCopy.playerIdDrl;
         leaderboardEntry.score = toCopy.score;
+        leaderboardEntry.previousScore = toCopy.previousScore;
         leaderboardEntry.crashCount = toCopy.crashCount;
         leaderboardEntry.topSpeed = toCopy.topSpeed;
         leaderboardEntry.position = toCopy.position;
+        leaderboardEntry.previousPosition = toCopy.previousPosition;
         leaderboardEntry.points = toCopy.points;
         leaderboardEntry.createdAt = toCopy.createdAt;
         leaderboardEntry.droneName = toCopy.droneName;

@@ -61,27 +61,24 @@ public class DiscordMessageService {
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMapIterable(Function.identity())
                 .flatMap(channel -> {
-                    List<PlayerImprovement> relevantImprovements = playerImprovements.stream()
-                            .filter(imp -> imp.getForcePost() || channel.getLastPostAt().isBefore(imp.getCreatedAt()))
-                            .collect(Collectors.toList());
-
-                    if (!relevantImprovements.isEmpty()) {
-                        latestCreatedAtOpt.ifPresent(latestCreatedAt ->
-                                updateLastPostAt(channel, latestCreatedAt));
-
-                        return sendMessageWithEmbedsToChannel(
-                                discordInitializationService.getLeaderboardGateway(),
-                                channel.getChannelId(),
-                                "### \uD83C\uDFC6 Leaderboard Updates (Top50) \uD83C\uDFC6",
-                                createEmbedsForPlayerImprovements(relevantImprovements));
-                    } else {
-                        // Logging improvements not posted to the channel
-                        playerImprovements.stream()
-                                .filter(imp -> !imp.getForcePost() && !channel.getLastPostAt().isBefore(imp.getCreatedAt()))
-                                .forEach(imp -> LOG.info("Improvement not posted \n {} \n in channel: {} ({}) ", imp,
-                                        channel.getChannelName(), channel.getChannelId()));
+                    // TODO should now work without the outcommented code, remove it in the future
+//                    List<PlayerImprovement> relevantImprovements = playerImprovements.stream()
+//                            .filter(imp -> imp.getForcePost() || channel.getLastPostAt().isBefore(imp.getCreatedAt()))
+//                            .collect(Collectors.toList());
+                    if(playerImprovements.isEmpty()){
+//                        playerImprovements.stream()
+//                                .filter(imp -> !imp.getForcePost() && !channel.getLastPostAt().isBefore(imp.getCreatedAt()))
+//                                .forEach(imp -> LOG.info("Improvement not posted \n {} \n in channel: {} ({}) ", imp,
+//                                        channel.getChannelName(), channel.getChannelId()));
                         return Mono.empty();
                     }
+                    latestCreatedAtOpt.ifPresent(latestCreatedAt ->
+                            updateLastPostAt(channel, latestCreatedAt));
+                    return sendMessageWithEmbedsToChannel(
+                            discordInitializationService.getLeaderboardGateway(),
+                            channel.getChannelId(),
+                            "### \uD83C\uDFC6 Leaderboard Updates (Top50) \uD83C\uDFC6",
+                            createEmbedsForPlayerImprovements(playerImprovements));
                 })
                 .subscribe(
                         result -> LOG.info("Message sent successfully to channel"),
