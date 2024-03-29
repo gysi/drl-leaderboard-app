@@ -91,19 +91,21 @@ public class LeaderboardService {
                     .sorted(Comparator.comparing(LeaderboardEntry::getCreatedAt).reversed())
                     .map(lbe -> modelMapper.map(lbe, LeaderboardEntryMinimal.class))
                     .toList();
-            if (!beatenByEntries.isEmpty()) {
-                Set<LeaderboardEntryMinimal> mergedSet = new LinkedHashSet<>();
-                List<LeaderboardEntryMinimal> currentBeatenByEntries = leaderboardEntry.getBeatenBy();
-                if (currentBeatenByEntries != null) {
-                    mergedSet.addAll(currentBeatenByEntries);
-                }
-                mergedSet.addAll(beatenByEntries);
-                List<LeaderboardEntryMinimal> mergedList = mergedSet.stream()
-                        .sorted(Comparator.comparing(LeaderboardEntryMinimal::getCreatedAt).reversed())
-                        .limit(5)
-                        .collect(Collectors.toList());
-                leaderboardEntry.setBeatenBy(mergedList);
-            }
+            leaderboardEntry.setBeatenBy(beatenByEntries);
+            // TODO I think this code here is buggy, and we want to always updat, but for now I will let this in here.
+//            if (!beatenByEntries.isEmpty()) {
+//                Set<LeaderboardEntryMinimal> mergedSet = new LinkedHashSet<>();
+//                List<LeaderboardEntryMinimal> currentBeatenByEntries = leaderboardEntry.getBeatenBy();
+//                if (currentBeatenByEntries != null) {
+//                    mergedSet.addAll(currentBeatenByEntries);
+//                }
+//                mergedSet.addAll(beatenByEntries);
+//                List<LeaderboardEntryMinimal> mergedList = mergedSet.stream()
+//                        .sorted(Comparator.comparing(LeaderboardEntryMinimal::getCreatedAt).reversed())
+//                        .limit(5)
+//                        .collect(Collectors.toList());
+//                leaderboardEntry.setBeatenBy(mergedList);
+//            }
         }
     }
 

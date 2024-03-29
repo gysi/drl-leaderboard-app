@@ -13,11 +13,26 @@
         </q-banner>
         <q-separator />
         <q-card style="max-height: 40rem" class="scroll">
+<!-- 3.0.1 Release -->
+          <q-card>
+            <q-card-section class="q-py-none q-px-sm row dialog-news-content-header">
+              <div class="text-h5 q-py-sm">3.0.1 Release</div><q-space />
+              <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-02-29 13:30') }}</div>
+            </q-card-section>
+            <q-card-section class="q-py-sm q-pl-lg dialog-news-content">
+              <div class="text-h6">Bug fixes</div>
+              <ul class="q-my-sm" style="font-size: 1rem">
+                <li>When a player set a new pb his old "gotBeatenBy" entries weren't updated/removed.
+                </li>
+              </ul>
+            </q-card-section>
+          </q-card>
+          <q-separator />
 <!-- 3.0.0 Release -->
           <q-card>
             <q-card-section class="q-py-none q-px-sm row dialog-news-content-header">
               <div class="text-h5 q-py-sm">3.0.0 Release - Community Season</div><q-space />
-              <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-03-27 00:00') }}</div>
+              <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-03-29 02:00') }}</div>
             </q-card-section>
             <q-card-section class="q-py-sm q-pl-lg dialog-news-content">
               <div class="text-h6">Features</div>
