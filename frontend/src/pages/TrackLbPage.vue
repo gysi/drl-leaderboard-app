@@ -124,7 +124,7 @@ export default defineComponent({
     onTrackSelection(track) {
       this.selectedTrack = track;
       if (this.selectedTrack?.parentCategory === 'Community') {
-        this.targetProfileLink = 'player-lb-communtiy'
+        this.targetProfileLink = 'player-lb-community'
       } else {
         this.targetProfileLink = 'player-lb'
       }

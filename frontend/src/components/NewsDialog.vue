@@ -24,6 +24,8 @@
               <ul class="q-my-sm" style="font-size: 1rem">
                 <li>When a player set a new pb his old "gotBeatenBy" entries weren't updated/removed.
                 </li>
+                <li>The profile links from the track leaderboard of community tracks to profile pages were broken.
+                </li>
               </ul>
             </q-card-section>
           </q-card>
