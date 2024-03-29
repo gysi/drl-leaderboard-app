@@ -24,7 +24,8 @@
               <ul class="q-my-sm" style="font-size: 1rem">
                 <li>When a player set a new pb his old "gotBeatenBy" entries weren't updated/removed.
                 </li>
-                <li>The profile links from the track leaderboard of community tracks to profile pages were broken.
+                <li>The links from the track leaderboard of community tracks to profile
+                  pages were broken.
                 </li>
                 <li>Fixes the cache for the latest top10 entries, it wasn't updated at all.
                 </li>
@@ -33,6 +34,8 @@
                   initially submitted without a replay; as a result, the bot did not post an update due to the submission
                   appearing invalid. Later, once a replay was added, the bot failed to recognize any position improvement
                   because it had already recorded the player's standing, leading to a false notification of progress.
+                </li>
+                <li>'Lastest Activity' board entries correctly link to community profile leaderboards when its a community track
                 </li>
               </ul>
             </q-card-section>
