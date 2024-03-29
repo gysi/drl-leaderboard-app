@@ -2,9 +2,9 @@ FROM eclipse-temurin:21-jre-jammy
 RUN mkdir /opt/app
 COPY app.jar /opt/app
 ENV JAVA_TOOL_OPTIONS="\
-    -Xms300m \
-    -Xmx1G \
-    -XX:MaxMetaspaceSize=200m \
+    -Xms300M \
+    -Xmx1500M \
+    -XX:MaxMetaspaceSize=200M \
     -XX:+UseStringDeduplication \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:HeapDumpPath=/var/log/heapdumps_backend/ \
