@@ -7,6 +7,7 @@ const routes = [
     component: MainLayout,
     children: [
       { name: 'home', path: '', component: IndexPage },
+      { name: 'news', path: 'news', component: () => import('pages/NewsPage.vue')},
       { name: 'overallrankings', path: 'overall-rankings', component: () => import('pages/OverallPage.vue') },
       { name: 'community-rankings', path: 'community-rankings', component: () => import('pages/CommunityRankingPage.vue') },
       { name: 'tournaments', path: 'tournaments', component: () => import('pages/TournamentsPage.vue') },

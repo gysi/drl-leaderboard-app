@@ -101,10 +101,10 @@ $dark-accent4-color: 217, 205, 205;
   --app-slotmachine-card-border-color: #{$dark-accent2};
   --app-slotmachine-table-td-text-color: #{$dark-white};
 
-  --app-dialog-news-content-header-background-color: #{$dark-primary};
-  --app-dialog-news-content-header-text-color: #{$dark-white};
-  --app-dialog-news-content-background-color: #{$dark-secondary};
-  --app-dialog-news-content-text-color: #{$dark-white};
+  --app-news-content-header-background-color: #{$dark-primary};
+  --app-news-content-header-text-color: #{$dark-white};
+  --app-news-content-background-color: #{$dark-secondary};
+  --app-news-content-text-color: #{$dark-white};
 
   --app-show-excluded-players-toggle-color: #{$dark-accent2};
   --app-show-excluded-players-text-color: rgba(255, 255, 255, 0.54);
@@ -207,10 +207,10 @@ body {
   --app-slotmachine-card-border-color: #{$light-accent2};
   --app-slotmachine-table-td-text-color: #{$light-dark};
 
-  --app-dialog-news-content-header-background-color: #{$light-secondary};
-  --app-dialog-news-content-header-text-color: #{$light-white};
-  --app-dialog-news-content-background-color: #{$light-light};
-  --app-dialog-news-content-text-color: #{$light-dark};
+  --app-news-content-header-background-color: #{$light-secondary};
+  --app-news-content-header-text-color: #{$light-white};
+  --app-news-content-background-color: #{$light-light};
+  --app-news-content-text-color: #{$light-dark};
 
   background: var(--app-background-color);
   color: var(--app-dark-color);
@@ -442,14 +442,16 @@ body {
     .q-dialog__backdrop {
       background-color: rgba(0, 0, 0, 0.7) !important;
     }
-    .dialog-news-content-header {
-      background-color: var(--app-dialog-news-content-header-background-color) !important;
-      color: var(--app-dialog-news-content-header-text-color) !important;
-    }
-    .dialog-news-content {
-      background-color: var(--app-dialog-news-content-background-color) !important;
-      color: var(--app-dialog-news-content-text-color) !important;
-    }
+  }
+
+  .news-content {
+    background-color: var(--app-news-content-background-color) !important;
+    color: var(--app-news-content-text-color) !important;
+  }
+
+  .news-content-header {
+    background-color: var(--app-news-content-header-background-color) !important;
+    color: var(--app-news-content-header-text-color) !important;
   }
 }
 
