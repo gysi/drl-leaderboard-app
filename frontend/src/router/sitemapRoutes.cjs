@@ -1,5 +1,6 @@
 const sitemapRoutes = [
   { url: '/', priority: 1 },
+  { url: '/news', priority: 0.9 },
   { url: '/overall-rankings', priority: 0.9 },
   { url: '/community-rankings', priority: 0.9 },
   { url: '/tournaments', priority: 0.9 },
