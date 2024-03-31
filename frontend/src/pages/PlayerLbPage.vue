@@ -206,6 +206,17 @@ import {
 } from 'src/modules/LeaderboardFunctions'
 import {differenceInDays} from "date-fns"
 import { useRouter } from 'vue-router'
+import {useMeta} from "src/modules/meta.js"
+
+useMeta({
+  title: "Player Leaderboards - Offical tracks",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Explore individual best times for the offical tracks by player. Find and compare performances seamlessly.`
+    }
+  }
+})
 
 const compareTracks = function (track1, track2) {
   if (track1.mapName !== track2.mapName) {

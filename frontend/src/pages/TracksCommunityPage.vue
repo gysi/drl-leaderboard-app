@@ -72,6 +72,17 @@ import axios from 'axios';
 import {computed, ref, shallowRef} from 'vue';
 import {formatISODateTimeToDate} from "src/modules/LeaderboardFunctions.js";
 import {fetchCurrentSeason} from "src/modules/backendApi.js";
+import {useMeta} from "src/modules/meta.js"
+
+useMeta({
+  title: "Community Season Tracks",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Dive into the latest 30 tracks of the community season. Discover new challenges.`
+    }
+  }
+})
 
 const sortRating = (a, b, rowA, rowB) => {
   const scoreDiff = rowA.ratingScore - rowB.ratingScore;

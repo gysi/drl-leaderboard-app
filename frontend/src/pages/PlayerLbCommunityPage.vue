@@ -210,7 +210,18 @@ import {
 } from 'src/modules/LeaderboardFunctions'
 import {differenceInDays} from "date-fns"
 import { useRouter } from 'vue-router'
-import {fetchCurrentSeason} from "src/modules/backendApi.js";
+import {fetchCurrentSeason} from "src/modules/backendApi.js"
+import {useMeta} from "src/modules/meta.js"
+
+useMeta({
+  title: "Player Leaderboards - Community Season",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Explore individual best times for current community season tracks by player. Find and compare performances seamlessly.`
+    }
+  }
+})
 
 const compareTracks = function (track1, track2) {
   if (track1.mapName !== track2.mapName) {

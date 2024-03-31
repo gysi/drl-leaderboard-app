@@ -134,7 +134,7 @@
 </template>
 
 <script setup>
-import {computed, ref, shallowRef } from 'vue'
+import { ref, shallowRef } from 'vue'
 import axios from 'axios';
 import { backGroundColorByPosition, formatMilliSeconds, getDateDifference,
   formatISODateTimeToDate } from 'src/modules/LeaderboardFunctions'
@@ -143,6 +143,18 @@ import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
 import placeholder from 'src/assets/placeholder.png'
 import {useQuasar} from "quasar";
 import { Dark } from 'quasar'
+import {useMeta} from "src/modules/meta.js"
+
+useMeta({
+  title: "Community Rankings",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Rankings of the current community season which consists of 30 Community tracks.`
+    }
+  }
+})
+
 const $q = useQuasar()
 let darkModeInStorage = $q.localStorage.getItem('darkMode');
 console.log('darkMode', darkModeInStorage);
@@ -205,9 +217,7 @@ const fetchData = async function () {
 const onPlayerSelected = function (playerName) {
   selectedPlayer.value = playerName;
   const filtered = filterMethod(rows.value, { showExcludedPlayers: showExcludedPlayers.value })
-  console.log("filtelded", filtered)
   const index = filtered.findIndex((row) => row['playerName'] === playerName)
-  console.log("index", index);
   if(index >= 0) overallTable.value.scrollTo(index, 'center-force');
 }
 

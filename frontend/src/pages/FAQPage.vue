@@ -3,9 +3,9 @@
     <div class="grid">
       <div class="grid-sizer"></div>
       <FAQCard
-        title="My time is not on the leaderboard but I just put up a time"
+        title="Why isn't my recently submitted time appearing on the leaderboard?"
         :msnry="msnry"
-        :initially-expanded="this.$router.currentRoute.value.query.card === 'no-time'"
+        :initially-expanded="router.currentRoute.value.query.card === 'no-time'"
       >
         <p>The timing of when your new personal best (PB) appears on the leaderboard can vary due
           to the way our website updates its data. Our system periodically scans all the tracks through
@@ -28,7 +28,7 @@
       <FAQCard
         title="My placement doesn't match with the in-game leadeboard"
         :msnry="msnry"
-        :initially-expanded="this.$router.currentRoute.value.query.card === 'ingame-mismatch'"
+        :initially-expanded="router.currentRoute.value.query.card === 'ingame-mismatch'"
       >
         <p>If you notice discrepancies between your placement on our website and the in-game
           leaderboard, it may be due to the game occasionally recording times that are considered
@@ -42,7 +42,7 @@
       <FAQCard
         title="How does the leaderboard track point system work?"
         :msnry="msnry"
-        :initially-expanded="this.$router.currentRoute.value.query.card === 'pointSystem'"
+        :initially-expanded="router.currentRoute.value.query.card === 'pointSystem'"
       >
         <div>The number of points a player receives is calculated based on their position on the leaderboard using the formula</div>
         <b><span>base points = 1046.1 - 515.88 * log(position + 2)</span></b>
@@ -155,9 +155,9 @@
         />
       </FAQCard>
       <FAQCard
-        title="Invalid Runs"
+        title="What does it mean if a run is marked as invalid"
         :msnry="msnry"
-        :initially-expanded="this.$router.currentRoute.value.query.card === 'invalidRuns'"
+        :initially-expanded="router.currentRoute.value.query.card === 'invalidRuns'"
       >
         <p>
           Invalid runs refer to attempts by a player that do not earn any points and are not considered
@@ -233,13 +233,13 @@
       </FAQCard>
       <FAQCard
         :msnry="msnry"
-        :initially-expanded="this.$router.currentRoute.value.query.card === 'beatenBy'"
+        :initially-expanded="router.currentRoute.value.query.card === 'beatenBy'"
       >
         <template v-slot:title>
           <div class="text-h6">
-            "Beaten by" column
+            What is the "Beaten by" column
             (<q-icon name="query_stats" color="white" size="md" />)
-            on player leaderboard
+            on the player leaderboard?
           </div>
         </template>
         <p>
@@ -333,7 +333,7 @@
       <FAQCard
         title="How does the tournament point system work?"
         :msnry="msnry"
-        :initially-expanded="this.$router.currentRoute.value.query.card === 'tournamentPointSystem'"
+        :initially-expanded="router.currentRoute.value.query.card === 'tournamentPointSystem'"
       >
         The tournament points are based on the DRL irl point system and only the best 12 tournaments for each player are counted. In cases where players have equal points from their best 12 tournaments, rankings are determined based on their overall positions across all tournaments played. The player with more lower (better) positions will rank higher. This ensures that consistent top performance across events is rewarded in the final rankings.
         <div>
@@ -396,7 +396,7 @@
       <FAQCard
         title="What is a season?"
         :msnry="msnry"
-        :initially-expanded="this.$router.currentRoute.value.query.card === 'season'"
+        :initially-expanded="router.currentRoute.value.query.card === 'season'"
       >
         <p>A season on this website brings together competition and community, framed within the four
           seasons of the year: spring, summer, fall, and winter. Each three-month period launches a series
@@ -437,7 +437,7 @@
       <FAQCard
         title="Why do I see myself in the Community Rankings only when toggling 'Show Excluded Players'"
         :msnry="msnry"
-        :initially-expanded="this.$router.currentRoute.value.query.card === 'excluded-from-season'"
+        :initially-expanded="router.currentRoute.value.query.card === 'excluded-from-season'"
       >
         <p>In the Community Season rankings, the primary focus is on highlighting the contributions of players
           actively engaged with the current season. This means the leaderboard prominently displays players who
@@ -470,33 +470,35 @@
   </q-page>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup>
+import {onMounted, ref} from 'vue'
 import Masonry from 'masonry-layout'
 import FAQCard from 'components/FAQCard.vue'
+import { useRouter } from 'vue-router';
+import {useMeta} from "src/modules/meta.js"
 
-export default defineComponent({
-  name: 'FAQPage',
-  components: {
-    FAQCard
-  },
-  data () {
-    return {
-      console: console,
-      msnry: undefined
+useMeta({
+  title: "FAQ - Frequently Asked Questions",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Do you have a question about the leaderboard website? Here you will find anything you want to know.`
     }
-  },
-  mounted () {
-    let msnry = new Masonry('.grid', {
-      itemSelector: '.grid-item',
-      columnWidth: '.grid-sizer',
-      percentPosition: true,
-      transitionDuration: '0.2s',
-      gutter: 10
-      // fitWidth: true
-    });
-    this.msnry = msnry;
   }
+})
+
+const router = useRouter()
+const msnry = ref(undefined)
+
+onMounted(() => {
+  msnry.value = new Masonry('.grid', {
+    itemSelector: '.grid-item',
+    columnWidth: '.grid-sizer',
+    percentPosition: true,
+    transitionDuration: '0.2s',
+    gutter: 10
+    // fitWidth: true
+  });
 })
 </script>
 

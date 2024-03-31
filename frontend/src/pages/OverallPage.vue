@@ -51,7 +51,7 @@
         </th>
       </template>
       <template v-slot:body="props">
-        <q-tr :props="props" :class="this.selectedPlayer === props.row.playerName ? 'highlight-td' : ''">
+        <q-tr :props="props" :class="selectedPlayer === props.row.playerName ? 'highlight-td' : ''">
           <q-td v-for="col in props.cols" :key="col.name" :props="props"
                 :style="{
               backgroundColor: col.name === 'position' ? backGroundColorByPosition(props.row.position) : null
@@ -92,124 +92,104 @@
   </q-page>
 </template>
 
-<script>
-import { computed, defineComponent} from 'vue'
-import axios from 'axios';
+<script setup>
+import {ref, watch, shallowRef} from 'vue'
+import axios from 'axios'
 import { backGroundColorByPosition, formatMilliSeconds, getDateDifference } from 'src/modules/LeaderboardFunctions'
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
 import placeholder from 'src/assets/placeholder.png'
+import {useMeta} from "src/modules/meta.js"
 
-export default defineComponent({
-  name: 'OverallPage',
-  components: {PlayerSearchSelect},
-  data() {
-    return {
-      log: console.log,
-      columns: [
-        {name: 'position', label: '#', field: 'position', required: true},
-        {name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true},
-        {name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true},
-        {
-          name: 'avgPosition',
-          label: 'Average Position',
-          field: 'avgPosition',
-          align: 'right',
-          format: (val, row) => (Math.round(val * 100) / 100),
-          required: true
-        },
-        {name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
-        {name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
-        {name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
-        {
-          name: 'totalScore',
-          label: 'Total Time',
-          field: 'totalScore',
-          format: (val, row) => this.formatMilliSeconds(val),
-          align: 'right',
-          required: true
-        },
-        {
-          name: 'maxTopSpeed',
-          label: 'Top Speed',
-          field: 'maxTopSpeed',
-          format: (val, row) => (Math.round(val * 10) / 10),
-          required: true
-        },
-        {name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb'},
-        { name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', format: (val, row) => this.getDateDifference(val), required: true }
-      ],
-      rows: [],
-      loading: false,
-      selectedPlayer: null,
-      parentCategories: [{id: null, name: 'Overall', description: 'Overall'}],
-      selectedParentCategory: {id: null, name: 'Overall', description: 'Overall'},
+useMeta({
+  title: "Overall Rankings",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Explore rankings across the 201 official DRL drone racing tracks.`
     }
-  },
-  watch: {
-    selectedParentCategory(newCategory) {
-      this.fetchData(newCategory);
-    }
-  },
-  methods: {
-    async fetchData(parentCategory) {
-      this.loading = true;
-      try {
-        const response = await axios.get(process.env.DLAPP_API_URL + '/leaderboards/official/overall-ranking?page=1&limit=500'
-          + (parentCategory != null && parentCategory.name !== 'Overall' ? `&parentCategory=${parentCategory.name}` : '')
-        );
-        this.rows = response.data.map((row) => {
-          if (row['profileThumb'].includes('placeholder.png')) {
-            row['profileThumb'] = placeholder;
-          }else{
-            row['profileThumb'] = this.buildImgCacheUrl(row['profileThumb']);
-          }
-          return row;
-        });
-      } catch (error) {
-        console.error(error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    onPlayerSelected(playerName) {
-      this.selectedPlayer = playerName;
-      const row = this.rows.find(row => row['playerName'] === playerName);
-      if(row) this.$refs.overallTable.scrollTo(row['position'], 'center-force');
-    },
-    async fetchParentCategories() {
-      const response = await axios.get(process.env.DLAPP_API_URL + '/tracks/parent-categories')
-      this.parentCategories = [{id: null, name: 'Overall', description: 'Overall'}, ...response.data.map((category) => {
-        return category;
-      })];
-    },
-    convertParentCategoryString(str) {
-      let words = str.toLowerCase().split(' ');
-
-      for (let i = 0; i < words.length; i++) {
-        words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
-      }
-
-      return words.join(' ');
-    },
-    buildImgCacheUrl(url){
-      if (url) {
-        if(url.includes('placeholder.png')) return url;
-        let encodedUrl = encodeURIComponent(url);
-        return computed(() => `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`).value;
-      }
-    },
-    formatMilliSeconds, backGroundColorByPosition, getDateDifference
-  },
-  created() {
-    this.fetchData();
-    this.fetchParentCategories();
-  },
-  mounted() {
-  },
-  beforeUnmount() {
-    clearInterval(this.interval);
-  },
+  }
 })
+
+const columns = [
+  {name: 'position', label: '#', field: 'position', required: true},
+  {name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true},
+  {name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true},
+  {
+    name: 'avgPosition',
+    label: 'Average Position',
+    field: 'avgPosition',
+    align: 'right',
+    format: (val, row) => (Math.round(val * 100) / 100),
+    required: true
+  },
+  {name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
+  {name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
+  {name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
+  {
+    name: 'totalScore',
+    label: 'Total Time',
+    field: 'totalScore',
+    format: val => formatMilliSeconds(val),
+    align: 'right',
+    required: true
+  },
+  {
+    name: 'maxTopSpeed',
+    label: 'Top Speed',
+    field: 'maxTopSpeed',
+    format: (val, row) => (Math.round(val * 10) / 10),
+    required: true
+  },
+  {name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb'},
+  { name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', format: val => getDateDifference(val), required: true }
+]
+const overallTable = ref(null);
+const rows = shallowRef([])
+const loading = ref(false)
+const selectedPlayer = ref(null)
+const parentCategories = ref([{id: null, name: 'Overall', description: 'Overall'}])
+const selectedParentCategory = ref({id: null, name: 'Overall', description: 'Overall'})
+
+watch(selectedParentCategory, (newCategory) => {
+  fetchData(newCategory)
+})
+
+const fetchData = async (parentCategory = selectedParentCategory.value) => {
+  loading.value = true
+  try {
+    const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/official/overall-ranking?page=1&limit=500${parentCategory != null && parentCategory.name !== 'Overall' ? `&parentCategory=${parentCategory.name}` : ''}`)
+    rows.value = response.data.map((row) => {
+      row['profileThumb'] = row['profileThumb'].includes('placeholder.png') ? placeholder : buildImgCacheUrl(row['profileThumb'])
+      return row
+    })
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const onPlayerSelected = (playerName) => {
+  selectedPlayer.value = playerName
+  const row = rows.value.find(row => row['playerName'] === playerName)
+  if (row) overallTable.value.scrollTo(row['position'], 'center-force')
+}
+
+const fetchParentCategories = async () => {
+  const response = await axios.get(`${process.env.DLAPP_API_URL}/tracks/parent-categories`)
+  parentCategories.value = [{id: null, name: 'Overall', description: 'Overall'}, ...response.data]
+}
+
+const buildImgCacheUrl = (url) => {
+  if (url && !url.includes('placeholder.png')) {
+    let encodedUrl = encodeURIComponent(url)
+    return `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`
+  }
+  return url
+}
+
+fetchData()
+fetchParentCategories()
 </script>
 
 <style lang="sass" scoped>
