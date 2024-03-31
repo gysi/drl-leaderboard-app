@@ -127,6 +127,8 @@
               fab padding="5px"
               :to="{ name: 'faq', query: { card: 'invalidRuns' } }"
               ripple
+              :label="props.row.position"
+              style="width: 52px; position: relative"
             >
               <q-tooltip>
                 <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>
@@ -190,7 +192,7 @@
               </div>
             </div>
             <!-- compare end -->
-            {{ col.name !== 'track' && col.name !== 'beatenBy' && !col.name.startsWith('compare') ? col.value : '' }}
+            {{ col.name === 'track' || col.name === 'beatenBy' || col.name.startsWith('compare') || (col.name === 'position' && props.row.isInvalidRun) ? '' : col.value }}
           </q-td>
         </q-tr>
       </template>
