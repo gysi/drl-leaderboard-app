@@ -75,12 +75,22 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, reactive, computed } from 'vue';
-import { compressJSON, decompressJSON } from "src/modules/JsonCompression";
-import ColorPickerButton from "components/ColorPickerButton.vue";
+import { ref, watch, reactive, computed } from 'vue';
+import { compressJSON } from "src/modules/JsonCompression";
 import StreamCardPage from "pages/StreamCardPage.vue";
 import StreamCardSetting from "components/StreamCardSetting.vue";
 import { copyToClipboard } from 'quasar'
+import {useMeta} from "src/modules/meta.js"
+
+useMeta({
+  title: "Stream Card Overlay Creator",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Design stream cards showcasing your current ranking and competitors for use as an automatic-refresh overlay in your DRL live streams.`
+    }
+  }
+})
 
 const settings = reactive({
   general: {

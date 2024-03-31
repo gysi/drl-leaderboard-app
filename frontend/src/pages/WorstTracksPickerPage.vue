@@ -148,10 +148,22 @@ import axios from 'axios';
 import SlotMachine from "components/SlotMachine.vue";
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
 import WorstTracksSearchSelect from "components/WorstTracksSearchSelect.vue";
+import {createMetaMixin} from "src/modules/meta.js"
 
 export default defineComponent({
   name: 'WorstTracksPickerPage',
   components: { SlotMachine, PlayerSearchSelect, WorstTracksSearchSelect },
+  mixins: [
+    createMetaMixin({
+      title: "Random Track Gambling",
+      meta: {
+        description: {
+          name: 'description',
+          content: `Discover new tracks with a gamble. Enter your name, choose a category, apply filters if you wish, and spin to fly a randomly selected track.`
+        }
+      }
+    })
+  ],
   watch: {
     menuRef: function (val) {
       window.addEventListener('click', this.onClickToggleIfOutsideOfMenu);

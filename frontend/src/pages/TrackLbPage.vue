@@ -62,7 +62,7 @@
               <q-item-section>
                 <q-item-label class="player-item-label">{{ props.row.player.playerName }}</q-item-label>
                 <q-item-label caption>
-                  <span :class="`fi fi-${this.formatFlagUrl(props.row.player.flagUrl)}`"></span>
+                  <span :class="`fi fi-${formatFlagUrl(props.row.player.flagUrl)}`"></span>
                   <q-badge
                     :class="`badge-platform q-batch-${props.row.player.profilePlatform}`"
                   >{{ props.row.player.profilePlatform }}</q-badge>
@@ -90,75 +90,78 @@
   </q-page>
 </template>
 
-<script>
-import {computed, defineComponent} from 'vue'
-import axios from 'axios';
-import {backGroundColorByPosition, formatMilliSeconds, getDateDifference} from "src/modules/LeaderboardFunctions";
-import TracksSearchSelect from "components/TracksSearchSelect.vue";
+<script setup>
+import {ref, shallowRef} from 'vue'
+import axios from 'axios'
+import { backGroundColorByPosition, formatMilliSeconds, getDateDifference } from "src/modules/LeaderboardFunctions"
+import TracksSearchSelect from "components/TracksSearchSelect.vue"
+import {useMeta} from "src/modules/meta.js"
 
-export default defineComponent({
-  name: 'TrackLbPage',
-  components: {TracksSearchSelect},
-  data(){
-    return {
-      selectedTrack: null,
-      targetProfileLink: null,
-      columns: [
-        { name: 'position', label: '#', field: 'position' },
-        { name: 'playerName', label: 'Player', field: row => row.player.playerName, align: 'left' },
-        { name: 'score', label: 'Time', field: 'score', format: (val, row) => this.formatMilliSeconds(val), align: 'left' },
-        { name: 'crashes', label: 'Crashes', field: 'crashCount' },
-        { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed', format: (val, row) => (Math.round(val*10)/10) },
-        { name: 'points', label: 'Points', field: 'points', format: (val, row) => row.isInvalidRun ? 0 : Math.round(val) },
-        { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val) },
-        { name: 'droneName', label: 'Drone Name', field: 'droneName' },
-      ],
-      rows: [],
-      loading: false,
-      pagination: {
-        rowsPerPage: 0,
-      },
+useMeta({
+  title: "Track Leaderboards",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Discover top times for official and community season tracks. Easily compare performances across the board.`
     }
-  },
-  methods: {
-    onTrackSelection(track) {
-      this.selectedTrack = track;
-      if (this.selectedTrack?.parentCategory === 'Community') {
-        this.targetProfileLink = 'player-lb-community'
-      } else {
-        this.targetProfileLink = 'player-lb'
-      }
-      this.fetchData(track);
-    },
-    async fetchData(track) {
-      if(!track || !track.id) {
-        this.rows = [];
-        return;
-      }
-      this.loading = true;
-      try {
-        const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/bytrack/${track.id}?page=1&limit=250`);
-        this.rows = response.data;
-      } catch (error) {
-        console.error(error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    formatFlagUrl(flagUrl){
-      return flagUrl.substring(flagUrl.length-6, flagUrl.length-4);
-    },
-    buildImgCacheUrl (url) {
-      if (url) {
-        let encodedUrl = encodeURIComponent(url);
-        return computed(() => `${process.env.DLAPP_THUMBOR_URL}/${encodedUrl}`).value;
-      }
-    },
-    formatMilliSeconds,
-    backGroundColorByPosition,
-    getDateDifference
   }
 })
+
+const selectedTrack = ref(null)
+const targetProfileLink = ref(null)
+const rows = shallowRef([])
+const loading = ref(false)
+const pagination = ref({
+  rowsPerPage: 0,
+})
+
+const columns = [
+  { name: 'position', label: '#', field: 'position' },
+  { name: 'playerName', label: 'Player', field: row => row.player.playerName, align: 'left' },
+  { name: 'score', label: 'Time', field: 'score', format: (val, row) => formatMilliSeconds(val), align: 'left' },
+  { name: 'crashes', label: 'Crashes', field: 'crashCount' },
+  { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed', format: (val, row) => (Math.round(val*10)/10) },
+  { name: 'points', label: 'Points', field: 'points', format: (val, row) => row.isInvalidRun ? 0 : Math.round(val) },
+  { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => getDateDifference(val) },
+  { name: 'droneName', label: 'Drone Name', field: 'droneName' },
+]
+
+const onTrackSelection = (track) => {
+  selectedTrack.value = track
+  if (track?.parentCategory === 'Community') {
+    targetProfileLink.value = 'player-lb-community'
+  } else {
+    targetProfileLink.value = 'player-lb'
+  }
+  fetchData(track)
+}
+
+const fetchData = async (track) => {
+  if (!track || !track.id) {
+    rows.value = []
+    return
+  }
+  loading.value = true
+  try {
+    const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/bytrack/${track.id}?page=1&limit=250`)
+    rows.value = response.data
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const formatFlagUrl = (flagUrl) => {
+  return flagUrl.substring(flagUrl.length - 6, flagUrl.length - 4)
+}
+
+const buildImgCacheUrl = (url) => {
+  if (url) {
+    let encodedUrl = encodeURIComponent(url)
+    return `${process.env.DLAPP_THUMBOR_URL}/${encodedUrl}`
+  }
+}
 </script>
 
 <style lang="sass" scoped>

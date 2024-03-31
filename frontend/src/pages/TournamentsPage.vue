@@ -179,6 +179,17 @@ import { format, parseISO, formatDuration, intervalToDuration } from 'date-fns'
 import { utcToZonedTime } from "date-fns-tz";
 import { backGroundColorByPosition } from 'src/modules/LeaderboardFunctions'
 import placeholder from 'src/assets/placeholder.png'
+import {useMeta} from "src/modules/meta.js"
+
+useMeta({
+  title: "Tournaments",
+  meta: {
+    description: {
+      name: 'description',
+      content: `Explore current tournament rankings, upcoming events, and past results all in one place.`
+    }
+  }
+})
 
 const calcBackgroundColorByPosition = backGroundColorByPosition;
 const tournamentRanking = shallowRef([]);

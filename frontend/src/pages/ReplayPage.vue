@@ -27,6 +27,17 @@
   import ReplayViewer from "components/ReplayViewer.vue";
   import TracksSearchSelect from "components/TracksSearchSelect.vue";
   import TrackReplaySearchSelect from "components/TrackReplaySearchSelect.vue";
+  import {useMeta} from "src/modules/meta.js"
+
+  useMeta({
+    title: "Replay Viewer",
+    meta: {
+      description: {
+        name: 'description',
+        content: `Discover and analyze replays from all tracks to compare performances and strategies.`
+      }
+    }
+  })
 
   const state = reactive({
     replaySelectionDisabled: true,

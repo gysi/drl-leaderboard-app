@@ -179,122 +179,134 @@
   </q-page>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
-import axios from 'axios';
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 import { getDateDifference } from 'src/modules/LeaderboardFunctions'
+import {useMeta} from "src/modules/meta.js"
 
-export default defineComponent({
-  name: 'IndexPage',
-  data(){
-    return {
-      latestActivity: {
-        columns: [
-          { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
-          { name: 'position', label: '#', field: 'position', align: 'right' },
-          { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => this.getDateDifference(val), align: 'right' },
-          { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
-        ],
-        rows: [],
-        pagination: {
-          rowsPerPage: 10
-        },
-        loading: false,
-        uniqueFunction: (row) => row.playerName + row.createdAt
-      },
-      latestActivityTop10: {
-        rows: [],
-        pagination: {
-          rowsPerPage: 10
-        },
-        loading: false,
-      },
-      mostPbsLast7Days: {
-        columns: [
-          { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
-          { name: 'entries', label: 'Entries', field: 'entries', align: 'center' },
-          { name: 'bestPosition', label: 'Best Position', field: 'bestPosition', align: 'center' },
-          { name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'center'},
-        ],
-        rows: [],
-        pagination: {
-          rowsPerPage: 10
-        },
-        loading: false,
-      },
-      mostPbsLastMonth: {
-        rows: [],
-        pagination: {
-          rowsPerPage: 10
-        },
-        loading: false,
-      },
-      mostTrackEntriesLast14Days: {
-        columns: [
-          { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
-          { name: 'entries', label: 'Entries', field: 'entries', align: 'center' },
-        ],
-        rows: [],
-        pagination: {
-          rowsPerPage: 10
-        },
-        loading: false,
-      },
-      mostTrackEntriesLastMonth: {
-        columns: [
-          { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
-          { name: 'entries', label: 'Entries', field: 'entries', align: 'center' },
-        ],
-        rows: [],
-        pagination: {
-          rowsPerPage: 10
-        },
-        loading: false,
-      },
+useMeta({
+  title: "🏆 DRL Leaderboards 🏆",
+  meta: {
+    description: {
+      name: 'description',
+      content: `See the latest leaderboard activies and rankings. Discover community activies like tournaments and much more.`
     }
-  },
-  methods: {
-    async fetchData() {
-      try {
-        const [ responseLatest, responseLatestTop10, responseMostPbsLast7Days, responseMostPbsLastMonth,
-          responseMostTrackEntriesLast14Days, responseMostTrackEntriesLastMonth] =
-          await Promise.all([
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/latest-activity'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/latest-activity-top-10'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-pbs-last-7-days'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-pbs-last-month'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-track-entries-last-14-days'),
-            axios.get(process.env.DLAPP_API_URL+'/leaderboards/most-track-entries-last-month'),
-          ]);
-        this.latestActivity.rows = responseLatest.data;
-        this.latestActivityTop10.rows = responseLatestTop10.data;
-        this.mostPbsLast7Days.rows = responseMostPbsLast7Days.data;
-        this.mostPbsLastMonth.rows = responseMostPbsLastMonth.data;
-        this.mostTrackEntriesLast14Days.rows = responseMostTrackEntriesLast14Days.data;
-        this.mostTrackEntriesLastMonth.rows = responseMostTrackEntriesLastMonth.data;
-      } catch (error) {
-        console.error(error);
-      } finally {
-        this.latestActivity.loading = false;
-        this.latestActivityTop10.loading = false;
-        this.mostPbsLast7Days.loading = false;
-        this.mostPbsLastMonth.loading = false;
-        this.mostTrackEntriesLast14Days.loading = false;
-        this.mostTrackEntriesLastMonth.loading = false;
-      }
-    }, getDateDifference
-  },
-  created() {
-    this.latestActivity.loading = true;
-    this.latestActivityTop10.loading = true;
-    this.mostPbsLast7Days.loading = true;
-    this.mostPbsLastMonth.loading = true;
-    this.mostTrackEntriesLast14Days.loading = true;
-    this.mostTrackEntriesLastMonth.loading = true;
-    this.fetchData()
   }
 })
+
+// Setup reactive data
+const latestActivity = ref({
+  columns: [
+    { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
+    { name: 'position', label: '#', field: 'position', align: 'right' },
+    { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => getDateDifference(val), align: 'right' },
+    { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
+  ],
+  rows: [],
+  pagination: {
+    rowsPerPage: 10
+  },
+  loading: false,
+  uniqueFunction: row => row.playerName + row.createdAt
+})
+
+const latestActivityTop10 = ref({
+  rows: [],
+  pagination: {
+    rowsPerPage: 10
+  },
+  loading: false,
+})
+
+const mostPbsLast7Days = ref({
+  columns: [
+    { name: 'playerName', label: 'Player', field: 'playerName', align: 'left' },
+    { name: 'entries', label: 'Entries', field: 'entries', align: 'center' },
+    { name: 'bestPosition', label: 'Best Position', field: 'bestPosition', align: 'center' },
+    { name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'center'},
+  ],
+  rows: [],
+  pagination: {
+    rowsPerPage: 10
+  },
+  loading: false,
+})
+
+const mostPbsLastMonth = ref({
+  rows: [],
+  pagination: {
+    rowsPerPage: 10
+  },
+  loading: false,
+})
+
+const mostTrackEntriesLast14Days = ref({
+  columns: [
+    { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
+    { name: 'entries', label: 'Entries', field: 'entries', align: 'center' },
+  ],
+  rows: [],
+  pagination: {
+    rowsPerPage: 10
+  },
+  loading: false,
+})
+
+const mostTrackEntriesLastMonth = ref({
+  columns: [
+    { name: 'trackName', label: 'Track / Map / Category', align: 'left'},
+    { name: 'entries', label: 'Entries', field: 'entries', align: 'center' },
+  ],
+  rows: [],
+  pagination: {
+    rowsPerPage: 10
+  },
+  loading: false,
+})
+
+// fetchData method
+const fetchData = async () => {
+  // Set all loading states to true
+  latestActivity.value.loading = true
+  latestActivityTop10.value.loading = true
+  mostPbsLast7Days.value.loading = true
+  mostPbsLastMonth.value.loading = true
+  mostTrackEntriesLast14Days.value.loading = true
+  mostTrackEntriesLastMonth.value.loading = true
+
+  try {
+    const [responseLatest, responseLatestTop10, responseMostPbsLast7Days, responseMostPbsLastMonth, responseMostTrackEntriesLast14Days, responseMostTrackEntriesLastMonth] = await Promise.all([
+      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/latest-activity`),
+      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/latest-activity-top-10`),
+      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/most-pbs-last-7-days`),
+      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/most-pbs-last-month`),
+      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/most-track-entries-last-14-days`),
+      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/most-track-entries-last-month`),
+    ])
+    latestActivity.value.rows = responseLatest.data
+    latestActivityTop10.value.rows = responseLatestTop10.data
+    mostPbsLast7Days.value.rows = responseMostPbsLast7Days.data
+    mostPbsLastMonth.value.rows = responseMostPbsLastMonth.data
+    mostTrackEntriesLast14Days.value.rows = responseMostTrackEntriesLast14Days.data
+    mostTrackEntriesLastMonth.value.rows = responseMostTrackEntriesLastMonth.data
+  } catch (error) {
+    console.error(error)
+  } finally {
+    // Set all loading states to false
+    latestActivity.value.loading = false
+    latestActivityTop10.value.loading = false
+    mostPbsLast7Days.value.loading = false
+    mostPbsLastMonth.value.loading = false
+    mostTrackEntriesLast14Days.value.loading = false
+    mostTrackEntriesLastMonth.value.loading = false
+  }
+}
+
+// Lifecycle hook
+onMounted(fetchData)
 </script>
+
 
 <style lang="sass" scoped>
 :deep(.q-table tbody td)
