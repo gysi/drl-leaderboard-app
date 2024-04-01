@@ -200,13 +200,13 @@ const linksListTop = [
     title: 'Player Leaderboard',
     caption: 'Leaderboard for a specific player',
     icon: 'sports_martial_arts',
-    link: '/player-lb'
+    link: '/player-leaderboard'
   },
   {
     title: 'Track Leaderboard',
     caption: 'Leaderboard for a specific track',
     icon: 'timeline',
-    link: '/track-lb'
+    link: '/track-leaderboard'
   },
   {
     title: 'Replay Viewer',
@@ -241,7 +241,7 @@ const linksListTop = [
         title: 'Player Leaderboard',
         caption: 'Leaderboard for a specific player',
         icon: 'sports_martial_arts',
-        link: '/player-lb-community'
+        link: '/player-leaderboard-community'
       },
       {
         title: 'Tournaments',

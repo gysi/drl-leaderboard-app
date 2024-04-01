@@ -26,7 +26,7 @@
             >
               <q-item style="padding:0;"
                       clickable
-                      :to="`/track-lb?trackId=${card.trackId}`"
+                      :to="`/track-leaderboard?trackId=${card.trackId}`"
               >
                 <q-item-section thumbnail style="padding-right: 5px; margin: 0;">
                   <img src="~assets/maps/maps-120x68.png"

@@ -22,7 +22,7 @@
           >
             <q-item style="padding:0" v-if="col.name === 'name'"
                     clickable
-                    :to="`/track-lb?trackId=${props.row.id}`"
+                    :to="`/track-leaderboard?trackId=${props.row.id}`"
                     class="q-item-player-region"
             >
               <q-item-section thumbnail style="padding-right: 10px; margin: 0;">

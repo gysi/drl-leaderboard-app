@@ -129,9 +129,9 @@ const columns = [
 const onTrackSelection = (track) => {
   selectedTrack.value = track
   if (track?.parentCategory === 'Community') {
-    targetProfileLink.value = 'player-lb-community'
+    targetProfileLink.value = 'player-leaderboard-community'
   } else {
-    targetProfileLink.value = 'player-lb'
+    targetProfileLink.value = 'player-leaderboard'
   }
   fetchData(track)
 }

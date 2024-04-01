@@ -120,7 +120,7 @@
                 class="worstTracksTable-track-td"
               >
                 <q-item clickable
-                        :to="`/track-lb?trackId=${props.row.trackId}`"
+                        :to="`/track-leaderboard?trackId=${props.row.trackId}`"
                 >
                   <q-item-section>
                     <q-item-label>{{ props.row.trackName }}</q-item-label>

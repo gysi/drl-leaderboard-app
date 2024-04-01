@@ -63,7 +63,7 @@
           >
             <q-item v-if="col.name === 'playerName'"
                     clickable
-                    :to="`/player-lb?playerName=${encodeURIComponent(props.row.playerName)}`"
+                    :to="`/player-leaderboard?playerName=${encodeURIComponent(props.row.playerName)}`"
                     class="q-item-player-region"
             >
               <q-item-section avatar side>
@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import {ref, watch, shallowRef} from 'vue'
+import {ref, watch, shallowRef, onMounted} from 'vue'
 import axios from 'axios'
 import { backGroundColorByPosition, formatMilliSeconds, getDateDifference } from 'src/modules/LeaderboardFunctions'
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
@@ -188,8 +188,10 @@ const buildImgCacheUrl = (url) => {
   return url
 }
 
-fetchData()
-fetchParentCategories()
+onMounted(() => {
+  fetchData()
+  fetchParentCategories()
+})
 </script>
 
 <style lang="sass" scoped>

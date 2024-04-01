@@ -80,7 +80,7 @@
             </q-td>
             <q-td :props="props" key="playerName" class="td-borders-font-size16">
               <q-item clickable
-                      :to="`/player-lb-community?playerName=${encodeURIComponent(props.row.playerName)}`"
+                      :to="`/player-leaderboard-community?playerName=${encodeURIComponent(props.row.playerName)}`"
                       class="q-item-player-region"
               >
                 <q-item-section avatar side>

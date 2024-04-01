@@ -37,7 +37,6 @@ function processEJSFiles(dir) {
       const outputFilePath = path.join(dir, outputFilename);
 
       fs.writeFileSync(outputFilePath, htmlContent);
-      console.log(`Processed: ${filePath}`);
     }
   });
 }
@@ -109,6 +108,9 @@ export default configure(function (/* ctx */) {
       minify: 'terser',
       vueRouterMode: 'history', // available values: 'hash', 'history'
       envFolder: './env',
+      env: {
+        DLAPP_ENV: process.env.DLAPP_ENV, // this is needed to be accessible within the index.html template engine
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -120,35 +122,28 @@ export default configure(function (/* ctx */) {
           console.error('Error generating sitemap:', err);
         });
       },
-      viteVuePluginOptions: {
-        template: {
-          compilerOptions: {
-            // treat all tags with a dash as custom elements
-            isCustomElement: (tag) => tag.includes('shadow-')
-          }
-        }
-      },
+      // viteVuePluginOptions: {
+      //   template: {
+      //     compilerOptions: {
+      //       // treat all tags with a dash as custom elements
+      //       isCustomElement: (tag) => tag.includes('shadow-') || tag.includes('-')
+      //     }
+      //   }
+      // },
 
       vitePlugins: [
         ['vite-plugin-checker', {
           eslint: {
             lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"'
           }
-        }, { server: false }]
+        }, { server: false }],
         ['@intlify/unplugin-vue-i18n/vite', {
           // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
           // compositionOnly: false,
 
           // you need to set i18n resource including paths !
           include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ],
-        },
-        vue({
-          template: {
-            compilerOptions: {
-              // treat all tags with a dash as custom elements
-              isCustomElement: (tag) => tag.includes('-')
-            }
-          }})
+        }
       ]]
     },
 

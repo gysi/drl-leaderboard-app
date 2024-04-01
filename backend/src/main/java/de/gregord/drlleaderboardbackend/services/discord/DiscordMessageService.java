@@ -124,7 +124,7 @@ public class DiscordMessageService {
                             .description(description)
                             .color(color)
                             .thumbnail(imp.getProfilePicture())
-                            .url(String.format("%s/track-lb?trackId=%d", frontendUrl, imp.getTrack().getId()))
+                            .url(String.format("%s/track-leaderboard?trackId=%d", frontendUrl, imp.getTrack().getId()))
                             .build();
                 })
                 .collect(Collectors.toList());
