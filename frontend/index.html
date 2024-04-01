@@ -10,7 +10,7 @@
         "url" : "https://<%= process.env.DLAPP_ENV === 'PROD' ? '' : 'test.' %>drl-leaderboards.com/"
       }
     </script>
-    <% if (process.env.DLAPP_ENV === 'STAGING') { %>
+    <% if (process.env.DLAPP_ENV !== 'PROD') { %>
     <meta name="robots" content="noindex">
     <% } %>
     <meta charset="utf-8">

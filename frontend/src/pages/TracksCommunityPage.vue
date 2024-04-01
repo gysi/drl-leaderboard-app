@@ -27,7 +27,7 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td key="name" :props="props" class="td-borders-font-size16" style="padding: 5px 5px 5px 5px">
-            <q-item style="padding:0" clickable :to="`/track-lb?trackId=${props.row.id}`"
+            <q-item style="padding:0" clickable :to="`/track-leaderboard?trackId=${props.row.id}`"
                     class="q-item-player-region">
               <q-item-section thumbnail style="padding-right: 10px; margin: 0;">
                 <img v-if="props.row.mapThumb != null" :src="buildImgCacheUrl(props.row.mapThumb)" width="120" height="68"
@@ -54,8 +54,8 @@
           <q-td key="ratingScore" :props="props" class="td-borders-font-size16"
                 style="padding: 5px 16px 5px 5px">
             ({{ props.row.ratingCount }})
-            <q-icon v-for="n in ratingScoreToStarCount(props.row.ratingScore)" name="star" color="yellow-9" size="sm" />
-            <q-icon v-for="n in (5 - ratingScoreToStarCount(props.row.ratingScore))" name="star_border" size="sm" />
+            <q-icon v-for="n in ratingScoreToStarCount(props.row.ratingScore)" name="star" color="yellow-9" size="sm" :key="n" />
+            <q-icon v-for="n in (5 - ratingScoreToStarCount(props.row.ratingScore))" name="star_border" size="sm" :key="n" />
           </q-td>
           <q-td key="trackDifficulty" :props="props" class="td-borders-font-size16"
                 style="padding: 5px 5px 5px 5px">

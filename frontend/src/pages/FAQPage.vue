@@ -423,7 +423,7 @@
           keeping the leaderboard fresh and reflective of active community engagement.
         </p>
 
-        <p>A heartfelt appreciation goes to Mr. Persister <3, whose boundless enthusiasm and meticulous testing of the
+        <p>A heartfelt appreciation goes to Mr. Persister &lt;3, whose boundless enthusiasm and meticulous testing of the
           Community Tracks have greatly enriched our seasonal dynamics. The invaluable insights gained from our extensive
           discussions and collaborations have directly influenced the seasonal offerings, enhancing the competitive spirit
           and community involvement on the website.

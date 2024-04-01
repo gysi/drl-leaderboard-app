@@ -137,7 +137,7 @@
             <!-- Position row end-->
             <!-- Track row -->
             <q-item clickable v-if="col.name === 'track'" class="playerlb-track-td"
-                    :to="`/track-lb?trackId=${props.row.track.id}`"
+                    :to="`/track-leaderboard?trackId=${props.row.track.id}`"
             >
               <q-item-section>
                 <q-item-label>{{ props.row.track.name }}</q-item-label>
