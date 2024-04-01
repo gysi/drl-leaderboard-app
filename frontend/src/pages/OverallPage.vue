@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import {ref, watch, shallowRef, onMounted} from 'vue'
+import {ref, watch, shallowRef} from 'vue'
 import axios from 'axios'
 import { backGroundColorByPosition, formatMilliSeconds, getDateDifference } from 'src/modules/LeaderboardFunctions'
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
@@ -188,10 +188,8 @@ const buildImgCacheUrl = (url) => {
   return url
 }
 
-onMounted(() => {
-  fetchData()
-  fetchParentCategories()
-})
+fetchData()
+fetchParentCategories()
 </script>
 
 <style lang="sass" scoped>
