@@ -58,7 +58,8 @@ public class LeaderboardUpdater {
                         if (!isNewTrack
                                 && newOrUpdatedLeaderboardEntry.getPosition() <= 50
                                 && (existingEntry == null
-                                    || newOrUpdatedLeaderboardEntry.getPosition() < existingEntry.getPosition()
+                                    || (newOrUpdatedLeaderboardEntry.getPosition() < existingEntry.getPosition()
+                                            && !newOrUpdatedLeaderboardEntry.getDrlId().equals(existingEntry.getDrlId()))
                                     /* When the DRL Api doesn't give me a replay URL I flag the run as invalid. But it happens often
                                        that the replay is there later on because the DRL System is slow to upload it and save it
                                        within the player pb. Until thats happened my site reports that PB as invalid.

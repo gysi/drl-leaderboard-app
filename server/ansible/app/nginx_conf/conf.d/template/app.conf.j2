@@ -119,7 +119,7 @@ server {
     }
 
     # CSS and Javascript
-    location ~* \.(?:css|js|woff|woff2|svg|png)$ {
+    location ~* \.(?:css|js|woff|woff2|svg|png|obj)$ {
         expires 1M;
         access_log off;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
