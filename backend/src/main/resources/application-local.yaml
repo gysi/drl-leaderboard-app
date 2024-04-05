@@ -12,7 +12,7 @@ app:
     duration-between-requests: 200ms
   data-updater:
     leaderboards:
-      enabled: true
+      enabled: false
     tracks:
       cron: "-" # disabled
     tournaments:

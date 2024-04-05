@@ -241,7 +241,6 @@ public class DRLApiService {
                 LeaderboardEntry leaderboardEntry;
                 Optional<LeaderboardEntry> existingEntryOpt =
                         Optional.ofNullable(currentLeaderboardEntries.get((String) drlLeaderboardEntry.get("player-id")));
-                Boolean isExistingEntryInvalid = existingEntryOpt.map(LeaderboardEntry::getIsInvalidRun).orElse(null);
                 leaderboardEntry = existingEntryOpt.orElseGet(LeaderboardEntry::new);
                 Player playerForEntry;
                 Player existingPlayer = null;

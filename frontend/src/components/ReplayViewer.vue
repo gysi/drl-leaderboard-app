@@ -11,10 +11,12 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { Text } from 'troika-three-text';
 import axios from 'axios';
 import pako from 'pako';
 import { formatMilliSeconds } from 'src/modules/LeaderboardFunctions.js';
+import {assetLoader, assetObjLoader, getNameByModuleScale} from 'src/modules/ReplayAssetsLoader.js'
 
 const props = defineProps({
   trackId: {
@@ -29,7 +31,7 @@ const props = defineProps({
 
 let loadingTrackPromise = null;
 watch(() => props.trackId, (val) => {
-  console.log("replayviewer trackId changed", val);
+  // console.log("replayviewer trackId changed", val);
   if(val){
     disposeSceneObjects();
     currentSplineColor = 0;
@@ -38,7 +40,7 @@ watch(() => props.trackId, (val) => {
 });
 
 watch(() => props.replayData, (replayData) => {
-  console.log("replayviewer replayData changed", replayData);
+  // console.log("replayviewer replayData changed", replayData);
   if(replayData){
     loadReplay(props.trackId, replayData, replayData.playerName === 'devils' ? 0xff00ff : splineColors[currentSplineColor]);
     if(currentSplineColor >= splineColors.length - 1){
@@ -86,41 +88,77 @@ const defaultCubeMaterial = new THREE.MeshBasicMaterial({
   // alpha
   transparent: true,
   // opacity
-  opacity: 0.5,
+  opacity: 0.3,
   side: THREE.BackSide,
   fog: false,
 });
-function addCubes(color, scene, events, positionExtractor, scalingExtractor = null, rotationExtractor = null){
-  events.forEach((event) => {
-    let cube;
-    if(scalingExtractor != null){
-      const [sx, sy, sz] = scalingExtractor(event);
-      const customGeometry = new THREE.BoxGeometry(sx, sy, sz)
-      disposables.push(customGeometry);
-      cube = new THREE.Mesh(customGeometry, defaultCubeMaterial);
+async function loadAndAddAsset(scene, name, px, py, pz, sx, sy, sz, r0, r1, r2, r3){
+  if(assetLoader[name].refs){
+    const refs = assetLoader[name].refs
+    for (let ref of refs) {
+      // console.log("REF", ref);
+      loadAndAddAsset(scene, ref, px, py, pz, sx, sy, sz, r0, r1, r2, r3)
+    }
+  }
+  const loadLodFunc = assetLoader[name].lod;
+  if(loadLodFunc) {
+    const object = await assetObjLoader(await loadLodFunc())
+    object.matrixAutoUpdate = false;
+    object.position.set(px, py, -pz);
+    object.scale.set(sx, sz, sy);
+    const quaternion = new THREE.Quaternion(-r0, -r1, r2, r3);
+    object.quaternion.multiply(quaternion);
+    object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2))
+    object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI))
+    object.updateMatrix();
+    sceneObjects.push(object);
+    scene.add(object);
+  } else {
+    const loadTriggerFunc = assetLoader[name].trigger;
+    if (loadTriggerFunc) {
+      const object = await assetObjLoader(await loadTriggerFunc())
+      object.matrixAutoUpdate = false;
+      object.children[0].material = defaultCubeMaterial
+      object.position.set(px, py, -pz);
+      object.scale.set(sx, sz, sy);
+      const quaternion = new THREE.Quaternion(-r0, -r1, r2, r3);
+      object.quaternion.multiply(quaternion);
+      object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2))
+      object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI))
+      object.updateMatrix();
+      sceneObjects.push(object);
+      scene.add(object);
+      // const box = new THREE.BoxHelper(object, 0xffff00);
+      // scene.add(box);
+    }
+  }
+}
+async function addCubes(color, scene, checkpoints, positionExtractor, scalingExtractor = null, rotationExtractor = null){
+  checkpoints.forEach(async (checkpoint) => {
+    const [x, y, z] = positionExtractor(checkpoint);
+    const [sx, sy, sz] = scalingExtractor(checkpoint);
+    const [r0, r1, r2, r3] = rotationExtractor(checkpoint);
+    if(assetLoader[checkpoint.name]){
+      loadAndAddAsset(scene, checkpoint.name, x, y, z, sx, sy, sz, r0, r1, r2, r3)
     } else {
-      cube = new THREE.Mesh(defaultCubeGeometry, defaultCubeMaterial);
+      console.error("NO LOD OR TRIGGER FOUND")
+      console.log(checkpoint)
+      const customGeometry = new THREE.BoxGeometry()
+      disposables.push(customGeometry);
+      const object = new THREE.Mesh(customGeometry, defaultCubeMaterial);
+      object.matrixAutoUpdate = false;
+      object.position.set(x, y, -z);
+      object.scale.set(sx, sz, sy);
+      const quaternion = new THREE.Quaternion(-r0, -r1, r2, r3);
+      object.quaternion.multiply(quaternion);
+      object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2))
+      object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI))
+      object.updateMatrix();
+      sceneObjects.push(object);
+      scene.add(object);
     }
-    const [z, y, x] = positionExtractor(event);
-    cube.position.set(x, y, z);
-    if(rotationExtractor != null){
-      const [r0, r1, r2, r3] = rotationExtractor(event);
-      const quaternion = new THREE.Quaternion(r2, -r1, r0, r3);
-      const coordinateSystemRotation = new THREE.Quaternion();
-      coordinateSystemRotation.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2);
-      quaternion.normalize()
-      const combinedQuaternion = new THREE.Quaternion().multiplyQuaternions(
-        quaternion,
-        coordinateSystemRotation
-      );
-      combinedQuaternion.normalize();
-      cube.setRotationFromQuaternion(combinedQuaternion)
-    }
-    cube.matrixAutoUpdate = false;
-    cube.updateMatrix();
-
-    sceneObjects.push(cube);
-    scene.add(cube);
+    // const box = new THREE.BoxHelper( object, 0xffff00 );
+    // scene.add( box );
   });
 }
 
@@ -138,9 +176,9 @@ function addSplines(color, scene, events, eventPositionExtractor, replayData){
     const vectors = [];
     for (let i = lastEventSample; i < eventSample; i++) {
       vectors.push(new THREE.Vector3(
-        dronePosZ[i],
+        dronePosX[i],
         dronePosY[i],
-        dronePosX[i]
+        -dronePosZ[i]
       ));
     }
     // const [z, y, x] = eventPositionExtractor(event);
@@ -155,7 +193,7 @@ function addSplines(color, scene, events, eventPositionExtractor, replayData){
   // Generate a geometry from the spline
   // const geometry = new THREE.BufferGeometry().setFromPoints(spline.getPoints(points.length));
   // const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  const geometry = new THREE.TubeGeometry( spline, points.length, 0.3, 3, false );
+  const geometry = new THREE.TubeGeometry( spline, points.length, 0.2, 3, false );
   disposables.push(geometry);
 
   const material = new THREE.MeshStandardMaterial({ color: color, wireframe: false });
@@ -176,7 +214,7 @@ function addSplines(color, scene, events, eventPositionExtractor, replayData){
 function addTrackLabels(scene, checkpoints){
   // Add labels to the checkpoints
   checkpoints.forEach((checkpoint, index) => {
-    const position = new THREE.Vector3(checkpoint.position.z, checkpoint.position.y, checkpoint.position.x);
+    const position = new THREE.Vector3(checkpoint.position.x, checkpoint.position.y, -checkpoint.position.z);
     if (index === 0) {
       createLabel(scene, "Start", position, textLabels);
     } else if (index === checkpoints.length - 1) {
@@ -195,8 +233,6 @@ function addReplayLabels(scene, events, positionExtractor){
   events.forEach((event, index) => {
     const isLapStart = event["event-type"] === 7;
     if (isLapStart) lap++;
-
-    // console.log('indexoffset', index, index - (labelArrayOffset + lap))
     let textLabel = textLabels[index - (labelArrayOffset + lap)];
     if (textLabel) {
       const time = formatMilliSeconds(event["event-time"] * 1000);
@@ -248,19 +284,23 @@ function cancelAnimationFrame() {
   cancelInProgress = false;
 }
 
+const basePanSpeed = 1
+const baseDistance = 25
+
 function animate(scene, camera) {
   if (cancelInProgress) {
     return;
   }
-  requestAnimationFrameId = requestAnimationFrame(() => animate(scene, camera));
-
   // Update text label rotation
   textLabels.forEach(label => {
     label.lookAt(camera.position);
   });
-
-  controls.update();
   renderer.render(scene, camera);
+  const currentDistance = camera.position.distanceTo(controls.target);
+  controls.panSpeed = Math.max(0.8, Math.min(2, basePanSpeed * (baseDistance / currentDistance)));
+  // console.log(controls.panSpeed)
+  controls.update();
+  requestAnimationFrameId = requestAnimationFrame(() => animate(scene, camera));
 }
 
 function extractJSON(str) {
@@ -296,33 +336,52 @@ function createCheckpointsFromTrackDetailData(data){
 
     // }
     if(child['podium-index'] === 0) {
+      // console.log("podium");
+      // console.log(child)
       checkPoints.push({
+        // name: child['name'].replace(/\$.*/, ''),
+        name: 'podium-01',
         position: {
           x: child['local-position'][0],
           y: child['local-position'][1],
           z: child['local-position'][2]
         },
+        // scaling: {
+        //   x: 1,
+        //   y: 1,
+        //   z: 1
+        // },
         scaling: {
-          x: 1,
-          y: 1,
-          z: 1
+          x: child['local-scale'][0],
+          y: child['local-scale'][1],
+          z: child['local-scale'][2]
         },
-        rotation: [0,0,0,0],
+        // rotation: [0,0,0,0],
+        rotation: [
+          child['local-rotation'][0],
+          child['local-rotation'][1],
+          child['local-rotation'][2],
+          child['local-rotation'][3]
+        ],
         index: -1
       })
-    } else if(child['gate-index'] != null && child['is-trigger'] === true) {
+    } else if(child['gate-index'] != null
+        && child['is-trigger'] === true
+        && child['type'] === 301
+    ) {
       // console.log('gate-index', child['gate-index']);
       // console.log('child', child);
       let checkpoint = {
+        name: child['name'].replace(/\$.*/, ''),
         position: {
           x: child['local-position'][0],
           y: child['local-position'][1],
           z: child['local-position'][2]
         },
         scaling: {
-          x: child['local-scale'][0]*3.1, // scale up a bit to match the size of the checkpoints as close as possible
-          y: child['local-scale'][1]*3.1,
-          z: child['local-scale'][2]*1
+          x: child['local-scale'][0], //*3.1, // scale up a bit to match the size of the checkpoints as close as possible
+          y: child['local-scale'][1], //*3.1,
+          z: child['local-scale'][2] //*1
         },
         rotation: [
           child['local-rotation'][0],
@@ -333,9 +392,9 @@ function createCheckpointsFromTrackDetailData(data){
         index: child['gate-index']
       }
       if(child['module-scale']){ // if module scale is set then multiply the checkpoint scale with it
-        checkpoint.scaling.x *= child['module-scale'][0]*1.3
-        checkpoint.scaling.y *= child['module-scale'][1]*1.3
-        checkpoint.scaling.z *= child['module-scale'][2]
+        // console.log('module-scale?', child)
+        checkpoint.name = getNameByModuleScale(checkpoint.name,
+          child['module-scale'][0], child['module-scale'][1], child['module-scale'][2])
       }
       checkPoints.push(checkpoint)
       // console.log('child', child['gate-index'], child);
@@ -426,9 +485,9 @@ const loadTrack = async (trackId) => {
   const center = checkPoints.reduce(
     (acc, event) => {
       const {x, y, z} = event.position;
-      acc.x += z;
+      acc.x += x;
       acc.y += y;
-      acc.z += x;
+      acc.z += -z;
       return acc;
     },
     { x: 0, y: 0, z: 0 }
@@ -486,7 +545,7 @@ const loadReplay = async (trackId, replayData, splineColor) => {
     (event) => event["event-position"],
     markers
   )
-  addReplayLabels(scene, replayCheckPointData.events, (event) => event["event-position"])
+  // addReplayLabels(scene, replayCheckPointData.events, (event) => event["event-position"])
 }
 
 function disposeSceneObjects() {
@@ -504,7 +563,18 @@ function disposeSceneObjects() {
   sceneObjects = [];
 }
 
-onMounted(() => {
+const loadAsset = async function(asset){
+  return
+}
+
+// const assetLoader = {
+//   "gate-drl-34-b": {
+//     "lod": async () => (await import('assets/gate_triggers/gate-drl-34-b-lod2.obj?url')).default,
+//     "trigger": async () => (await import('assets/gate_triggers/gate-drl-34-b-trigger.obj?url')).default,
+//   }
+// }
+
+onMounted(async () => {
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(container.value.offsetWidth, container.value.offsetHeight);
   container.value.appendChild(renderer.domElement);
@@ -519,10 +589,17 @@ onMounted(() => {
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.panSpeed = 1;
-  controls.rotateSpeed = 0.5;
-  controls.zoomSpeed = 1.8;
-  controls.minDistance = 8;
-  controls.maxDistance = 1000;
+  controls.rotateSpeed = 0.5
+  controls.zoomSpeed = 1.8
+  controls.minDistance = 5
+  controls.maxDistance = 1000
+  controls.zoomToCursor = true
+  // controls.mouseButtons = {
+  //   LEFT: THREE.MOUSE.ROTATE,
+  //   MIDDLE: THREE.MOUSE.PAN,
+  //   RIGHT: THREE.MOUSE.PAN
+  // }
+  // controls.screenSpacePanning = false
 
   const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5); // Add ambient light with an intensity of 1
   scene.add(ambientLight);
@@ -531,6 +608,77 @@ onMounted(() => {
   const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
   directionalLight.position.set(1, 1, 1);
   scene.add(directionalLight);
+
+  const axesHelper = new THREE.AxesHelper( 5 );
+  scene.add( axesHelper );
+
+  // const loader = new OBJLoader();
+  // load a resource
+  // const asset = (await import("assets/gate_triggers/gate-drl-34-b-lod0.obj?url")).default;
+  // const asset = await assetLoader["gate-drl-34-b"].lod();
+
+  // console.log("asset", asset);
+  // loader.load(
+  //   // resource URL
+  //   await assetLoader["gate-multigp-c-01"].lod(),
+  //   // called when resource is loaded
+  //   function ( object ) {
+  //
+  //     object.position.set(-1.56716824, 7.027457, -11.1708822 * -1); // I needed to switch x and z
+  //     object.scale.set(3.24904728, 3.2487154, 3.24858356);
+  //     const r0 = 0.685492
+  //     const r1 = 0.167431936
+  //     const r2 = 0.173496366
+  //     const r3 = 0.6869981
+  //     const quaternion = new THREE.Quaternion(-r0, -r1, r2, r3);
+  //     object.quaternion.multiply(quaternion);
+  //     object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2))
+  //     object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI))
+  //     scene.add(object);
+  //
+  //     // const customGeometry = new THREE.BoxGeometry(3.24904728 * 3.1, 3.2487154 * 3.1, 3.24858356)
+  //     // let cube = new THREE.Mesh(customGeometry, defaultCubeMaterial);
+  //     // cube.position.set(-1.56716824, 7.027457, -11.1708822 * -1);
+  //     // cube.setRotationFromQuaternion(quaternion)
+  //     // scene.add(cube)
+  //   },
+  //   // called when loading is in progresses
+  //   function ( xhr ) {
+  //     console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+  //   },
+  //   // called when loading has errors
+  //   function ( error ) {
+  //     console.log( 'An error happened' );
+  //   }
+  // );
+  //
+  // loader.load(
+  //   // resource URL
+  //   await assetLoader["gate-multigp-c-01"].trigger(),
+  //   // called when resource is loaded
+  //   function ( object ) {
+  //
+  //     object.position.set(-1.56716824, 7.027457, -11.1708822 * -1); // I needed to switch x and z
+  //     object.scale.set(3.24904728, 3.2487154, 3.24858356);
+  //     const r0 = 0.685492
+  //     const r1 = 0.167431936
+  //     const r2 = 0.173496366
+  //     const r3 = 0.6869981
+  //     const quaternion = new THREE.Quaternion(-r0, -r1, r2, r3);
+  //     object.quaternion.multiply(quaternion);
+  //     object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2))
+  //     object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI))
+  //     scene.add( object );
+  //   },
+  //   // called when loading is in progresses
+  //   function ( xhr ) {
+  //     console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+  //   },
+  //   // called when loading has errors
+  //   function ( error ) {
+  //     console.log( 'An error happened' );
+  //   }
+  // );
 
   animate(scene, camera);
 });
