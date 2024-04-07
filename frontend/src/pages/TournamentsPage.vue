@@ -241,7 +241,10 @@ const rankingsTable = {
 
 const fetchTournamentRankings = async () => {
   rankingsTable.loading.value = true;
-  const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/rankings-current-season`);
+  const response = await axios.get(
+    `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+    + `/tournaments/rankings-current-season`
+  )
   if(response.data.rankings){
     response.data.rankings = response.data.rankings.map((row) => {
       if (row['profileThumb'].includes('placeholder.png')) {
@@ -284,7 +287,10 @@ const toLocalDateformat = (val) => {
 const buildImgCacheUrl = (url) => {
   if (url) {
     let encodedUrl = encodeURIComponent(url);
-    return computed(() => `${process.env.DLAPP_THUMBOR_URL}/x500/${encodedUrl}`).value;
+    return computed(() =>
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}${process.env.DLAPP_THUMBOR_PATH}`
+      + `/x500/${encodedUrl}`
+    ).value
   }
 }
 
@@ -292,7 +298,10 @@ const buildImgCacheUrlForThumbs = (url) => {
   if (url) {
     if(url.includes('placeholder.png')) return url;
     let encodedUrl = encodeURIComponent(url);
-    return computed(() => `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`).value;
+    return computed(() =>
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}${process.env.DLAPP_THUMBOR_PATH}`
+      + `/50x50/${encodedUrl}`
+    ).value;
   }
 }
 
@@ -322,14 +331,20 @@ const getDateDifferenceToNow = (dateString) => {
 
 const fetchTournaments = async () => {
   tournamentTable.loading.value = true;
-  const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/tournaments-current-season`);
+  const response = await axios.get(
+    `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+    + `/tournaments/tournaments-current-season`
+  )
   tournaments.value = response.data;
   // console.log(tournaments.value);
   tournamentTable.loading.value = false;
 }
 
 const fetchSeasonStatus = async () => {
-  const response = await axios.get(`${process.env.DLAPP_API_URL}/tournaments/season-status`);
+  const response = await axios.get(
+    `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+    + `/tournaments/season-status`
+  )
   seasonStatus.value = response.data;
 }
 

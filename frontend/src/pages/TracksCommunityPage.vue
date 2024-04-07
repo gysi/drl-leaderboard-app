@@ -103,7 +103,10 @@ const loading = ref(true);
 
 const fetchData = async () => {
   try {
-    const response = await axios.get(process.env.DLAPP_API_URL+'/tracks/community-season/current');
+    const response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + '/tracks/community-season/current'
+    )
     rows.value = response.data;
   } catch (error) {
     console.error(error);
@@ -114,7 +117,9 @@ const fetchData = async () => {
 const buildImgCacheUrl = function(url) {
   if (url) {
     let encodedUrl = encodeURIComponent(url);
-    return computed(() => `${process.env.DLAPP_THUMBOR_URL}/120x68/${encodedUrl}`).value;
+    return computed(() =>
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}${process.env.DLAPP_THUMBOR_PATH}`
+      + `/120x68/${encodedUrl}`).value;
   }
 }
 

@@ -198,7 +198,10 @@ const showExcludedPlayers = ref(false)
 
 const fetchData = async function () {
   try {
-    const response = await axios.get(`${process.env.DLAPP_API_URL}/seasons/ranking-current-season?page=1&limit=500`);
+    const response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `/seasons/ranking-current-season?page=1&limit=500`
+    );
     rows.value = response.data.map((row) => {
       if (row['profileThumb'].includes('placeholder.png')) {
         row['profileThumb'] = placeholder;
@@ -225,7 +228,8 @@ const buildImgCacheUrl = function (url) {
   if (url) {
     if(url.includes('placeholder.png')) return url;
     let encodedUrl = encodeURIComponent(url);
-    return `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`;
+    return `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}${process.env.DLAPP_THUMBOR_PATH}`
+      + `/50x50/${encodedUrl}`;
   }
 }
 

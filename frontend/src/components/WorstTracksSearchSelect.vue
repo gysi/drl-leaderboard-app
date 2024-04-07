@@ -137,7 +137,10 @@ export default {
       if(this.tracks.length > 0) return;
       this.loadingState = true;
       try {
-        const response = await axios.get(process.env.DLAPP_API_URL+'/tracks/official');
+        const response = await axios.get(
+          `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+          + `/tracks/official`
+        );
         this.tracks = response.data;
         this.searchResults = this.tracks;
       } catch (error) {

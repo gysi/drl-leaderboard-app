@@ -1,6 +1,155 @@
 import {OBJLoader} from "three/addons/loaders/OBJLoader.js";
+import * as THREE from "three";
 
 const assetLoader = {
+  // DRONE PARTS!!
+  "antenna-04": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/antenna-04-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(-0.09, 0, 0.007)
+      obj.applyQuaternion(new THREE.Quaternion(0.5, -0.5, -0.5, 0.5))
+      obj.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 6))
+    }
+  },
+  "attachment-02": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/attachment-02-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(-0.1, -0.1, 0)
+    }
+  },
+  "esc-02": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/esc-02-lod2.obj?url')).default,
+  },
+  "frame-34-body-arm-0": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-body-arm-0-lod2.obj?url')).default,
+  },
+  "frame-34-body-arm-1": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-body-arm-1-lod2.obj?url')).default,
+  },
+  "frame-34-body-arm-2": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-body-arm-2-lod2.obj?url')).default,
+  },
+  "frame-34-body-arm-3": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-body-arm-3-lod2.obj?url')).default,
+  },
+  "frame-34-body": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-body-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-b-arm-0": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-b-arm-0-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-b-arm-1": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-b-arm-1-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-b-arm-2": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-b-arm-2-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-b-arm-3": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-b-arm-3-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-body-b": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-body-b-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-body-t": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-body-t-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-glass": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-glass-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-t-arm-0": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-t-arm-0-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-t-arm-1": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-t-arm-1-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-t-arm-2": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-t-arm-2-lod2.obj?url')).default,
+  },
+  "frame-34-canopy-t-arm-3": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-canopy-t-arm-3-lod2.obj?url')).default,
+  },
+  "frame-34-part-cradle": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-part-cradle-lod2.obj?url')).default,
+  },
+  "frame-34-part-leds": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-part-leds-lod2.obj?url')).default,
+  },
+  "frame-34-part-tail": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/frame-34-part-tail-lod2.obj?url')).default,
+  },
+  "propeller-45-0": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/propeller-45-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(-0.095, 0.126, 0.0264)
+    }
+  },
+  "propeller-45-1": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/propeller-45-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(0.1111, 0.126, 0.0264)
+    }
+  },
+  "propeller-45-2": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/propeller-45-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(0.1111, -0.126, 0.0264)
+    }
+  },
+  "propeller-45-3": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/propeller-45-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(-0.095, -0.126, 0.0264)
+    }
+  },
+  "motor-30-base-0": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/motor-30-base-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(-0.095, 0.126, -0.005)
+    }
+  },
+  "motor-30-base-1": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/motor-30-base-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(0.1111, 0.126, -0.005)
+    }
+  },
+  "motor-30-base-2": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/motor-30-base-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(0.1111, -0.126, -0.005)
+    }
+  },
+  "motor-30-base-3": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/motor-30-base-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(-0.095, -0.126, -0.005)
+    }
+  },
+  "motor-30-cap-0": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/motor-30-cap-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(-0.095, 0.126, -0.005)
+    }
+  },
+  "motor-30-cap-1": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/motor-30-cap-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(0.1111, 0.126, -0.005)
+    }
+  },
+  "motor-30-cap-2": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/motor-30-cap-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(0.1111, -0.126, -0.005)
+    }
+  },
+  "motor-30-cap-3": {
+    "lod": async () => (await import('assets/replay_assets/drone_parts/motor-30-cap-lod2.obj?url')).default,
+    "offset": (obj) => {
+      obj.position.set(-0.095, -0.126, -0.005)
+    }
+  },
+  // GATES
   "podium-01": {
     "lod": async () => (await import('assets/replay_assets/podiums/podium-01-base-lod2.obj?url')).default,
   },
@@ -1434,7 +1583,7 @@ const assetObjLoader = async function (url) {
           resolve(object.clone())
         },
         function (xhr) {
-          console.log(`${url}${(xhr.loaded / xhr.total * 100)}% loaded`);
+          // console.log(`${url}${(xhr.loaded / xhr.total * 100)}% loaded`);
         },
         function (error) {
           console.log('An error happened during loading of the asset:' + url, error);

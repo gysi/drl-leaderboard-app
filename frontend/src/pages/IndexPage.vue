@@ -276,13 +276,14 @@ const fetchData = async () => {
   mostTrackEntriesLastMonth.value.loading = true
 
   try {
+    const baseUrl = `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
     const [responseLatest, responseLatestTop10, responseMostPbsLast7Days, responseMostPbsLastMonth, responseMostTrackEntriesLast14Days, responseMostTrackEntriesLastMonth] = await Promise.all([
-      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/latest-activity`),
-      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/latest-activity-top-10`),
-      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/most-pbs-last-7-days`),
-      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/most-pbs-last-month`),
-      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/most-track-entries-last-14-days`),
-      axios.get(`${process.env.DLAPP_API_URL}/leaderboards/most-track-entries-last-month`),
+      axios.get(`${baseUrl}/leaderboards/latest-activity`),
+      axios.get(`${baseUrl}/leaderboards/latest-activity-top-10`),
+      axios.get(`${baseUrl}/leaderboards/most-pbs-last-7-days`),
+      axios.get(`${baseUrl}/leaderboards/most-pbs-last-month`),
+      axios.get(`${baseUrl}/leaderboards/most-track-entries-last-14-days`),
+      axios.get(`${baseUrl}/leaderboards/most-track-entries-last-month`),
     ])
     latestActivity.value.rows = responseLatest.data
     latestActivityTop10.value.rows = responseLatestTop10.data

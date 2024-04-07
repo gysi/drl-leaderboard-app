@@ -143,7 +143,10 @@ const fetchData = async (track) => {
   }
   loading.value = true
   try {
-    const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/bytrack/${track.id}?page=1&limit=250`)
+    const response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `/leaderboards/bytrack/${track.id}?page=1&limit=250`
+    )
     rows.value = response.data
   } catch (error) {
     console.error(error)
@@ -159,7 +162,8 @@ const formatFlagUrl = (flagUrl) => {
 const buildImgCacheUrl = (url) => {
   if (url) {
     let encodedUrl = encodeURIComponent(url)
-    return `${process.env.DLAPP_THUMBOR_URL}/${encodedUrl}`
+    return `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}${process.env.DLAPP_THUMBOR_PATH}`
+      +`/${encodedUrl}`
   }
 }
 </script>

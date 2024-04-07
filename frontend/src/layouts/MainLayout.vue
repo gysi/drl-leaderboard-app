@@ -283,7 +283,8 @@ const linksListMenu = [
     title: 'API',
     caption: 'API documentation',
     icon: 'code',
-    link: process.env.DLAPP_API_URL + process.env.DLAPP_SWAGGER_URL_PART,
+    link: `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `${process.env.DLAPP_SWAGGER_URL_PART}`,
     external: true,
     openInNew: true
   }
@@ -334,13 +335,18 @@ const fetchTwitchStreams = async function () {
   const width = 150;
   const height = Math.round(width / (16 / 9));
   try {
-    let response = await axios.get(process.env.DLAPP_API_URL + '/twitch/streams');
+    let response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `/twitch/streams`
+    )
     response.data.forEach(item => {
       item.streamThumbnail = item.streamThumbnail
         .replace("{width}", String(width))
         .replace("{height}", String(height));
     });
     twitchStreams.value = response.data;
+  } catch (e) {
+    console.error(e)
   } finally {
     fetchStreamTimer = setTimeout(fetchTwitchStreams, 60000);
   }
