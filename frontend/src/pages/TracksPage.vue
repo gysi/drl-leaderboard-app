@@ -67,10 +67,13 @@
   }
   const fetchData = async () => {
     try {
-      const response = await axios.get(process.env.DLAPP_API_URL+'/tracks/official');
-      rows.value = response.data;
+      const response = await axios.get(
+        `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+        + '/tracks/official'
+      )
+      rows.value = response.data
     } catch (error) {
-      console.error(error);
+      console.error(error)
     } finally {
       loading.value = false;
     }

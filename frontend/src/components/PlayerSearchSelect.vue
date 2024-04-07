@@ -63,7 +63,9 @@ export default {
         return;
       }
       this.loadingState = true;
-      const response = await axios.get(`${process.env.DLAPP_API_URL}/players/search?playerName=${encodeURIComponent(val)}`);
+      const response = await axios.get(
+        `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}/players/search?playerName=${encodeURIComponent(val)}`
+      );
       this.searchResults = response.data;
       this.loadingState = false;
       update();

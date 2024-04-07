@@ -87,7 +87,10 @@ watch(() => props.trackId, (val) => {
 const fetchData = async (trackId) => {
   state.loading = true;
   try {
-    const response = await axios.get(process.env.DLAPP_API_URL+'/leaderboards/replays/bytrack/'+trackId);
+    const response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `/leaderboards/replays/bytrack/${trackId}`
+    );
     // console.log("fetching data", response.data);
     state.replays = response.data;
     state.searchResults = response.data;

@@ -68,7 +68,7 @@
             >
               <q-item-section avatar side>
                 <q-avatar rounded size="50px">
-                  <img :src="props.row.profileThumb" loading="eager" alt="Avatar"/>
+                  <img :src="props.row.profileThumb" loading="lazy" alt="Avatar"/>
                   <!--                  <q-img loading="lazy" :src="props.row.profileThumb" />-->
                 </q-avatar>
               </q-item-section>
@@ -157,7 +157,9 @@ watch(selectedParentCategory, (newCategory) => {
 const fetchData = async (parentCategory = selectedParentCategory.value) => {
   loading.value = true
   try {
-    const response = await axios.get(`${process.env.DLAPP_API_URL}/leaderboards/official/overall-ranking?page=1&limit=500${parentCategory != null && parentCategory.name !== 'Overall' ? `&parentCategory=${parentCategory.name}` : ''}`)
+    const response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `/leaderboards/official/overall-ranking?page=1&limit=500${parentCategory != null && parentCategory.name !== 'Overall' ? `&parentCategory=${parentCategory.name}` : ''}`)
     rows.value = response.data.map((row) => {
       row['profileThumb'] = row['profileThumb'].includes('placeholder.png') ? placeholder : buildImgCacheUrl(row['profileThumb'])
       return row
@@ -176,14 +178,19 @@ const onPlayerSelected = (playerName) => {
 }
 
 const fetchParentCategories = async () => {
-  const response = await axios.get(`${process.env.DLAPP_API_URL}/tracks/parent-categories`)
+  const response = await axios.get(
+    `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.
+      DLAPP_API_PATH}`
+    + `/tracks/parent-categories`
+  )
   parentCategories.value = [{id: null, name: 'Overall', description: 'Overall'}, ...response.data]
 }
 
 const buildImgCacheUrl = (url) => {
   if (url && !url.includes('placeholder.png')) {
     let encodedUrl = encodeURIComponent(url)
-    return `${process.env.DLAPP_THUMBOR_URL}/50x50/${encodedUrl}`
+    return `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}${process.env.DLAPP_THUMBOR_PATH}`
+      + `/50x50/${encodedUrl}`
   }
   return url
 }

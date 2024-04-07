@@ -198,7 +198,8 @@ watch(currentTab, val => {
 }, {immediate: true})
 let compressedData = ref("");
 const iFrameUrlFull = computed(() => {
-  return `${process.env.DLAPP_URL}/stream-card?settings=${encodeURIComponent(compressedData.value)}`;
+  return `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_PORT}`
+    + `/stream-card?settings=${encodeURIComponent(compressedData.value)}`;
 });
 
 const copyUrlToClipboard = () => {

@@ -371,7 +371,9 @@ export default defineComponent({
       }
       this.worstTracksTable.loading = true;
       try {
-        const response = await axios.post(process.env.DLAPP_API_URL+'/leaderboards/worst-tracks',
+        const response = await axios.post(
+          `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+          + '/leaderboards/worst-tracks',
           this.toggles.categoryToggles.reduce((obj, toggle) => {
             obj[toggle.name] = toggle.isIncluded;
             return obj;

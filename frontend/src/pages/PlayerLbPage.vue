@@ -299,7 +299,10 @@ const onEnterPressedCompareSelect = function (val) {
 }
 
 const searchPlayer = async function (val, update, abort) {
-  return axios.get(`${process.env.DLAPP_API_URL}/players/search?playerName=${encodeURIComponent(val)}`);
+  return axios.get(
+    `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+    + `/players/search?playerName=${encodeURIComponent(val)}`
+  );
 }
 
 const searchSelectPlayer = async function (val, update, abort) {
@@ -333,10 +336,11 @@ const fetchData = async function (player, ignoreDoubleTrackEntries = false) {
   loading.value = true;
   let newArray = [];
   try {
+    const baseUrl = `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
     const [responseFinishedTracks, responseMissingTracks] =
       await Promise.all([
-        axios.get(`${process.env.DLAPP_API_URL}/leaderboards/official/byplayername?playerName=${encodeURIComponent(player)}`),
-        axios.get(`${process.env.DLAPP_API_URL}/tracks/missing-official-tracks-by-playername?playerName=${encodeURIComponent(player)}`)
+        axios.get(`${baseUrl}/leaderboards/official/byplayername?playerName=${encodeURIComponent(player)}`),
+        axios.get(`${baseUrl}/tracks/missing-official-tracks-by-playername?playerName=${encodeURIComponent(player)}`)
       ]);
     const finishedTracks = responseFinishedTracks.data;
     const missingTracks = responseMissingTracks.data;

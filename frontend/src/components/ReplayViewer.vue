@@ -39,10 +39,10 @@ watch(() => props.trackId, (val) => {
   }
 });
 
-watch(() => props.replayData, (replayData) => {
+watch(() => props.replayData, async (replayData) => {
   // console.log("replayviewer replayData changed", replayData);
   if(replayData){
-    loadReplay(props.trackId, replayData, replayData.playerName === 'devils' ? 0xff00ff : splineColors[currentSplineColor]);
+    await loadReplay(props.trackId, replayData, splineColors[currentSplineColor]);
     if(currentSplineColor >= splineColors.length - 1){
       currentSplineColor = 0;
     } else {
@@ -54,11 +54,26 @@ watch(() => props.replayData, (replayData) => {
 const container = ref(null);
 
 let splineColors = [
-  0x00FF00,
-  0x71bbff,
-  0xff76eb,
-  0xffe54c,
-  0xcffffd,
+  {
+    color1: new THREE.Color("rgb(117,252,117)"),
+    color2: new THREE.Color("rgb(0,128,0)")
+  },
+  {
+    color1: new THREE.Color("rgb(117,190,255)"),
+    color2: new THREE.Color("rgb(0,90,166)")
+  },
+  {
+    color1: new THREE.Color("rgb(255,137,237)"),
+    color2: new THREE.Color("rgb(164,0,139)")
+  },
+  {
+    color1: new THREE.Color("rgb(255,236,109)"),
+    color2: new THREE.Color("rgb(192,166,0)")
+  },
+  {
+    color1: new THREE.Color("rgb(250,102,102)"),
+    color2: new THREE.Color("rgb(129,0,0)")
+  },
 ];
 
 let currentSplineColor = 0;
@@ -84,12 +99,15 @@ function createLabel(scene, text, position, textLabels) {
 
 const defaultCubeGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
 const defaultCubeMaterial = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
+  // color: 0xff0000,
+  color: "rgb(255,47,47)",
   // alpha
   transparent: true,
+  depthTest: true,
+  depthWrite: true,
   // opacity
-  opacity: 0.3,
-  side: THREE.BackSide,
+  opacity: 0.2,
+  side: THREE.DoubleSide,
   fog: false,
 });
 async function loadAndAddAsset(scene, name, px, py, pz, sx, sy, sz, r0, r1, r2, r3){
@@ -162,53 +180,158 @@ async function addCubes(color, scene, checkpoints, positionExtractor, scalingExt
   });
 }
 
-function addSplines(color, scene, events, eventPositionExtractor, replayData){
-  // Create an array of Vector3 points from the event positions
-  let lastEventSample = 0;
-  const dronePosX = replayData['drone-px'];
-  const dronePosY = replayData['drone-py'];
-  const dronePosZ = replayData['drone-pz'];
-  const points = events.flatMap((event) => {
-    let eventSample = event["event-sample"];
-    if (eventSample === 0 || event["event-type"] === 7) {
-      return [];
-    }
-    const vectors = [];
-    for (let i = lastEventSample; i < eventSample; i++) {
-      vectors.push(new THREE.Vector3(
+function addSplines(splineColor, scene, trackDistance, eventPositionExtractor, replayData){
+  const dronePosX = replayData['drone-px']
+  const dronePosY = replayData['drone-py']
+  const dronePosZ = replayData['drone-pz']
+  const throttleInputs = replayData['input-t']
+  const points = []
+  const throttleInputPoints = []
+  {
+    for (let i = 0; i < dronePosX.length; i++) {
+      if (dronePosX[i] === dronePosX[i - 1]
+        && dronePosY[i] === dronePosY[i - 1]
+        && dronePosZ[i] === dronePosZ[i - 1]) {
+        continue
+      }
+      throttleInputPoints.push(throttleInputs[i])
+      points.push(new THREE.Vector3(
         dronePosX[i],
         dronePosY[i],
         -dronePosZ[i]
       ));
     }
-    // const [z, y, x] = eventPositionExtractor(event);
-    // vectors.push(new THREE.Vector3(x, y, z));
-    lastEventSample = eventSample;
-    return vectors;
-  });
+    const spline = new THREE.CatmullRomCurve3(points);
+    // console.log(points.length, spline.getLength() * 2.5)
+    const geometry = new THREE.TubeGeometry(spline, Math.round(spline.getLength() * 2.5), 0.2, 3, false)
 
-  // Create a Catmull-Rom spline from the points
-  const spline = new THREE.CatmullRomCurve3(points);
+    // Set Color gradient accross the spline
+    let color1 = splineColor.color1;
+    let color2 = splineColor.color2;
+    let color1Copy = new THREE.Color();
+    color1Copy.set(color1)
+    const segmentSize = 100;
+    const vertexSize = geometry.attributes.position.count
+    const colors = new Float32Array(vertexSize * 3);
 
-  // Generate a geometry from the spline
-  // const geometry = new THREE.BufferGeometry().setFromPoints(spline.getPoints(points.length));
-  // const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  const geometry = new THREE.TubeGeometry( spline, points.length, 0.2, 3, false );
-  disposables.push(geometry);
+    let i = 0
+    do {
+      color1Copy.lerpHSL(color2, i / (vertexSize - 1));
+      let j = 0
+      do {
+        colors[i * 3] = color1Copy.r
+        colors[i * 3 + 1] = color1Copy.g
+        colors[i * 3 + 2] = color1Copy.b
+        i++
+        j++
+      } while (j < segmentSize && i < vertexSize)
+      color1Copy.set(color1);
+    } while (i < vertexSize)
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-  const material = new THREE.MeshStandardMaterial({ color: color, wireframe: false });
-  // const material = new THREE.LineBasicMaterial({ color: color, linewidth: 10 });
+    disposables.push(geometry);
+    const material = new THREE.MeshStandardMaterial({
+      transparent: true,
+      depthTest: true,
+      depthWrite: true,
+      opacity: 0.8,
+      side: THREE.DoubleSide,
+      // color: 0x0ff00,
+      wireframe: false,
+      metalness: 0.5,
+      vertexColors: true
+    });
+    disposables.push(material)
+    const line = new THREE.Mesh(geometry, material);
+    line.matrixAutoUpdate = false;
+    sceneObjects.push(line);
+    scene.add(line);
+  }
 
-  disposables.push(material)
-  // Create a line using the geometry and material
-  // const line = new THREE.Line(geometry, material);
-  const line = new THREE.Mesh(geometry, material);
+  // THROTTLE!!
+  {
+    const throttleColor1 = new THREE.Color('yellow')
+    const throttleColor2 = new THREE.Color('rgb(255,0,0)')
+    const throttleMaterial = new THREE.MeshStandardMaterial({
+      // transparent: true,
+      // depthTest: true,
+      // depthWrite: true,
+      // opacity: 0.8,
+      // side: THREE.DoubleSide,
+      // color: throttleColor1,
+      wireframe: false,
+      // metalness: 0.5,
+      vertexColors: true
+    });
+    disposables.push(throttleMaterial)
+    // Calc max throttle input
+    let maxThrottleInput = -Infinity
+    for (let i = 0; i < throttleInputPoints.length; i++) {
+      if (throttleInputPoints[i] > maxThrottleInput) {
+        maxThrottleInput = throttleInputPoints[i];
+      }
+    }
+    // I don't want to show not relevant mini blips or shady floating point stuff
+    maxThrottleInput -= 0.001
+    // console.log("max Throttle input: ", maxThrottleInput)
 
-  line.matrixAutoUpdate = false;
-  line.updateMatrix();
+    // Create throttle splines
+    for (let i = 0; i < throttleInputPoints.length; i++) {
+      if (throttleInputPoints[i] < maxThrottleInput) {
+        // Create spline for marking a lower throttle
+        const throttleSplinePoints = []
+        const throttleSplineInputs = []
+        for (; i < throttleInputPoints.length && throttleInputPoints[i] < maxThrottleInput; i++) {
+          throttleSplinePoints.push(points[i]);
+          throttleSplineInputs.push(throttleInputPoints[i])
+        }
+        // Can't create spline with only 2 points
+        if (throttleSplinePoints.length < 2){
+          if (i + 1 < throttleInputPoints.length) {
+            throttleSplinePoints.push(points[i + 1])
+            throttleSplineInputs.push(throttleInputPoints[i + 1])
+          } else {
+            // no next point avaiable
+            continue
+          }
+        }
+        // console.log("createdThrottlePoints", throttleSplinePoints)
+        const throttleCurve = new THREE.CatmullRomCurve3(throttleSplinePoints);
+        const throttleGeometry = new THREE.TubeGeometry(throttleCurve, throttleSplinePoints.length, 0.25, 3, false)
+        disposables.push(throttleGeometry)
+        // Create color gradient for the strength of throttle decrease
+        // console.log("throttleGeometry.attributes.position.count", throttleGeometry.attributes.position.count)
+        // console.log(throttleGeometry.attributes.position.count / throttleSplinePoints.length)
+        const vertexCount = throttleGeometry.attributes.position.count
+        const segmentSize = vertexCount / throttleSplinePoints.length
+        const color1Copy = new THREE.Color();
+        color1Copy.set(throttleColor1)
+        const colors = new Float32Array(vertexCount * 3);
+        let i_2 = 0
+        let currentSegment = 0
+        do {
+          // console.log(`(throttleIndex i / segmentSize): ${i_2} / ${segmentSize}: `, Math.floor(i_2 / segmentSize))
+          // console.log('trottleInput', throttleSplineInputs[Math.floor(i_2 / segmentSize)]);
+          // console.log('alpha value', 1 - (throttleSplineInputs[Math.floor(i_2 / segmentSize)] / 0.6))
+          color1Copy.lerpHSL(throttleColor2, Math.min(1.1, Math.max(0, 1 - (throttleSplineInputs[Math.floor(i_2 / segmentSize)] / maxThrottleInput))));
+          do {
+            colors[i_2 * 3] = color1Copy.r
+            colors[i_2 * 3 + 1] = color1Copy.g
+            colors[i_2 * 3 + 2] = color1Copy.b
+            i_2++
+          } while (Math.floor(i_2 / segmentSize) <= currentSegment && i_2 < vertexCount)
+          currentSegment++
+          color1Copy.set(throttleColor1);
+        } while (i_2 < vertexCount)
+        throttleGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-  sceneObjects.push(line);
-  scene.add(line);
+        const throttleLine = new THREE.Mesh(throttleGeometry, throttleMaterial);
+        throttleLine.matrixAutoUpdate = false;
+        sceneObjects.push(throttleLine);
+        scene.add(throttleLine);
+      }
+    }
+  }
 }
 
 function addTrackLabels(scene, checkpoints){
@@ -332,9 +455,6 @@ function extractJSON(str) {
 function createCheckpointsFromTrackDetailData(data){
   const checkPoints = []
   data.root.children.forEach((child) => {
-    // if(child['is-lap-start'] === true || child['is-lap-end'] === true) {
-
-    // }
     if(child['podium-index'] === 0) {
       // console.log("podium");
       // console.log(child)
@@ -412,6 +532,11 @@ function findMarkersAndExtractData(byteArray) {
     'drone-px,': 'drone-px',
     'drone-py,': 'drone-py',
     'drone-pz,': 'drone-pz',
+    'input-t': 'input-t',
+    'drone-rpm0' : 'drone-rpm0',
+    'drone-rpm1' : 'drone-rpm1',
+    'drone-rpm2' : 'drone-rpm2',
+    'drone-rpm3' : 'drone-rpm3',
   }
   const output = {};
   const markerKeys = Object.keys(markerPrefixes);
@@ -463,7 +588,7 @@ function sumMarkerData(markers){
   const dronePosX = markers['drone-px'];
   const dronePosY = markers['drone-py'];
   const dronePosZ = markers['drone-pz'];
-
+  const inputT = markers['input-t'];
   const sumFloatArray = function (arr) {
     for (let i = 1; i < arr.length; i++) {
       arr[i] += arr[i - 1];
@@ -473,12 +598,16 @@ function sumMarkerData(markers){
   sumFloatArray(dronePosX);
   sumFloatArray(dronePosY);
   sumFloatArray(dronePosZ);
+  sumFloatArray(inputT)
 }
 
 let checkPoints = [];
+let trackDetails;
 const loadTrack = async (trackId) => {
-  const trackDetails = await axios.get(process.env.DLAPP_API_URL+'/tracks/details/'+trackId);
-  checkPoints = createCheckpointsFromTrackDetailData(trackDetails.data);
+  trackDetails = (await axios.get(
+    `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}/tracks/details/${trackId}`
+  )).data;
+  checkPoints = createCheckpointsFromTrackDetailData(trackDetails);
 
   // Calculate the center of the event positions
   // console.log("checkPoints", checkPoints)
@@ -511,37 +640,25 @@ const loadTrack = async (trackId) => {
 const loadReplay = async (trackId, replayData, splineColor) => {
   await loadingTrackPromise;
   let replayUrl = replayData.replayUrl;
+  // console.log("original replayUrl", replayUrl)
   // if replay url contains https://drl-game-dashboard.s3.amazonaws.com
-  // then replace it with process.env.DLAPP_API_URL
+  // then replace it with a proxy call because it has some crossorigin headers set
   if(replayData.replayUrl.startsWith("https://drl-game-dashboard.s3.amazonaws.com")) {
     let tempReplayUrl = replayUrl;
-    replayUrl = process.env.DLAPP_URL + "/proxy?url=" + encodeURIComponent(tempReplayUrl);
+    // TODO Doesn't work on local env currently, because we need a seperate nginx port for that and it needs to be running
+    replayUrl = `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}/proxy?url=${encodeURIComponent(tempReplayUrl)}`;
+    // console.log("corrected replayUrl", replayUrl)
   }
 
   const response = await axios.get(replayUrl, { responseType: 'arraybuffer' });
   const decodedData = new TextDecoder().decode(response.data);
-  const replayCheckPointData = extractJSON(decodedData)[0];
-  replayCheckPointData.events.unshift({
-    "event-data":
-      [
-        0
-      ],
-    "event-position":
-      [
-        checkPoints[0].position.x,
-        checkPoints[0].position.y,
-        checkPoints[0].position.z
-      ],
-    "event-sample": 0,
-    "event-time": 0,
-    "event-type": 1
-  });
+  const replayJson = extractJSON(decodedData)[0];
   let markers = findMarkersAndExtractData(new Uint8Array(response.data));
+  // console.log("initial markers", markers)
   sumMarkerData(markers);
-  // console.log("time markers", markers['time']);
-
-  // addCubes(0x00ff00, scene, replayCheckPointData.events, (event) => event["event-position"])
-  addSplines(splineColor, scene, replayCheckPointData.events,
+  // console.log("sum", markers)
+  // console.log(trackDetails)
+  addSplines(splineColor, scene, trackDetails['map-distance'] * trackDetails['map-laps'],
     (event) => event["event-position"],
     markers
   )
@@ -577,6 +694,7 @@ const loadAsset = async function(asset){
 onMounted(async () => {
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(container.value.offsetWidth, container.value.offsetHeight);
+  renderer.setPixelRatio( window.devicePixelRatio );
   container.value.appendChild(renderer.domElement);
 
   scene = new THREE.Scene();
@@ -591,7 +709,8 @@ onMounted(async () => {
   controls.panSpeed = 1;
   controls.rotateSpeed = 0.5
   controls.zoomSpeed = 1.8
-  controls.minDistance = 5
+  // controls.minDistance = 5
+  controls.minDistance = 0.1
   controls.maxDistance = 1000
   controls.zoomToCursor = true
   // controls.mouseButtons = {
@@ -609,79 +728,66 @@ onMounted(async () => {
   directionalLight.position.set(1, 1, 1);
   scene.add(directionalLight);
 
-  const axesHelper = new THREE.AxesHelper( 5 );
-  scene.add( axesHelper );
+  // const axesHelper = new THREE.AxesHelper( 5 );
+  // scene.add( axesHelper );
 
-  // const loader = new OBJLoader();
-  // load a resource
-  // const asset = (await import("assets/gate_triggers/gate-drl-34-b-lod0.obj?url")).default;
-  // const asset = await assetLoader["gate-drl-34-b"].lod();
-
-  // console.log("asset", asset);
-  // loader.load(
-  //   // resource URL
-  //   await assetLoader["gate-multigp-c-01"].lod(),
-  //   // called when resource is loaded
-  //   function ( object ) {
-  //
-  //     object.position.set(-1.56716824, 7.027457, -11.1708822 * -1); // I needed to switch x and z
-  //     object.scale.set(3.24904728, 3.2487154, 3.24858356);
-  //     const r0 = 0.685492
-  //     const r1 = 0.167431936
-  //     const r2 = 0.173496366
-  //     const r3 = 0.6869981
-  //     const quaternion = new THREE.Quaternion(-r0, -r1, r2, r3);
-  //     object.quaternion.multiply(quaternion);
-  //     object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2))
-  //     object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI))
-  //     scene.add(object);
-  //
-  //     // const customGeometry = new THREE.BoxGeometry(3.24904728 * 3.1, 3.2487154 * 3.1, 3.24858356)
-  //     // let cube = new THREE.Mesh(customGeometry, defaultCubeMaterial);
-  //     // cube.position.set(-1.56716824, 7.027457, -11.1708822 * -1);
-  //     // cube.setRotationFromQuaternion(quaternion)
-  //     // scene.add(cube)
-  //   },
-  //   // called when loading is in progresses
-  //   function ( xhr ) {
-  //     console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-  //   },
-  //   // called when loading has errors
-  //   function ( error ) {
-  //     console.log( 'An error happened' );
-  //   }
-  // );
-  //
-  // loader.load(
-  //   // resource URL
-  //   await assetLoader["gate-multigp-c-01"].trigger(),
-  //   // called when resource is loaded
-  //   function ( object ) {
-  //
-  //     object.position.set(-1.56716824, 7.027457, -11.1708822 * -1); // I needed to switch x and z
-  //     object.scale.set(3.24904728, 3.2487154, 3.24858356);
-  //     const r0 = 0.685492
-  //     const r1 = 0.167431936
-  //     const r2 = 0.173496366
-  //     const r3 = 0.6869981
-  //     const quaternion = new THREE.Quaternion(-r0, -r1, r2, r3);
-  //     object.quaternion.multiply(quaternion);
-  //     object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2))
-  //     object.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI))
-  //     scene.add( object );
-  //   },
-  //   // called when loading is in progresses
-  //   function ( xhr ) {
-  //     console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-  //   },
-  //   // called when loading has errors
-  //   function ( error ) {
-  //     console.log( 'An error happened' );
-  //   }
-  // );
+  // TODO FINISH RACER4 implementation
+  // loadRacer4().then((obj) => {
+  //   // obj.position.set(1,1,1)
+  //   sceneObjects.push(obj)
+  //   scene.add(obj)
+  // })
 
   animate(scene, camera);
 });
+
+const loadRacer4 = async function () {
+  const r4DroneParts = [
+    "antenna-04",
+    // "attachment-02",
+    // "esc-02",
+    "frame-34-body-arm-0",
+    "frame-34-body-arm-1",
+    "frame-34-body-arm-2",
+    "frame-34-body-arm-3",
+    "frame-34-body",
+    "frame-34-canopy-b-arm-0",
+    "frame-34-canopy-b-arm-1",
+    "frame-34-canopy-b-arm-2",
+    "frame-34-canopy-b-arm-3",
+    "frame-34-canopy-body-b",
+    "frame-34-canopy-body-t",
+    "frame-34-canopy-glass",
+    "frame-34-canopy-t-arm-0",
+    "frame-34-canopy-t-arm-1",
+    "frame-34-canopy-t-arm-2",
+    "frame-34-canopy-t-arm-3",
+    "frame-34-part-cradle",
+    "frame-34-part-leds",
+    "frame-34-part-tail",
+    "propeller-45-0",
+    "propeller-45-1",
+    "propeller-45-2",
+    "propeller-45-3",
+    "motor-30-base-0",
+    "motor-30-base-1",
+    "motor-30-base-2",
+    "motor-30-base-3",
+    "motor-30-cap-0",
+    "motor-30-cap-1",
+    "motor-30-cap-2",
+    "motor-30-cap-3",
+  ]
+  const group = new THREE.Group()
+  for (const r4DronePart of r4DroneParts) {
+    const obj = await assetObjLoader(await assetLoader[r4DronePart].lod())
+    if(assetLoader[r4DronePart].offset){
+      assetLoader[r4DronePart].offset(obj)
+    }
+    group.add(obj)
+  }
+  return group
+}
 
 onUnmounted(() => {
   cancelAnimationFrame();

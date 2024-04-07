@@ -76,7 +76,10 @@ const router = useRouter();
 const fetchTracks = async () => {
   try {
     state.loading = true;
-    const response = await axios.get(process.env.DLAPP_API_URL+'/tracks');
+    const response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `/tracks`
+    );
     state.tracks = response.data;
   } catch (error) {
     console.error(error);
