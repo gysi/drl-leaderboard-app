@@ -409,12 +409,13 @@ function cancelAnimationFrame() {
 
 const basePanSpeed = 1
 const baseDistance = 25
+const moveSpeed = 30;
 
 function animate(scene, camera) {
   if (cancelInProgress) {
     return;
   }
-  const moveSpeed = 1.1;  // Reduce speed if too fast
+  const delta = clock.getDelta();
   let forwardDirection = new THREE.Vector3();
   let rightDirection = new THREE.Vector3();
   let displacement = new THREE.Vector3();
@@ -428,18 +429,18 @@ function animate(scene, camera) {
 
   // Handle forward and backward movements
   if (keyStates['w']) {
-    displacement.addScaledVector(forwardDirection, moveSpeed);
+    displacement.addScaledVector(forwardDirection, moveSpeed * delta);
   }
   if (keyStates['s']) {
-    displacement.addScaledVector(forwardDirection, -moveSpeed);
+    displacement.addScaledVector(forwardDirection, -moveSpeed * delta);
   }
 
   // Handle left and right strafing
   if (keyStates['a']) {
-    displacement.addScaledVector(rightDirection, moveSpeed);
+    displacement.addScaledVector(rightDirection, moveSpeed * delta);
   }
   if (keyStates['d']) {
-    displacement.addScaledVector(rightDirection, -moveSpeed);
+    displacement.addScaledVector(rightDirection, -moveSpeed * delta);
   }
 
   // Apply the displacement if there's any movement
@@ -447,6 +448,7 @@ function animate(scene, camera) {
     camera.position.add(displacement);
     controls.target.add(displacement);
   }
+
   // Update text label rotation
   textLabels.forEach(label => {
     label.lookAt(camera.position);
@@ -724,6 +726,7 @@ const loadAsset = async function(asset){
 //   }
 // }
 
+const clock = new THREE.Clock(true)
 const keyStates = {}
 let keyListenerDown
 let keyListenerUp
@@ -831,6 +834,7 @@ const loadRacer4 = async function () {
 onUnmounted(() => {
   document.removeEventListener('keydown', keyListenerUp)
   document.removeEventListener('keyup', keyListenerDown)
+  clock.stop()
   cancelAnimationFrame();
   for (let i = disposables.length - 1; i >= 0; i--) {
     disposables[i].dispose();
