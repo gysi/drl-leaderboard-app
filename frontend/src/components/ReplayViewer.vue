@@ -414,13 +414,46 @@ function animate(scene, camera) {
   if (cancelInProgress) {
     return;
   }
+  const moveSpeed = 1.1;  // Reduce speed if too fast
+  let forwardDirection = new THREE.Vector3();
+  let rightDirection = new THREE.Vector3();
+  let displacement = new THREE.Vector3();
+
+  // Calculate forward direction
+  camera.getWorldDirection(forwardDirection);
+  forwardDirection.normalize();
+
+  // Calculate right direction for strafing
+  rightDirection.crossVectors(camera.up, forwardDirection).normalize();
+
+  // Handle forward and backward movements
+  if (keyStates['w']) {
+    displacement.addScaledVector(forwardDirection, moveSpeed);
+  }
+  if (keyStates['s']) {
+    displacement.addScaledVector(forwardDirection, -moveSpeed);
+  }
+
+  // Handle left and right strafing
+  if (keyStates['a']) {
+    displacement.addScaledVector(rightDirection, moveSpeed);
+  }
+  if (keyStates['d']) {
+    displacement.addScaledVector(rightDirection, -moveSpeed);
+  }
+
+  // Apply the displacement if there's any movement
+  if (displacement.lengthSq() > 0) {
+    camera.position.add(displacement);
+    controls.target.add(displacement);
+  }
   // Update text label rotation
   textLabels.forEach(label => {
     label.lookAt(camera.position);
   });
   renderer.render(scene, camera);
   const currentDistance = camera.position.distanceTo(controls.target);
-  controls.panSpeed = Math.max(0.8, Math.min(2, basePanSpeed * (baseDistance / currentDistance)));
+  controls.panSpeed = Math.max(0.9, Math.min(2, basePanSpeed * (baseDistance / currentDistance)));
   // console.log(controls.panSpeed)
   controls.update();
   requestAnimationFrameId = requestAnimationFrame(() => animate(scene, camera));
@@ -625,7 +658,7 @@ const loadTrack = async (trackId) => {
   center.y /= checkPoints.length;
   center.z /= checkPoints.length;
 
-  camera.position.set(center.x+25, center.y+25, center.z+25);
+  camera.position.set(center.x+30, center.y+30, center.z+30);
   controls.target.set(center.x, center.y, center.z);
 
   addCubes(0xff0000, scene, checkPoints,
@@ -691,6 +724,10 @@ const loadAsset = async function(asset){
 //   }
 // }
 
+const keyStates = {}
+let keyListenerDown
+let keyListenerUp
+
 onMounted(async () => {
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(container.value.offsetWidth, container.value.offsetHeight);
@@ -702,23 +739,25 @@ onMounted(async () => {
     90,
     container.value.offsetWidth / container.value.offsetHeight,
     0.1,
-    1000
+    200
   );
+  camera.zoom = 0.4
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.panSpeed = 1;
   controls.rotateSpeed = 0.5
   controls.zoomSpeed = 1.8
-  // controls.minDistance = 5
-  controls.minDistance = 0.1
-  controls.maxDistance = 1000
+  controls.minDistance = 5
+  // controls.minDistance = 0.1
+  controls.maxDistance = 100
   controls.zoomToCursor = true
-  // controls.mouseButtons = {
-  //   LEFT: THREE.MOUSE.ROTATE,
-  //   MIDDLE: THREE.MOUSE.PAN,
-  //   RIGHT: THREE.MOUSE.PAN
-  // }
-  // controls.screenSpacePanning = false
+  document.addEventListener('keydown', function(event) {
+    keyStates[event.key] = true; // Mark this key as pressed
+  });
+
+  document.addEventListener('keyup', function(event) {
+    keyStates[event.key] = false; // Mark this key as not pressed
+  });
 
   const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5); // Add ambient light with an intensity of 1
   scene.add(ambientLight);
@@ -790,6 +829,8 @@ const loadRacer4 = async function () {
 }
 
 onUnmounted(() => {
+  document.removeEventListener('keydown', keyListenerUp)
+  document.removeEventListener('keyup', keyListenerDown)
   cancelAnimationFrame();
   for (let i = disposables.length - 1; i >= 0; i--) {
     disposables[i].dispose();
