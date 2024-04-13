@@ -1,4 +1,6 @@
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 29s
   threads:
     virtual:
       enabled: true
@@ -68,6 +70,7 @@ app:
       cron: "0 0 0 * * *"
 
 server:
+  shutdown: graceful
   error:
     include-message: always
     include-exception: false

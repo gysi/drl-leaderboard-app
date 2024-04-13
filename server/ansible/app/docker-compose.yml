@@ -28,6 +28,7 @@ services:
       resources:
         limits:
           memory: 1.5G
+    stop_grace_period: 30s
     networks:
       - local_network
     depends_on:

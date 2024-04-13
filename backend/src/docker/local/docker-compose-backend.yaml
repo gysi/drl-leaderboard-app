@@ -6,7 +6,7 @@ services:
         dockerfile: src/docker/local/Dockerfile-backend
     env_file:
       - docker_compose.env
-      - docker_compose_no_data_updaters.env
+#      - docker_compose_no_data_updaters.env
     ports:
       - "8080:8080"
     volumes:
@@ -15,12 +15,13 @@ services:
       - ../../../../logs/heapdumps_backend:/var/log/heapdumps_backend
     networks:
       - local_network
+    stop_grace_period: 30s
     deploy:
       resources:
         limits:
-          memory: 800M
+          memory: 1G
         reservations:
-          memory: 800M
+          memory: 1G
 
 networks:
   local_network:

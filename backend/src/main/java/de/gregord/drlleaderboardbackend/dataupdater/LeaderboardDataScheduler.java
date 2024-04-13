@@ -84,19 +84,22 @@ public class LeaderboardDataScheduler {
                         tracksProcessedNotSoLongAgo.poll();
                     }
                     tracksRepository.findById(trackId).ifPresent(leaderboardUpdater::updateLeaderboardForTrack);
+                    if(Boolean.FALSE.equals(running.get())){
+                        break;
+                    }
                 }
             }
         });
     }
 
     @PreDestroy
-    public void stopLeaderboardUpdating() {
+    public void stopLeaderboardUpdating() throws InterruptedException {
         running.set(false);
         if (thread1 != null) {
-            thread1.interrupt();
+            thread1.join();
         }
         if (thread2 != null) {
-            thread2.interrupt();
+            thread2.join();
         }
     }
 }
