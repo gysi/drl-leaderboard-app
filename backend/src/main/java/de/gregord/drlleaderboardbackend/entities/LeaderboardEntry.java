@@ -38,6 +38,7 @@ public class LeaderboardEntry {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "track_id", nullable = false)
+    @ToString.Exclude
     private TrackMinimal track;
     private String drlId;
 

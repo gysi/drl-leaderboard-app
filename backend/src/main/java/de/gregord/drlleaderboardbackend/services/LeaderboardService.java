@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_COMMUNITY_LEADERBOARD_BY_PLAYERNAME_CURRENT_SEASON;
@@ -88,31 +91,32 @@ public class LeaderboardService {
     }
 
     public void setBeatenByEntries(List<LeaderboardEntry> leaderboardEntries) {
-        for (LeaderboardEntry leaderboardEntry : leaderboardEntries) {
-            List<LeaderboardEntryMinimal> beatenByEntries = leaderboardEntries.stream()
-                    .filter(lbe -> lbe.getScore() < leaderboardEntry.getScore())
-                    .filter(lbe -> lbe.getCreatedAt().isAfter(leaderboardEntry.getCreatedAt()))
-                    .filter(lbe -> lbe.getIsInvalidRun() == null || !lbe.getIsInvalidRun())
-                    .limit(5)
-                    .sorted(Comparator.comparing(LeaderboardEntry::getCreatedAt).reversed())
-                    .map(lbe -> modelMapper.map(lbe, LeaderboardEntryMinimal.class))
-                    .toList();
-            leaderboardEntry.setBeatenBy(beatenByEntries);
-            // TODO I think this code here is buggy, and we want to always updat, but for now I will let this in here.
-//            if (!beatenByEntries.isEmpty()) {
-//                Set<LeaderboardEntryMinimal> mergedSet = new LinkedHashSet<>();
-//                List<LeaderboardEntryMinimal> currentBeatenByEntries = leaderboardEntry.getBeatenBy();
-//                if (currentBeatenByEntries != null) {
-//                    mergedSet.addAll(currentBeatenByEntries);
-//                }
-//                mergedSet.addAll(beatenByEntries);
-//                List<LeaderboardEntryMinimal> mergedList = mergedSet.stream()
-//                        .sorted(Comparator.comparing(LeaderboardEntryMinimal::getCreatedAt).reversed())
-//                        .limit(5)
-//                        .collect(Collectors.toList());
-//                leaderboardEntry.setBeatenBy(mergedList);
-//            }
+        try (ExecutorService executor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("setBeatenByThread", 1L).factory())) {
+
+            List<Callable<Void>> tasks = leaderboardEntries.stream()
+                    .map(leaderboardEntry -> createSetBeatenByTask(leaderboardEntry, leaderboardEntries))
+                    .collect(Collectors.toList());
+
+            executor.invokeAll(tasks);
+        } catch (InterruptedException e) {
+            LOG.error("BeatenByThread got interrupted", e);
+            Thread.currentThread().interrupt();
         }
+    }
+
+    private Callable<Void> createSetBeatenByTask(LeaderboardEntry targetEntry, List<LeaderboardEntry> allEntries) {
+        return () -> {
+            List<LeaderboardEntryMinimal> beatenByEntries = allEntries.stream()
+                    .filter(lbe -> lbe.getScore() < targetEntry.getScore())
+                    .filter(lbe -> lbe.getCreatedAt().isAfter(targetEntry.getCreatedAt()))
+                    .filter(lbe -> Boolean.FALSE.equals(lbe.getIsInvalidRun()))
+                    .sorted(Comparator.comparing(LeaderboardEntry::getCreatedAt).reversed())
+                    .limit(5)
+                    .map(lbe -> modelMapper.map(lbe, LeaderboardEntryMinimal.class))
+                    .collect(Collectors.toList());
+            targetEntry.setBeatenBy(beatenByEntries);
+            return null;
+        };
     }
 
     @Transactional

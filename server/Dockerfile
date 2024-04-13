@@ -2,7 +2,12 @@ FROM eclipse-temurin:21-jdk-alpine as backend-builder
 WORKDIR /app
 COPY backend/.mvn .mvn
 COPY backend/mvnw backend/pom.xml ./
-RUN ./mvnw dependency:resolve
+RUN ./mvnw dependency:resolve dependency:resolve-plugins
+
+# This we want to do before because proto will download a binary on this phase and we want to cache that behavior
+COPY backend/src/main/proto ./src/main/proto
+RUN ./mvnw protobuf:compile
+
 COPY backend/src/main ./src/main
 COPY backend/src/test ./src/test
 RUN ./mvnw package

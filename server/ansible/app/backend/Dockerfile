@@ -4,6 +4,7 @@ COPY app.jar /opt/app
 ENV JAVA_TOOL_OPTIONS="\
     -Xms300M \
     -Xmx1500M \
+    -XX:ActiveProcessorCount=2 \
     -XX:MaxMetaspaceSize=200M \
     -XX:+UseStringDeduplication \
     -XX:+HeapDumpOnOutOfMemoryError \

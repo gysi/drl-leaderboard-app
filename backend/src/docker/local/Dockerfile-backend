@@ -2,17 +2,23 @@ FROM eclipse-temurin:21-jdk-alpine as backend-builder
 WORKDIR /app
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
-RUN ./mvnw dependency:resolve
+RUN ./mvnw dependency:resolve dependency:resolve-plugins
+
+# This we want to do before because proto will download a binary on this phase and we want to cache that behavior
+COPY src/main/proto ./src/main/proto
+RUN ./mvnw protobuf:compile
+
 COPY src/main ./src/main
 COPY src/test ./src/test
-RUN ./mvnw install spring-boot:repackage
+RUN ./mvnw -DskipTests package
 
 FROM eclipse-temurin:21-jre-alpine
 RUN mkdir /opt/app /var/log/backend /var/log/backend/gc
 COPY --from=backend-builder /app/target/*.jar /opt/app/app.jar
 ENV JAVA_TOOL_OPTIONS="\
     -Xms300M \
-    -Xmx1500M \
+    -Xmx1000M \
+    -XX:ActiveProcessorCount=4 \
     -XX:+UseStringDeduplication \
     -XX:MaxMetaspaceSize=200M \
     -XX:+HeapDumpOnOutOfMemoryError \
