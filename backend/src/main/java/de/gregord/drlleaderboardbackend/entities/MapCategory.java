@@ -8,7 +8,7 @@ import java.util.*;
 @JsonSerialize(using = MapCategorySerializer.class)
 public enum MapCategory {
     MapDRL("DRL Maps"),
-    MapVirtualSeason("Virutal Season"),
+    MapVirtualSeason("Virtual Season"),
     MapMultiGP("MultiGP"),
     MapDRLSimCup("Sim Racing Cup"),
     MapFeatured("Featured"),
