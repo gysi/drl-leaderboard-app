@@ -97,6 +97,10 @@ public class DRLApiService {
         manualInvalidRuns.put("655c78c6f5f438000a237dae", InvalidRunReasons.WRONG_DRONE);
         // mckfpv Atlanta #2
         manualInvalidRuns.put("63a16b5e667fbd0022521f9f", InvalidRunReasons.NO_REPLAY);
+        // MadOhmz SILENT #FREETHEBRIDGE
+        manualInvalidRuns.put("6610c47974116e0011b589f2", InvalidRunReasons.WRONG_REPLAY);
+        // curtiss_66 DRL 2022-23 METACITY
+        manualInvalidRuns.put("6629cffeaaf498000a576b69", InvalidRunReasons.WRONG_REPLAY);
     }
 
     public DRLApiService(
