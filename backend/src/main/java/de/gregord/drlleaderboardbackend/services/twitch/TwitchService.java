@@ -40,39 +40,44 @@ public class TwitchService {
 
     @Cacheable(CACHE_TWITCH_STREAMS)
     public List<ActiveStreams> getActiveStreams() {
-        StreamList list = twitchClient.getHelix().getStreams(
-                null,
-                null,
-                null,
-                STREAMS_LIMIT,
-                List.of(GAME_ID_DRL),
-                null,
-                null,
-                null).execute();
-        List<ActiveStreams> activeStreamsList = new ArrayList<>(list.getStreams().stream().map(stream -> {
-            ActiveStreams aStream = new ActiveStreams();
-            aStream.setUserId(stream.getUserId());
-            aStream.setUserName(stream.getUserName());
-            aStream.setStreamThumbnail(stream.getThumbnailUrl());
-            aStream.setViewerCount(stream.getViewerCount());
-            return aStream;
-        }).toList());
-        if (activeStreamsList.isEmpty()) {
-            return activeStreamsList;
-        }
+        try {
+            StreamList list = twitchClient.getHelix().getStreams(
+                    null,
+                    null,
+                    null,
+                    STREAMS_LIMIT,
+                    List.of(GAME_ID_DRL),
+                    null,
+                    null,
+                    null).execute();
+            List<ActiveStreams> activeStreamsList = new ArrayList<>(list.getStreams().stream().map(stream -> {
+                ActiveStreams aStream = new ActiveStreams();
+                aStream.setUserId(stream.getUserId());
+                aStream.setUserName(stream.getUserName());
+                aStream.setStreamThumbnail(stream.getThumbnailUrl());
+                aStream.setViewerCount(stream.getViewerCount());
+                return aStream;
+            }).toList());
+            if (activeStreamsList.isEmpty()) {
+                return activeStreamsList;
+            }
 
-        List<String> userIds = activeStreamsList.stream().map(ActiveStreams::getUserId).toList();
-        if (!userIds.isEmpty()) {
-            UserList userList = twitchClient.getHelix().getUsers(null, userIds, null).execute();
-            userList.getUsers().forEach(u -> {
-                for (ActiveStreams stream : activeStreamsList) {
-                    if (stream.getUserId().equals(u.getId())) {
-                        stream.setUserLogin(u.getLogin());
-                        stream.setUserThumbnail(u.getProfileImageUrl());
+            List<String> userIds = activeStreamsList.stream().map(ActiveStreams::getUserId).toList();
+            if (!userIds.isEmpty()) {
+                UserList userList = twitchClient.getHelix().getUsers(null, userIds, null).execute();
+                userList.getUsers().forEach(u -> {
+                    for (ActiveStreams stream : activeStreamsList) {
+                        if (stream.getUserId().equals(u.getId())) {
+                            stream.setUserLogin(u.getLogin());
+                            stream.setUserThumbnail(u.getProfileImageUrl());
+                        }
                     }
-                }
-            });
+                });
+            }
+            return activeStreamsList;
+        } catch (Exception e ){
+            LOG.error("Error while getting twitch streams.", e);
+            return new ArrayList<>();
         }
-        return activeStreamsList;
     }
 }
