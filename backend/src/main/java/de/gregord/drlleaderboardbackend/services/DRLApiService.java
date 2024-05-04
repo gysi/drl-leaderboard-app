@@ -367,7 +367,7 @@ public class DRLApiService {
                     );
                 }
 
-                if (leaderboardEntry.getScore() != null && leaderboardEntry.getScore() < 14400) {
+                if (leaderboardEntry.getScore() != null && leaderboardEntry.getScore() < 14400L) {
                     LOG.info("Player " + playerForEntry.getPlayerName() + " has a replay that is too short");
                     leaderboardEntry.setIsInvalidRun(true);
                     leaderboardEntry.setInvalidRunReason(
