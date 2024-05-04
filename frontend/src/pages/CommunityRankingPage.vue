@@ -109,6 +109,9 @@
             <q-td :props="props" key="avgPosition">
               {{ props.cols[props.colsMap['avgPosition'].index].value }}
             </q-td>
+            <q-td :props="props" key="bestPosition">
+              {{ props.cols[props.colsMap['bestPosition'].index].value }}
+            </q-td>
             <q-td :props="props" key="invalidRuns">
               {{ props.row.invalidRuns }}
             </q-td>
@@ -174,17 +177,18 @@ const columns = [
   { index: 3, name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'right', required: true,
     format: (val, row) => (Math.round(val * 100) / 100),
   },
-  { index: 4, name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
-  { index: 5, name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
-  { index: 6, name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
-  { index: 7, name: 'totalScore', label: 'Total Time', field: 'totalScore', align: 'right', required: true,
+  { index: 4, name: 'bestPosition', label: 'Best Position', field: 'bestPosition', align: 'right', required: true },
+  { index: 5, name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
+  { index: 6, name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
+  { index: 7, name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
+  { index: 8, name: 'totalScore', label: 'Total Time', field: 'totalScore', align: 'right', required: true,
     format: (val, row) => formatMilliSeconds(val),
   },
-  { index: 8, name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', required: true,
+  { index: 9, name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', required: true,
     format: (val, row) => (Math.round(val * 10) / 10),
   },
   { index: null, name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb' },
-  { index: 9, name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', required: true,
+  { index: 10, name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', required: true,
     format: (val, row) => getDateDifference(val)
   }
 ];

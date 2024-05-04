@@ -122,6 +122,13 @@ const columns = [
     format: (val, row) => (Math.round(val * 100) / 100),
     required: true
   },
+  {
+    name: 'bestPosition',
+    label: 'Best Position',
+    field: 'bestPosition',
+    align: 'right',
+    required: true
+  },
   {name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
   {name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
   {name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},

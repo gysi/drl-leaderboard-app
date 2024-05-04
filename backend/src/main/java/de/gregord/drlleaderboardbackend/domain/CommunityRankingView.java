@@ -11,6 +11,8 @@ public interface CommunityRankingView {
 
     Double getAvgPosition();
 
+    Long getBestPosition();
+
     Long getInvalidRuns();
 
     Long getCompletedTracks();
