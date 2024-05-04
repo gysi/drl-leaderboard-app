@@ -296,7 +296,7 @@ public class DRLApiService {
                 boolean isInvalidSpeed = (customTopSpeed != null && leaderboardEntry.getTopSpeed() > customTopSpeed) ||
                         (customTopSpeed == null && leaderboardEntry.getTopSpeed() > 104);
                 if (isInvalidSpeed) {
-                    LOG.warn("Player " + playerForEntry.getPlayerName() + " has impossible top speed " + leaderboardEntry.getTopSpeed() + ", DRL BUG!");
+                    LOG.info("Player " + playerForEntry.getPlayerName() + " has impossible top speed " + leaderboardEntry.getTopSpeed() + ", DRL BUG!");
                     leaderboardEntry.setIsInvalidRun(true);
                     leaderboardEntry.setInvalidRunReason(
                             (leaderboardEntry.getInvalidRunReason() == null) ?
@@ -305,7 +305,7 @@ public class DRLApiService {
                     );
                 }
                 if (leaderboardEntry.getReplayUrl() == null) {
-                    LOG.warn("Player " + playerForEntry.getPlayerName() + " has no replay url, DRL BUG (Or intended)!");
+                    LOG.info("Player " + playerForEntry.getPlayerName() + " has no replay url, DRL BUG (Or intended)!");
                     leaderboardEntry.setIsInvalidRun(true);
                     leaderboardEntry.setInvalidRunReason(
                             (leaderboardEntry.getInvalidRunReason() == null) ?
@@ -319,7 +319,7 @@ public class DRLApiService {
                         if (alreadyFoundPlayerIds.containsKey(doubleAcc)) {
                             LeaderboardEntry alreadyExistingEntry = alreadyFoundPlayerIds.get(doubleAcc);
                             if (Boolean.FALSE.equals(alreadyExistingEntry.getIsInvalidRun())) {
-                                LOG.warn("Player " + playerForEntry.getPlayerId() + " is a double account of " + doubleAcc + " and " +
+                                LOG.info("Player " + playerForEntry.getPlayerId() + " is a double account of " + doubleAcc + " and " +
                                         "already exists in this leaderboard");
                                 leaderboardEntry.setIsInvalidRun(true);
                                 leaderboardEntry.setInvalidRunReason(
@@ -346,8 +346,29 @@ public class DRLApiService {
                 }
 
                 if (track.getDrlTrackId() != null && !track.getDrlTrackId().equals(drlLeaderboardEntry.get("track"))) {
-                    LOG.warn("Player " + playerForEntry.getPlayerName() + " has a replay that doesn't match the track, DRL BUG (Or " +
+                    LOG.info("Player " + playerForEntry.getPlayerName() + " has a replay that doesn't match the track, DRL BUG (Or " +
                             "intended)!");
+                    leaderboardEntry.setIsInvalidRun(true);
+                    leaderboardEntry.setInvalidRunReason(
+                            (leaderboardEntry.getInvalidRunReason() == null) ?
+                                    InvalidRunReasons.WRONG_REPLAY.toString() :
+                                    leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.WRONG_REPLAY
+                    );
+                }
+
+                if (track.getDrlTrackId() != null && !track.getDrlTrackId().equals(drlLeaderboardEntry.get("track"))) {
+                    LOG.info("Player " + playerForEntry.getPlayerName() + " has a replay that doesn't match the track, DRL BUG (Or " +
+                            "intended)!");
+                    leaderboardEntry.setIsInvalidRun(true);
+                    leaderboardEntry.setInvalidRunReason(
+                            (leaderboardEntry.getInvalidRunReason() == null) ?
+                                    InvalidRunReasons.WRONG_REPLAY.toString() :
+                                    leaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.WRONG_REPLAY
+                    );
+                }
+
+                if (leaderboardEntry.getScore() != null && leaderboardEntry.getScore() < 14400) {
+                    LOG.info("Player " + playerForEntry.getPlayerName() + " has a replay that is too short");
                     leaderboardEntry.setIsInvalidRun(true);
                     leaderboardEntry.setInvalidRunReason(
                             (leaderboardEntry.getInvalidRunReason() == null) ?
