@@ -367,7 +367,13 @@ public class DRLApiService {
                     );
                 }
 
-                if (leaderboardEntry.getScore() != null && leaderboardEntry.getScore() < 14400L) {
+                if (leaderboardEntry.getScore() != null &&
+                        (leaderboardEntry.getScore() < 14400L
+                                || (leaderboardEntry.getScore() < 24000L
+                                    && !"STRAIGHT LINE".equals(track.getName())
+                                    && !"MT-513".equals(track.getGuid()) // DRL - Sandbox
+                                    && !"MGP UTT 5: NAUTILUS".equals(track.getName())
+                                    && !"MGP 2018 IO ROOKIE".equals(track.getName())))) {
                     LOG.info("Player " + playerForEntry.getPlayerName() + " has a replay that is too short");
                     leaderboardEntry.setIsInvalidRun(true);
                     leaderboardEntry.setInvalidRunReason(
