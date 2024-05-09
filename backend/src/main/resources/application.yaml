@@ -13,29 +13,29 @@ spring:
     url: jdbc:postgresql://postgres:5432/drl?reWriteBatchedInserts=true
     username: admin
     password: admin
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: none # update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    properties:
       hibernate:
-        ddl-auto: none # update
-      database-platform: org.hibernate.dialect.PostgreSQLDialect
-      show-sql: false
-      properties:
-        hibernate:
-          format_sql: true
-          jdbc:
-            batch_size: 100
-          order_updates: true
-          order_inserts: true
-          type:
+        format_sql: true
+        jdbc:
+          batch_size: 100
+        order_updates: true
+        order_inserts: true
+        type:
             json_format_mapper: de.gregord.drlleaderboardbackend.config.CustomHibernateJsonFormatter
-      generate-ddl: false # true
-      database: postgresql
-    flyway:
-      validateMigrationNaming: true
-      locations: classpath:db/migration
-    task:
-      scheduling:
-        pool:
-          size: 3
+    generate-ddl: false # true
+    database: postgresql
+  flyway:
+    validateMigrationNaming: true
+    locations: classpath:db/migration
+  task:
+    scheduling:
+      pool:
+        size: 3
 
 management:
   endpoints:
