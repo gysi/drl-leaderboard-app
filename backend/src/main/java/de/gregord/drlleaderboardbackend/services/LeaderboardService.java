@@ -107,14 +107,28 @@ public class LeaderboardService {
     private Callable<Void> createSetBeatenByTask(LeaderboardEntry targetEntry, List<LeaderboardEntry> allEntries) {
         return () -> {
             List<LeaderboardEntryMinimal> beatenByEntries = allEntries.stream()
-                    .filter(lbe -> lbe.getScore() < targetEntry.getScore())
+                    .filter(lbe -> lbe.getPosition() < targetEntry.getPosition())
+                    .filter(lbe -> lbe.getPreviousPosition() == null || lbe.getPreviousPosition() > targetEntry.getPosition())
                     .filter(lbe -> lbe.getCreatedAt().isAfter(targetEntry.getCreatedAt()))
                     .filter(lbe -> Boolean.FALSE.equals(lbe.getIsInvalidRun()))
                     .sorted(Comparator.comparing(LeaderboardEntry::getCreatedAt).reversed())
                     .limit(5)
                     .map(lbe -> modelMapper.map(lbe, LeaderboardEntryMinimal.class))
                     .collect(Collectors.toList());
-            targetEntry.setBeatenBy(beatenByEntries);
+            if (!beatenByEntries.isEmpty()) {
+                Set<LeaderboardEntryMinimal> mergedSet = new LinkedHashSet<>();
+                List<LeaderboardEntryMinimal> currentBeatenByEntries = targetEntry.getBeatenBy();
+                if (currentBeatenByEntries != null) {
+                    mergedSet.addAll(currentBeatenByEntries);
+                }
+                mergedSet.addAll(beatenByEntries);
+                List<LeaderboardEntryMinimal> mergedList = mergedSet.stream()
+                        .filter(lbe -> lbe.getPosition() < targetEntry.getPosition())
+                        .sorted(Comparator.comparing(LeaderboardEntryMinimal::getCreatedAt).reversed())
+                        .limit(5)
+                        .collect(Collectors.toList());
+                targetEntry.setBeatenBy(mergedList);
+            }
             return null;
         };
     }
