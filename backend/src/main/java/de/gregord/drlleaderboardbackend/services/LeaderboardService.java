@@ -91,22 +91,8 @@ public class LeaderboardService {
     }
 
     public void setBeatenByEntries(List<LeaderboardEntry> leaderboardEntries) {
-        try (ExecutorService executor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("setBeatenByThread", 1L).factory())) {
-
-            List<Callable<Void>> tasks = leaderboardEntries.stream()
-                    .map(leaderboardEntry -> createSetBeatenByTask(leaderboardEntry, leaderboardEntries))
-                    .collect(Collectors.toList());
-
-            executor.invokeAll(tasks);
-        } catch (InterruptedException e) {
-            LOG.error("BeatenByThread got interrupted", e);
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    private Callable<Void> createSetBeatenByTask(LeaderboardEntry targetEntry, List<LeaderboardEntry> allEntries) {
-        return () -> {
-            List<LeaderboardEntryMinimal> beatenByEntries = allEntries.stream()
+        for (LeaderboardEntry targetEntry : leaderboardEntries) {
+            List<LeaderboardEntryMinimal> beatenByEntries = leaderboardEntries.stream()
                     .filter(lbe -> lbe.getPosition() < targetEntry.getPosition())
                     .filter(lbe -> lbe.getPreviousPosition() == null || lbe.getPreviousPosition() > targetEntry.getPosition())
                     .filter(lbe -> lbe.getCreatedAt().isAfter(targetEntry.getCreatedAt()))
@@ -114,7 +100,7 @@ public class LeaderboardService {
                     .sorted(Comparator.comparing(LeaderboardEntry::getCreatedAt).reversed())
                     .limit(5)
                     .map(lbe -> modelMapper.map(lbe, LeaderboardEntryMinimal.class))
-                    .collect(Collectors.toList());
+                    .toList();
             if (!beatenByEntries.isEmpty()) {
                 Set<LeaderboardEntryMinimal> mergedSet = new LinkedHashSet<>();
                 List<LeaderboardEntryMinimal> currentBeatenByEntries = targetEntry.getBeatenBy();
@@ -129,6 +115,12 @@ public class LeaderboardService {
                         .collect(Collectors.toList());
                 targetEntry.setBeatenBy(mergedList);
             }
+        }
+    }
+
+    private Callable<Void> createSetBeatenByTask(LeaderboardEntry targetEntry, List<LeaderboardEntry> allEntries) {
+        return () -> {
+
             return null;
         };
     }
