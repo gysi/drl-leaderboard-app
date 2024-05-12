@@ -101,13 +101,16 @@ public class LeaderboardService {
                     .limit(5)
                     .map(lbe -> modelMapper.map(lbe, LeaderboardEntryMinimal.class))
                     .toList();
+
+            Set<LeaderboardEntryMinimal> mergedSet = new LinkedHashSet<>();
+            List<LeaderboardEntryMinimal> currentBeatenByEntries = targetEntry.getBeatenBy();
+            if (currentBeatenByEntries != null && !currentBeatenByEntries.isEmpty()) {
+                mergedSet.addAll(currentBeatenByEntries);
+            }
             if (!beatenByEntries.isEmpty()) {
-                Set<LeaderboardEntryMinimal> mergedSet = new LinkedHashSet<>();
-                List<LeaderboardEntryMinimal> currentBeatenByEntries = targetEntry.getBeatenBy();
-                if (currentBeatenByEntries != null) {
-                    mergedSet.addAll(currentBeatenByEntries);
-                }
                 mergedSet.addAll(beatenByEntries);
+            }
+            if(!mergedSet.isEmpty()){
                 List<LeaderboardEntryMinimal> mergedList = mergedSet.stream()
                         .filter(lbe -> lbe.getPosition() < targetEntry.getPosition())
                         .sorted(Comparator.comparing(LeaderboardEntryMinimal::getCreatedAt).reversed())
