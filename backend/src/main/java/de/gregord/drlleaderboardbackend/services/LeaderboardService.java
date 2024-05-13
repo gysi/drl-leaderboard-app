@@ -113,6 +113,7 @@ public class LeaderboardService {
             if(!mergedSet.isEmpty()){
                 List<LeaderboardEntryMinimal> mergedList = mergedSet.stream()
                         .filter(lbe -> lbe.getPosition() < targetEntry.getPosition())
+                        .filter(lbe -> lbe.getCreatedAt().isAfter(targetEntry.getCreatedAt()))
                         .sorted(Comparator.comparing(LeaderboardEntryMinimal::getCreatedAt).reversed())
                         .limit(5)
                         .collect(Collectors.toList());
