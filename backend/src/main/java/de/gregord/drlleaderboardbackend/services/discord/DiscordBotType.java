@@ -10,8 +10,12 @@ public enum DiscordBotType {
     TOURNAMENT(List.of(
             DiscordCommand.TOURNAMENT_REMINDER_ACTIVATE,
             DiscordCommand.TOURNAMENT_REMINDER_DEACTIVATE,
+            DiscordCommand.TOURNAMENT_REMINDER_TAG_ROLE,
+            DiscordCommand.TOURNAMENT_REMINDER_TAG_ROLE_REMOVE,
+            DiscordCommand.TOURNAMENT_REMINDER_TEST,
             DiscordCommand.TOURNAMENT_RESULTS_ACTIVATE,
-            DiscordCommand.TOURNAMENT_RESULTS_DEACTIVATE
+            DiscordCommand.TOURNAMENT_RESULTS_DEACTIVATE,
+            DiscordCommand.TOURNAMENT_RESULTS_TEST
     ));
 
     private final List<DiscordCommand> commands;
