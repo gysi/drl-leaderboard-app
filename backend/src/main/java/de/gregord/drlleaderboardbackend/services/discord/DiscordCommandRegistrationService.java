@@ -7,11 +7,15 @@ import discord4j.core.object.command.ApplicationCommand;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import discord4j.discordjson.json.ImmutableApplicationCommandRequest;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DiscordCommandRegistrationService {
@@ -25,26 +29,13 @@ public class DiscordCommandRegistrationService {
     @PostConstruct
     public void init() {
         discordInitializationService.getLeaderboardGateway().thenAccept(gateway -> {
-//            registerSlashCommandsOnReady(gateway).subscribe();
             handleGuildCreateEvents(gateway, DiscordBotType.LEADERBOARD).subscribe();
         });
 
         discordInitializationService.getTournamentGateway().thenAccept(gateway -> {
-//            registerSlashCommandsOnReady(gateway).subscribe();
             handleGuildCreateEvents(gateway, DiscordBotType.TOURNAMENT).subscribe();
         });
     }
-
-    // Maybe remove this in the future, it seems like the GuildCreateEvent is enough, because it is also triggered on startup
-//    private Mono<Void> registerSlashCommandsOnReady(GatewayDiscordClient gateway) {
-//        return gateway.on(ReadyEvent.class, event -> {
-//            event.getGuilds().forEach(guild -> {
-//                registerSlashCommandForGuild(gateway, guild.getId(), "drl-leaderboard-posts-activate", "Activate leaderboard posts");
-//                registerSlashCommandForGuild(gateway, guild.getId(), "drl-leaderboard-posts-deactivate", "Deactivate leaderboard posts");
-//            });
-//            return Mono.empty();
-//        }).then();
-//    }
 
     private Mono<Void> handleGuildCreateEvents(GatewayDiscordClient gateway, DiscordBotType botType) {
         return gateway.on(GuildCreateEvent.class, event -> {
@@ -63,31 +54,51 @@ public class DiscordCommandRegistrationService {
                     })
                     .doOnComplete(() -> {
                         botType.getCommands().forEach(command -> {
-                            registerSlashCommandForGuild(gateway, guildId, command.getCommandName(), command.getDescription());
+                            registerSlashCommandForGuild(gateway, guildId, command);
                         });
                     }).then();
         }).then();
     }
 
-    private void registerSlashCommandForGuild(GatewayDiscordClient gateway, Snowflake guildId, String commandName, String description) {
-        ApplicationCommandOptionData channelOption = ApplicationCommandOptionData.builder()
-                .name("channel")
-                .description("Select a channel to which the bot should post the messages")
-                .type(ApplicationCommandOption.Type.STRING.getValue())
-                .required(true)
-                .autocomplete(true)
-                .build();
+    private void registerSlashCommandForGuild(GatewayDiscordClient gateway, Snowflake guildId, DiscordCommand command) {
+        String commandName = command.getCommandName();
+        String commandDescription = command.getDescription();
+        List<ApplicationCommandOptionData> channelOptions = new ArrayList<>();
+        if(command.activatesChannel() || command.deactivatesChannel()) {
+            channelOptions.add(ApplicationCommandOptionData.builder()
+                    .name("channel")
+                    .description("Select a channel to which the bot should post the messages")
+                    .type(ApplicationCommandOption.Type.STRING.getValue())
+                    .required(true)
+                    .autocomplete(true)
+                    .build()
+            );
+        } else if (command.setsSettingRegardingRoles()) {
+            channelOptions.add(ApplicationCommandOptionData.builder()
+                    .name("role")
+                    .description("Selects a role that will be tagged for a tournament reminder")
+                    .type(ApplicationCommandOption.Type.ROLE.getValue())
+                    .required(true)
+                    .autocomplete(true)
+                    .build()
+            );
+        }
+
+        ImmutableApplicationCommandRequest.Builder commandRequestBuilder = ApplicationCommandRequest.builder()
+                .name(commandName)
+                .description(commandDescription)
+                .dmPermission(false)
+                .defaultMemberPermissions("0")
+                .type(ApplicationCommand.Type.CHAT_INPUT.getValue());
+        if(!channelOptions.isEmpty()) {
+            commandRequestBuilder.addAllOptions(channelOptions);
+        }
+
+        ImmutableApplicationCommandRequest commandRequest = commandRequestBuilder.build();
 
         gateway.getRestClient().getApplicationService()
                 .createGuildApplicationCommand(gateway.getRestClient().getApplicationId().block(), guildId.asLong(),
-                        ApplicationCommandRequest.builder()
-                                .name(commandName)
-                                .description(description)
-                                .dmPermission(false)
-                                .defaultMemberPermissions("0")
-                                .type(ApplicationCommand.Type.CHAT_INPUT.getValue())
-                                .addOption(channelOption)
-                                .build())
+                        commandRequest)
                 .subscribe(
                         result -> LOG.info("Slash command '{}' registered for guild: {}", commandName, guildId.asString()),
                         error -> LOG.error("Error registering slash command '{}' for guild: {}", commandName, guildId.asString(), error)

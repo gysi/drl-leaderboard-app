@@ -239,11 +239,11 @@ public class TournamentDataUpdater {
                 if (tournamentAlreadyExists && "idle".equals(tournament.getStatus()) &&
                         tournament.getRegistrationEndAt().minusMinutes(30).isBefore(LocalDateTime.now())
                 ) {
-                    discordMessageService.sendMessageToTournamentReminderChannel(tournament, false);
+                    discordMessageService.sendMessageToTournamentReminderChannel(tournament, false, false);
                 } else if (tournamentAlreadyExists && "idle".equals(oldStatus) && "active".equals(tournament.getStatus())) {
-                    discordMessageService.sendMessageToTournamentReminderChannel(tournament, true);
+                    discordMessageService.sendMessageToTournamentReminderChannel(tournament, true, false);
                 } else if (tournamentAlreadyExists && "active".equals(oldStatus) && "complete".equals(tournament.getStatus())) {
-                    discordMessageService.sendMessageToTournamentResultChannel(tournament);
+                    discordMessageService.sendMessageToTournamentResultChannel(tournament, false);
                 }
             }
         } catch (Exception e) {

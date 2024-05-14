@@ -2,10 +2,12 @@ package de.gregord.drlleaderboardbackend.services.discord;
 
 import de.gregord.drlleaderboardbackend.domain.PlayerImprovement;
 import de.gregord.drlleaderboardbackend.entities.DiscordActiveChannels;
+import de.gregord.drlleaderboardbackend.entities.DiscordServerSetting;
 import de.gregord.drlleaderboardbackend.entities.Tournament;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRound;
 import de.gregord.drlleaderboardbackend.repositories.DiscordActiveChannelsRepository;
+import de.gregord.drlleaderboardbackend.repositories.DiscordServerSettingsRepository;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.TextChannel;
@@ -36,15 +38,18 @@ public class DiscordMessageService {
     private static final Logger LOG = LoggerFactory.getLogger(DiscordMessageService.class);
     private final DiscordInitializationService discordInitializationService;
     private final DiscordActiveChannelsRepository discordActiveChannelsRepository;
+    private final DiscordServerSettingsRepository discordServerSettingRepository;
     private final String frontendUrl;
 
     public DiscordMessageService(
             DiscordInitializationService discordInitializationService,
             DiscordActiveChannelsRepository discordActiveChannelsRepository,
+            DiscordServerSettingsRepository discordServerSettingRepository,
             @Value("${app.frontend-url}") String frontendUrl
     ) {
         this.discordInitializationService = discordInitializationService;
         this.discordActiveChannelsRepository = discordActiveChannelsRepository;
+        this.discordServerSettingRepository = discordServerSettingRepository;
         this.frontendUrl = frontendUrl;
     }
 
@@ -158,33 +163,60 @@ public class DiscordMessageService {
                 ).then();
     }
 
-    public void sendMessageToTournamentReminderChannel(Tournament tournament, Boolean justStarted) {
-        Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType(DiscordPostType.TOURNAMENT_REMINDER))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMapIterable(Function.identity())
-                .flatMap(channel -> {
-                    // Calculate the adjusted registration end date
-                    LocalDateTime adjustedRegistrationEndDate = tournament.getRegistrationEndAt().minusMinutes(30);
-                    // Compare lastPostAt with the adjusted registration end date
-                    if (justStarted || (channel.getLastPostAt() != null && channel.getLastPostAt().isBefore(adjustedRegistrationEndDate))) {
-                        updateLastPostAt(channel, LocalDateTime.now());
-                        return sendMessageWithEmbedsToChannel(
-                                discordInitializationService.getTournamentGateway(),
-                                channel.getChannelId(),
-                                "",
-                                justStarted ? createEmbedsForTournamentStart(tournament) :
-                                        createEmbedsForTournamentReminder(tournament));
-                    } else {
-                        return Mono.empty(); // Skip sending message if condition not met
-                    }
-                })
-                .subscribe(
-                        result -> LOG.info("Message sent successfully to channel"),
-                        error -> LOG.error("Error sending message to channel: {}", error.getMessage())
-                );
+    public void sendMessageToTournamentReminderChannel(Tournament tournament, Boolean justStarted, Boolean isTest) {
+        sendMessageToTournamentReminderChannelFlux(tournament, justStarted, isTest).subscribe(
+                result -> LOG.info("Message sent successfully to channel"),
+                error -> LOG.error("Error sending message to channel: {}", error.getMessage())
+        );
     }
 
-    private List<EmbedCreateSpec> createEmbedsForTournamentReminder(Tournament tournament) {
+    public Flux<Void> sendMessageToTournamentReminderChannelFlux(Tournament tournament, Boolean justStarted, Boolean isTest) {
+        return Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType(DiscordPostType.TOURNAMENT_REMINDER))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMapMany(Flux::fromIterable)
+                .flatMap(channel -> {
+                    // Reactive handling of the repository call
+                    return Mono.fromCallable(() ->
+                                    discordServerSettingRepository.findByServerIdAndSetting(
+                                            channel.getDiscordServer().getId(), DiscordServerSetting.Settings.TAG_ROLE)
+                            )
+                            .subscribeOn(Schedulers.boundedElastic())
+                            .flatMap(roleTaggingSetting -> {
+                                // Calculate the adjusted registration end date
+                                LocalDateTime adjustedRegistrationEndDate = tournament.getRegistrationEndAt().minusMinutes(30);
+                                // Compare lastPostAt with the adjusted registration end date
+                                if (justStarted
+                                        || (channel.getLastPostAt() != null && channel.getLastPostAt().isBefore(adjustedRegistrationEndDate))
+                                        || isTest) {
+                                    if(!isTest) {
+                                        updateLastPostAt(channel, LocalDateTime.now());
+                                    }
+                                    String roleTag = roleTaggingSetting
+                                            .map(DiscordServerSetting::getValue)
+                                            .map(value -> {
+                                                if(value.contains("@")){
+                                                    return value;
+                                                } else {
+                                                    return "<@&" + value + ">";
+                                                }
+                                            })
+                                            .orElse("");
+
+                                    return sendMessageWithEmbedsToChannel(
+                                            discordInitializationService.getTournamentGateway(),
+                                            channel.getChannelId(),
+                                            roleTag,
+                                            justStarted ? createEmbedsForTournamentStart(tournament, roleTag) :
+                                                    createEmbedsForTournamentReminder(tournament, roleTag)
+                                    );
+                                } else {
+                                    return Mono.empty(); // Skip sending message if condition not met
+                                }
+                            });
+                });
+    }
+
+    private List<EmbedCreateSpec> createEmbedsForTournamentReminder(Tournament tournament, String roleTag) {
         Optional<TournamentRound> qualifyingRound = tournament.getRounds().stream().min(Comparator.comparing(TournamentRound::getNOrder));
         List<TournamentRound.Player> players = qualifyingRound.flatMap(rounds -> rounds.getMatches().stream().findFirst())
                 .map(TournamentRound.Match::getPlayers).orElse(Collections.emptyList());
@@ -196,7 +228,7 @@ public class DiscordMessageService {
                 .url(String.format("%s/tournaments", frontendUrl))
                 .addField(EmbedCreateFields.Field.of("", "Participants:", false))
                 .addFields(participantsEmbedFields.toArray(EmbedCreateFields.Field[]::new))
-                .addField(EmbedCreateFields.Field.of("Go start the SIM and get warmed up!", "", false))
+                .addField(EmbedCreateFields.Field.of("Go start the SIM and get warmed up!","", false))
                 .footer("HAVE FUN!", null)
                 .color(Color.of(67, 214, 214));
         if (tournament.getImageUrl() != null) {
@@ -205,7 +237,7 @@ public class DiscordMessageService {
         return List.of(builder.build());
     }
 
-    private List<EmbedCreateSpec> createEmbedsForTournamentStart(Tournament tournament) {
+    private List<EmbedCreateSpec> createEmbedsForTournamentStart(Tournament tournament, String roleTag) {
         Optional<TournamentRound> qualifyingRound = tournament.getRounds().stream().min(Comparator.comparing(TournamentRound::getNOrder));
         List<TournamentRound.Player> players = qualifyingRound.flatMap(rounds -> rounds.getMatches().stream().findFirst())
                 .map(TournamentRound.Match::getPlayers).orElse(Collections.emptyList());
@@ -227,22 +259,28 @@ public class DiscordMessageService {
         return List.of(builder.build());
     }
 
-    public void sendMessageToTournamentResultChannel(Tournament tournament) {
-        Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType(DiscordPostType.TOURNAMENT_RESULTS))
+    public void sendMessageToTournamentResultChannel(Tournament tournament, Boolean isTest) {
+        sendMessageToTournamentResultChannelFlux(tournament, isTest)
+                .subscribe(
+                        result -> LOG.info("Message sent successfully to channel"),
+                        error -> LOG.error("Error sending message to channel: {}", error.getMessage())
+                );
+    }
+
+    public Flux<Void> sendMessageToTournamentResultChannelFlux(Tournament tournament, Boolean isTest) {
+        return Mono.fromCallable(() -> discordActiveChannelsRepository.findByPostType(DiscordPostType.TOURNAMENT_RESULTS))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMapIterable(Function.identity())
                 .flatMap(channel -> {
-                    updateLastPostAt(channel, LocalDateTime.now());
+                    if(!isTest) {
+                        updateLastPostAt(channel, LocalDateTime.now());
+                    }
                     return sendMessageWithEmbedsToChannel(
                             discordInitializationService.getTournamentGateway(),
                             channel.getChannelId(),
                             "",
                             createEmbedsForTournamentResult(tournament));
-                })
-                .subscribe(
-                        result -> LOG.info("Message sent successfully to channel"),
-                        error -> LOG.error("Error sending message to channel: {}", error.getMessage())
-                );
+                });
     }
 
     private List<EmbedCreateSpec> createEmbedsForTournamentResult(Tournament tournament) {
