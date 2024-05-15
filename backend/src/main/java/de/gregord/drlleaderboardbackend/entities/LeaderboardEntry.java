@@ -6,10 +6,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "leaderboards", indexes = {
@@ -27,14 +29,12 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class LeaderboardEntry {
     @Id
     @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
     @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
-    @EqualsAndHashCode.Include
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "track_id", nullable = false)
@@ -112,5 +112,24 @@ public class LeaderboardEntry {
         leaderboardEntry.invalidRunReason = toCopy.invalidRunReason;
         leaderboardEntry.updatedAt = toCopy.updatedAt;
         return leaderboardEntry;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ?
+                ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        LeaderboardEntry that = (LeaderboardEntry) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() :
+                getClass().hashCode();
     }
 }
