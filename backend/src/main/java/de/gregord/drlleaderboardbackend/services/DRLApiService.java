@@ -384,13 +384,6 @@ public class DRLApiService {
                 }
 
                 leaderboardEntry.setPoints(PointsCalculation.calculatePointsByPositionV3(leaderboardPosition));
-                // 1 p1 valid
-                // 2 p2 invalid prev = 10
-                // 2 p3 valid
-
-                // 1 p1 valid
-                // 2 p2 valid prev = 2
-                // 2 p3 valid
 
                 // DRL bug, that later adds a replay to the existing entry
                 if (existingEntry != null
