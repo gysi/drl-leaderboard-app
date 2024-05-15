@@ -8,15 +8,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.JavaType;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.SqlTypes;
-import org.hibernate.type.descriptor.jdbc.JsonJdbcType;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tournaments", indexes = {
@@ -40,12 +39,10 @@ import java.util.List;
 @Setter
 @EntityListeners(AuditingEntityListener.class)
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Tournament {
     @Id
     @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
     @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
-    @EqualsAndHashCode.Include
     private Long id;
 
     private String drlId; // drl api name "id"
@@ -86,4 +83,20 @@ public class Tournament {
 
     private LocalDateTime nextTurnAt; // drl api name "next-turn", null if tournament is over
     private LocalDateTime completedAt; // drl api name "completed-at", does not exist if tournament is not completed
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Tournament that = (Tournament) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }

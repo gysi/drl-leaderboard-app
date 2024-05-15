@@ -1,14 +1,15 @@
 package de.gregord.drlleaderboardbackend.entities;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "players", indexes = {
@@ -21,12 +22,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Player {
     @Id
     @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
     @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
-    @EqualsAndHashCode.Include
     private Long id;
     private String playerName;
     private String profileThumb;
@@ -67,5 +66,24 @@ public class Player {
         player.createdAt = toCopy.createdAt;
         player.updatedAt = toCopy.updatedAt;
         return player;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ?
+                ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Player player = (Player) o;
+        return getId() != null && Objects.equals(getId(), player.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() :
+                getClass().hashCode();
     }
 }

@@ -8,9 +8,11 @@ import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tracks", indexes = {
@@ -27,15 +29,12 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Track {
 
     @Id
     @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
     @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
-    @EqualsAndHashCode.Include
     private Long id;
-    @EqualsAndHashCode.Include
     private String guid;
     private String mapId;
     // custom
@@ -85,5 +84,21 @@ public class Track {
         this.name = name;
         this.parentCategory = parentCategory.getDescription();
         this.mapCategoryId = parentCategory.ordinal();
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Track track = (Track) o;
+        return getId() != null && Objects.equals(getId(), track.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
