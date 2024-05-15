@@ -122,13 +122,6 @@ public class LeaderboardService {
         }
     }
 
-    private Callable<Void> createSetBeatenByTask(LeaderboardEntry targetEntry, List<LeaderboardEntry> allEntries) {
-        return () -> {
-
-            return null;
-        };
-    }
-
     @Transactional
     public void deleteLeaderboardEntries(Collection<LeaderboardEntry> leaderboardEntries) {
         leaderboardRepository.deleteAll(leaderboardEntries);
