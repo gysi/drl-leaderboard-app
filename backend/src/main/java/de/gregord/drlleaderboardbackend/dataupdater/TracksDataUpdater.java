@@ -162,7 +162,11 @@ public abstract class TracksDataUpdater {
             // Could be optimized by applying distinct only on the guid field because the API returns a specific track two times.
             // And distinct executes the equals/hashCode method and it includes the id field as well.
             // But for new tracks its null and for existing its then on both objects the id from the database
-            tracksService.saveAllAndDeleteMissing(tracksToBeSaved, mapCategoryIdsForDB, preventDeletion);
+            /* TODO currently preventDeletion is hardcoded to true because we don't want to delete community tracks that get removed
+             *  from the featured section.
+            */
+            tracksService.saveAllAndDeleteMissing(tracksToBeSaved, mapCategoryIdsForDB, true);
+//            tracksService.saveAllAndDeleteMissing(tracksToBeSaved, mapCategoryIdsForDB, preventDeletion);
         } catch (Exception e) {
             LOG.error("Error updating maps data", e);
         }
