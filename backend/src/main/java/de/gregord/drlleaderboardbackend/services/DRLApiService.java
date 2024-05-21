@@ -392,7 +392,7 @@ public class DRLApiService {
                 {
                     leaderboardEntry.setPreviousPosition(existingEntry.getPreviousPosition());
                     leaderboardEntry.setPreviousScore(existingEntry.getPreviousScore());
-                } else if (existingEntry != null){
+                } else if (existingEntry != null && !LeaderboardEntry.equalsForUpdate(existingEntry, leaderboardEntry)){
                     leaderboardEntry.setPreviousPosition(existingEntry.getPosition());
                     leaderboardEntry.setPreviousScore(existingEntry.getScore());
                 }
