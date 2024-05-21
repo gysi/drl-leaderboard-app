@@ -94,7 +94,7 @@ public class LeaderboardService {
         for (LeaderboardEntry targetEntry : leaderboardEntries) {
             List<LeaderboardEntryMinimal> beatenByEntries = leaderboardEntries.stream()
                     .filter(lbe -> lbe.getPosition() < targetEntry.getPosition())
-                    .filter(lbe -> lbe.getPreviousPosition() == null || lbe.getPreviousPosition() > targetEntry.getPosition())
+                    .filter(lbe -> lbe.getPreviousPosition() == null || lbe.getPreviousPosition() >= targetEntry.getPosition())
                     .filter(lbe -> lbe.getCreatedAt().isAfter(targetEntry.getCreatedAt()))
                     .filter(lbe -> Boolean.FALSE.equals(lbe.getIsInvalidRun()))
                     .sorted(Comparator.comparing(LeaderboardEntry::getCreatedAt).reversed())
