@@ -165,7 +165,7 @@
           are highlighted with a red background and a warning sign in the track and player leaderboards.
           Hovering over the warning sign will display the reason for the invalidation.</p>
 
-        <p>There are four possible reasons for a run to be flagged as invalid:</p>
+        <p>There are multiple possible reasons for a run to be flagged as invalid:</p>
         <div>
           <b>BETTER_ENTRY_WITH_SAME_NAME</b>
         </div>
