@@ -101,6 +101,8 @@ public class DRLApiService {
         manualInvalidRuns.put("6610c47974116e0011b589f2", InvalidRunReasons.WRONG_REPLAY);
         // curtiss_66 DRL 2022-23 METACITY
         manualInvalidRuns.put("6629cffeaaf498000a576b69", InvalidRunReasons.WRONG_REPLAY);
+        // BDUBARI on DRL 2022-23 USAF
+        manualInvalidRuns.put("663765ce191c13001769c2b5", InvalidRunReasons.WRONG_REPLAY);
     }
 
     public DRLApiService(
