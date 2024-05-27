@@ -65,7 +65,8 @@ app:
     tournaments:
       cron: "0 */1 * * * *" # every Minute (But waits for the previous run to finish)
     season:
-      cron: "0 0 0 * * *"
+      enabled: false
+      cron: "0 0 0 * * *" # every day at midnight
 
 server:
   shutdown: graceful

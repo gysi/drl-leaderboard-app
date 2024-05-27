@@ -220,6 +220,11 @@ public enum Season {
     }
 
     @CheckForNull
+    public static Season getPreviousSeason() {
+        return getPreviousSeason(getCurrentSeason());
+    }
+
+    @CheckForNull
     public static Season getNextSeason(Season season) {
         int seasonOrdinal = season.ordinal();
         if(seasonOrdinal == Season.SEASON_2034_SUMMER.ordinal()){

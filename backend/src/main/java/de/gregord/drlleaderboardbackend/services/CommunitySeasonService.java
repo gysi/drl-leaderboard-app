@@ -34,9 +34,19 @@ public class CommunitySeasonService {
 
     // TODO ADD a better cachekey, look at the overallranking from the Leaderboardrepo
     @Cacheable(CACHE_OVERALLRANKING_COMMUNITY_CURRENT_SEASON)
-    public List<CommunityRankingView> getOverallRankingCurrentSeason(int page, int limit) {
+    public List<CommunityRankingView> getOverallRankingCurrentSeasonCached(boolean onlyEligible, int page, int limit) {
+        return getOverallRankingCurrentSeasonNoCache(onlyEligible, page, limit);
+    }
+
+    public List<CommunityRankingView> getOverallRankingCurrentSeasonNoCache(boolean onlyEligible, int page, int limit) {
         int offset = (page - 1) * limit;
         return communitySeasonsRepository.getOverallRankingCurrentSeason(
-                Season.getCurrentSeasonId(), Season.getCurrentSeason().getSeasonStartDate(), limit, offset);
+                Season.getCurrentSeasonId(), Season.getCurrentSeason().getSeasonStartDate(), onlyEligible, limit, offset);
+    }
+
+    public List<CommunityRankingView> getOverallRankingForSeason(Season season, boolean onlyEligible, int page, int limit) {
+        int offset = (page - 1) * limit;
+        return communitySeasonsRepository.getOverallRankingCurrentSeason(
+                season.getSeasonId(), season.getSeasonStartDate(), onlyEligible, limit, offset);
     }
 }

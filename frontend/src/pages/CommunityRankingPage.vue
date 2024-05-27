@@ -173,7 +173,9 @@ const columns = [
     } },
   { index: 1, name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true,
   },
-  { index: 2, name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true},
+  { index: 2, name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true,
+    format: (val, row) => Math.round(val)
+  },
   { index: 3, name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'right', required: true,
     format: (val, row) => (Math.round(val * 100) / 100),
   },

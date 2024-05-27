@@ -40,7 +40,7 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
                  overall_ranking AS
                      (SELECT l.player_id       AS playerId,
                              p.player_name      AS playerName,
-                             round(sum(l.points))  AS totalPoints,
+                             sum(l.points)  AS totalPoints,
                              avg(l.position)     AS avgPosition,
                              min(l.position)     AS bestPosition,
                              count(*)       AS completedTracks,
@@ -74,6 +74,7 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
             SELECT (CASE WHEN isEligible THEN 0 ELSE 1 END) +
                    (row_number() over (ORDER BY totalPoints DESC, totalScore)) -
                    SUM(CASE WHEN isEligible THEN 0 ELSE 1 END) OVER (ORDER BY totalPoints DESC, totalScore) as position,
+                   playerId,
                    playerName,
                    totalPoints,
                    avgPosition,
@@ -89,6 +90,7 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
                    latestActivity,
                    isEligible
             FROM overall_ranking ovr
-                """, nativeQuery = true)
-    List<CommunityRankingView> getOverallRankingCurrentSeason(int seasonId, LocalDateTime seasonStartDate, int limit, int offset);
+            WHERE (:onlyEligible = FALSE OR isEligible = TRUE)
+            """, nativeQuery = true)
+    List<CommunityRankingView> getOverallRankingCurrentSeason(int seasonId, LocalDateTime seasonStartDate, boolean onlyEligible, int limit, int offset);
 }

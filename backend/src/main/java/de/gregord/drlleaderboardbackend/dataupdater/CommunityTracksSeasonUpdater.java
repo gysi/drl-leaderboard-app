@@ -27,6 +27,8 @@ import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_COMMUNIT
 @Component
 public class CommunityTracksSeasonUpdater {
     private static final Logger LOG = LoggerFactory.getLogger(CommunityTracksSeasonUpdater.class);
+    private static final int NEXT_SEASON_LEAD_PERIOD_DAYS = 14;
+
     private final DRLApiService drlApiService;
     private final TracksRepository tracksRepository;
     private final CommunitySeasonsRepository communitySeasonsRepository;
@@ -50,7 +52,7 @@ public class CommunityTracksSeasonUpdater {
         Season currentSeason = Season.getCurrentSeason();
         LocalDateTime currentSeasonEndDate = currentSeason.getSeasonEndDate();
         LocalDateTime now = LocalDateTime.now();
-        boolean isPreviewSeason = currentSeasonEndDate.minusDays(7).isBefore(now);
+        boolean isPreviewSeason = currentSeasonEndDate.minusDays(NEXT_SEASON_LEAD_PERIOD_DAYS).isBefore(now);
 
         Season seasonToProcess = isPreviewSeason ? Season.getNextSeason() : Season.getCurrentSeason();
         if (seasonToProcess == null) {
