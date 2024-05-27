@@ -4,32 +4,19 @@ import java.time.LocalDateTime;
 
 public interface CommunityRankingView {
     Long getPosition();
-
+    Long getPlayerId();
     String getPlayerName();
-
-    Long getTotalPoints();
-
+    Double getTotalPoints();
     Double getAvgPosition();
-
     Long getBestPosition();
-
     Long getInvalidRuns();
-
     Long getCompletedTracks();
-
-    Integer getTotalCrashCount();
-
+    Long getTotalCrashCount();
     Long getTotalScore();
-
     Double getMaxTopSpeed();
-
     String getFlagUrl();
-
     String getProfilePlatform();
-
     String getProfileThumb();
-
     LocalDateTime getLatestActivity();
-
     Boolean getIsEligible();
 }

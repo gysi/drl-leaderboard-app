@@ -43,7 +43,7 @@ public class SeasonController {
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "50") @Min(1) @Max(500) int limit
     ) {
-        List<CommunityRankingView> overallRanking = communitySeasonService.getOverallRankingCurrentSeason(page, limit);
+        List<CommunityRankingView> overallRanking = communitySeasonService.getOverallRankingCurrentSeasonCached(false, page, limit);
         return ResponseEntity.ok(overallRanking);
     }
 }
