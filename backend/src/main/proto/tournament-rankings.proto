@@ -10,18 +10,19 @@ message TournamentRankings {
   repeated PlayerRanking rankings = 4;
 
   message PlayerRanking {
-    string commonPlayerName = 1;
-    string profileThumb = 2;
-    string flagUrl = 3;
-    string platform = 4;
-    int32 numberOfTournamentsPlayed = 5;
-    int32 numberOfGoldenHeats = 6;
-    int32 totalPoints = 7;
-    int32 position = 8;
-    int32 pointsBest12Tournaments = 9;
-    repeated int32 best12Positions = 10;
-    repeated int32 allPositions = 11;
-    repeated Tournament playedTournaments = 12;
+    int64 playerId = 1;
+    string commonPlayerName = 2;
+    string profileThumb = 3;
+    string flagUrl = 4;
+    string platform = 5;
+    int32 numberOfTournamentsPlayed = 6;
+    int32 numberOfGoldenHeats = 7;
+    int32 totalPoints = 8;
+    int32 position = 9;
+    int32 pointsBest12Tournaments = 10;
+    repeated int32 best12Positions = 11;
+    repeated int32 allPositions = 12;
+    repeated Tournament playedTournaments = 13;
   }
 
   message Tournament {

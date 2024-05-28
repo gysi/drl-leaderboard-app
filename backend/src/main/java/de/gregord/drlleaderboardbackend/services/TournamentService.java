@@ -3,6 +3,7 @@ package de.gregord.drlleaderboardbackend.services;
 import de.gregord.drlleaderboardbackend.domain.Season;
 import de.gregord.drlleaderboardbackend.domain.TournamentRankings;
 import de.gregord.drlleaderboardbackend.domain.TournamentSeason;
+import de.gregord.drlleaderboardbackend.entities.Player;
 import de.gregord.drlleaderboardbackend.entities.Tournament;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;
 import de.gregord.drlleaderboardbackend.repositories.TournamentRepository;
@@ -11,9 +12,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -28,17 +27,31 @@ public class TournamentService {
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(TournamentService.class);
 
     TournamentRepository tournamentRepository;
+    PlayerService playerService;
 
-    public TournamentService(TournamentRepository tournamentRepository) {
+    public TournamentService(
+            TournamentRepository tournamentRepository,
+            PlayerService playerService
+    ) {
         this.tournamentRepository = tournamentRepository;
+        this.playerService = playerService;
     }
 
     @Cacheable(CACHE_TOURNAMENT_RANKINGS)
     public TournamentRankings getTournamentRankingForSeason(Season season) {
-        try (Stream<Tournament> tournaments = tournamentRepository.streamTournaments(season.getSeasonStartDate(),
+        try (Stream<Tournament> tournamentsStream = tournamentRepository.streamTournaments(season.getSeasonStartDate(),
                 season.getSeasonEndDate())) {
+            List<Tournament> tournaments = tournamentsStream.toList();
             // Map<PlayerId, PlayerRanking>
-            Map<String, TournamentRankings.PlayerRanking> playerRankingMap = new java.util.HashMap<>();
+            Map<String, TournamentRankings.PlayerRanking> playerRankingMap = new HashMap<>();
+
+            // Build hashmap for already existing players in db
+            List<String> allPlayerIds = tournaments.stream()
+                    .flatMap(tournament -> tournament.getPlayerIds().stream())
+                    .distinct()
+                    .toList();
+            Map<String, Player> retrievedPlayers = playerService.getPlayersByDrlIdAsMap(allPlayerIds);
+            Map<String, Player> playersByDrlIdAsMapInDB = new HashMap<>(retrievedPlayers);
 
             tournaments.forEach(tournament -> {
                 List<TournamentRanking> rankings = tournament.getRankings();
@@ -52,16 +65,27 @@ public class TournamentService {
                     // Player ranking
                     TournamentRankings.PlayerRanking playerRanking = playerRankingMap.computeIfAbsent(ranking.getPlayerId(), playerId -> {
                         TournamentRankings.PlayerRanking newPlayerRanking = new TournamentRankings.PlayerRanking();
-                        newPlayerRanking.setCommonPlayerName(ranking.getProfileName());
-                        newPlayerRanking.setProfileThumb(ranking.getProfileThumb());
-                        newPlayerRanking.setFlagUrl(extractCountryIdentifier(ranking.getFlagUrl()));
-                        newPlayerRanking.setPlatform(ranking.getPlatform());
+                        Player player = playersByDrlIdAsMapInDB.get(ranking.getPlayerId());
+                        if(player == null) {
+                            newPlayerRanking.setCommonPlayerName(ranking.getProfileName());
+                            newPlayerRanking.setProfileThumb(ranking.getProfileThumb());
+                            newPlayerRanking.setFlagUrl(extractCountryIdentifier(ranking.getFlagUrl()));
+                            newPlayerRanking.setPlatform(ranking.getPlatform());
+                        } else {
+                            newPlayerRanking.setPlayerId(player.getId());
+                            newPlayerRanking.setCommonPlayerName(player.getPlayerName());
+                            newPlayerRanking.setProfileThumb(player.getProfileThumb());
+                            newPlayerRanking.setFlagUrl(extractCountryIdentifier(player.getFlagUrl()));
+                            newPlayerRanking.setPlatform(player.getProfilePlatform());
+                        }
                         return newPlayerRanking;
                     });
-                    playerRanking.setCommonPlayerName(ranking.getProfileName());
-                    playerRanking.setProfileThumb(ranking.getProfileThumb());
-                    playerRanking.setFlagUrl(extractCountryIdentifier(ranking.getFlagUrl()));
-                    playerRanking.setPlatform(ranking.getPlatform());
+                    if(playerRanking.getPlayerId() != null) {
+                        playerRanking.setCommonPlayerName(ranking.getProfileName());
+                        playerRanking.setProfileThumb(ranking.getProfileThumb());
+                        playerRanking.setFlagUrl(extractCountryIdentifier(ranking.getFlagUrl()));
+                        playerRanking.setPlatform(ranking.getPlatform());
+                    }
                     playerRanking.incrementNumberOfTournamentsPlayed();
                     if (ranking.getGoldenPos() != null && ranking.getGoldenPos() != 0) {
                         playerRanking.incrementNumberOfGoldenHeats();
@@ -70,7 +94,7 @@ public class TournamentService {
 
                     // Tournament
                     TournamentRankings.Tournament tournamentPlayerParticipatedIn = new TournamentRankings.Tournament();
-                    tournamentPlayerParticipatedIn.setNameUsedInGame(ranking.getProfileName());
+                    tournamentPlayerParticipatedIn.setNameUsedInGame(playerRanking.getCommonPlayerName());
                     tournamentPlayerParticipatedIn.setTitle(tournament.getTitle());
                     tournamentPlayerParticipatedIn.setPosition(position);
                     tournamentPlayerParticipatedIn.setPoints(getPointByIRLSystem(position));

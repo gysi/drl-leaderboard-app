@@ -19,6 +19,11 @@ public class TournamentRankingsToProto {
         for (TournamentRankings.PlayerRanking playerRanking : tournamentRankings.getRankings()) {
             TournamentRankingsOuterClass.TournamentRankings.PlayerRanking.Builder playerRankingBuilder = TournamentRankingsOuterClass.TournamentRankings.PlayerRanking.newBuilder();
 
+            if(playerRanking.getPlayerId() == null) {
+                playerRankingBuilder.clearPlayerId();
+            } else {
+                playerRankingBuilder.setPlayerId(playerRanking.getPlayerId());
+            }
             playerRankingBuilder.setCommonPlayerName(playerRanking.getCommonPlayerName());
             playerRankingBuilder.setProfileThumb(playerRanking.getProfileThumb());
             playerRankingBuilder.setFlagUrl(playerRanking.getFlagUrl());

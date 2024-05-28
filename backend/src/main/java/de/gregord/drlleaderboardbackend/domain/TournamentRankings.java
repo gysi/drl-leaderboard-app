@@ -10,6 +10,7 @@ public class TournamentRankings {
 
     @Data
     public static class PlayerRanking {
+        Long playerId;
         String commonPlayerName;
         String profileThumb;
         String flagUrl;
