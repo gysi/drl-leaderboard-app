@@ -104,7 +104,7 @@
               </q-item>
             </q-td>
             <q-td :props="props" key="totalPoints">
-              {{ props.row.totalPoints }}
+              {{ props.cols[props.colsMap['totalPoints'].index].value  }}
             </q-td>
             <q-td :props="props" key="avgPosition">
               {{ props.cols[props.colsMap['avgPosition'].index].value }}
