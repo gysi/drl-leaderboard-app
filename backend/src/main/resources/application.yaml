@@ -62,6 +62,8 @@ app:
       enabled: true
     tracks:
       cron: "0 0 */3 * * *" # every 3 hours
+    community-tracks:
+      cron: "0 */1 * * * *" # every 5 minutes
     tournaments:
       cron: "0 */1 * * * *" # every Minute (But waits for the previous run to finish)
     season:

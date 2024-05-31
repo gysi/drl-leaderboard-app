@@ -32,8 +32,12 @@ public class TracksDataScheduler {
     @Scheduled(cron = "${app.data-updater.tracks.cron}")
     public void updateMapsData() throws InterruptedException {
         var thread1 = Thread.ofVirtual().name("OfficialTracksDataUpdater").start(() -> tracksOfficialDataUpdater.updateMapsData());
-        var thread2 = Thread.ofVirtual().name("CommunityTracksDataUpdater").start(() -> tracksCommunityDataUpdater.updateMapsData());
         thread1.join();
-        thread2.join();
+    }
+
+    @Scheduled(cron = "${app.data-updater.community-tracks.cron}")
+    public void updateCommunityMapsData() throws InterruptedException {
+        var thread1 = Thread.ofVirtual().name("CommunityTracksDataUpdater").start(() -> tracksCommunityDataUpdater.updateMapsData());
+        thread1.join();
     }
 }
