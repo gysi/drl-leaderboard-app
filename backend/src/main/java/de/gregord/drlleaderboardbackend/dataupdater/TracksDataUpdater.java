@@ -38,6 +38,8 @@ public abstract class TracksDataUpdater {
     @Setter
     private List<Track> manualTracksToBeAdded = new ArrayList<>();
 
+    private Integer pageLimit = null;
+
     public TracksDataUpdater(
             String token,
             String mapsEndpoint,
@@ -144,7 +146,7 @@ public abstract class TracksDataUpdater {
                     preventDeletion = true;
                 }
                 pageCount++;
-            } while (nextPageUrl != null);
+            } while (nextPageUrl != null && (pageLimit == null || pageCount <= pageLimit));
 
             for (Track track : manualTracksToBeAdded) {
                 Optional<Track> existingTrack = tracksService.findByGuid(track.getGuid());
@@ -218,5 +220,9 @@ public abstract class TracksDataUpdater {
                                 );
                     });
         }
+    }
+
+    public void setPageLimit(Integer pageLimit) {
+        this.pageLimit = pageLimit;
     }
 }
