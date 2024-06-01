@@ -32,6 +32,8 @@
             <li>4th Place: $75</li>
             <li>5th Place: $50</li>
             </ul>
+            You can also contribute to the prize pool! Any contributions will increase the total prize pool proportionally across all placings based on the current distribution.
+            <br/><br/>
             Our talented track designers for this season are:
             <ul class="q-my-sm" style="font-size: 1rem">
               <li>FPVgan</li>
