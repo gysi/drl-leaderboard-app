@@ -34,6 +34,11 @@
             </ul>
             You can also contribute to the prize pool! Any contributions will increase the total prize pool proportionally across all placings based on the current distribution.
             <br/><br/>
+            <b>💸 Prize Pool Contributors 💸</b>
+            <ul class="q-my-sm" style="font-size: 1rem">
+              <li>gysi: $575</li>
+              <li>TrippFPV: $100</li>
+            </ul>
             Our talented track designers for this season are:
             <ul class="q-my-sm" style="font-size: 1rem">
               <li>FPVgan</li>
