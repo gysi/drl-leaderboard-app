@@ -103,6 +103,9 @@
                 </q-item-section>
               </q-item>
             </q-td>
+            <q-td :props="props" key="prize">
+              {{ props.cols[props.colsMap['prize'].index].value  }}
+            </q-td>
             <q-td :props="props" key="totalPoints">
               {{ props.cols[props.colsMap['totalPoints'].index].value  }}
             </q-td>
@@ -171,26 +174,26 @@ const columns = [
       if (!row.isEligible) return ''
       return row.position === 1 ? 'first-place' : row.position === 2 ? 'second-place' : row.position === 3 ? 'third-place' : ''
     } },
-  { index: 1, name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true,
-  },
-  { index: 2, name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true,
+  { index: 1, name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true, },
+  { index: 2, name: 'prize', label: 'Prize', field: 'prize', align: 'center', required: true, },
+  { index: 3, name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true,
     format: (val, row) => Math.round(val)
   },
-  { index: 3, name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'right', required: true,
+  { index: 4, name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'right', required: true,
     format: (val, row) => (Math.round(val * 100) / 100),
   },
-  { index: 4, name: 'bestPosition', label: 'Best Position', field: 'bestPosition', align: 'right', required: true },
-  { index: 5, name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
-  { index: 6, name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
-  { index: 7, name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
-  { index: 8, name: 'totalScore', label: 'Total Time', field: 'totalScore', align: 'right', required: true,
+  { index: 5, name: 'bestPosition', label: 'Best Position', field: 'bestPosition', align: 'right', required: true },
+  { index: 6, name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
+  { index: 7, name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
+  { index: 8, name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
+  { index: 9, name: 'totalScore', label: 'Total Time', field: 'totalScore', align: 'right', required: true,
     format: (val, row) => formatMilliSeconds(val),
   },
-  { index: 9, name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', required: true,
+  { index: 10, name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', required: true,
     format: (val, row) => (Math.round(val * 10) / 10),
   },
   { index: null, name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb' },
-  { index: 10, name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', required: true,
+  { index: 11, name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', required: true,
     format: (val, row) => getDateDifference(val)
   }
 ];
@@ -202,13 +205,22 @@ const overallTable = ref(null);
 const season = shallowRef({});
 const showExcludedPlayers = ref(false)
 
+const prizes = [
+  "$311",
+  "$233",
+  "$156",
+  "$117",
+  "$78"
+]
+
 const fetchData = async function () {
   try {
     const response = await axios.get(
       `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
       + `/seasons/ranking-current-season?page=1&limit=500`
     );
-    rows.value = response.data.map((row) => {
+    rows.value = response.data.map((row, i) => {
+      row['prize'] = prizes[i];
       if (row['profileThumb'].includes('placeholder.png')) {
         row['profileThumb'] = placeholder;
       }else{
