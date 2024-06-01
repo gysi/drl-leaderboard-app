@@ -1,16 +1,16 @@
 <template>
   <q-card bordered style="max-height: 100%; display: flex; flex-direction: column">
-<!--    <q-banner inline-actions class="text-white bg-red-10" style="min-height: fit-content">-->
-<!--      <div><b>General Info:</b></div>-->
+    <q-banner inline-actions class="text-white bg-red-6" style="min-height: fit-content">
+      <div class="text-h6">News</div>
 <!--      <div> Your position within the game for individual tracks can be different from the position shown here.</div>-->
 <!--      <q-btn type="a" flat padding="0"-->
 <!--             :to="{ name: 'faq', query: { card: 'ingame-mismatch' } }"-->
 <!--      >Read more in the FAQ</q-btn>-->
-<!--      <q-btn dense flat icon="close" v-close-popup style="position: absolute; top: 0; right: 0">-->
-<!--        <q-tooltip class="bg-white text-primary">Close</q-tooltip>-->
-<!--      </q-btn>-->
-<!--    </q-banner>-->
-<!--    <q-separator />-->
+      <q-btn dense flat icon="close" v-close-popup style="position: absolute; top: 0; right: 0">
+        <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+      </q-btn>
+    </q-banner>
+    <q-separator />
     <q-card style="overflow-wrap: break-word" class="scroll">
       <!-- 3.7.0 Release - Summer Season 2024 Start -->
       <q-card>
@@ -26,18 +26,20 @@
             <b>🏆 Prize Pool 🏆</b><br/>
             We are excited to announce a prize pool for the top pilots this season:
             <ul class="q-my-sm" style="font-size: 1rem">
-            <li>1st Place: $200</li>
-            <li>2nd Place: $150</li>
-            <li>3rd Place: $100</li>
-            <li>4th Place: $75</li>
-            <li>5th Place: $50</li>
+            <li>1st Place: $311</li>
+            <li>2nd Place: $233</li>
+            <li>3rd Place: $156</li>
+            <li>4th Place: $117</li>
+            <li>5th Place: $78</li>
             </ul>
             You can also contribute to the prize pool! Any contributions will increase the total prize pool proportionally across all placings based on the current distribution.
             <br/><br/>
             <b>💸 Prize Pool Contributors 💸</b>
             <ul class="q-my-sm" style="font-size: 1rem">
               <li>gysi: $575</li>
+              <li>itsLeeFPV: $200</li>
               <li>TrippFPV: $100</li>
+              <li>Str33tz: $20</li>
             </ul>
             Our talented track designers for this season are:
             <ul class="q-my-sm" style="font-size: 1rem">
