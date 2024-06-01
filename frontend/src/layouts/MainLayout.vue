@@ -223,7 +223,7 @@ const linksListTop = [
   },
   {
     sectionTitle: "COMMUNITY SEASON",
-    badge: "PREVIEW",
+    // badge: "PREVIEW",
     links: [
       {
         title: 'Tracks',
