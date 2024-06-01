@@ -41,7 +41,7 @@
               <li>NoSkillSammy</li>
               <li>Shaigne</li>
               <li>Swoop</li>
-              <li>Tripp</li>
+              <li>TrippFPV</li>
               <li>WestFPV</li>
             </ul>
             These creators, led by the meticulous planning and organization of Mr. Persister, have developed a series of unique tracks that promise to challenge and engage pilots of all skill levels. The project kicked off with a vision to create 25 brand new tracks across five community maps, each offering varied difficulty and exciting new racing lines.
