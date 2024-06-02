@@ -95,7 +95,7 @@ public class TournamentDataUpdater {
                 Tournament tournament = tournamentRepository.findTournamentByDrlId(tournamentDrlId).orElseGet(Tournament::new);
                 boolean tournamentAlreadyExists = tournament.getId() != null;
                 String oldStatus = tournament.getStatus();
-                if (tournamentAlreadyExists && tournament.getStatus().equals("complete")) {
+                if (tournamentAlreadyExists && (tournament.getStatus().equals("complete") || tournament.getStatus().equals("canceled"))) {
                     LOG.info("Tournament {} is already completed and saved within the db, skipping...", tournamentGuid);
                     continue;
                 }
