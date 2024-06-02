@@ -92,7 +92,16 @@
               </q-item-section>
             </q-item>
           </q-card>
-
+          <!--        AD Banner-->
+<!--          <q-item href=-->
+<!--                    "https://discord.gg/sgps" target="_blank">-->
+            <q-item to=
+                    "community-rankings">
+            <q-item-section style="position: relative">
+              <section id="glitch-image-1"></section>
+              <section id="glitch-image-2"></section>
+            </q-item-section>
+          </q-item>
         </div>
         <div style="align-self: end">
           <template v-for="(item, index) in linksListBottom" :key="index">
@@ -149,14 +158,6 @@
               </template>
             </q-menu>
           </q-item>
-          <!--        AD Banner-->
-          <!--        <q-item href=
-          "https://discord.gg/sgps" target="_blank">-->
-          <!--          <q-item-section style="position: relative">-->
-          <!--            <section id="glitch-image-1"></section>-->
-          <!--            <section id="glitch-image-2"></section>-->
-          <!--          </q-item-section>-->
-          <!--        </q-item>-->
         </div>
       </div>
     </q-drawer>
@@ -169,7 +170,7 @@
 </template>
 
 <script setup>
-import {onBeforeUnmount, ref} from 'vue'
+import {onBeforeUnmount, onMounted, ref} from 'vue'
 import NavigationLinks from 'components/NavigationLinks.vue'
 import {version} from '../../package.json'
 import {useQuasar} from "quasar"
@@ -216,12 +217,6 @@ const linksListTop = [
     // badge: 'PREVIEW'
   },
   {
-    title: 'Gimme a random track!',
-    caption: 'Gives you random worst tracks',
-    icon: 'casino',
-    link: '/worst-tracks-picker'
-  },
-  {
     sectionTitle: "COMMUNITY SEASON",
     // badge: "PREVIEW",
     links: [
@@ -264,6 +259,12 @@ const linksListBottom = [
 ];
 
 const linksListMenu = [
+  {
+    title: 'Gimme a random track!',
+    caption: 'Gives you random worst tracks',
+    icon: 'casino',
+    link: '/worst-tracks-picker'
+  },
   {
     title: 'Stream Card Creator',
     caption: 'Create stream cards for your stream',
@@ -364,29 +365,30 @@ onBeforeUnmount(() => {
 
 fetchTwitchStreams();
 
+var mySection;
 // AD BANNER
-// var mySection = document.getElementById('glitch-image-2');
-//
-// function randomizeVariables() {
-//   // Randomize each position variable
-//   for (let i = 1; i <= 14; i++) {
-//     var randomPos = Math.floor(Math.random() * 30) - 15;
-//     mySection.style.setProperty(`--pos-${i}`, `${randomPos}px`);
-//   }
-// }
-//
-// function startAnimation() {
-//   randomizeVariables();
-//   mySection.classList.add('glitch-animate'); // Start the animation
-// }
-//
-// mySection.addEventListener('animationend', function() {
-//   mySection.classList.remove('glitch-animate');
-//   var delay = Math.floor(Math.random() * 4 + 4) * 1000;
-//   setTimeout(startAnimation, delay);
-// });
-//
-// startAnimation(); // Start the first animation
+onMounted(() => {
+  mySection = document.getElementById('glitch-image-2');
+  mySection.addEventListener('animationend', function() {
+    mySection.classList.remove('glitch-animate');
+    var delay = Math.floor(Math.random() * 4 + 4) * 1000;
+    setTimeout(startAnimation, delay);
+  });
+  startAnimation(); // Start the first animation
+})
+
+function randomizeVariables() {
+  // Randomize each position variable
+  for (let i = 1; i <= 14; i++) {
+    var randomPos = Math.floor(Math.random() * 30) - 15;
+    mySection.style.setProperty(`--pos-${i}`, `${randomPos}px`);
+  }
+}
+
+function startAnimation() {
+  randomizeVariables();
+  mySection.classList.add('glitch-animate'); // Start the animation
+}
 </script>
 
 <style lang="sass">
@@ -701,8 +703,8 @@ body.body--dark .doc-card-title
 #glitch-image-1
   position: relative
   width: 100%
-  height: 474px
-  background: url(assets/sgpsflyer916.png)
+  height: 267px
+  background: url(assets/summer_series_2024.webp)
   background-size: 100%
 
 #glitch-image-2
@@ -710,8 +712,8 @@ body.body--dark .doc-card-title
   top: 0
   left: 0
   width: 100%
-  height: 474px
-  background: url(assets/sgpsflyer916.png)
+  height: 267px
+  background: url(assets/summer_series_2024.webp)
   background-size: 100%
   opacity: .5
   mix-blend-mode: hard-light
