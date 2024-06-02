@@ -12,7 +12,21 @@
     </q-banner>
     <q-separator />
     <q-card style="overflow-wrap: break-word" class="scroll">
-      <!-- 3.7.0 Release - Summer Season 2024 Start -->
+<!-- 3.7.1 Release -->
+      <q-card>
+        <q-card-section class="q-py-none q-px-sm row news-content-header">
+          <div class="text-h5 q-py-sm">Community Summer Season Competition FAQ</div><q-space />
+          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-02 03:40') }}</div>
+        </q-card-section>
+        <q-card-section class="q-pa-sm news-content">
+          There is now a FAQ Page about the current ongoing competition: <br/>
+          <q-btn type="a" flat padding="0"
+                 :to="{ name: 'communitySeasonCompetitionFaq' }"
+          >Click here to go to the FAQ</q-btn>
+        </q-card-section>
+      </q-card>
+      <q-separator />
+<!-- 3.7.0 Release - Summer Season 2024 Start -->
       <q-card>
         <q-card-section class="q-py-none q-px-sm row news-content-header">
           <div class="text-h5 q-py-sm">🏁 Summer Season 2024 Has Begun! 🏁</div><q-space />
@@ -26,19 +40,21 @@
             <b>🏆 Prize Pool 🏆</b><br/>
             We are excited to announce a prize pool for the top pilots this season:
             <ul class="q-my-sm" style="font-size: 1rem">
-            <li>1st Place: $311</li>
-            <li>2nd Place: $233</li>
-            <li>3rd Place: $156</li>
-            <li>4th Place: $117</li>
-            <li>5th Place: $78</li>
+              <li>1st Place: $433</li>
+              <li>2nd Place: $325</li>
+              <li>3rd Place: $217</li>
+              <li>4th Place: $162</li>
+              <li>5th Place: $108</li>
             </ul>
             You can also contribute to the prize pool! Any contributions will increase the total prize pool proportionally across all placings based on the current distribution.
             <br/><br/>
             <b>💸 Prize Pool Contributors 💸</b>
             <ul class="q-my-sm" style="font-size: 1rem">
               <li>gysi: $575</li>
+              <li>FPVgan: $250</li>
               <li>itsLeeFPV: $200</li>
               <li>TrippFPV: $100</li>
+              <li>THE_BOB!!: $100</li>
               <li>Str33tz: $20</li>
             </ul>
             Our talented track designers for this season are:

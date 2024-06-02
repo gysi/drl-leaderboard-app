@@ -249,6 +249,12 @@ const linksListTop = [
         icon: 'emoji_events',
         link: '/tournaments'
       },
+      {
+        title: 'FAQ',
+        caption: 'Summer Season Competition FAQ',
+        icon: 'help',
+        link: '/community-season-competition-faq'
+      },
     ]
   },
 ];

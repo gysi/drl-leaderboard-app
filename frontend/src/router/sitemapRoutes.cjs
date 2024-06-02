@@ -10,6 +10,7 @@ const sitemapRoutes = [
   { url: '/player-leaderboard', priority: 0.9 },
   { url: '/player-leaderboard-community' ,priority: 0.9},
   { url: '/faq', priority: 0.9 },
+  { url: '/community-season-competition-faq', priority: 0.9 },
   { url: '/worst-tracks-picker', priority: 0.9 },
   { url: '/replay-viewer', priority: 0.9 },
   { url: '/stream-card-creator', priority: 0.9 }
