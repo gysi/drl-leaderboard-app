@@ -2,6 +2,7 @@ package de.gregord.drlleaderboardbackend.dataupdater;
 
 import de.gregord.drlleaderboardbackend.entities.MapCategory;
 import de.gregord.drlleaderboardbackend.entities.Track;
+import de.gregord.drlleaderboardbackend.services.CommunitySeasonService;
 import de.gregord.drlleaderboardbackend.services.DRLApiService;
 import de.gregord.drlleaderboardbackend.services.TracksService;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_TRACKS;
 
@@ -100,6 +102,7 @@ public class TracksOfficialDataUpdater extends TracksDataUpdater {
             @Value("${app.drl-api.maps-endpoint}") String mapsEndpoint,
             DRLApiService drlApiService,
             TracksService tracksService,
+            CommunitySeasonService communitySeasonService,
             CacheManager cacheManager
     ) {
         super(
@@ -115,6 +118,11 @@ public class TracksOfficialDataUpdater extends TracksDataUpdater {
         super.setExcludedMapsByName(excludedMapsByName);
         super.setMapIdToParentCategory(mapIdToParentCategory);
         super.setManualTracksToBeAdded(manualTracksToBeAdded);
+        super.setTracksIdsRemappedToAnotherCategorySupplier(() ->
+                communitySeasonService.findTrackIdsByExcludedIsFalse()
+                        .stream()
+                        .collect(Collectors.toMap(trackId -> trackId, trackId -> MapCategory.MapCommunity))
+        );
     }
 
     @Override

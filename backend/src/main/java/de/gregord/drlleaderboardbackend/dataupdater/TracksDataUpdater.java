@@ -17,6 +17,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_INTERNAL_MAPID_TRACKID_MAPPING;
@@ -37,6 +39,8 @@ public abstract class TracksDataUpdater {
     private Map<String, MapCategory> mapIdToParentCategory = new HashMap<>();
     @Setter
     private List<Track> manualTracksToBeAdded = new ArrayList<>();
+    @Setter
+    private Supplier<Map<Long, MapCategory>> tracksIdsRemappedToAnotherCategorySupplier = null;
 
     private Integer pageLimit = null;
 
@@ -71,6 +75,10 @@ public abstract class TracksDataUpdater {
 
     public void updateMapsData() {
         LOG.info("Updating maps data");
+        Map<Long, MapCategory> tracksIdsRemappedToAnotherCategory = new HashMap<>();
+        if(tracksIdsRemappedToAnotherCategorySupplier != null) {
+            tracksIdsRemappedToAnotherCategory = tracksIdsRemappedToAnotherCategorySupplier.get();
+        }
         List<Track> tracksToBeSaved = new ArrayList<>();
         boolean preventDeletion = false;
         RestTemplate restTemplate = new RestTemplate();
@@ -113,7 +121,10 @@ public abstract class TracksDataUpdater {
                             findAndSetDrlTrackIdForTrack(track);
 
                             MapCategory parentCategory;
-                            if (mappableMapCategories.contains(track.getMapCategory())) {
+                            if(track.getId() != null && tracksIdsRemappedToAnotherCategory.containsKey(track.getId())) {
+                                parentCategory = tracksIdsRemappedToAnotherCategory.get(track.getId());
+                                track.setParentCategory(parentCategory.getDescription());
+                            } else if (mappableMapCategories.contains(track.getMapCategory())) {
                                 parentCategory = mapCategoryToParentCategory.get(track.getMapCategory());
                                 track.setParentCategory(parentCategory.getDescription());
                             } else if (mapIdToParentCategory.containsKey(track.getMapId())) {

@@ -23,6 +23,10 @@ public class CommunitySeasonService {
         this.communitySeasonsRepository = communitySeasonsRepository;
     }
 
+    public List<Long> findTrackIdsByExcludedIsFalse() {
+        return communitySeasonsRepository.findTrackIdsByExcludedIsFalse();
+    }
+
     public List<TrackCommunitySeasonView> findBySeasonIdAndExcludedIsFalseAndSortedByDifficulty(int seasonId) {
         return communitySeasonsRepository.findBySeasonIdAndExcludedIsFalseAndSortedByDifficulty(seasonId);
     }

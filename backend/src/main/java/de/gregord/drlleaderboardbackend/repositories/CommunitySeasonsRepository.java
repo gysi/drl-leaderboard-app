@@ -15,6 +15,8 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
 
     boolean existsByTrackId(Long trackId);
 
+    List<Long> findTrackIdsByExcludedIsFalse();
+
     @Query(value = """
                 SELECT cs.track_id FROM community_seasons cs WHERE cs.season_id = :seasonId AND excluded = FALSE
             """, nativeQuery = true)

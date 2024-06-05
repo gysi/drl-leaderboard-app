@@ -61,9 +61,9 @@ app:
     leaderboards:
       enabled: true
     tracks:
-      cron: "0 0 */3 * * *" # every 3 hours
+      cron: "0 */30 * * * *" # every 30 minutes
     community-tracks:
-      cron: "0 */5 * * * *" # every 5 minutes
+      cron: "0 */30 * * * *" # every 30 minutes
     tournaments:
       cron: "0 */1 * * * *" # every Minute (But waits for the previous run to finish)
     season:
