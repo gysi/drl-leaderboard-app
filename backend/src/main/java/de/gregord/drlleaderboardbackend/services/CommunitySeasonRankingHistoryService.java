@@ -44,4 +44,8 @@ public class CommunitySeasonRankingHistoryService {
         }).toList();
         communitySeasonRankingHistoryRepository.saveAll(rankingToSave);
     }
+
+    public long countBySeasonId(Long seasonId) {
+        return communitySeasonRankingHistoryRepository.countBySeasonId(seasonId);
+    }
 }
