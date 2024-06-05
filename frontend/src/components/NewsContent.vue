@@ -12,6 +12,25 @@
     </q-banner>
     <q-separator />
     <q-card style="overflow-wrap: break-word" class="scroll">
+<!-- 3.7.2 Release -->
+      <q-card>
+        <q-card-section class="q-py-none q-px-sm row news-content-header">
+          <div class="text-h5 q-py-sm">Prize Pool Update & Fix</div><q-space />
+          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-05 09:35') }}</div>
+        </q-card-section>
+        <q-card-section class="q-pa-sm news-content">
+          <div class="q-my-sm" style="font-size: 1rem">
+          The prize pool got updated, another contribution by THE_BOB!!: $50
+          </div>
+          <div class="text-h6">Fixes</div>
+          <ul class="q-my-sm" style="font-size: 1rem">
+            <li>When Community Season tracks are added to the Featured section,
+              they don't count towards the official track rankings.
+            </li>
+          </ul>
+        </q-card-section>
+      </q-card>
+      <q-separator />
 <!-- 3.7.1 Release -->
       <q-card>
         <q-card-section class="q-py-none q-px-sm row news-content-header">
@@ -19,10 +38,12 @@
           <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-02 03:40') }}</div>
         </q-card-section>
         <q-card-section class="q-pa-sm news-content">
+          <div class="q-my-sm" style="font-size: 1rem">
           There is now a FAQ Page about the current ongoing competition: <br/>
           <q-btn type="a" flat padding="0"
                  :to="{ name: 'communitySeasonCompetitionFaq' }"
           >Click here to go to the FAQ</q-btn>
+          </div>
         </q-card-section>
       </q-card>
       <q-separator />
@@ -40,11 +61,11 @@
             <b>🏆 Prize Pool 🏆</b><br/>
             We are excited to announce a prize pool for the top pilots this season:
             <ul class="q-my-sm" style="font-size: 1rem">
-              <li>1st Place: $433</li>
-              <li>2nd Place: $325</li>
-              <li>3rd Place: $217</li>
-              <li>4th Place: $162</li>
-              <li>5th Place: $108</li>
+              <li>1st Place: $450</li>
+              <li>2nd Place: $338</li>
+              <li>3rd Place: $225</li>
+              <li>4th Place: $169</li>
+              <li>5th Place: $113</li>
             </ul>
             You can also contribute to the prize pool! Any contributions will increase the total prize pool proportionally across all placings based on the current distribution.
             <br/><br/>
@@ -53,8 +74,8 @@
               <li>gysi: $575</li>
               <li>FPVgan: $250</li>
               <li>itsLeeFPV: $200</li>
+              <li>THE_BOB!!: $150</li>
               <li>TrippFPV: $100</li>
-              <li>THE_BOB!!: $100</li>
               <li>Str33tz: $20</li>
             </ul>
             Our talented track designers for this season are:

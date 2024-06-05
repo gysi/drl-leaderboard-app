@@ -140,15 +140,17 @@
 </template>
 
 <script setup>
-import { ref, shallowRef } from 'vue'
+import {ref, shallowRef} from 'vue'
 import axios from 'axios';
-import { backGroundColorByPosition, formatMilliSeconds, getDateDifference,
-  formatISODateTimeToDate } from 'src/modules/LeaderboardFunctions'
-import { fetchCurrentSeason } from 'src/modules/backendApi.js'
+import {
+  backGroundColorByPosition, formatMilliSeconds, getDateDifference,
+  formatISODateTimeToDate
+} from 'src/modules/LeaderboardFunctions'
+import {fetchCurrentSeason} from 'src/modules/backendApi.js'
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
 import placeholder from 'src/assets/placeholder.png'
 import {useQuasar} from "quasar";
-import { Dark } from 'quasar'
+import {Dark} from 'quasar'
 import {useMeta} from "src/modules/meta.js"
 
 useMeta({
@@ -165,35 +167,44 @@ const $q = useQuasar()
 let darkModeInStorage = $q.localStorage.getItem('darkMode');
 console.log('darkMode', darkModeInStorage);
 const columns = [
-  { index: 0, name: 'position', label: '#', field: 'position', required: true,
+  {
+    index: 0, name: 'position', label: '#', field: 'position', required: true,
     style: row => {
-      return { backgroundColor: !row.isEligible ? 'var(--app-player-lb-missing-run-background-color)' :
-        backGroundColorByPosition(row.position) }
+      return {
+        backgroundColor: !row.isEligible ? 'var(--app-player-lb-missing-run-background-color)' :
+          backGroundColorByPosition(row.position)
+      }
     },
     classes: row => {
       if (!row.isEligible) return ''
       return row.position === 1 ? 'first-place' : row.position === 2 ? 'second-place' : row.position === 3 ? 'third-place' : ''
-    } },
-  { index: 1, name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true, },
-  { index: 2, name: 'prize', label: 'Prize', field: 'prize', align: 'center', required: true, },
-  { index: 3, name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true,
+    }
+  },
+  {index: 1, name: 'playerName', label: 'Player', field: 'playerName', align: 'left', required: true,},
+  {index: 2, name: 'prize', label: 'Prize', field: 'prize', align: 'center', required: true,},
+  {
+    index: 3, name: 'totalPoints', label: 'Points', field: 'totalPoints', align: 'right', required: true,
     format: (val, row) => Math.round(val)
   },
-  { index: 4, name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'right', required: true,
+  {
+    index: 4, name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'right', required: true,
     format: (val, row) => (Math.round(val * 100) / 100),
   },
-  { index: 5, name: 'bestPosition', label: 'Best Position', field: 'bestPosition', align: 'right', required: true },
-  { index: 6, name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
-  { index: 7, name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
-  { index: 8, name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
-  { index: 9, name: 'totalScore', label: 'Total Time', field: 'totalScore', align: 'right', required: true,
+  {index: 5, name: 'bestPosition', label: 'Best Position', field: 'bestPosition', align: 'right', required: true},
+  {index: 6, name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
+  {index: 7, name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
+  {index: 8, name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
+  {
+    index: 9, name: 'totalScore', label: 'Total Time', field: 'totalScore', align: 'right', required: true,
     format: (val, row) => formatMilliSeconds(val),
   },
-  { index: 10, name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', required: true,
+  {
+    index: 10, name: 'maxTopSpeed', label: 'Top Speed', field: 'maxTopSpeed', required: true,
     format: (val, row) => (Math.round(val * 10) / 10),
   },
-  { index: null, name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb' },
-  { index: 11, name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', required: true,
+  {index: null, name: 'profileThumb', label: 'Profile Thumb', field: 'profileThumb'},
+  {
+    index: 11, name: 'latestActivity', label: 'Latest Activity', field: 'latestActivity', required: true,
     format: (val, row) => getDateDifference(val)
   }
 ];
@@ -206,11 +217,11 @@ const season = shallowRef({});
 const showExcludedPlayers = ref(false)
 
 const prizes = [
-  "$433",
-  "$325",
-  "$217",
-  "$162",
-  "$108"
+  "$450",
+  "$338",
+  "$225",
+  "$169",
+  "$113"
 ]
 
 const fetchData = async function () {
@@ -223,7 +234,7 @@ const fetchData = async function () {
       row['prize'] = prizes[i];
       if (row['profileThumb'].includes('placeholder.png')) {
         row['profileThumb'] = placeholder;
-      }else{
+      } else {
         row['profileThumb'] = buildImgCacheUrl(row['profileThumb']);
       }
       return row;
@@ -237,14 +248,14 @@ const fetchData = async function () {
 
 const onPlayerSelected = function (playerName) {
   selectedPlayer.value = playerName;
-  const filtered = filterMethod(rows.value, { showExcludedPlayers: showExcludedPlayers.value })
+  const filtered = filterMethod(rows.value, {showExcludedPlayers: showExcludedPlayers.value})
   const index = filtered.findIndex((row) => row['playerName'] === playerName)
-  if(index >= 0) overallTable.value.scrollTo(index, 'center-force');
+  if (index >= 0) overallTable.value.scrollTo(index, 'center-force');
 }
 
 const buildImgCacheUrl = function (url) {
   if (url) {
-    if(url.includes('placeholder.png')) return url;
+    if (url.includes('placeholder.png')) return url;
     let encodedUrl = encodeURIComponent(url);
     return `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}${process.env.DLAPP_THUMBOR_PATH}`
       + `/50x50/${encodedUrl}`;
@@ -253,7 +264,7 @@ const buildImgCacheUrl = function (url) {
 
 const filterMethod = function (rows, terms) {
   console.log("filterMethod");
-  if(!terms.showExcludedPlayers)
+  if (!terms.showExcludedPlayers)
     return rows.filter(row => row.isEligible)
   return rows;
 }
