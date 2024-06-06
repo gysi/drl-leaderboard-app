@@ -86,7 +86,9 @@ public class LeaderboardUpdater {
                             if (existingEntry != null && Boolean.TRUE.equals(existingEntry.getIsInvalidRun())
                                     /* This prevents a post when the player didn't advance in position but his time was invalid before,
                                        which otherwise would lead to a posting that shows the previous position the same as the new one */
-                                    && newOrUpdatedLeaderboardEntry.getPosition() < newOrUpdatedLeaderboardEntry.getPreviousPosition()) {
+                                    && (newOrUpdatedLeaderboardEntry.getPreviousPosition() == null
+                                        || newOrUpdatedLeaderboardEntry.getPosition() < newOrUpdatedLeaderboardEntry.getPreviousPosition())
+                            ) {
                                 improvement.setForcePost(true);
                             }
                             improvements.add(improvement);
