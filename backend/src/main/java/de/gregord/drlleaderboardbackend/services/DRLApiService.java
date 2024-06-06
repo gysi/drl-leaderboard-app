@@ -296,7 +296,7 @@ public class DRLApiService {
                 }
                 Double customTopSpeed = customTopSpeeds.get(track.getGuid());
                 boolean isInvalidSpeed = (customTopSpeed != null && leaderboardEntry.getTopSpeed() > customTopSpeed) ||
-                        (customTopSpeed == null && leaderboardEntry.getTopSpeed() > 104);
+                        (customTopSpeed == null && leaderboardEntry.getTopSpeed() > 104.1);
                 if (isInvalidSpeed) {
                     LOG.info("Player " + playerForEntry.getPlayerName() + " has impossible top speed " + leaderboardEntry.getTopSpeed() + ", DRL BUG!");
                     leaderboardEntry.setIsInvalidRun(true);
