@@ -45,7 +45,7 @@
               <li>Flightless (Collosuem)</li>
               <li>Mr. Persister (Sand Castle)</li>
               <li>Shaigne (Solitude & Bio Modern City)</li>
-              <li>Xtk (Office Space)</li>
+              <li>XTK FPV (Office Space)</li>
             </ul>
             Thank you all for your incredible contributions and hard work.
             <br/><br/>
