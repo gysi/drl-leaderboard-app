@@ -93,8 +93,8 @@ public class TracksOfficialDataUpdater extends TracksDataUpdater {
         manualTracksToBeAdded.add(new Track("MP-95a", "MT-46e", "MT-46e", "WOODS", MapCategory.MapDRL));
         manualTracksToBeAdded.add(new Track("MP-23c", "MT-513", "MT-513", "DRL", MapCategory.MapDRL));
         manualTracksToBeAdded.add(new Track("MP-23c", "MT-fb1", "MT-fb1", "STRAIGHT LINE", MapCategory.MapDRL));
-        manualTracksToBeAdded.add(new Track("MP-ad9", "CMP-501cb857a4c399073d33d324", "MT-a09", "CTG / 07: TREEHOUSE TANGO",
-                MapCategory.MapFeatured));
+//        manualTracksToBeAdded.add(new Track("MP-ad9", "CMP-501cb857a4c399073d33d324", "MT-a09", "CTG / 07: TREEHOUSE TANGO",
+//                MapCategory.MapFeatured));
     }
 
     public TracksOfficialDataUpdater(

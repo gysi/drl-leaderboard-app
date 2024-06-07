@@ -19,7 +19,7 @@ import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_COMMUNIT
 @Component
 public class TracksCommunityDataUpdater extends TracksDataUpdater {
     private static final List<String> excludedMapsByName = List.of(
-            "CTG / 07: TREEHOUSE TANGO" // this is in the official section despite being flagged as a community track
+//            "CTG / 07: TREEHOUSE TANGO" // this is in the official section despite being flagged as a community track
     );
     private static final Map<String, MapCategory> mapCategoryToParentCategory = new HashMap<>();
     private static final Set<String> mappableMapCategories = Set.of(
@@ -40,7 +40,7 @@ public class TracksCommunityDataUpdater extends TracksDataUpdater {
         super(token, mapsEndpoint, drlApiService, tracksService, cacheManager, mappableMapCategories,
                 mapCategoryToParentCategory, MapCategory.getCommunityCategoriesIds());
         super.setExcludedMapsByName(excludedMapsByName);
-        setPageLimit(5);
+//        setPageLimit(5);
     }
 
     @Override
