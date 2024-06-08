@@ -30,7 +30,7 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
     @Query("""
                 SELECT cs FROM CommunitySeason cs JOIN FETCH cs.track t
                 WHERE cs.seasonId = :seasonId and cs.excluded = FALSE
-                ORDER BY COALESCE(cs.customTrackDifficulty, t.mapDifficulty)
+                ORDER BY t.name, COALESCE(cs.customTrackDifficulty, t.mapDifficulty)
             """)
     List<TrackCommunitySeasonView> findBySeasonIdAndExcludedIsFalseAndSortedByDifficulty(int seasonId);
 
