@@ -40,7 +40,7 @@ public class TracksCommunityDataUpdater extends TracksDataUpdater {
         super(token, mapsEndpoint, drlApiService, tracksService, cacheManager, mappableMapCategories,
                 mapCategoryToParentCategory, MapCategory.getCommunityCategoriesIds());
         super.setExcludedMapsByName(excludedMapsByName);
-//        setPageLimit(5);
+        setPageLimit(10);
     }
 
     @Override
