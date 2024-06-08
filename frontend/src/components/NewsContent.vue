@@ -12,6 +12,19 @@
     </q-banner>
     <q-separator />
     <q-card style="overflow-wrap: break-word" class="scroll">
+<!-- 3.7.4 Release -->
+      <q-card>
+        <q-card-section class="q-py-none q-px-sm row news-content-header">
+          <div class="text-h5 q-py-sm">Prize Pool Update</div><q-space />
+          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-05 09:35') }}</div>
+        </q-card-section>
+        <q-card-section class="q-pa-sm news-content">
+          <div class="q-my-sm" style="font-size: 1rem">
+            The prize pool got updated, another contribution by THE_BOB!!: $50
+          </div>
+        </q-card-section>
+      </q-card>
+      <q-separator />
 <!-- 3.7.3 Release -->
       <q-card>
         <q-card-section class="q-py-none q-px-sm row news-content-header">
@@ -106,11 +119,11 @@
             <b>🏆 Prize Pool 🏆</b><br/>
             We are excited to announce a prize pool for the top pilots this season:
             <ul class="q-my-sm" style="font-size: 1rem">
-              <li>1st Place: $450</li>
-              <li>2nd Place: $338</li>
-              <li>3rd Place: $225</li>
-              <li>4th Place: $169</li>
-              <li>5th Place: $113</li>
+              <li>1st Place: $468</li>
+              <li>2nd Place: $351</li>
+              <li>3rd Place: $234</li>
+              <li>4th Place: $175</li>
+              <li>5th Place: $117</li>
             </ul>
             You can also contribute to the prize pool! Any contributions will increase the total prize pool proportionally across all placings based on the current distribution.
             <br/><br/>
@@ -119,7 +132,7 @@
               <li>gysi: $575</li>
               <li>FPVgan: $250</li>
               <li>itsLeeFPV: $200</li>
-              <li>THE_BOB!!: $150</li>
+              <li>THE_BOB!!: $200</li>
               <li>TrippFPV: $100</li>
               <li>Str33tz: $20</li>
             </ul>

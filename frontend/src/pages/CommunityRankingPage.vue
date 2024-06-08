@@ -217,11 +217,11 @@ const season = shallowRef({});
 const showExcludedPlayers = ref(false)
 
 const prizes = [
-  "$450",
-  "$338",
-  "$225",
-  "$169",
-  "$113"
+  "$468",
+  "$351",
+  "$234",
+  "$175",
+  "$117"
 ]
 
 const fetchData = async function () {

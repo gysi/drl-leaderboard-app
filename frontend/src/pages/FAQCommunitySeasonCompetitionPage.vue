@@ -36,18 +36,18 @@
       >
         When the season ends, the top 5 players on the Community Season Ranking win money from the prize pool:
         <ul>
-          <li>1st Place: $450</li>
-          <li>2nd Place: $338</li>
-          <li>3rd Place: $225</li>
-          <li>4th Place: $169</li>
-          <li>5th Place: $113</li>
+          <li>1st Place: $468</li>
+          <li>2nd Place: $351</li>
+          <li>3rd Place: $234</li>
+          <li>4th Place: $175</li>
+          <li>5th Place: $117</li>
         </ul>
         The money for the prize pool got sponsored from passionate players:
         <ul>
           <li>gysi: $575</li>
           <li>FPVgan: $250</li>
           <li>itsLeeFPV: $200</li>
-          <li>THE_BOB!!: $150</li>
+          <li>THE_BOB!!: $200</li>
           <li>TrippFPV: $100</li>
           <li>Str33tz: $20</li>
         </ul>
