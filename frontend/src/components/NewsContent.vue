@@ -16,7 +16,7 @@
       <q-card>
         <q-card-section class="q-py-none q-px-sm row news-content-header">
           <div class="text-h5 q-py-sm">Prize Pool Update</div><q-space />
-          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-05 09:35') }}</div>
+          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-08 04:15') }}</div>
         </q-card-section>
         <q-card-section class="q-pa-sm news-content">
           <div class="q-my-sm" style="font-size: 1rem">
