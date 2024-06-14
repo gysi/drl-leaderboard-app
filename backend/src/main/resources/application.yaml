@@ -1,4 +1,7 @@
 spring:
+  main:
+    #https://docs.spring.io/spring-boot/docs/3.2.3/reference/htmlsingle/#features.spring-application.virtual-threads
+    keep-alive: true
   lifecycle:
     timeout-per-shutdown-phase: 29s
   threads:
