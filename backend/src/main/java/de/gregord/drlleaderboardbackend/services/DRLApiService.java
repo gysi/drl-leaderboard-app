@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class DRLApiService {
     private final Duration durationBetweenRequests;
     private Long waitMillisToResetRequestLimit = null;
     private LocalDateTime lastApiRequest = LocalDateTime.now();
-    private final Object apiWaitLock = new Object();
+    private final ReentrantLock lockApiWait = new ReentrantLock();
     private static final Map<String, Double> customTopSpeeds = new HashMap<>();
     // <player_id, player_id>
     private static final Map<String, List<String>> doubleAccountMatchingMap = new HashMap<>();
@@ -127,8 +128,9 @@ public class DRLApiService {
     }
 
     public <T> ResponseEntity<T> waitForApiLimitAndExecuteRequest(Supplier<ResponseEntity<T>> requestExecutor) throws RestClientException {
-        synchronized (apiWaitLock) {
-            do {
+        lockApiWait.lock();
+        try {
+            while(true) {
                 LocalDateTime now = LocalDateTime.now();
                 long millisBetweenRequest = durationBetweenRequests.toMillis();
                 long millisPassedSinceLastRequest =
@@ -136,8 +138,16 @@ public class DRLApiService {
                                 lastApiRequest.atZone(ZoneId.systemDefault()).toInstant(),
                                 now.atZone(ZoneId.systemDefault()).toInstant()
                         ).toMillis();
+                long waitTime = 0;
 
-                if(waitMillisToResetRequestLimit != null){
+                if (waitMillisToResetRequestLimit != null) {
+                    waitTime = waitMillisToResetRequestLimit;
+                    waitMillisToResetRequestLimit = null;
+                } else if (millisPassedSinceLastRequest < millisBetweenRequest) {
+                    waitTime = millisBetweenRequest - millisPassedSinceLastRequest;
+                }
+
+                if (waitTime > 0) {
                     try {
                         LOG.info("Waiting for api rate limit to reset {}ms", waitMillisToResetRequestLimit);
                         Thread.sleep(waitMillisToResetRequestLimit);
@@ -145,18 +155,10 @@ public class DRLApiService {
                         Thread.currentThread().interrupt();
                         LOG.error("Thread was interrupted while waiting to respect API limit", e);
                     }
-                    waitMillisToResetRequestLimit = null;
-                } else if (millisPassedSinceLastRequest < millisBetweenRequest) {
-                    try {
-                        Thread.sleep(millisBetweenRequest - millisPassedSinceLastRequest);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        LOG.error("Thread was interrupted while waiting to respect API limit", e);
-                    }
                 }
 
+                lastApiRequest = LocalDateTime.now();
                 try {
-                    lastApiRequest = LocalDateTime.now();
                     ResponseEntity<T> response = requestExecutor.get();
                     HttpHeaders headers = response.getHeaders();
                     String remaining = headers.getFirst("x-ratelimit-remaining");
@@ -177,7 +179,9 @@ public class DRLApiService {
                 } catch (HttpClientErrorException.TooManyRequests tooManyRequestsError) {
                     LOG.warn("Too many requests, this shouldn't really happen anymore", tooManyRequestsError);
                 }
-            } while (true);
+            }
+        } finally {
+            lockApiWait.unlock();
         }
     }
 
