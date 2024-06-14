@@ -149,8 +149,8 @@ public class DRLApiService {
 
                 if (waitTime > 0) {
                     try {
-                        LOG.info("Waiting for api rate limit to reset {}ms", waitMillisToResetRequestLimit);
-                        Thread.sleep(waitMillisToResetRequestLimit);
+                        LOG.info("Waiting for api rate limit to reset {}ms", waitTime);
+                        Thread.sleep(waitTime);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         LOG.error("Thread was interrupted while waiting to respect API limit", e);
