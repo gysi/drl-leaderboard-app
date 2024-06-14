@@ -10,13 +10,18 @@
         You will join the competition automatically by flying the community season tracks.
         <br/>
         You will find the tracks in the navigation within the Community Season section.
+        <br/>
+        Additionally you should create an account on matcherino.com and join the competition
+        <a href="https://matcherino.com/tournaments/116263" target="_blank">https://matcherino.com/tournaments/116263</a>
       </FAQCard>
       <FAQCard
         title="How do I find the tracks within the DRL Simulator?"
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'where-are-the-tracks-in-the-sim'"
       >
-        From the main menu click on Fly -> Solo Race -> Community Tracks.
+        You will find the tracks in the featured section (Fly -> Solo Race -> Featured Tracks).
+        <br/><br/>
+        Or from the main menu click on Fly -> Solo Race -> Community Tracks.
         <br/>
         Then search for the tracks by typing the name in the searchbar.
         <br/>
@@ -36,11 +41,11 @@
       >
         When the season ends, the top 5 players on the Community Season Ranking win money from the prize pool:
         <ul>
-          <li>1st Place: $468</li>
-          <li>2nd Place: $351</li>
-          <li>3rd Place: $234</li>
-          <li>4th Place: $175</li>
-          <li>5th Place: $117</li>
+          <li>1st Place: $470</li>
+          <li>2nd Place: $336</li>
+          <li>3rd Place: $228</li>
+          <li>4th Place: $174</li>
+          <li>5th Place: $134</li>
         </ul>
         The money for the prize pool got sponsored from passionate players:
         <ul>
@@ -57,20 +62,22 @@
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'how-do-i-get-the-money'"
       >
-        gysi manages the prize pool fund. He will message the winners about the details on Discord.
+        gysi manages the prize pool fund through Matcherino. He will message the winners about the details on Discord.
         <br/>
         If you are in the DRL Discord and your name on discord is somewhat like your name within the game, he will find you.
         <br/>
-        Otherwise he will ask around in the discord.
+        Please create an Account on Matcherino and join the competition, if you are one of the winners you will
+        get assigned to your winning position on Matcherino and can claim the money. <br/>
+        <a href="https://matcherino.com/tournaments/116263" target="_blank">https://matcherino.com/tournaments/116263</a>
       </FAQCard>
       <FAQCard
         title="How can I contribute to the prize pool?"
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'how-to-contribute'"
       >
-        gysi manages the prize pool fund.
+        gysi manages the prize pool fund through Matcherino, you can contribute there.
         <br/>
-        If you want to contribute money, message him on discord. You will find him in the official DRL Discord.
+        <a href="https://matcherino.com/tournaments/116263" target="_blank">https://matcherino.com/tournaments/116263</a>
       </FAQCard>
       <FAQCard
         title="When does the Season end?"

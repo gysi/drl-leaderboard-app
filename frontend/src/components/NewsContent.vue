@@ -12,6 +12,25 @@
     </q-banner>
     <q-separator />
     <q-card style="overflow-wrap: break-word" class="scroll">
+<!-- 3.7.5 Release -->
+      <q-card>
+        <q-card-section class="q-py-none q-px-sm row news-content-header">
+          <div class="text-h5 q-py-sm">Prize Pool Update</div><q-space />
+          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-13 00:19') }}</div>
+        </q-card-section>
+        <q-card-section class="q-pa-sm news-content">
+          <div class="q-my-sm" style="font-size: 1rem">
+            The prize pool funding and payout is now managed through Matcherino.<br/>
+            Check it out: <a padding="0" href="https://matcherino.com/tournaments/116263" target="_blank">https://matcherino.com/tournaments/116263</a>
+            <br/>
+            This makes contributions to the prize pool easier and more legitimate.
+            Also payouts are way easier to manage through their system.
+            <br/><br/>
+            Make sure to create an account on Matcherino and join the competition if you want to claim prize money.
+          </div>
+        </q-card-section>
+      </q-card>
+      <q-separator />
 <!-- 3.7.4 Release -->
       <q-card>
         <q-card-section class="q-py-none q-px-sm row news-content-header">
@@ -119,11 +138,11 @@
             <b>🏆 Prize Pool 🏆</b><br/>
             We are excited to announce a prize pool for the top pilots this season:
             <ul class="q-my-sm" style="font-size: 1rem">
-              <li>1st Place: $468</li>
-              <li>2nd Place: $351</li>
-              <li>3rd Place: $234</li>
-              <li>4th Place: $175</li>
-              <li>5th Place: $117</li>
+              <li>1st Place: $470</li>
+              <li>2nd Place: $336</li>
+              <li>3rd Place: $228</li>
+              <li>4th Place: $174</li>
+              <li>5th Place: $134</li>
             </ul>
             You can also contribute to the prize pool! Any contributions will increase the total prize pool proportionally across all placings based on the current distribution.
             <br/><br/>

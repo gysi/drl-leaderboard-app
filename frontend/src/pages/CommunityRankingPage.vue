@@ -60,6 +60,15 @@
             />
           </th>
         </template>
+        <template v-slot:header-cell-prize="props">
+          <th :class="props.col.__thclass">
+            {{ props.col.label }}
+            <q-btn type="a" icon="help" size="1.3rem"
+                   fab flat padding="5px"
+                   href="https://matcherino.com/tournaments/116263" target="_blank"
+            />
+          </th>
+        </template>
         <template v-slot:header-cell-totalPoints="props">
           <th :class="props.col.__thClass">
             {{ props.col.label }}
@@ -217,11 +226,11 @@ const season = shallowRef({});
 const showExcludedPlayers = ref(false)
 
 const prizes = [
-  "$468",
-  "$351",
-  "$234",
-  "$175",
-  "$117"
+  "$470",
+  "$336",
+  "$228",
+  "$174",
+  "$134"
 ]
 
 const fetchData = async function () {
