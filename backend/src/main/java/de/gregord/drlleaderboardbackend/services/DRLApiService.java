@@ -52,7 +52,7 @@ public class DRLApiService {
 
     static {
         customTopSpeeds.put("MT-9eb", 104.6);
-        customTopSpeeds.put("CMP-7ab877a2c62446a10c9316a0", 104.2);
+        customTopSpeeds.put("CMP-7ab877a2c62446a10c9316a0", 104.2); // SHIPYARD DISASTER
         customTopSpeeds.put("MT-fb1", 102.0); // Straight line
 
         // pawelos -> p
@@ -300,7 +300,7 @@ public class DRLApiService {
                 }
                 Double customTopSpeed = customTopSpeeds.get(track.getGuid());
                 boolean isInvalidSpeed = (customTopSpeed != null && leaderboardEntry.getTopSpeed() > customTopSpeed) ||
-                        (customTopSpeed == null && leaderboardEntry.getTopSpeed() > 104.1);
+                        (customTopSpeed == null && leaderboardEntry.getTopSpeed() > 104.15);
                 if (isInvalidSpeed) {
                     LOG.info("Player " + playerForEntry.getPlayerName() + " has impossible top speed " + leaderboardEntry.getTopSpeed() + ", DRL BUG!");
                     leaderboardEntry.setIsInvalidRun(true);
