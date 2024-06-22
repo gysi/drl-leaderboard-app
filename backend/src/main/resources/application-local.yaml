@@ -13,6 +13,8 @@ app:
   data-updater:
     leaderboards:
       enabled: false
+    community-tracks:
+      cron: "-" # disabled
     tracks:
       cron: "-" # disabled
     tournaments:
