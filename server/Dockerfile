@@ -94,7 +94,7 @@ COPY --chown=myuser:mygroup server/.ssh .ssh
 
 ARG sshpassword_arg
 # Removes password from private_key_file to avoid passwordprompt when for example using git commands or using ansible
-RUN ssh-keygen -p -P $sshpassword_arg -N '' -f .ssh/id_ed25519
+RUN chmod 0600 .ssh/id_ed25519 && ssh-keygen -p -P $sshpassword_arg -N '' -f .ssh/id_ed25519
 
 COPY --chown=myuser:mygroup server/ansible ansible
 
