@@ -1,8 +1,19 @@
 # DRL Leaderboard Frontend (drl-leaderboard-frontend)
 **Tech/Framework/Libs:**
-* Node
-* Quasar (Vue, Vite)
+* Node (18)
+* Quasar (Vue, Vite) -> using the Quasar CLI (with Vite) flavour
 * Yarn
+
+### Install yarn
+Yarn is included within the repository, just tell node to find it automatically using corepack
+```bash
+corepack enable
+```
+
+### Install dependencies
+```bash
+yarn install
+```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
