@@ -29,10 +29,10 @@ public class DatasourceProxyBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
-        if (bean instanceof DataSource) {
+        if (bean instanceof DataSource source) {
             ProxyFactory factory = new ProxyFactory(bean);
             factory.setProxyTargetClass(true);
-            factory.addAdvice(new ProxyDataSourceInterceptor((DataSource) bean));
+            factory.addAdvice(new ProxyDataSourceInterceptor(source));
             return factory.getProxy();
         }
         return bean;

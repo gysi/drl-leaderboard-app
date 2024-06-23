@@ -61,10 +61,10 @@ public class PlayerImprovement {
         long seconds = (milliseconds % 60000) / 1000;
         long millis = milliseconds % 1000;
 
-        String formattedHours = (hours > 0) ? String.format("%d:", hours) : "";
-        String formattedMinutes = (minutes > 0 || hours > 0) ? String.format("%02d:", minutes) : "";
-        String formattedSeconds = (seconds > 0 || minutes > 0 || hours > 0) ? String.format(seconds < 10 && minutes == 0 && hours == 0 ? "%d" : "%02d", seconds) : "0";
-        String formattedMillis = String.format(".%03d", millis);
+        String formattedHours = (hours > 0) ? "%d:".formatted(hours) : "";
+        String formattedMinutes = (minutes > 0 || hours > 0) ? "%02d:".formatted(minutes) : "";
+        String formattedSeconds = (seconds > 0 || minutes > 0 || hours > 0) ? (seconds < 10 && minutes == 0 && hours == 0 ? "%d" : "%02d").formatted(seconds) : "0";
+        String formattedMillis = ".%03d".formatted(millis);
 
         return formattedHours + formattedMinutes + formattedSeconds + formattedMillis;
     }

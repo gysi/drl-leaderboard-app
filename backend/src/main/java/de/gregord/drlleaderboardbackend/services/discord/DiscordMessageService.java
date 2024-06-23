@@ -102,7 +102,7 @@ public class DiscordMessageService {
 
                     if (imp.getPreviousPosition() != null) {
                         String scoreDifference = PlayerImprovement.getScoreDifference(imp.getPreviousScore(), imp.getCurrentScore());
-                        scoreImprovementPart = String.format("Faster by: %s\n", scoreDifference);
+                        scoreImprovementPart = "Faster by: %s\n".formatted(scoreDifference);
                     }
 
                     if (imp.getCurrentPosition() == 1) {
@@ -110,7 +110,7 @@ public class DiscordMessageService {
                     } else if (imp.getLeaderScore() != null) {
                         String leaderScoreDifference = PlayerImprovement.getScoreDifference(imp.getCurrentScore(), imp.getLeaderScore());
                         String formattedLeaderScore = PlayerImprovement.formatScore(imp.getLeaderScore());
-                        leaderScorePart = String.format("Behind the track leader by: %s (%s)", leaderScoreDifference, formattedLeaderScore);
+                        leaderScorePart = "Behind the track leader by: %s (%s)".formatted(leaderScoreDifference, formattedLeaderScore);
                     }
 
                     String description = (imp.getPreviousPosition() == null ?
@@ -121,7 +121,7 @@ public class DiscordMessageService {
                                     imp.getPreviousPosition(), imp.getCurrentPosition(), imp.getTrack().getName(),
                                     imp.getTrack().getMapName(), imp.getTrack().getParentCategory()))
                             + scoreImprovementPart
-                            + String.format("New Time: %s\n", formattedCurrentScore)
+                            + "New Time: %s\n".formatted(formattedCurrentScore)
                             + leaderScorePart;
 
                     return EmbedCreateSpec.builder()
@@ -225,7 +225,7 @@ public class DiscordMessageService {
         EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
                 .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Reminder \uD83C\uDFC6", null, null))
                 .title(String.format("%s\nis about to start in 30min!", tournament.getTitle()))
-                .url(String.format("%s/tournaments", frontendUrl))
+                .url("%s/tournaments".formatted(frontendUrl))
                 .addField(EmbedCreateFields.Field.of("", "Participants:", false))
                 .addFields(participantsEmbedFields.toArray(EmbedCreateFields.Field[]::new))
                 .addField(EmbedCreateFields.Field.of("Go start the SIM and get warmed up!","", false))
@@ -246,7 +246,7 @@ public class DiscordMessageService {
         EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
                 .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Started \uD83C\uDFC6", null, null))
                 .title(String.format("%s", tournament.getTitle()))
-                .url(String.format("%s/tournaments", frontendUrl))
+                .url("%s/tournaments".formatted(frontendUrl))
                 .addField(EmbedCreateFields.Field.of(String.format("Track: %s", tournament.getCustomMapTitle()), "", false))
                 .addField(EmbedCreateFields.Field.of("", "Participants:", false))
                 .addFields(participantsEmbedFields.toArray(EmbedCreateFields.Field[]::new))
@@ -292,11 +292,11 @@ public class DiscordMessageService {
             String playerName = playerRanking.getProfileName();
             String score = PlayerImprovement.formatScore(playerRanking.getScore());
             if (counter.get() == 1) {
-                playerName = String.format("%d. %s %s %s  (%s)", counter.get(), playerName, winner, goldenheat, score);
+                playerName = "%d. %s %s %s  (%s)".formatted(counter.get(), playerName, winner, goldenheat, score);
             } else {
                 playerName = playerRanking.getGoldenPos() != null && playerRanking.getGoldenPos() > 0 ?
-                        String.format("%d. %s %s  (%s)", counter.get(), playerName, goldenheat, score) :
-                        String.format("%d. %s ", counter.get(), playerName);
+                        "%d. %s %s  (%s)".formatted(counter.get(), playerName, goldenheat, score) :
+                        "%d. %s ".formatted(counter.get(), playerName);
             }
             counter.getAndIncrement();
             return playerName;
@@ -305,7 +305,7 @@ public class DiscordMessageService {
         EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
                 .author(EmbedCreateFields.Author.of("\uD83C\uDFC6 Tournament Finished \uD83C\uDFC6", null, null))
                 .title(String.format("%s", tournament.getTitle()))
-                .url(String.format("%s/tournaments", frontendUrl))
+                .url("%s/tournaments".formatted(frontendUrl))
                 .addField(EmbedCreateFields.Field.of(String.format("Track: %s", tournament.getCustomMapTitle()), "", false))
                 .addField(EmbedCreateFields.Field.of("", "Results:", false))
                 .addFields(participantsEmbedFields.toArray(new EmbedCreateFields.Field[0]))

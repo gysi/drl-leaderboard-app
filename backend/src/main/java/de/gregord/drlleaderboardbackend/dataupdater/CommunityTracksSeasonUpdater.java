@@ -279,8 +279,8 @@ public class CommunityTracksSeasonUpdater {
     }
 
     public static String trackWeightedRatingToString(TrackWeightedRatingView track) {
-        return String.format("name:%s, trackCreator:%s, mapDifficulty:%s, ratingCount:%s, ratingScore:%s," +
-                        " weightedRating:%s, tournamentBoost:%s",
+        return ("name:%s, trackCreator:%s, mapDifficulty:%s, ratingCount:%s, ratingScore:%s," +
+                " weightedRating:%s, tournamentBoost:%s").formatted(
                 track.getName(), track.getTrackCreator(),
                 track.getMapDifficulty(), track.getRatingCount(),
                 track.getRatingScore(), track.getWeightedRating(),

@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.3.1</version>
     </parent>
 
     <properties>
@@ -41,7 +41,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -74,18 +73,15 @@
         <dependency>
             <groupId>org.cache2k</groupId>
             <artifactId>cache2k-api</artifactId>
-            <version>2.6.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.cache2k</groupId>
             <artifactId>cache2k-core</artifactId>
-            <version>2.6.1.Final</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.cache2k</groupId>
             <artifactId>cache2k-spring</artifactId>
-            <version>2.6.1.Final</version>
         </dependency>
         <dependency>
             <groupId>com.github.f4b6a3</groupId>
@@ -100,6 +96,10 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 <!--        Deactivated because ImageController isn't needed anymore, we use Thumbor instead-->
 <!--        <dependency>-->
