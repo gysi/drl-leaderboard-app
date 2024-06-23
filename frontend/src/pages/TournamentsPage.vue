@@ -419,121 +419,13 @@ tbody .q-item
   p
     margin: 0 0 2px
 
-///// DOC CARD /////
+.q-tab--active
+  background-color: rgb(255,255,255,0.1)
+
 .doc-api
-  &__subtabs .q-tabs__content
-    padding: 8px 0
-
-  &__subtabs-item
-    justify-content: left
-    min-height: 36px !important
-    .q-tab__content
-      width: 100%
-
-  &__subtabs,
-  &__subtabs-item
-    border-radius: 0 !important
-
   &__container
     max-height: 600px
 
   &__nothing-to-show
     padding: 16px
-
-  &__search-field
-    cursor: text
-    min-width: 10em !important
-
-  &__search
-    border: 0
-    outline: 0
-    background: none
-    color: inherit
-    width: 1px !important // required when on narrow width window to not overflow the page
-    height: 37px
-
-.doc-api-entry
-  padding: 16px
-  color: #757575
-
-  .doc-api-entry
-    padding: 8px
-
-  & + &
-    border-top: 1px solid #ddd
-
-  &__expand-btn
-    margin-left: 4px
-
-  &__item
-    min-height: 25px
-    & + &
-      margin-top: 4px
-
-  &__subitem
-    padding: 4px 0 0 8px
-    border-radius: 4px
-    > div
-      border: 1px solid rgba(0,0,0,.12) !important
-      border-radius: inherit
-    > div + div
-      margin-top: 8px
-
-  &__type
-    line-height: 24px
-
-  &__value
-    color: #474747
-
-  &--indent
-    padding-left: 8px
-
-  .doc-token
-    margin: 4px
-    display: inline-block
-
-  &__added-in,
-  &__pill
-    font-size: 15px
-    letter-spacing: .7px
-    line-height: 1.4em
-
-  &__added-in
-    font-size: 12px
-
-body.body--light
-  .doc-api .doc-token
-    background-color: #eee
-    border: 1px solid rgba(0, 0, 0, .12)
-    color: #474747
-  .doc-api-entry__pill
-    color: #fff
-  .doc-api-entry__added-in
-    color: $red-7
-    border-color: $red
-    background-color: $red-1
-
-body.body--dark
-  .doc-api .doc-token
-    background-color: #050A14
-    border: 1px solid rgba(255, 255, 255, .28)
-    color: #cbcbcb
-  .doc-api__search
-    color: #cbcbcb
-  .doc-api-entry
-    color: #8FA8B2
-    & + .doc-api-entry,
-    &__subitem > div
-      border-color: rgba(255, 255, 255, .28) !important
-    &__value
-      color: #cbcbcb
-    &__example
-      color: #00B4FF
-      border-color: #00B4FF
-    &__pill
-      color: $dark
-    &__added-in
-      color: $red
-      border-color: $red
-      background-color: #050A14
 </style>
