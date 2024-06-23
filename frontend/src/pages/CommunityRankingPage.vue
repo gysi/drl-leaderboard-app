@@ -37,15 +37,16 @@
         :loading="loading"
         row-key="playerName"
         class="my-sticky-header-table"
+        table-class="col-auto"
         style="overflow: hidden; max-height: 100%"
         flat
         bordered
         :visible-columns="[]"
         :rows-per-page-options="[0]"
         virtual-scroll
-        virtual-scroll-item-size="60"
-        virtual-scroll-slice-ratio-before="25"
-        virtual-scroll-slice-ratio-after="25"
+        virtual-scroll-item-size="65"
+        virtual-scroll-slice-ratio-before="5"
+        virtual-scroll-slice-ratio-after="5"
         virtual-scroll-sticky-size-start="49"
         hide-bottom
         :filter="{ showExcludedPlayers: showExcludedPlayers }"
@@ -79,17 +80,19 @@
           </th>
         </template>
         <template v-slot:body="props">
-          <q-tr :props="props" :class="[
-            selectedPlayer === props.row.playerName ? 'highlight-td' : '',
-            props.row.isEligible ? '' : 'greyed-out-row'
-            ]">
+          <q-tr :props="props"
+                :class="[
+                  selectedPlayer === props.row.playerName ? 'highlight-td' : '',
+                  props.row.isEligible ? '' : 'greyed-out-row'
+                ]
+          ">
             <q-td :props="props" key="position" class="leaderboard-position-column"
             >
               {{ props.row.position }}
             </q-td>
             <q-td :props="props" key="playerName" class="td-borders-font-size16">
               <q-item clickable
-                      :to="`/player-leaderboard-community?playerName=${encodeURIComponent(props.row.playerName)}`"
+                      :to="`/player-leaderboard-community?playerName=${props.row.encodedPlayerName}`"
                       class="q-item-player-region"
               >
                 <q-item-section avatar side>
@@ -149,7 +152,7 @@
 </template>
 
 <script setup>
-import {ref, shallowRef} from 'vue'
+import {markRaw, ref, shallowRef} from 'vue'
 import axios from 'axios';
 import {
   backGroundColorByPosition, formatMilliSeconds, getDateDifference,
@@ -221,9 +224,9 @@ const columns = [
 const rows = shallowRef([]);
 const loading = ref(true);
 const selectedPlayer = ref(null);
-const overallTable = ref(null);
+const overallTable = shallowRef(null);
 const season = shallowRef({});
-const showExcludedPlayers = ref(false)
+const showExcludedPlayers = shallowRef(false)
 
 const prizes = [
   "$470",
@@ -239,15 +242,16 @@ const fetchData = async function () {
       `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
       + `/seasons/ranking-current-season?page=1&limit=500`
     );
-    rows.value = response.data.map((row, i) => {
+    rows.value = markRaw(response.data.map((row, i) => {
       row['prize'] = prizes[i];
+      row['encodedPlayerName'] = encodeURIComponent(row['playerName']);
       if (row['profileThumb'].includes('placeholder.png')) {
         row['profileThumb'] = placeholder;
       } else {
         row['profileThumb'] = buildImgCacheUrl(row['profileThumb']);
       }
       return row;
-    });
+    }));
   } catch (error) {
     console.error(error);
   } finally {
@@ -262,12 +266,13 @@ const onPlayerSelected = function (playerName) {
   if (index >= 0) overallTable.value.scrollTo(index, 'center-force');
 }
 
+const fixedImgUrlPart = `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}`
+  + `${process.env.DLAPP_THUMBOR_PATH}/50x50/`
 const buildImgCacheUrl = function (url) {
   if (url) {
     if (url.includes('placeholder.png')) return url;
     let encodedUrl = encodeURIComponent(url);
-    return `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_THUMBOR_PORT}${process.env.DLAPP_THUMBOR_PATH}`
-      + `/50x50/${encodedUrl}`;
+    return `${fixedImgUrlPart}${encodedUrl}`;
   }
 }
 

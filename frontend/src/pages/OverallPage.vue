@@ -17,8 +17,8 @@
       :rows-per-page-options="[0]"
       hide-bottom
       virtual-scroll-item-size="65"
-      virtual-scroll-slice-ratio-before="50"
-      virtual-scroll-slice-ratio-after="50"
+      virtual-scroll-slice-ratio-before="5"
+      virtual-scroll-slice-ratio-after="5"
       virtual-scroll-sticky-size-start="49"
     >
       <template v-slot:top-left>

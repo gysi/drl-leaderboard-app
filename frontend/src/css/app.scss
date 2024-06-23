@@ -273,8 +273,9 @@ body {
       background-color: var(--app-table-top-bottom-background-color) !important;
     }
 
-    thead tr:first-child th {
+    thead tr:first-child {
       background-color: var(--app-table-column-header-background-color) !important;
+      border-color: var(--app-table-column-header-background-color) !important;
     }
 
     // Select within table
