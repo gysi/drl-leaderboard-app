@@ -19,8 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class LeaderboardEntryMinimal {
     @Id
-    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
+    @CustomTsidGenerator
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "player_id", nullable = false)

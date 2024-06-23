@@ -17,10 +17,8 @@ import java.util.Objects;
 @Setter
 @ToString
 public class DiscordActiveChannels {
-
     @Id
-    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
+    @CustomTsidGenerator
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)

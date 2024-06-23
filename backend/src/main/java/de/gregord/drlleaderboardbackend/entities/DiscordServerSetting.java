@@ -16,8 +16,7 @@ import java.util.Objects;
 @ToString
 public class DiscordServerSetting {
     @Id
-    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
+    @CustomTsidGenerator
     private Long id;
 
     private Long serverId;

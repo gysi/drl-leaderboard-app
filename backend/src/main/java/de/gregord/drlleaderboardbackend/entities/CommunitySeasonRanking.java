@@ -14,8 +14,7 @@ import java.util.Objects;
 @Table(name = "community_seasons_ranking_history")
 public class CommunitySeasonRanking {
     @Id
-    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
+    @CustomTsidGenerator
     private Long id;
     private Long seasonId;
 

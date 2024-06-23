@@ -3,7 +3,6 @@ package de.gregord.drlleaderboardbackend.entities;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRound;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,8 +40,7 @@ import java.util.Objects;
 @ToString
 public class Tournament {
     @Id
-    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
+    @CustomTsidGenerator
     private Long id;
 
     private String drlId; // drl api name "id"

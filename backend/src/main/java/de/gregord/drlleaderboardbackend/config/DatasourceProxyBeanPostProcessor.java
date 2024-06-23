@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -23,12 +24,12 @@ import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 public class DatasourceProxyBeanPostProcessor implements BeanPostProcessor {
 
     @Override
-    public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(final @NotNull Object bean, final @NotNull String beanName) throws BeansException {
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(final @NotNull Object bean, final @NotNull String beanName) throws BeansException {
         if (bean instanceof DataSource source) {
             ProxyFactory factory = new ProxyFactory(bean);
             factory.setProxyTargetClass(true);

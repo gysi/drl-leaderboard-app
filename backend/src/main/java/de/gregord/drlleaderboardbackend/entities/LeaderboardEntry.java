@@ -33,8 +33,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class LeaderboardEntry {
     @Id
-    @GeneratedValue(generator = TsidGenerator.GENERATOR_NAME)
-    @GenericGenerator(name = TsidGenerator.GENERATOR_NAME, type = TsidGenerator.class)
+    @CustomTsidGenerator
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "track_id", nullable = false)

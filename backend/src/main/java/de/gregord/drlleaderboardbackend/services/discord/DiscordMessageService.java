@@ -326,7 +326,7 @@ public class DiscordMessageService {
         if (allPlayers.length() > 1021) {
             // Truncate the list of players to fit within the character limit
             while (allPlayers.length() > 1021 && !players.isEmpty()) {
-                players.remove(players.size() - 1); // Remove players from the end
+                players.removeLast(); // Remove players from the end
                 allPlayers = String.join("\n", players);
             }
             allPlayers += "..."; // Add ellipsis to indicate truncation
