@@ -192,7 +192,9 @@ useMeta({
 })
 
 const calcBackgroundColorByPosition = backGroundColorByPosition;
-const tournamentRanking = shallowRef([]);
+const tournamentRanking = shallowRef({
+  rankings: [],
+});
 
 const seasonTitle = computed(() => {
   return tournamentRanking.value.seasonName == null ? 'Tournaments Rankings' : `Tournament Rankings - ${tournamentRanking.value.seasonName}`;
