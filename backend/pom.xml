@@ -137,6 +137,12 @@
             <artifactId>twitch4j</artifactId>
             <version>1.19.0</version>
         </dependency>
+        <!-- https://docs.spring.io/spring-boot/upgrading.html#upgrading.to-feature-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-properties-migrator</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
