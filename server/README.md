@@ -80,6 +80,19 @@ ssh -N -L 5433:localhost:5432 root@test.drl-leaderboards.com
 ssh -N -L 5434:localhost:5432 root@drl-leaderboards.com
 ```
 Then just connect to localhost:5433/localhost:5434 with your favorite postgres client.
+
+### Get a dump from the server using pg_dump + intellij database plugin
+For this you need a matching postgres client version, this is currently the postgresql-client-15 package.  
+Add the postgres apt repository (further reading: https://www.postgresql.org/download/linux/ubuntu/)
+```bash
+sudo apt install -y postgresql-common
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+```
+Then install the client:
+```bash
+sudo apt install -y postgresql-client-15
+```
+Now you can just right click on the database in the intellij database plugin and select "Import/Export -> Export with 'pg_dump'..." and it will create a dump file.
 ### Logs
 Nginx: /var/log/nginx/*  
 Backend: /var/log/backend/*
