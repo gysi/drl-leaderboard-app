@@ -24,8 +24,8 @@
              class="animated-background-image"
              style="mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 160px, rgba(0,0,0,1));"
              :src="`/maps/map-${selectedTrack.mapName.toLowerCase().replaceAll(/[. ]/g, '-')}-fs8.png`" />
-        <div class="row" style="overflow: hidden; position: relative; padding: 12px 16px;">
-          <div class="q-table__title">Track Rankings</div>
+        <div class="row q-pa-md" style="overflow: hidden; position: relative;">
+          <div class="q-table__title q-mr-md q-mb-sm">Track Rankings</div>
           <TracksSearchSelect @track-selected="onTrackSelection" />
         </div>
       </template>

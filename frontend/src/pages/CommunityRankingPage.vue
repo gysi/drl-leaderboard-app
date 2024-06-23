@@ -37,7 +37,6 @@
         :loading="loading"
         row-key="playerName"
         class="my-sticky-header-table"
-        table-class="col-auto"
         style="overflow: hidden; max-height: 100%"
         flat
         bordered

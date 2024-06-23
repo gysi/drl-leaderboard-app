@@ -16,63 +16,65 @@
     >
       <template v-slot:top-left>
         <div class="row">
-          <div class="q-table__title">{{ playerSelect.searchText.value?.toUpperCase() || 'Player' }}'s Rankings</div>
-          <q-select
-            ref="userselect"
-            filled
-            v-model="playerSelect.searchText.value"
-            use-input
-            hide-dropdown-icon
-            autofocus
-            input-debounce="150"
-            :options="playerSelect.searchResults.value"
-            @filter="searchSelectPlayer"
-            @new-value="onEnterPressedPlayerSelect"
-            @update:model-value="onSelectPlayer"
-            style="width: 175px"
-            class="q-ml-md"
-            use-chips
-            label="Enter player name"
-            popup-content-class="q-menu-dropdown"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey">
-                  No results
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-          <q-select
-            ref="compareSelectRef"
-            filled
-            v-model="compareSelect.searchText.value"
-            use-input
-            hide-dropdown-icon
-            :autofocus="false"
-            input-debounce="150"
-            max-values="5"
-            :options="compareSelect.searchResults.value"
-            @filter="searchSelectComparePlayer"
-            @new-value="onEnterPressedCompareSelect"
-            @update:model-value="onCompareSelect"
-            :style="{
+          <div class="q-table__title q-mr-md q-mb-sm">{{ playerSelect.searchText.value?.toUpperCase() || 'Player' }}'s Rankings</div>
+          <div class="row q-gutter-md">
+            <q-select
+              ref="userselect"
+              filled
+              v-model="playerSelect.searchText.value"
+              use-input
+              hide-dropdown-icon
+              autofocus
+              input-debounce="150"
+              :options="playerSelect.searchResults.value"
+              @filter="searchSelectPlayer"
+              @new-value="onEnterPressedPlayerSelect"
+              @update:model-value="onSelectPlayer"
+              style="width: 175px"
+              class="q-ml-md"
+              use-chips
+              label="Enter player name"
+              popup-content-class="q-menu-dropdown"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+            <q-select
+              ref="compareSelectRef"
+              filled
+              v-model="compareSelect.searchText.value"
+              use-input
+              hide-dropdown-icon
+              :autofocus="false"
+              input-debounce="150"
+              max-values="5"
+              :options="compareSelect.searchResults.value"
+              @filter="searchSelectComparePlayer"
+              @new-value="onEnterPressedCompareSelect"
+              @update:model-value="onCompareSelect"
+              :style="{
                 minWidth: '220px'
               }"
-            class="q-ml-md"
-            use-chips
-            multiple
-            label="Compare against players"
-            popup-content-class="q-menu-dropdown"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey">
-                  No results
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
+              class="q-ml-md"
+              use-chips
+              multiple
+              label="Compare against players"
+              popup-content-class="q-menu-dropdown"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
         </div>
       </template>
       <template v-slot:header-cell-beatenBy="props">

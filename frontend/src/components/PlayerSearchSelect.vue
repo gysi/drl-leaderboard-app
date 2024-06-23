@@ -12,7 +12,6 @@
     @new-value="onEnterPressedPlayerSelect"
     @update:model-value="onPlayerSelected"
     style="width: 250px"
-    class="q-ml-md"
     use-chips
     :label="label"
     popup-content-class="q-menu-dropdown"

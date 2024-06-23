@@ -11,7 +11,6 @@
     @new-value="onEnterPressed"
     @update:model-value="onOptionSelected"
     style="width: 350px"
-    class="q-ml-md"
     use-chips
     label="Enter track name"
     :loading="state.loading"

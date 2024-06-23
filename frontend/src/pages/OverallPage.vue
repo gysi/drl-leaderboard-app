@@ -8,7 +8,6 @@
       :loading="loading"
       row-key="position"
       class="my-sticky-header-table"
-      table-class="col-auto"
       style="max-height: 100%;"
       flat
       bordered
@@ -23,13 +22,15 @@
     >
       <template v-slot:top-left>
         <div class="row">
-          <div class="q-table__title">Rankings</div>
-          <q-select v-model="selectedParentCategory"
-                    :options="parentCategories"
-                    option-label="description"
-                    filled label="Category" class="q-ml-md" popup-content-class="q-menu-dropdown"
-                    style="width: 250px"></q-select>
-          <PlayerSearchSelect @onPlayerSelected="onPlayerSelected" label="Jump to player name" />
+          <div class="q-table__title q-mr-md q-mb-sm">Rankings</div>
+          <div class="row q-gutter-md">
+            <q-select v-model="selectedParentCategory"
+                      :options="parentCategories"
+                      option-label="description"
+                      filled label="Category" popup-content-class="q-menu-dropdown"
+                      style="width: 250px"></q-select>
+            <PlayerSearchSelect @onPlayerSelected="onPlayerSelected" label="Jump to player name" />
+          </div>
         </div>
       </template>
       <template v-slot:header-cell-invalidRuns="props">

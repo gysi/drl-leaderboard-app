@@ -72,7 +72,6 @@
       :loading="loading"
       row-key="track.id"
       class="my-sticky-header-table"
-      table-class="col-auto"
       style="max-height: 100%; overflow: hidden"
       :pagination="pagination"
       hide-pagination
