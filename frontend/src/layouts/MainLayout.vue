@@ -417,7 +417,7 @@ function startAnimation() {
 .my-sticky-header-table
   /* height or max-height is important */
   //min-height: inherit
-  thead tr th
+  thead th
     position: sticky
     z-index: 1
     font-size: 18px
