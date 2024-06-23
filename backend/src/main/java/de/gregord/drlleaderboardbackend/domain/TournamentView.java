@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public interface TournamentView {
     String getGuid();
     String getTitle();
-//    String getTrackName(); // Don't show the trackname within the api.
+    String getTrackName();
     String getImgUrl();
     @JsonRawValue
     String getTop10();

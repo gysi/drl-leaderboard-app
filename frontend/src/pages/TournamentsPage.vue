@@ -147,8 +147,13 @@
                   <q-card-section class="absolute-top" style="background: rgba(0,0,0,70%)">
                     <div class="" style="font-size: 20px">{{props.row.title}}</div>
                     <div class="text-subtitle2 text-grey-5">{{ toLocalDateformat(props.row.startDate) }}</div>
-                    <q-separator v-if="props.row.top10.length !== 0" class="bg-grey-6 q-mb-xs" />
-                    <div v-for="(player, i) in props.row.top10" v-bind:key="player">{{i+1}}. {{player}}</div>
+                    <q-chip v-if="props.row.trackName" dense class="track-chip">{{ props.row.trackName }}</q-chip>
+                    <q-separator v-if="props.row.top10?.length !== 0" class="bg-grey-6 q-mb-xs" />
+                    <div v-for="(player, i) in props.row.top10" v-bind:key="player">
+                      {{i+1}}. {{player.profileName}}
+                      {{ i === 0 ? '🏆' : '' }}
+                      {{ player.goldenPos > 0 ? `🌟 (${formatMilliSeconds(player.score)}${player.score < props.row.top10[0].score ? '⚠️' : ''})` : '' }}
+                    </div>
                   </q-card-section>
                   <q-card-section v-if="props.row.status === 'idle'" class="absolute-bottom" style="background: rgba(255,0,0,80%)">
                     <div style="text-align: center; font-weight: 900; font-size: 16px">Starts in</div>
@@ -177,7 +182,7 @@ import axios from 'axios';
 import {computed, ref, shallowRef, watch} from "vue";
 import { format, parseISO, formatDuration, intervalToDuration } from 'date-fns'
 import { utcToZonedTime } from "date-fns-tz";
-import { backGroundColorByPosition } from 'src/modules/LeaderboardFunctions'
+import {backGroundColorByPosition, formatMilliSeconds} from 'src/modules/LeaderboardFunctions'
 import placeholder from 'src/assets/placeholder.png'
 import {useMeta} from "src/modules/meta.js"
 
@@ -281,7 +286,7 @@ const toLocalDateformat = (val) => {
     const date = new Date(val+'Z')
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const zonedDate = utcToZonedTime(date, userTimezone);
-    const pattern = 'yyyy-MM-dd HH:mm:ss'
+    const pattern = 'yyyy-MM-dd HH:mm'
     return format(zonedDate, pattern, { timeZone: userTimezone }) + ' ' + userTimezone
   }
 };
@@ -355,6 +360,9 @@ fetchTournamentRankings();
 
 </script>
 
+<style lang="sass">
+
+</style>
 <style lang="sass" scoped>
 tbody td
   //color: black
@@ -428,4 +436,15 @@ tbody .q-item
 
   &__nothing-to-show
     padding: 16px
+
+
+:deep(.q-img__content)
+  .q-chip
+    margin-left: 0
+    margin-right: 0
+  .q-chip__content
+    display: block
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
 </style>
