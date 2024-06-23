@@ -16,7 +16,7 @@
       <q-card>
         <q-card-section class="q-py-none q-px-sm row news-content-header">
           <div class="text-h5 q-py-sm">3.7.7 Release</div><q-space />
-          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-23 18:10') }}</div>
+          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-06-23 19:50') }}</div>
         </q-card-section>
         <q-card-section class="q-pa-sm news-content">
           <div class="text-h6">Features</div>
@@ -86,7 +86,7 @@
         <q-card-section class="q-pa-sm news-content">
           <div class="q-my-sm" style="font-size: 1rem">
             The prize pool funding and payout is now managed through Matcherino.<br/>
-            Check it out: <a padding="0" href="https://matcherino.com/tournaments/116263" target="_blank">https://matcherino.com/tournaments/116263</a>
+            Check it out: <a href="https://matcherino.com/tournaments/116263" target="_blank">https://matcherino.com/tournaments/116263</a>
             <br/>
             This makes contributions to the prize pool easier and more legitimate.
             Also payouts are way easier to manage through their system.
