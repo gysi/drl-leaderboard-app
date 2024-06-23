@@ -15,7 +15,7 @@
 
 ## Local Setup
 ### Generate your own api token
-Create a token (ask gysi if you don't know how) and paste it into src/main/resources/application.yaml file under 'app.drl-api.token'
+Create a token (ask gysi if you don't know how) and paste it into src/main/resources/application-local-secrets.yaml file under 'app.drl-api.token'
 
 ### Run the application locally
 #### Run the postgres docker container:
@@ -24,7 +24,7 @@ cd src/docker/local && docker-compose up
 ```
 #### Build & Run the application
 ```bash
-mvn clean package spring-boot:run -Dspring-boot.run.profiles=local
+mvn clean package spring-boot:run -Dspring-boot.run.profiles=local,local-secrets
 ```
 If the db is empty it will initialize the database with the latest data from the drl api on startup.
 
@@ -41,7 +41,7 @@ Make sure to have native-image installed (gu install native-image) only need whe
 ```
 Build jar file, go to backend folder and run:
 ```bash
-java -Dspring.profiles.active=local -agentlib:native-image-agent=config-output-dir=META-INF/native-image -jar target/DRLLeaderboardBackend-1.4.0.jar
+java -Dspring.profiles.active=local,local-secrets -agentlib:native-image-agent=config-output-dir=META-INF/native-image -jar target/DRLLeaderboardBackend-1.4.0.jar
 ```
 
 Now test all features of the app as best as you can, by clicking through the app.
