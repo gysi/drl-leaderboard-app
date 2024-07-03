@@ -23,3 +23,10 @@ INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from track
 INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-13] SANDSTORM'), 2, false);
 INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-14] SHADOWS AND DUST'), 2, false);
 INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-15] COOL BREEZE'), 2, false);
+
+-- orange series
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-16] SUMMERFELL'), 3, false);
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-17] ATHENAS RAMPAGE'), 3, false);
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-18] NIGHTWATCH'), 3, false);
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-19] CUBIC TRIPP'), 3, false);
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-20] AFTERWORK'), 3, false);
