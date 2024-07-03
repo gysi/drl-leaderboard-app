@@ -534,9 +534,9 @@ function createCheckpointsFromTrackDetailData(data){
           z: child['local-position'][2]
         },
         scaling: {
-          x: child['local-scale'][0], //*3.1, // scale up a bit to match the size of the checkpoints as close as possible
-          y: child['local-scale'][1], //*3.1,
-          z: child['local-scale'][2] //*1
+          x: child['local-scale'][0],
+          y: child['local-scale'][1],
+          z: child['local-scale'][2],
         },
         rotation: [
           child['local-rotation'][0],
@@ -568,6 +568,9 @@ function findMarkersAndExtractData(byteArray) {
     'drone-py,': 'drone-py',
     'drone-pz,': 'drone-pz',
     'input-t': 'input-t',
+    'drone-vx': 'drone-vx',
+    'drone-vy': 'drone-vy',
+    'drone-vz': 'drone-vz',
     'drone-rpm0' : 'drone-rpm0',
     'drone-rpm1' : 'drone-rpm1',
     'drone-rpm2' : 'drone-rpm2',
@@ -600,7 +603,6 @@ function findMarkersAndExtractData(byteArray) {
     }
     byteIndex++;
   }
-
   return output;
 }
 
@@ -618,22 +620,116 @@ function byteArrayToFloatArray(byteArray){
   return floatArray
 }
 
-function sumMarkerData(markers){
+function sumMarkerData(markers) {
   const time = markers['time'];
   const dronePosX = markers['drone-px'];
   const dronePosY = markers['drone-py'];
   const dronePosZ = markers['drone-pz'];
   const inputT = markers['input-t'];
+  const droneVX = markers['drone-vx'];
+  const droneVY = markers['drone-vy'];
+  const droneVZ = markers['drone-vz'];
+
+  const droneVelocity = new Float32Array(droneVX.length); // New array for overall velocity
+  const directionChanges = new Float32Array(droneVX.length); // Array for direction changes
+
   const sumFloatArray = function (arr) {
     for (let i = 1; i < arr.length; i++) {
       arr[i] += arr[i - 1];
     }
   }
+
   sumFloatArray(time);
   sumFloatArray(dronePosX);
   sumFloatArray(dronePosY);
   sumFloatArray(dronePosZ);
   sumFloatArray(inputT)
+  sumFloatArray(droneVX);
+  sumFloatArray(droneVY);
+  sumFloatArray(droneVZ);
+
+  // Calculate the overall velocity and direction changes
+  for (let i = 0; i < droneVX.length; i++) {
+    droneVelocity[i] = Math.sqrt(droneVX[i]**2 + droneVY[i]**2 + ((-droneVZ[i])**2));
+    if (i > 0) {
+      const previousDirection = new THREE.Vector3(droneVX[i-1], droneVY[i-1], -droneVZ[i-1]).normalize();
+      const currentDirection = new THREE.Vector3(droneVX[i], droneVY[i], -droneVZ[i]).normalize();
+      directionChanges[i] = previousDirection.angleTo(currentDirection);
+
+      // For debugging: add lines to represent the velocity vectors
+      // const currentPosition = new THREE.Vector3(dronePosX[i], dronePosY[i], -dronePosZ[i]);
+      // const currentVelocityEnd = currentPosition.clone().add(currentDirection)
+      // const currentVelocityLine = new THREE.Line(
+      //   new THREE.BufferGeometry().setFromPoints([currentPosition, currentVelocityEnd]),
+      //   new THREE.LineBasicMaterial({ color: 0xFF0000 }) // Red color for current velocity
+      // );
+      //
+      // // Add the lines to the scene for debugging
+      // sceneObjects.push(currentVelocityLine);
+      // scene.add(currentVelocityLine);
+      // DEBUGGING END
+    } else {
+      directionChanges[i] = 0;
+    }
+  }
+
+  markers['drone-velocity'] = droneVelocity; // Add this new data to the markers
+  markers['direction-changes'] = directionChanges; // Add direction changes to markers
+}
+
+function addBounceMarkers(scene, markers) { // Threshold for detecting abrupt direction changes
+  const lowestThresholdLimit = 5
+  const aboveCountsAsHighVelocity = 15
+  const directionChangeThresholdLowSpeed = degreesToRadians(30)
+  const directionChangeThresholdHighSpeed = degreesToRadians(16)
+
+  const dronePosX = markers['drone-px'];
+  const dronePosY = markers['drone-py'];
+  const dronePosZ = markers['drone-pz'];
+  const droneVelocity = markers['drone-velocity'];
+  const directionChanges = markers['direction-changes'];
+  const time = markers['time'];
+
+  // Calculate the maximum velocity magnitude
+  const maxVelocityMagnitude = Math.max(...droneVelocity);
+  const endingTime = time[time.length - 1];
+
+  for (let i = 1; i < directionChanges.length && time[i] < endingTime - 1.5; i++) {
+    if (time[i] < 1) continue;
+
+    const prevVelocity = droneVelocity[i-1]
+    const directionChangeThreshold = prevVelocity > aboveCountsAsHighVelocity ? directionChangeThresholdHighSpeed : directionChangeThresholdLowSpeed
+    if (directionChanges[i] > directionChangeThreshold && prevVelocity >= lowestThresholdLimit) {
+      console.log(directionChangeThreshold * (180 / Math.PI));
+      const directionChangeInDegrees = directionChanges[i] * (180 / Math.PI); // Convert to degrees
+      console.log(`Found bounce: ${i} directional change ${directionChangeInDegrees}`);
+      console.log(maxVelocityMagnitude)
+      console.log(droneVelocity[i-4])
+      console.log(droneVelocity[i-3])
+      console.log(droneVelocity[i-2])
+      console.log(droneVelocity[i-1])
+      console.log('bounce', droneVelocity[i])
+      console.log(droneVelocity[i+1])
+      console.log(droneVelocity[i+2])
+      console.log(droneVelocity[i+3])
+      console.log(droneVelocity[i+4])
+      console.log(droneVelocity[i+5])
+      console.log(droneVelocity[i+6])
+      console.log(droneVelocity[i+7])
+
+      const x = dronePosX[i];
+      const y = dronePosY[i];
+      const z = dronePosZ[i];
+      const geometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(x, y, -z),
+        new THREE.Vector3(x, y + 5, -z) // Vertical line going up from the bounce point
+      ]);
+      const material = new THREE.LineBasicMaterial({ color: 0xFFFF00 }); // Yellow color
+      const line = new THREE.Line(geometry, material);
+      sceneObjects.push(line);
+      scene.add(line);
+    }
+  }
 }
 
 let checkPoints = [];
@@ -693,12 +789,22 @@ const loadReplay = async (trackId, replayData, splineColor) => {
   sumMarkerData(markers);
   // console.log("sum", markers)
   // console.log(trackDetails)
+  addBounceMarkers(scene, markers); // Add bounce markers
   addSplines(splineColor, scene, trackDetails['map-distance'] * trackDetails['map-laps'],
     (event) => event["event-position"],
     markers
   )
   // addReplayLabels(scene, replayCheckPointData.events, (event) => event["event-position"])
 }
+
+function degreesToRadians(degrees) {
+  return degrees * (Math.PI / 180);
+}
+
+function radiansToDegrees(radians) {
+  return radians * (180 / Math.PI);
+}
+
 
 function disposeSceneObjects() {
   if(scene == null){
