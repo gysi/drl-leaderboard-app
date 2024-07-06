@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@JsonSerialize(using = SeasonSerializer.class)
 public enum Season {
 // 2023 no spring season because of to little tournaments because of DRL game release
 //        SEASON_2023_SPRING("2023-01-SPRING", "Spring Season 2023",

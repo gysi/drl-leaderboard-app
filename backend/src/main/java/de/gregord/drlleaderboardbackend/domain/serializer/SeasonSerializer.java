@@ -1,20 +1,18 @@
 package de.gregord.drlleaderboardbackend.domain.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.gregord.drlleaderboardbackend.domain.Season;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 public class SeasonSerializer extends StdSerializer<Season> {
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    private final ObjectMapper objectMapper;
-
-    protected SeasonSerializer(ObjectMapper objectMapper) {
-        super(Season.class);
-        this.objectMapper = objectMapper;
+    public SeasonSerializer(Class<Season> t) {
+        super(t);
     }
 
     @Override
@@ -23,10 +21,8 @@ public class SeasonSerializer extends StdSerializer<Season> {
         gen.writeNumberField("id", value.ordinal());
         gen.writeStringField("idName", value.getSeasonIdName());
         gen.writeStringField("name", value.getSeasonName());
-        gen.writeFieldName("startDate");
-        objectMapper.writeValue(gen, value.getSeasonStartDate());
-        gen.writeFieldName("endDate");
-        objectMapper.writeValue(gen, value.getSeasonEndDate());
+        gen.writeStringField("startDate", formatter.format(value.getSeasonStartDate()));
+        gen.writeStringField("endDate", formatter.format(value.getSeasonEndDate()));
         gen.writeEndObject();
     }
 }

@@ -1,5 +1,8 @@
 package de.gregord.drlleaderboardbackend.config;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import de.gregord.drlleaderboardbackend.domain.Season;
+import de.gregord.drlleaderboardbackend.domain.serializer.SeasonSerializer;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,5 +26,12 @@ public class AppConfig {
                 registry.addMapping("/**").allowedOrigins("*");
             }
         };
+    }
+
+    @Bean
+    public SimpleModule seasonModule() {
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Season.class, new SeasonSerializer(Season.class));
+        return module;
     }
 }
