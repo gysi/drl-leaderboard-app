@@ -153,7 +153,7 @@
               style="width: 52px; position: relative"
             >
               <q-tooltip>
-                <!--                <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>-->
+                <div>BOUNCE</div>
               </q-tooltip>
             </q-btn>
             <!-- Position row end-->
