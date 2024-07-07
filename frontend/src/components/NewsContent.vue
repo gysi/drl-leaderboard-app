@@ -17,7 +17,7 @@
         <q-card-section class="q-py-none q-px-sm row news-content-header">
           <div class="text-h5 q-py-sm">🚨 Summer Season Heats Up: Red Series Tracks & New Bounce Penalty 🚨</div>
           <q-space />
-          <div style="padding-top: 5px">Just now</div> </q-card-section>
+          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-07-07 03:20') }}</div> </q-card-section>
         <q-card-section class="q-pa-sm news-content">
           <div class="q-my-sm" style="font-size: 1rem">
             The Community Summer Season is reaching its peak, and we've got a double dose of excitement to share!
