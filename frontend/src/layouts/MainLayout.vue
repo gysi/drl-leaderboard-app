@@ -95,8 +95,10 @@
           <!--        AD Banner-->
 <!--          <q-item href=-->
 <!--                    "https://discord.gg/sgps" target="_blank">-->
-            <q-item to=
-                    "community-rankings">
+<!--            <q-item to=-->
+<!--                    "community-rankings">-->
+              <q-item href=
+                    "https://matcherino.com/tournaments/116263" target="_blank">
             <q-item-section style="position: relative">
               <section id="glitch-image-1"></section>
               <section id="glitch-image-2"></section>
@@ -704,7 +706,7 @@ body.body--dark .doc-card-title
   position: relative
   width: 100%
   height: 267px
-  background: url(assets/summer_series_2024.webp)
+  background: url(assets/Summer_Series_2024_matcherino.png)
   background-size: 100%
 
 #glitch-image-2
@@ -713,7 +715,7 @@ body.body--dark .doc-card-title
   left: 0
   width: 100%
   height: 267px
-  background: url(assets/summer_series_2024.webp)
+  background: url(assets/Summer_Series_2024_matcherino.png)
   background-size: 100%
   opacity: .5
   mix-blend-mode: hard-light

@@ -95,7 +95,7 @@ Webapp for displaying DRL Simulator leaderboards.
       * [ ] General statistics on the top of the page/table-header
       * [x] ~~Make the "beaten by" column also sortable.~~
       * [ ] Remember last state (filter, compare filter)
-      * [*] Encode special characters in the url (player names, e.g.: fv|impulse)
+      * [x] Encode special characters in the url (player names, e.g.: fv|impulse)
     * [x] ~~SLOTMACHINE!!!~~
       * ~~Maybe take 10 lastest improved tracks, 10 highest position, 10 of most by beaten entries etc. and then take a random one. Display it like a slotmachine.~~
       * ~~Could be a new entry within the navbar which then renders an overlay with a playersearch bar and a slotmachine~~
