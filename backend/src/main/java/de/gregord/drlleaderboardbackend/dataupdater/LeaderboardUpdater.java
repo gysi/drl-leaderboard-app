@@ -47,12 +47,11 @@ public class LeaderboardUpdater {
             LOG.info("update leaderboard for track: {} ...", track.getName());
             List<PlayerImprovement> improvements = new ArrayList<>();
             LeaderboardProcessorResult leaderboardProcessorResult = drlApiService.getAndProcessLeaderboardEntries(
-                    track, PAGE_LIMIT, MAX_ENTRIES_PER_TRACK,
+                    track, PAGE_LIMIT, 250, MAX_ENTRIES_PER_TRACK,
                     (isNewTrack,
                      drlLeaderboardEntry,
                      existingEntry,
                      newOrUpdatedLeaderboardEntry,
-                     currentLeaderboardEntriesForTrack,
                      leaderScore) -> {
                         totalRequestCount++;
                         if (!isNewTrack

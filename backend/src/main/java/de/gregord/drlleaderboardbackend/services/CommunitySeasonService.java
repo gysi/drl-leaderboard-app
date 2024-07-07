@@ -3,6 +3,7 @@ package de.gregord.drlleaderboardbackend.services;
 import de.gregord.drlleaderboardbackend.domain.CommunityRankingView;
 import de.gregord.drlleaderboardbackend.domain.Season;
 import de.gregord.drlleaderboardbackend.domain.TrackCommunitySeasonView;
+import de.gregord.drlleaderboardbackend.entities.Track;
 import de.gregord.drlleaderboardbackend.repositories.CommunitySeasonsRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,9 @@ public class CommunitySeasonService {
         int offset = (page - 1) * limit;
         return communitySeasonsRepository.getOverallRankingCurrentSeason(
                 season.getSeasonId(), season.getSeasonStartDate(), onlyEligible, limit, offset);
+    }
+
+    public boolean isSeasonTrack(Track track) {
+        return communitySeasonsRepository.existsByTrackIdAndExcludedIsFalse(track.getId());
     }
 }

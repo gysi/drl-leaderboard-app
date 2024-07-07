@@ -38,13 +38,23 @@
           />
         </th>
       </template>
+      <template v-slot:header-cell-penalties="props">
+        <th :class="props.col.__thClass">
+          {{ props.col.label }}
+          <q-btn type="a" icon="help" size="1.3rem"
+                 fab flat padding="5px"
+                 :to="{ name: 'communitySeasonCompetitionFaq', query: { card: 'bounce-penalty' } }"
+          />
+        </th>
+      </template>
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td v-for="col in props.cols" :key="col.name" :props="props"
                 :style="{
                   backgroundColor: props.row.isInvalidRun ?
-                    'rgba(187,44,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null,
-                  paddingLeft: props.row.isInvalidRun && col.name === 'position' ? '5px' : null,
+                    'rgba(187,44,44,0.54)': props.row.timePenaltyTotal > 0 ?
+                    'rgba(187,175,44,0.54)': col.name === 'position' ? backGroundColorByPosition(props.row.position) : null,
+                  paddingLeft: (props.row.isInvalidRun || props.row.timePenaltyTotal > 0) && col.name === 'position' ? '5px' : null,
                   }"
                 :class="['td-borders-font-size16', col.name === 'position' && !props.row.isInvalidRun ?
                           props.row.position === 1 ? 'first-place' :
@@ -82,7 +92,20 @@
                 <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>
               </q-tooltip>
             </q-btn>
-            {{ col.name === 'playerName' || (col.name === 'position' && props.row.isInvalidRun) ? '' : col.value }}
+            <q-btn
+              v-if="props.row.timePenaltyTotal > 0 && col.name === 'position'"
+              type="button" icon="warning" size="sm"
+              fab padding="5px"
+              :to="{ name: 'communitySeasonCompetitionFaq', query: { card: 'bounce-penalty' } }"
+              ripple
+              :label="props.row.position"
+              style="width: 52px; position: relative"
+            >
+              <q-tooltip>
+                <div>BOUNCE</div>
+              </q-tooltip>
+            </q-btn>
+            {{ col.name === 'playerName' || (col.name === 'position' && (props.row.isInvalidRun || props.row.timePenaltyTotal > 0)) ? '' : col.value }}
           </q-td>
         </q-tr>
       </template>
@@ -119,7 +142,7 @@ const columns = [
   { name: 'position', label: '#', field: 'position' },
   { name: 'playerName', label: 'Player', field: row => row.player.playerName, align: 'left' },
   { name: 'score', label: 'Time', field: 'score', format: (val, row) => formatMilliSeconds(val), align: 'left' },
-  { name: 'crashes', label: 'Crashes', field: 'crashCount' },
+  { name: 'penalties', label: 'Penalties', field: 'penalties' },
   { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed', format: (val, row) => (Math.round(val*10)/10) },
   { name: 'points', label: 'Points', field: 'points', format: (val, row) => row.isInvalidRun ? 0 : Math.round(val) },
   { name: 'createdAt', label: 'Time Set', field: 'createdAt', format: (val, row) => getDateDifference(val) },
@@ -147,7 +170,12 @@ const fetchData = async (track) => {
       `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
       + `/leaderboards/bytrack/${track.id}?page=1&limit=250`
     )
-    rows.value = response.data
+    // rows.value = response.data;
+    rows.value = response.data.map((row) => {
+      row['score'] = row['score'] + (row['timePenaltyTotal'] ? row['timePenaltyTotal'] : 0)
+      row['penalties'] = row['penalties'] == null ? 0 : row['penalties'].length
+      return row
+    })
   } catch (error) {
     console.error(error)
   } finally {

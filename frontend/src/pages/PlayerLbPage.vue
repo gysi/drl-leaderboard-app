@@ -109,9 +109,10 @@
                 backgroundColor:
                   props.row.isMissing ? 'var(--app-player-lb-missing-run-background-color)' :
                   props.row.isInvalidRun ? 'rgba(187,44,44,0.54)' :
-                    col.name === 'position' ? backGroundColorByPosition(props.row.position) :
-                      null,
-                paddingLeft: props.row.isInvalidRun && col.name === 'position' ? '5px' : null,
+                    props.row.timePenaltyTotal > 0 ? 'rgba(187,175,44,0.54)':
+                      col.name === 'position' ? backGroundColorByPosition(props.row.position) :
+                        null,
+                paddingLeft: (props.row.isInvalidRun || props.row.timePenaltyTotal > 0) && col.name === 'position' ? '5px' : null,
               }"
             :class="['td-borders-font-size16', col.name === 'position' && !props.row.isInvalidRun ?
                 props.row.position === 1 ? 'first-place' :
@@ -130,6 +131,19 @@
             >
               <q-tooltip>
                 <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              v-if="props.row.timePenaltyTotal > 0 && col.name === 'position'"
+              type="button" icon="warning" size="sm"
+              fab padding="5px"
+              :to="{ name: 'faq', query: { card: 'invalidRuns' } }"
+              ripple
+              :label="props.row.position"
+              style="width: 52px; position: relative"
+            >
+              <q-tooltip>
+<!--                <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>-->
               </q-tooltip>
             </q-btn>
             <!-- Position row end-->
@@ -190,7 +204,7 @@
               </div>
             </div>
             <!-- compare end -->
-            {{ col.name === 'track' || col.name === 'beatenBy' || col.name.startsWith('compare') || (col.name === 'position' && props.row.isInvalidRun) ? '' : col.value }}
+            {{ col.name === 'track' || col.name === 'beatenBy' || col.name.startsWith('compare') || (col.name === 'position' && (props.row.isInvalidRun || props.row.timePenaltyTotal > 0)) ? '' : col.value }}
           </q-td>
         </q-tr>
       </template>

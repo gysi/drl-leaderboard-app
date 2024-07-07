@@ -201,12 +201,11 @@ public abstract class TracksDataUpdater {
                 }
             }
             Map<String, Integer> trackIdOccurrences = new HashMap<>();
-            drlApiService.getAndProcessLeaderboardEntries(track, 10, 5,
+            drlApiService.getAndProcessLeaderboardEntries(track, 10, 10, 5,
                     (isNewTrack,
                      drlLeaderboardEntry,
                      existingEntry,
                      newOrUpdatedLeaderboardEntry,
-                     currentLeaderboardEntriesByPlayerId,
                      leaderScore) ->
                     {
                         // this is just to make sure the run is not flagged as invalid and the loop goes too much longer than

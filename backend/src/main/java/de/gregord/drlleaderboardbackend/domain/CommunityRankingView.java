@@ -12,6 +12,8 @@ public interface CommunityRankingView {
     Long getInvalidRuns();
     Long getCompletedTracks();
     Long getTotalCrashCount();
+    Long getTotalTimePenalty();
+    Long getTotalPenalties();
     Long getTotalScore();
     Double getMaxTopSpeed();
     String getFlagUrl();

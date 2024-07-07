@@ -265,7 +265,7 @@ public class CommunityTracksSeasonUpdater {
     private Long getScoreForTrack(TrackWeightedRatingView trackWeightedRatingView) {
         try {
             Track trackEntity = modelMapper.map(trackWeightedRatingView, Track.class);
-            LeaderboardProcessorResult leaderboardProcessorResult = drlApiService.getAndProcessLeaderboardEntries(trackEntity, 1, 1, null);
+            LeaderboardProcessorResult leaderboardProcessorResult = drlApiService.getAndProcessLeaderboardEntries(trackEntity, 1, 10, 1, null);
             if (!leaderboardProcessorResult.getNewOrUpdatedLeaderboardEntries().isEmpty()) {
                 LeaderboardEntry firstPositionLeaderboardEntry =
                         leaderboardProcessorResult.getNewOrUpdatedLeaderboardEntries().stream().findFirst().orElse(null);

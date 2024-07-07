@@ -30,3 +30,11 @@ INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from track
 INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-18] NIGHTWATCH'), 3, false);
 INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-19] CUBIC TRIPP'), 3, false);
 INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-20] AFTERWORK'), 3, false);
+
+
+-- Red series
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-21] HOT LAP'), 3, false);
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-22] LAST ROUND'), 3, false);
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-23] ROASTED AND TOASTED'), 3, false);
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-24] CRUNCH TIME'), 3, false);
+INSERT INTO community_seasons values (4, '2024-02-SUMMER', (SELECT id from tracks where name = '[SUM24-25] HEAD IN THE SAND'), 3, false);

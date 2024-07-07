@@ -122,6 +122,32 @@
           </li>
         </ul>
       </FAQCard>
+      <FAQCard
+        title="What counts as penality?"
+        :msnry="msnry"
+        :initially-expanded="router.currentRoute.value.query.card === 'bounce-penalty'"
+      >
+        To maintain fairness and authenticity in the competition, a penalty of 1 second will be applied for each significant bounce detected in a player's run. This decision was made following community feedback and a poll regarding the use of bounce techniques.
+        <br/><br/>
+        <b>What is a bounce?</b>
+        <br/>
+        In the context of the DRL Simulator, a bounce occurs when a drone hits a surface, such as the ground or a wall, and gains a speed boost from the collision. This can happen when the drone's angle and velocity allow it to ricochet off the surface, resulting in an unintended acceleration.
+        <br/><br/>
+        <b>How does it work?</b>
+        <ul>
+          <li>An algorithm analyzes replays to detect bounces that would result in damage. Bounces with very low angles or velocities are not counted.</li>
+          <li>If a bounce is detected, a 1-second penalty is added to the player's time for each bounce.</li>
+          <li>This penalty ensures that exploiting bounces for speed boosts is not beneficial.</li>
+        </ul>
+        <br/>
+        The penalty system aims to discourage the use of bounce techniques while still acknowledging runs that adhere to the game's mechanics.
+        <br/><br/>
+        <b>Feedback and Adjustments:</b>
+        <ul>
+          <li>The algorithm is continuously refined to reduce false positives. Players are encouraged to report any discrepancies they observe.</li>
+          <li>Runs with penalties will be highlighted on the leaderboard for easy identification.</li>
+        </ul>
+      </FAQCard>
     </div>
   </q-page>
 </template>

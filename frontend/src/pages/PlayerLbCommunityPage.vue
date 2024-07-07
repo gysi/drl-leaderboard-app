@@ -97,6 +97,15 @@
           />
         </q-th>
       </template>
+      <template v-slot:header-cell-penalties="props">
+        <q-th :props="props">
+          {{ props.col.label }}
+          <q-btn type="a" icon="help" size="1.3rem"
+                 fab flat padding="5px"
+                 :to="{ name: 'communitySeasonCompetitionFaq', query: { card: 'bounce-penalty' } }"
+          />
+        </q-th>
+      </template>
       <template v-slot:body="props">
         <q-tr
           :props="props"
@@ -110,9 +119,10 @@
                 backgroundColor:
                   props.row.isMissing ? 'var(--app-player-lb-missing-run-background-color)' :
                   props.row.isInvalidRun ? 'rgba(187,44,44,0.54)' :
+                  props.row.timePenaltyTotal > 0 ? 'rgba(187,175,44,0.54)':
                     col.name === 'position' ? backGroundColorByPosition(props.row.position) :
                       null,
-                paddingLeft: props.row.isInvalidRun && col.name === 'position' ? '5px' : null,
+                paddingLeft: (props.row.isInvalidRun || props.row.timePenaltyTotal > 0) && col.name === 'position' ? '5px' : null,
               }"
             :class="['td-borders-font-size16', col.name === 'position' && !props.row.isInvalidRun ?
                 props.row.position === 1 ? 'first-place' :
@@ -131,6 +141,19 @@
             >
               <q-tooltip>
                 <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              v-if="props.row.timePenaltyTotal > 0 && col.name === 'position'"
+              type="button" icon="warning" size="sm"
+              fab padding="5px"
+              :to="{ name: 'faq', query: { card: 'invalidRuns' } }"
+              ripple
+              :label="props.row.position"
+              style="width: 52px; position: relative"
+            >
+              <q-tooltip>
+                <!--                <div v-html="props.row.invalidRunReason.replaceAll(',', '</br>')"></div>-->
               </q-tooltip>
             </q-btn>
             <!-- Position row end-->
@@ -191,7 +214,7 @@
               </div>
             </div>
             <!-- compare end -->
-            {{ col.name === 'track' || col.name === 'beatenBy' || col.name.startsWith('compare') || (col.name === 'position' && props.row.isInvalidRun) ? '' : col.value }}
+            {{ col.name === 'track' || col.name === 'beatenBy' || col.name.startsWith('compare') || (col.name === 'position' && (props.row.isInvalidRun || props.row.timePenaltyTotal > 0)) ? '' : col.value }}
           </q-td>
         </q-tr>
       </template>
@@ -263,7 +286,7 @@ const columns = ref([
       if (val) return formatMilliSeconds(val)
     }
   },
-  { name: 'crashes', label: 'Crashes', field: 'crashCount', sortable: true, required: true },
+  { name: 'penalties', label: 'Penalties', field: 'penalties', sortable: true, required: true },
   { name: 'topSpeed', label: 'Top Speed', field: 'topSpeed', sortable: true, required: true,
     format: (val, row) => {
       if (val) return Math.round(val * 10) / 10
@@ -347,7 +370,11 @@ const fetchData = async function (player, ignoreDoubleTrackEntries = false) {
         axios.get(`${baseUrl}/leaderboards/community-season/by-playername/current-seasons?playerName=${encodeURIComponent(player)}`),
         axios.get(`${baseUrl}/tracks/community-season/current/missing-tracks-by-playername?playerName=${encodeURIComponent(player)}`)
       ]);
-    const finishedTracks = responseFinishedTracks.data;
+    const finishedTracks = responseFinishedTracks.data.map(row => {
+      row['score'] = row['score'] + (row['timePenaltyTotal'] ? row['timePenaltyTotal'] : 0)
+      row['penalties'] = row['penalties'] == null ? 0 : row['penalties'].length
+      return row
+    });
     const missingTracks = responseMissingTracks.data;
     let i = 0;
     let j = 0;

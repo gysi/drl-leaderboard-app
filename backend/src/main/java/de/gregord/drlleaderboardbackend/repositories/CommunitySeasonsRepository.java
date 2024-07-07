@@ -15,6 +15,8 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
 
     boolean existsByTrackId(Long trackId);
 
+    boolean existsByTrackIdAndExcludedIsFalse(Long trackId);
+
     @Query(value = """
                 SELECT cs.track_id FROM community_seasons cs WHERE excluded = FALSE
             """, nativeQuery = true)
@@ -51,7 +53,9 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
                              count(*)       AS completedTracks,
                              sum(l.crash_count)   AS totalCrashCount,
                              max(l.top_speed)    AS maxTopSpeed,
-                             sum(l.score)      AS totalScore,
+                             sum(l.score) + sum(l.time_penalty_total) AS totalScore,
+                             COALESCE(SUM(jsonb_array_length(penalties)), 0)  AS totalTimePenalty,
+                             SUM(jsonb_array_length(penalties)) AS totalPenalties,
                              min(p.flag_url)     AS flagUrl,
                              min(p.profile_platform) AS profilePlatform,
                              min(p.profile_thumb)  AS profileThumb,
@@ -88,6 +92,8 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
                    completedTracks,
                    totalCrashCount,
                    totalScore,
+                   totalTimePenalty,
+                   totalPenalties,
                    maxTopSpeed,
                    substring(flagUrl FROM position('.png' IN flagUrl) - 2 FOR 2) AS flagUrl,
                    profilePlatform,

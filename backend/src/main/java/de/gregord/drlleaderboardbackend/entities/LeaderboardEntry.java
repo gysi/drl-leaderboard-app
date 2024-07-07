@@ -7,11 +7,13 @@ import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "leaderboards", indexes = {
@@ -68,6 +70,55 @@ public class LeaderboardEntry {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<LeaderboardEntryMinimal> beatenBy = new ArrayList<>();
 
+    private Boolean isReplayAnalyzed = false;
+    private Integer timePenaltyTotal;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<Penalty> penalties;
+
+    @Getter
+    @Setter
+    @ToString
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Penalty {
+
+        @Getter
+        public enum Type {
+            BOUNCE(Bounce.class);
+
+            private Class T;
+
+            Type(Class T){
+                this.T = T;
+            }
+        }
+
+        public static record Bounce(float degree, float previousVelocity, float bounceVelocity) {
+        }
+
+        Type type;
+        Object typeData;
+        Integer timePenalty;
+        Long timePosition;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Penalty penalty = (Penalty) o;
+            return type == penalty.type && timePosition.equals(penalty.timePosition);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = type.hashCode();
+            result = 31 * result + timePosition.hashCode();
+            return result;
+        }
+    }
+
+
     public static boolean equalsForUpdate(LeaderboardEntry thiz, LeaderboardEntry that) {
         if (thiz == that) return true;
 
@@ -89,6 +140,7 @@ public class LeaderboardEntry {
                 .append(thiz.replayUrl, that.replayUrl)
                 .append(thiz.isInvalidRun, that.isInvalidRun)
                 .append(thiz.invalidRunReason, that.invalidRunReason)
+                .append(thiz.isReplayAnalyzed, that.isReplayAnalyzed)
                 .append(thiz.updatedAt, that.updatedAt).isEquals();
     }
 
@@ -110,6 +162,9 @@ public class LeaderboardEntry {
         leaderboardEntry.isInvalidRun = toCopy.isInvalidRun;
         leaderboardEntry.invalidRunReason = toCopy.invalidRunReason;
         leaderboardEntry.updatedAt = toCopy.updatedAt;
+        leaderboardEntry.isReplayAnalyzed = toCopy.isReplayAnalyzed;
+        leaderboardEntry.penalties = toCopy.penalties;
+        leaderboardEntry.timePenaltyTotal = toCopy.timePenaltyTotal;
         return leaderboardEntry;
     }
 

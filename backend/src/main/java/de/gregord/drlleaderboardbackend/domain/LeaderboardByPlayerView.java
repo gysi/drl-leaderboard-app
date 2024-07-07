@@ -7,6 +7,8 @@ public interface LeaderboardByPlayerView {
     String getId();
     Long getPosition();
     Long getScore();
+    Long getTimePenaltyTotal();
+    List<LeaderboardByPlayerView.LeaderboardByTrackView_Penalty> getPenalties();
     Double getPoints();
     LocalDateTime getCreatedAt();
     Integer getCrashCount();
@@ -35,5 +37,12 @@ public interface LeaderboardByPlayerView {
         Long getScore();
         Double getPoints();
         LocalDateTime getCreatedAt();
+    }
+
+    interface LeaderboardByTrackView_Penalty {
+        String getType();
+        Object getTypeData();
+        Integer getTimePenalty();
+        Long getTimePosition();
     }
 }

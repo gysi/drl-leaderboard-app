@@ -78,6 +78,15 @@
             />
           </th>
         </template>
+        <template v-slot:header-cell-totalPenalties="props">
+          <th :class="props.col.__thClass">
+            {{ props.col.label }}
+            <q-btn type="a" icon="help" size="1.3rem"
+                   fab flat padding="5px"
+                   :to="{ name: 'communitySeasonCompetitionFaq', query: { card: 'bounce-penalty' } }"
+            />
+          </th>
+        </template>
         <template v-slot:body="props">
           <q-tr :props="props"
                 :class="[
@@ -126,14 +135,14 @@
             <q-td :props="props" key="bestPosition">
               {{ props.cols[props.colsMap['bestPosition'].index].value }}
             </q-td>
-            <q-td :props="props" key="invalidRuns">
-              {{ props.row.invalidRuns }}
-            </q-td>
             <q-td :props="props" key="completedTracks">
               {{ props.row.completedTracks }}
             </q-td>
-            <q-td :props="props" key="totalCrashCount">
-              {{ props.row.totalCrashCount }}
+            <q-td :props="props" key="invalidRuns">
+              {{ props.row.invalidRuns }}
+            </q-td>
+            <q-td :props="props" key="totalPenalties">
+              {{ props.row.totalPenalties }}
             </q-td>
             <q-td :props="props" key="totalScore">
               {{ props.cols[props.colsMap['totalScore'].index].value }}
@@ -198,13 +207,13 @@ const columns = [
     format: (val, row) => Math.round(val)
   },
   {
-    index: 4, name: 'avgPosition', label: 'Average Position', field: 'avgPosition', align: 'right', required: true,
+    index: 4, name: 'avgPosition', label: 'Avg Position', field: 'avgPosition', align: 'right', required: true,
     format: (val, row) => (Math.round(val * 100) / 100),
   },
   {index: 5, name: 'bestPosition', label: 'Best Position', field: 'bestPosition', align: 'right', required: true},
-  {index: 6, name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
-  {index: 7, name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
-  {index: 8, name: 'totalCrashCount', label: 'Crashes', field: 'totalCrashCount', align: 'center', required: true},
+  {index: 6, name: 'completedTracks', label: 'Completed Tracks', field: 'completedTracks', align: 'center', required: true},
+  {index: 7, name: 'invalidRuns', label: 'Invalid Runs', field: 'invalidRuns', align: 'center', required: true},
+  {index: 8, name: 'totalPenalties', label: 'Pentalties', field: 'totalPenalties', align: 'center', required: true},
   {
     index: 9, name: 'totalScore', label: 'Total Time', field: 'totalScore', align: 'right', required: true,
     format: (val, row) => formatMilliSeconds(val),

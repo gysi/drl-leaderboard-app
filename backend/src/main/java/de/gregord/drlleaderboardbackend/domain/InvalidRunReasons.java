@@ -7,5 +7,6 @@ public enum InvalidRunReasons {
     NO_REPLAY,
     EPIC_BUG,
     WRONG_DRONE,
-    WRONG_REPLAY
+    WRONG_REPLAY,
+    EMPTY_REPLAY
 }

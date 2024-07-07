@@ -678,7 +678,8 @@ function sumMarkerData(markers) {
 }
 
 function addBounceMarkers(scene, markers) { // Threshold for detecting abrupt direction changes
-  const lowestThresholdLimit = 5
+  const lowestThresholdLimitBefore = 5
+  const lowestThresholdLimitAfter = 5
   const aboveCountsAsHighVelocity = 15
   const directionChangeThresholdLowSpeed = degreesToRadians(30)
   const directionChangeThresholdHighSpeed = degreesToRadians(16)
@@ -689,17 +690,27 @@ function addBounceMarkers(scene, markers) { // Threshold for detecting abrupt di
   const droneVelocity = markers['drone-velocity'];
   const directionChanges = markers['direction-changes'];
   const time = markers['time'];
+  const inputT = markers['input-t'];
 
   // Calculate the maximum velocity magnitude
   const maxVelocityMagnitude = Math.max(...droneVelocity);
+  const maxInputT = Math.max(...inputT);
+  const maxInputTLimit = maxInputT * 0.85;
+  console.log(maxInputT, maxInputTLimit)
   const endingTime = time[time.length - 1];
 
   for (let i = 1; i < directionChanges.length && time[i] < endingTime - 1.5; i++) {
     if (time[i] < 1) continue;
 
     const prevVelocity = droneVelocity[i-1]
+    const currentVelocity = droneVelocity[i]
     const directionChangeThreshold = prevVelocity > aboveCountsAsHighVelocity ? directionChangeThresholdHighSpeed : directionChangeThresholdLowSpeed
-    if (directionChanges[i] > directionChangeThreshold && prevVelocity >= lowestThresholdLimit) {
+    const avgThrottleAtBounce = (inputT[i] + inputT[i-5] + inputT[i+5]) / 3;
+    if (directionChanges[i] > directionChangeThreshold
+      && prevVelocity >= lowestThresholdLimitBefore
+      && currentVelocity >= lowestThresholdLimitAfter
+      && (avgThrottleAtBounce > maxInputTLimit)
+    ) {
       console.log(directionChangeThreshold * (180 / Math.PI));
       const directionChangeInDegrees = directionChanges[i] * (180 / Math.PI); // Convert to degrees
       console.log(`Found bounce: ${i} directional change ${directionChangeInDegrees}`);
@@ -708,7 +719,7 @@ function addBounceMarkers(scene, markers) { // Threshold for detecting abrupt di
       console.log(droneVelocity[i-3])
       console.log(droneVelocity[i-2])
       console.log(droneVelocity[i-1])
-      console.log('bounce', droneVelocity[i])
+      console.log('bounce', droneVelocity[i], "inputT", inputT[i], "avgBounce", avgThrottleAtBounce)
       console.log(droneVelocity[i+1])
       console.log(droneVelocity[i+2])
       console.log(droneVelocity[i+3])

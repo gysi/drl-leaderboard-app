@@ -11,13 +11,11 @@ public interface LeaderboardProcessor {
      * @param drlLeaderboardEntry Map from the json response of the drl leaderboard entry
      * @param existingEntry Existing LeaderboardEntry from DB or null
      * @param newOrUpdatedLeaderboardEntry current leaderboardEntry that is being processed
-     * @param currentLeaderboardEntriesByPlayerId key of this Map is the DRL player id
      * @param leaderScore drl api score for the leading player of this track which is the time in milliseconds
      */
     void process(boolean isNewTrack,
                  Map<String, Object> drlLeaderboardEntry,
                  LeaderboardEntry existingEntry,
                  LeaderboardEntry newOrUpdatedLeaderboardEntry,
-                 Map<String, LeaderboardEntry> currentLeaderboardEntriesByPlayerId,
                  Long leaderScore);
 }
