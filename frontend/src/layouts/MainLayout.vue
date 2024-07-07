@@ -706,7 +706,7 @@ body.body--dark .doc-card-title
   position: relative
   width: 100%
   height: 267px
-  background: url(assets/Summer_Series_2024_matcherino.png)
+  background: url(assets/Summer_Series_2024_matcherino_register.png)
   background-size: 100%
 
 #glitch-image-2
@@ -715,7 +715,7 @@ body.body--dark .doc-card-title
   left: 0
   width: 100%
   height: 267px
-  background: url(assets/Summer_Series_2024_matcherino.png)
+  background: url(assets/Summer_Series_2024_matcherino_register.png)
   background-size: 100%
   opacity: .5
   mix-blend-mode: hard-light
