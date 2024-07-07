@@ -319,7 +319,7 @@ public class DRLApiService {
         }
     }
 
-    private void analyzeReplays(List<ProcessingLbEntry> processingLbEntries){
+    private void analyzeReplays(Track track, List<ProcessingLbEntry> processingLbEntries){
         processingLbEntries.stream()
                 .limit(25)
                 .filter(entry -> entry.newOrUpdatedLeaderboardEntry.getReplayUrl() != null)
@@ -349,6 +349,9 @@ public class DRLApiService {
                                         entry.newOrUpdatedLeaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.EMPTY_REPLAY
                         );
                         entry.newOrUpdatedLeaderboardEntry.setIsReplayAnalyzed(true);
+                        return;
+                    } catch (Exception e) {
+                        LOG.error("Exception while analysing a replay, track: {} replay: {} player: {}", track.getName(), entry.newOrUpdatedLeaderboardEntry.getReplayUrl(), entry.player.getPlayerName(), e);
                         return;
                     }
                     entry.newOrUpdatedLeaderboardEntry.setIsReplayAnalyzed(true);
@@ -513,15 +516,17 @@ public class DRLApiService {
         processingLbEntries = setOrRemoveInvalidRuns(track, processingLbEntries);
 
         if(communitySeasonService.isSeasonTrack(track)) {
-            analyzeReplays(processingLbEntries);
+            analyzeReplays(track, processingLbEntries);
             // Sort by new score, now that penalties were added
             processingLbEntries = processingLbEntries.stream()
                     .sorted(Comparator.comparing(ProcessingLbEntry::getNewOrUpdatedLeaderboardEntryScorePlusPenalty)
                             .thenComparing(ProcessingLbEntry::getNewOrUpdatedLeaderboardEntryCreatedAt))
                     .toList();
-        } else {
-            return leaderboardProcessorResult;
         }
+        // For faster debugging purposes
+//        } else {
+//            return leaderboardProcessorResult;
+//        }
 
         long leaderboardPosition = 1;
         Long leaderScore = null;
