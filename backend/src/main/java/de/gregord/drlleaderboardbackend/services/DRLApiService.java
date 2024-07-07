@@ -397,8 +397,6 @@ public class DRLApiService {
                                     entry.newOrUpdatedLeaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.BETTER_ENTRY_WITH_SAME_NAME
                     );
                 }
-            } else {
-                alreadyFoundPlayerNames.put(entry.player.getPlayerName(), entry.newOrUpdatedLeaderboardEntry);
             }
 
             boolean isInvalidSpeed = (customTopSpeed != null && entry.newOrUpdatedLeaderboardEntry.getTopSpeed() > customTopSpeed) ||
@@ -431,8 +429,6 @@ public class DRLApiService {
                         }
                     }
                 }
-            } else {
-                alreadyFoundPlayerIds.put(entry.player.getPlayerId(), entry.newOrUpdatedLeaderboardEntry);
             }
 
             // Manual invalidation
@@ -484,6 +480,9 @@ public class DRLApiService {
                                 entry.newOrUpdatedLeaderboardEntry.getInvalidRunReason() + "," + InvalidRunReasons.WRONG_REPLAY
                 );
             }
+
+            alreadyFoundPlayerNames.put(entry.player.getPlayerName(), entry.newOrUpdatedLeaderboardEntry);
+            alreadyFoundPlayerIds.put(entry.player.getPlayerId(), entry.newOrUpdatedLeaderboardEntry);
         }
 
         return processingLbEntries.stream().filter(entry -> !markedForRemoval.contains(entry)).toList();
