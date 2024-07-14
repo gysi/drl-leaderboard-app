@@ -53,7 +53,7 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
                              count(*)       AS completedTracks,
                              sum(l.crash_count)   AS totalCrashCount,
                              max(l.top_speed)    AS maxTopSpeed,
-                             sum(l.score) + sum(l.time_penalty_total) AS totalScore,
+                             sum(l.score) + coalesce(sum(l.time_penalty_total), 0) AS totalScore,
                              COALESCE(SUM(jsonb_array_length(penalties)), 0)  AS totalTimePenalty,
                              SUM(jsonb_array_length(penalties)) AS totalPenalties,
                              min(p.flag_url)     AS flagUrl,
