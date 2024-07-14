@@ -84,6 +84,13 @@
                   </q-badge>
                 </q-item-label>
               </q-item-section>
+              <q-item-section side v-if="props.row.awards">
+                <img :src="props.row.awards.asset" loading="lazy" alt="Award"
+                     style="width: 25px; height:42px"/>
+                <q-tooltip>
+                  {{ props.row.awards.tooltip }}
+                </q-tooltip>
+              </q-item-section>
             </q-item>
             {{ col.name !== 'playerName' ? col.value : '' }}
           </q-td>
@@ -100,6 +107,7 @@ import { backGroundColorByPosition, formatMilliSeconds, getDateDifference } from
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
 import placeholder from 'src/assets/placeholder.png'
 import {useMeta} from "src/modules/meta.js"
+import {playerIdToAwardMap} from "src/modules/awards.js";
 
 useMeta({
   title: "Overall Rankings",
@@ -170,6 +178,7 @@ const fetchData = async (parentCategory = selectedParentCategory.value) => {
       + `/leaderboards/official/overall-ranking?page=1&limit=500${parentCategory != null && parentCategory.name !== 'Overall' ? `&parentCategory=${parentCategory.name}` : ''}`)
     rows.value = response.data.map((row) => {
       row['profileThumb'] = row['profileThumb'].includes('placeholder.png') ? placeholder : buildImgCacheUrl(row['profileThumb'])
+      row['awards'] = playerIdToAwardMap[row['playerId']]
       return row
     })
   } catch (error) {

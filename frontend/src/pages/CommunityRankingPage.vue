@@ -121,6 +121,13 @@
                     </q-badge>
                   </q-item-label>
                 </q-item-section>
+                <q-item-section side v-if="props.row.awards">
+                  <img :src="props.row.awards.asset" loading="lazy" alt="Award"
+                       style="width: 25px; height:42px"/>
+                  <q-tooltip>
+                    {{ props.row.awards.tooltip }}
+                  </q-tooltip>
+                </q-item-section>
               </q-item>
             </q-td>
             <q-td :props="props" key="prize">
@@ -167,6 +174,7 @@ import {
   formatISODateTimeToDate
 } from 'src/modules/LeaderboardFunctions'
 import {fetchCurrentSeason} from 'src/modules/backendApi.js'
+import { playerIdToAwardMap } from "src/modules/awards.js";
 import PlayerSearchSelect from "components/PlayerSearchSelect.vue";
 import placeholder from 'src/assets/placeholder.png'
 import {useQuasar} from "quasar";
@@ -258,6 +266,7 @@ const fetchData = async function () {
       } else {
         row['profileThumb'] = buildImgCacheUrl(row['profileThumb']);
       }
+      row['awards'] = playerIdToAwardMap[row['playerId']]
       return row;
     }));
   } catch (error) {

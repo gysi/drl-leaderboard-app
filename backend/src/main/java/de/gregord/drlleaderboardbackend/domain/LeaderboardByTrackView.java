@@ -22,6 +22,7 @@ public interface LeaderboardByTrackView {
     LocalDateTime getCreatedAt();
 
     interface LeaderboardByTrackView_Player {
+        Long getId();
         String getPlayerName();
         String getProfileThumb();
         String getProfilePlatform();

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public interface OverallRankingView {
     Long getPosition();
+    Long getPlayerId();
     String getPlayerName();
     Long getTotalPoints();
     Double getAvgPosition();

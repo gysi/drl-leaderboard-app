@@ -95,6 +95,7 @@ public interface LeaderboardRepository extends JpaRepository<LeaderboardEntry, L
                                     t.map_category_id in (:mapCategoryIds)
                                   GROUP BY l.player_id)
             SELECT ROW_NUMBER() OVER (ORDER BY totalPoints DESC)                                                 as position,
+                   playerId,
                    playerName,
                    totalPoints,
                    avgPosition,

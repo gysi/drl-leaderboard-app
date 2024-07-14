@@ -78,6 +78,13 @@
                   >{{ props.row.player.profilePlatform }}</q-badge>
                 </q-item-label>
               </q-item-section>
+              <q-item-section side v-if="props.row.player.awards">
+                <img :src="props.row.player.awards.asset" loading="lazy" alt="Award"
+                     style="width: 25px; height:42px"/>
+                <q-tooltip>
+                  {{ props.row.player.awards.tooltip }}
+                </q-tooltip>
+              </q-item-section>
             </q-item>
             <q-btn
               v-if="props.row.isInvalidRun && col.name === 'position'"
@@ -119,6 +126,7 @@ import axios from 'axios'
 import { backGroundColorByPosition, formatMilliSeconds, getDateDifference } from "src/modules/LeaderboardFunctions"
 import TracksSearchSelect from "components/TracksSearchSelect.vue"
 import {useMeta} from "src/modules/meta.js"
+import {playerIdToAwardMap} from "src/modules/awards.js";
 
 useMeta({
   title: "Track Leaderboards",
@@ -174,6 +182,7 @@ const fetchData = async (track) => {
     rows.value = response.data.map((row) => {
       row['score'] = row['score'] + (row['timePenaltyTotal'] ? row['timePenaltyTotal'] : 0)
       row['penalties'] = row['penalties'] == null ? 0 : row['penalties'].length
+      row['player']['awards'] = playerIdToAwardMap[row['player']['id']]
       return row
     })
   } catch (error) {
