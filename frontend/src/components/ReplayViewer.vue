@@ -709,7 +709,10 @@ function addBounceMarkers(scene, markers) { // Threshold for detecting abrupt di
     if (directionChanges[i] > directionChangeThreshold
       && prevVelocity >= lowestThresholdLimitBefore
       && currentVelocity >= lowestThresholdLimitAfter
-      && (avgThrottleAtBounce > maxInputTLimit)
+      && avgThrottleAtBounce > maxInputTLimit
+      && currentVelocity <= droneVelocity[i+1]
+      && droneVelocity[i+1] <= droneVelocity[i+2]
+      && droneVelocity[i+2] <= droneVelocity[i+3]
     ) {
       console.log(directionChangeThreshold * (180 / Math.PI));
       const directionChangeInDegrees = directionChanges[i] * (180 / Math.PI); // Convert to degrees

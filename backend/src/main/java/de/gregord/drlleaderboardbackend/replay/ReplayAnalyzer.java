@@ -234,13 +234,16 @@ public class ReplayAnalyzer {
             if(markers.time.get(i) < 1) continue;
 
             float prevVelocity = markers.droneVelocity.get(i-1);
-            float currentVelocity = markers.droneVelocity.get(i-1);
+            float currentVelocity = markers.droneVelocity.get(i);
             double directionChangeThreshold = prevVelocity > aboveCountsAsHighVelocity ? directionChangeThresholdHighSpeed : directionChangeThresholdLowSpeed;
             float avgThrottleAtBounce = (markers.inputT.get(i) + markers.inputT.get(i-5) + markers.inputT.get(i+5)) / 3;
             if (markers.directionChanges.get(i) > directionChangeThreshold
                     && prevVelocity >= lowestThresholdLimit
                     && currentVelocity >= lowestThresholdLimit
                     && avgThrottleAtBounce > maxInputTLimit
+                    && currentVelocity <= markers.droneVelocity.get(i+1)
+                    && markers.droneVelocity.get(i+1) <= markers.droneVelocity.get(i+2)
+                    && markers.droneVelocity.get(i+2) <= markers.droneVelocity.get(i+3)
             ) {
                 double directionChangeInDegrees = Math.toDegrees(markers.directionChanges.get(i));
                 System.out.println("Found bounce: " + i + " directional change " + directionChangeInDegrees + " at time " + markers.time.get(i));
