@@ -89,8 +89,8 @@ logging:
     rollingpolicy:
       file-name-pattern: /var/log/backend/drl-api-crawler-%d{yyyy-MM-dd}.%i
       max-file-size: 2MB
-      total-size-cap: 10MB
-      max-history: 10
+      total-size-cap: 100MB
+      max-history: 30
   level:
     root: info
     de.gregord.drlleaderboardbackend: info
