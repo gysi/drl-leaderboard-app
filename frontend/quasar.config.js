@@ -7,8 +7,6 @@
 
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
-
-import vue from '@vitejs/plugin-vue';
 import { configure } from 'quasar/wrappers';
 import path from 'node:path';
 import { simpleSitemapAndIndex } from 'sitemap';
@@ -101,6 +99,7 @@ export default configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
+      // analyze: true,
       target: {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
         node: 'node18'
@@ -144,7 +143,7 @@ export default configure(function (/* ctx */) {
           // you need to set i18n resource including paths !
           include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ],
         }
-      ]]
+      ]],
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer

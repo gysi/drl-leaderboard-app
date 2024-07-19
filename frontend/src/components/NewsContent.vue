@@ -58,7 +58,7 @@
             <br/><br/>
             <div class="text-h6">Contribution Items</div>
             Check out the items you can purchase to contribute to the prize pool and earn these rewards. <br/>
-            You will find it here: <a href="https://matcherino.com/tournaments/116263" target="_blank">Matcherino page</a>
+            You will find them here: <a href="https://matcherino.com/tournaments/116263" target="_blank">Matcherino Page</a>
             <br/>
             <q-img
               src="~assets/news/24_summer_season_matcherino_marketplace_items.png"
