@@ -111,5 +111,5 @@ fail2ban-client status [jailname]
 ### GoAccess
 Analyze logs:
 ```bash
-goaccess https-drl-leaderboards.com.access.log* --log-format='%h - %^ [%d:%t %^] "%r" %s %b "%R" "%u" "%^"' --date-format='%d/%b/%Y' --time-format='%H:%M:%S'
+goaccess https-drl-leaderboards.com.access.log* --log-format='%h - %^ [%d:%t %^] "%r" %s %b "%R" "%u" "%^"' --date-format='%d/%b/%Y' --time-format='%T' --ignore-crawlers --unknowns-as-crawlers
 ```
