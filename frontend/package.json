@@ -21,9 +21,7 @@
     "flag-icons": "^7.2.0",
     "masonry-layout": "^4",
     "pako": "^2",
-    "pinia": "^2",
     "quasar": "^2",
-    "terser": "^5",
     "three": "^0",
     "troika-three-text": "^0",
     "vue": "^3",
@@ -41,6 +39,7 @@
     "prettier": "^2",
     "purgecss": "^5",
     "sitemap": "^7",
+    "terser": "^5",
     "vite": "^2",
     "vite-plugin-checker": "^0"
   },
