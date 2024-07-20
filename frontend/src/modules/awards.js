@@ -27,19 +27,19 @@ const awards = {
 }
 const playerIdToAwardMap = {
   //gysi 5xx
-  547247576684373570: awards['2024-season-diamond'],
+  "547247576684373546": awards['2024-season-diamond'],
   //vgan 250
-  547247574603995140: awards['2024-season-diamond'],
+  "547247574603995155": awards['2024-season-diamond'],
   //ItsleeFpv 200
-  547247575287661800: awards['2024-season-gold'],
+  "547247575287661837": awards['2024-season-gold'],
   // The Bob 200
-  547247575891648960: awards['2024-season-gold'],
+  "547247575891648956": awards['2024-season-gold'],
   // tripp 100
-  547247575321225860: awards['2024-season-gold'],
+  "547247575321225883": awards['2024-season-gold'],
   // streetz 20
-  547247575895839300: awards['2024-season-bronze'],
+  "547247575895839312": awards['2024-season-bronze'],
   // thesauceror
-  547247577200271842: awards['2024-season-bronze']
+  "547247577200271842": awards['2024-season-bronze']
 }
 
 export { playerIdToAwardMap }

@@ -10,7 +10,7 @@ message TournamentRankings {
   repeated PlayerRanking rankings = 4;
 
   message PlayerRanking {
-    int64 playerId = 1;
+    string playerId = 1;
     string commonPlayerName = 2;
     string profileThumb = 3;
     string flagUrl = 4;

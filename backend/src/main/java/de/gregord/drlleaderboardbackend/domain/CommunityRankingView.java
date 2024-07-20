@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public interface CommunityRankingView {
     Long getPosition();
-    Long getPlayerId();
+    String getPlayerId();
     String getPlayerName();
     Double getTotalPoints();
     Double getAvgPosition();

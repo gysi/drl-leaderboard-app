@@ -72,7 +72,7 @@ public class TournamentService {
                             newPlayerRanking.setFlagUrl(extractCountryIdentifier(ranking.getFlagUrl()));
                             newPlayerRanking.setPlatform(ranking.getPlatform());
                         } else {
-                            newPlayerRanking.setPlayerId(player.getId());
+                            newPlayerRanking.setPlayerId(String.valueOf(player.getId()));
                             newPlayerRanking.setCommonPlayerName(player.getPlayerName());
                             newPlayerRanking.setProfileThumb(player.getProfileThumb());
                             newPlayerRanking.setFlagUrl(extractCountryIdentifier(player.getFlagUrl()));

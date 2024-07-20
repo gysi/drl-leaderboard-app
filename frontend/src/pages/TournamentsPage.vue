@@ -91,6 +91,13 @@
                         </q-badge>
                       </q-item-label>
                     </q-item-section>
+                    <q-item-section side v-if="props.row.awards">
+                      <img :src="props.row.awards.asset" loading="lazy" alt="Award"
+                           style="width: 25px; height:42px"/>
+                      <q-tooltip>
+                        {{ props.row.awards.tooltip }}
+                      </q-tooltip>
+                    </q-item-section>
                   </q-item>
                 </q-td>
                 <q-td key="pointsBest12Tournaments" :props="props">
@@ -185,6 +192,7 @@ import { utcToZonedTime } from "date-fns-tz";
 import {backGroundColorByPosition, formatMilliSeconds} from 'src/modules/LeaderboardFunctions'
 import placeholder from 'src/assets/placeholder.png'
 import {useMeta} from "src/modules/meta.js"
+import {playerIdToAwardMap} from "src/modules/awards.js";
 
 useMeta({
   title: "Tournaments",
@@ -259,6 +267,8 @@ const fetchTournamentRankings = async () => {
       }else{
         row['profileThumb'] = buildImgCacheUrlForThumbs(row['profileThumb']);
       }
+      row['awards'] = playerIdToAwardMap[row['playerId']]
+      console.log(row['playerId'])
       return row;
     });
   }

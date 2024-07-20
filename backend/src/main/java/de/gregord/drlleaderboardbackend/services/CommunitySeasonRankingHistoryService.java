@@ -29,7 +29,7 @@ public class CommunitySeasonRankingHistoryService {
             CommunitySeasonRanking communitySeasonRanking = new CommunitySeasonRanking();
             communitySeasonRanking.setSeasonId((long) season.getSeasonId());
             Player player = new Player();
-            player.setId(communityRankingView.getPlayerId());
+            player.setId(Long.valueOf(communityRankingView.getPlayerId()));
             communitySeasonRanking.setPlayer(player);
             communitySeasonRanking.setPoints(communityRankingView.getTotalPoints());
             communitySeasonRanking.setPosition(communityRankingView.getPosition());
