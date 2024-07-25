@@ -567,12 +567,11 @@ public class DRLApiService {
             }
             if (entry.player.getId() == null) {
                 entry.player.setCreatedAt(entry.newOrUpdatedLeaderboardEntry.getUpdatedAt());
-                entry.player.setUpdatedAt(entry.newOrUpdatedLeaderboardEntry.getUpdatedAt());
+                entry.player.setUpdatedAt(LocalDateTime.now());
                 leaderboardProcessorResult.getNewPlayers().add(entry.player);
-            } else if (entry.player.getUpdatedAt().isBefore(entry.newOrUpdatedLeaderboardEntry.getUpdatedAt())
-                    && !Player.equalsForUpdate(entry.player, entry.existingPlayer)
+            } else if (!Player.equalsForUpdate(entry.player, entry.existingPlayer)
             ) {
-                entry.player.setUpdatedAt(entry.newOrUpdatedLeaderboardEntry.getUpdatedAt());
+                entry.player.setUpdatedAt(LocalDateTime.now());
                 leaderboardProcessorResult.getUpdatedPlayers().add(entry.player);
             }
             currentLeaderboardEntries.remove(entry.player.getPlayerId());
