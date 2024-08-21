@@ -11,5 +11,6 @@ ENV JAVA_TOOL_OPTIONS="\
     -XX:HeapDumpPath=/var/log/heapdumps_backend/ \
     -XX:+UseG1GC \
     -Xlog:gc*=info:file=/var/log/gc_backend/gc_%t.log:tags,time,uptime,level:filecount=10,filesize=100M \
+    -Djdk.tracePinnedThreads=full \
 "
 CMD ["java", "-jar", "/opt/app/app.jar"]
