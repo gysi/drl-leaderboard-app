@@ -36,6 +36,8 @@ const playerIdToAwardMap = {
   "547247575891648956": awards['2024-season-gold'],
   // tripp 100
   "547247575321225883": awards['2024-season-gold'],
+  // Kung Fu Chicken (Gnostic)
+  "547247577162521182": awards['2024-season-gold'],
   // streetz 20
   "547247575895839312": awards['2024-season-bronze'],
   // thesauceror
