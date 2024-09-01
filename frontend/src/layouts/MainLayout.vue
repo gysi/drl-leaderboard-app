@@ -37,24 +37,33 @@
         <div>
           <template v-for="(item, index) in linksListTop" :key="index">
             <!-- Render single link -->
-            <NavigationLinks v-if="!item.sectionTitle" v-bind="item" />
+            <NavigationLinks v-bind="item"/>
             <!-- Render section -->
-            <q-card v-else class="q-ma-sm q-pa-none">
-              <q-item class="q-ma-none q-pa-none" style="min-height:0">
-                <q-item-section>
-                  <q-item-label header class="q-pt-sm q-px-sm q-pb-none text-overline">
-                    {{ item.sectionTitle }}
-                  </q-item-label>
-                </q-item-section>
-                <q-item-section side style="padding-right: 5px; padding-top: 5px">
-                  <q-badge color="accent" style="" v-if="item.badge" :label="item.badge"/>
-                </q-item-section>
-              </q-item>
-              <q-card-section class="q-ma-none q-pa-sm">
-                <NavigationLinks v-for="link in item.links" :key="link.title" v-bind="link"/>
-              </q-card-section>
-            </q-card>
           </template>
+          <q-card class="q-ma-sm q-pa-none">
+            <q-item class="q-ma-none q-pa-none" style="min-height:0">
+              <q-item-section>
+                <q-item-label header class="q-pt-sm q-px-sm q-pb-none text-overline">
+                  COMMUNITY
+                </q-item-label>
+              </q-item-section>
+              <q-item-section side style="padding-left: 5px; padding-right: 5px; padding-top: 5px;">
+                <q-badge color="accent" style="" :label="currentSeasonLabel"/>
+              </q-item-section>
+            </q-item>
+            <q-card-section class="q-ma-none q-px-sm q-pt-sm q-pb-none">
+              <NavigationLinks v-for="link in linksListCommunitySeason" :key="link.title" v-bind="link"/>
+            </q-card-section>
+            <q-item v-if="currentSeason.details_v1?.matcherino" :href="currentSeason.details_v1.matcherino.matcherinoEventLink"
+                    target="_blank"
+                    class="q-pa-none q-ma-xs q-pb-xs"
+            >
+              <q-item-section style="position: relative">
+                <section id="glitch-image-1" :class="currentSeason.details_v1.matcherino.promoBannerImageName"></section>
+                <section id="glitch-image-2" :class="currentSeason.details_v1.matcherino.promoBannerImageName"></section>
+              </q-item-section>
+            </q-item>
+          </q-card>
 
           <q-card class="q-ma-sm" style="">
             <q-item class="q-ma-none q-pa-none" style="min-height:0">
@@ -65,22 +74,23 @@
               </q-item-section>
             </q-item>
             <q-list v-if="twitchStreams.length" class="q-pa-sm" style="max-height: 300px; overflow: auto">
-              <q-item clickable :href="`https://twitch.tv/${stream.userLogin}`" target="_blank" v-for="(stream, index) in twitchStreams" :key="index"
+              <q-item clickable :href="`https://twitch.tv/${stream.userLogin}`" target="_blank" v-for="(stream, index) in twitchStreams"
+                      :key="index"
                       class="q-mt-none q-pa-none q-mb-sm">
                 <q-item-section style="max-width: 90px">
                   <q-avatar size="3rem" class="self-center" style="box-shadow: 4px 4px 8px rgba(0, 0, 0, 1);">
-                    <img :src="stream.userThumbnail" loading="eager" />
+                    <img :src="stream.userThumbnail" loading="eager"/>
                   </q-avatar>
                   <q-item-label lines="1" class="q-pt-sm text-center">{{ stream.userName }}</q-item-label>
                 </q-item-section>
 
                 <q-item-section class="q-pr-none">
                   <div style="width: 150px; height:84px; position: relative">
-                    <img :src="stream.streamThumbnail" loading="eager" />
+                    <img :src="stream.streamThumbnail" loading="eager"/>
                     <q-badge color="red" class="absolute" style="top: 5px; right: 5px">LIVE</q-badge>
                     <q-badge color="black" class="absolute" style="bottom: 5px; right: 5px; background: rgba(0,0,0,0.7) !important">
                       {{ stream.viewerCount }}
-                      <q-icon name="person" color="white" class="q-ml-xs" />
+                      <q-icon name="person" color="white" class="q-ml-xs"/>
                     </q-badge>
                   </div>
                 </q-item-section>
@@ -93,22 +103,15 @@
             </q-item>
           </q-card>
           <!--        AD Banner-->
-<!--          <q-item href=-->
-<!--                    "https://discord.gg/sgps" target="_blank">-->
-<!--            <q-item to=-->
-<!--                    "community-rankings">-->
-              <q-item href=
-                    "https://matcherino.com/tournaments/116263" target="_blank">
-            <q-item-section style="position: relative">
-              <section id="glitch-image-1"></section>
-              <section id="glitch-image-2"></section>
-            </q-item-section>
-          </q-item>
+          <!--          <q-item href=-->
+          <!--                    "https://discord.gg/sgps" target="_blank">-->
+          <!--            <q-item to=-->
+          <!--                    "community-rankings">-->
         </div>
         <div style="align-self: end">
           <template v-for="(item, index) in linksListBottom" :key="index">
             <!-- Render single link -->
-            <NavigationLinks v-if="!item.sectionTitle" v-bind="item" />
+            <NavigationLinks v-if="!item.sectionTitle" v-bind="item"/>
             <!-- Render section -->
             <q-card v-else class="q-ma-sm q-pa-none">
               <q-item class="q-ma-none q-pa-none" style="min-height:0">
@@ -132,7 +135,7 @@
             </q-item-section>
             <q-item-section>
               <q-item-label>Other</q-item-label>
-              <q-item-label caption>News / Misc / External links </q-item-label>
+              <q-item-label caption>News / Misc / External links</q-item-label>
             </q-item-section>
             <q-menu auto-close transition-show="jump-up" transition-hide="jump-down" transition-duration="150"
                     anchor="top left" self="bottom left">
@@ -147,7 +150,7 @@
               </q-item>
               <template v-for="(item, index) in linksListMenu" :key="index">
                 <!-- Render single link -->
-                <NavigationLinks v-if="!item.sectionTitle" v-bind="item" />
+                <NavigationLinks v-if="!item.sectionTitle" v-bind="item"/>
                 <!-- Render section -->
                 <q-card v-else class="q-ma-sm q-pa-none">
                   <q-card-section class="q-ma-none q-pa-none">
@@ -172,16 +175,18 @@
 </template>
 
 <script setup>
-import {onBeforeUnmount, onMounted, ref} from 'vue'
+import {nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import NavigationLinks from 'components/NavigationLinks.vue'
 import {version} from '../../package.json'
 import {useQuasar} from "quasar"
 import NewsDialog from "components/NewsDialog.vue";
 import isCrawler from "src/modules/isCrawler";
 import axios from "axios";
+import {fetchCurrentSeason} from "src/modules/backendApi.js";
 
 const linksListTop = [
   {
+    type: 'link',
     title: 'Home',
     icon: 'home',
     link: '/',
@@ -194,80 +199,55 @@ const linksListTop = [
   //   link: '/tracks'
   // },
   {
+    type: 'link',
     title: 'Rankings',
-    caption: 'Player rankings by category',
+    // caption: 'Player rankings by category',
     icon: 'leaderboard', // sports_score as alternative
     link: '/overall-rankings'
   },
   {
+    type: 'link',
     title: 'Player Leaderboard',
-    caption: 'Leaderboard for a specific player',
+    // caption: 'Leaderboard for a specific player',
     icon: 'sports_martial_arts',
     link: '/player-leaderboard'
   },
   {
+    type: 'link',
     title: 'Track Leaderboard',
-    caption: 'Leaderboard for a specific track',
+    // caption: 'Leaderboard for a specific track',
     icon: 'timeline',
     link: '/track-leaderboard'
   },
   {
+    type: 'link',
+    title: 'Tournaments',
+    // caption: 'Seasonal Tournament Rankings',
+    icon: 'emoji_events',
+    link: '/tournaments'
+  },
+  {
+    type: 'link',
     title: 'Replay Viewer',
-    caption: 'Analyse and compare replays',
+    // caption: 'Analyse and compare replays',
     icon: 'visibility',
     link: '/replay-viewer',
     // badge: 'PREVIEW'
-  },
-  {
-    sectionTitle: "COMMUNITY SEASON",
-    // badge: "PREVIEW",
-    links: [
-      {
-        title: 'Tracks',
-        caption: 'Community season tracks',
-        icon: 'route',
-        link: '/tracks-community'
-      },
-      {
-        title: 'Rankings',
-        caption: 'Player rankings for season tracks',
-        icon: 'leaderboard', // sports_score as alternative
-        link: '/community-rankings'
-      },
-      {
-        title: 'Player Leaderboard',
-        caption: 'Leaderboard for a specific player',
-        icon: 'sports_martial_arts',
-        link: '/player-leaderboard-community'
-      },
-      {
-        title: 'Tournaments',
-        caption: 'Overview of all tournaments',
-        icon: 'emoji_events',
-        link: '/tournaments'
-      },
-      {
-        title: 'FAQ',
-        caption: 'Summer Season Competition FAQ',
-        icon: 'help',
-        link: '/community-season-competition-faq'
-      },
-    ]
-  },
-];
+  }];
+const linksListCommunitySeason = ref([])
 
-const linksListBottom = [
-
-];
+const linksListBottom = [];
 
 const linksListMenu = [
   {
+    type: "link",
     title: 'Gimme a random track!',
     caption: 'Gives you random worst tracks',
     icon: 'casino',
     link: '/worst-tracks-picker'
   },
   {
+    type: "link",
     title: 'Stream Card Creator',
     caption: 'Create stream cards for your stream',
     link: '/stream-card-creator',
@@ -275,12 +255,14 @@ const linksListMenu = [
     // badge: 'PREVIEW'
   },
   {
+    type: "link",
     title: 'FAQ',
     caption: 'Frequently asked questions',
     icon: 'help',
     link: '/faq'
   },
   {
+    type: "link",
     title: 'DRL Betaflight Calculator',
     caption: '1:1 Replica, play with it!',
     icon: 'calculate',
@@ -289,6 +271,7 @@ const linksListMenu = [
     openInNew: true
   },
   {
+    type: "link",
     title: 'API',
     caption: 'API documentation',
     icon: 'code',
@@ -338,6 +321,10 @@ const toggleDarkMode = function () {
   }
 }
 
+const currentSeason = ref({})
+const currentSeasonLabel = ref("Loading...")
+const fetchCurrentSeasonPromise = fetchCurrentSeason()
+
 let fetchStreamTimer = undefined
 const fetchTwitchStreams = async function () {
   console.log("Updating streams...")
@@ -362,22 +349,22 @@ const fetchTwitchStreams = async function () {
 }
 
 onBeforeUnmount(() => {
-  if(fetchStreamTimer) clearTimeout(fetchStreamTimer)
+  if (fetchStreamTimer) clearTimeout(fetchStreamTimer)
 })
 
 fetchTwitchStreams();
 
 var mySection;
 // AD BANNER
-onMounted(() => {
-  mySection = document.getElementById('glitch-image-2');
-  mySection.addEventListener('animationend', function() {
-    mySection.classList.remove('glitch-animate');
-    var delay = Math.floor(Math.random() * 4 + 4) * 1000;
-    setTimeout(startAnimation, delay);
-  });
-  startAnimation(); // Start the first animation
-})
+const setupAdBanner = () => {
+    mySection = document.getElementById('glitch-image-2');
+    mySection.addEventListener('animationend', function () {
+      mySection.classList.remove('glitch-animate');
+      var delay = Math.floor(Math.random() * 4 + 4) * 1000;
+      setTimeout(startAnimation, delay);
+    });
+    startAnimation(); // Start the first animation
+};
 
 function randomizeVariables() {
   // Randomize each position variable
@@ -391,12 +378,133 @@ function startAnimation() {
   randomizeVariables();
   mySection.classList.add('glitch-animate'); // Start the animation
 }
+
+onMounted(() => {
+  fetchCurrentSeasonPromise.then((data) => {
+    currentSeason.value = data
+    if (data.idName === 'NO-SEASON') {
+      currentSeasonLabel.value = 'No Active Season'
+      linksListCommunitySeason.value = [
+        {
+          type: 'link',
+          title: 'Previous Seasons',
+          // caption: 'Summer Season Competition FAQ',
+          icon: 'inventory_2',
+          link: '/community-previous-season-rankings'
+        }
+      ]
+    } else {
+      currentSeasonLabel.value = data.name
+    }
+
+    if (data.details_v1?.qualificationType === 'TIME_TRIAL') {
+      console.log(data.details_v1?.qualificationType);
+      linksListCommunitySeason.value = [
+        {
+          type: 'link',
+          title: 'Tracks',
+          // caption: 'Community season tracks',
+          icon: 'route',
+          link: '/tracks-community'
+        },
+        {
+          type: 'link',
+          title: 'Rankings',
+          // caption: 'Player rankings for season tracks',
+          icon: 'leaderboard', // sports_score as alternative
+          link: '/community-rankings'
+        },
+        {
+          type: 'link',
+          title: 'Player Leaderboard',
+          // caption: 'Leaderboard for a specific player',
+          icon: 'sports_martial_arts',
+          link: '/player-leaderboard-community'
+        },
+        {
+          type: 'link',
+          title: 'FAQ',
+          // caption: 'Summer Season Competition FAQ',
+          icon: 'help',
+          link: '/community-season-competition-faq'
+        },
+        {
+          type: 'link',
+          title: 'Previous Seasons',
+          // caption: 'Summer Season Competition FAQ',
+          icon: 'inventory_2',
+          link: '/community-previous-season-rankings'
+        }
+      ]
+    }
+    if (data.details_v1?.qualificationType === 'TIME_TRIAL_AND_TOURNAMENTS') {
+      linksListCommunitySeason.value = [
+        {
+          type: 'link',
+          title: 'Tracks',
+          // caption: 'Community season tracks',
+          icon: 'route',
+          link: '/tracks-community'
+        },
+        {
+          type: 'expansion-item',
+          title: 'Qualification options',
+          defaultOpened: true,
+          contentInsetLevel: 0.25,
+          children: [
+            {
+              type: 'link',
+              title: '1. Time Trial',
+              // caption: 'Player rankings for season tracks',
+              icon: 'leaderboard', // sports_score as alternative
+              link: '/community-rankings'
+            },
+            {
+              type: 'link',
+              title: '2. Tournaments',
+              // caption: 'Tourney Rankings and upcoming dates',
+              icon: 'leaderboard', // sports_score as alternative
+              link: '/community-rankings'
+            },
+          ]
+        },
+        {
+          type: 'link',
+          title: 'Final Tournament',
+          // caption: 'Summer Season Competition FAQ',
+          icon: 'sports_score',
+          link: '/community-season-competition-faq'
+        },
+        {
+          type: 'link',
+          title: 'FAQ',
+          // caption: 'Summer Season Competition FAQ',
+          icon: 'help',
+          link: '/community-season-competition-faq'
+        },
+        {
+          type: 'link',
+          title: 'Previous Seasons',
+          // caption: 'Summer Season Competition FAQ',
+          icon: 'inventory_2',
+          link: '/community-previous-season-rankings'
+        }
+      ];
+    }
+    if (data.details_v1?.matcherino?.promoBannerImageName) {
+      nextTick(() => {
+        setupAdBanner();
+      });
+    }
+  });
+})
 </script>
 
 <style lang="sass">
 .q-drawer
   .q-item__section--side
     padding-right: 16px
+
   .q-item__section--avatar
     min-width: unset
 
@@ -423,12 +531,15 @@ function startAnimation() {
     position: sticky
     z-index: 1
     font-size: 18px
+
   thead tr:first-child th
     //color: white
     top: 0
+
   td
     font-size: 200px
   /* this is when the loading indicator appears */
+
   &.q-table--loading thead tr:last-child th
     /* height of all previous header rows */
     top: 48px
@@ -459,6 +570,7 @@ tbody .td-borders-font-size16
 body.body--dark .doc-card-title
   background: #475D66
   color: #cbcbcb
+
   &:after
     border-top-color: scale-color(#475D66, $lightness: -30%)
 
@@ -673,9 +785,11 @@ body.body--dark .doc-card-title
     width: 100%
     position: relative
     align-items: flex-start !important
+
   .q-table__top
     overflow: hidden
     padding: 0
+
   .q-field--filled .q-field__control
     background-color: rgb(0, 0, 0, 0.7)
   // for f in map-*.png do convert "$f" -gaussian-blur 5x5 -quality 100 "${f%.*-blurred.png" done
@@ -705,8 +819,7 @@ body.body--dark .doc-card-title
 #glitch-image-1
   position: relative
   width: 100%
-  height: 267px
-  background: url(assets/Summer_Series_2024_matcherino_register.png)
+  aspect-ratio: 1
   background-size: 100%
 
 #glitch-image-2
@@ -714,8 +827,7 @@ body.body--dark .doc-card-title
   top: 0
   left: 0
   width: 100%
-  height: 267px
-  background: url(assets/Summer_Series_2024_matcherino_register.png)
+  aspect-ratio: 1
   background-size: 100%
   opacity: .5
   mix-blend-mode: hard-light
@@ -764,4 +876,7 @@ body.body--dark .doc-card-title
   100%
     background-position: 0 0
     filter: hue-rotate(360deg)
+
+.background-Summer_Series_2024_matcherino_register
+  background: url("/assets/matcherino/Summer_Series_2024_matcherino_register.png")
 </style>

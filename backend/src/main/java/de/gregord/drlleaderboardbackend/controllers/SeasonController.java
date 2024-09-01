@@ -1,5 +1,6 @@
 package de.gregord.drlleaderboardbackend.controllers;
 
+import de.gregord.drlleaderboardbackend.domain.CommunityRankingHistoryView;
 import de.gregord.drlleaderboardbackend.domain.CommunityRankingView;
 import de.gregord.drlleaderboardbackend.domain.Season;
 import de.gregord.drlleaderboardbackend.services.CommunitySeasonService;
@@ -38,12 +39,27 @@ public class SeasonController {
         return ResponseEntity.ok(Season.getNextSeason());
     }
 
+    @GetMapping("/previous")
+    public ResponseEntity<Season> pastSeason() {
+        return ResponseEntity.ok(Season.getPreviousSeason());
+    }
+
     @GetMapping("/ranking-current-season")
     public ResponseEntity<List<CommunityRankingView>> ranking(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "50") @Min(1) @Max(500) int limit
     ) {
         List<CommunityRankingView> overallRanking = communitySeasonService.getOverallRankingCurrentSeasonCached(false, page, limit);
+        return ResponseEntity.ok(overallRanking);
+    }
+
+    @GetMapping("/ranking-previous-seasons")
+    public ResponseEntity<List<CommunityRankingHistoryView>> rankingPrevious(
+            @RequestParam String seasonIdName,
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "50") @Min(1) @Max(500) int limit
+    ) {
+        List<CommunityRankingHistoryView> overallRanking = communitySeasonService.getRankingHistory(Season.getBySeasionIdName(seasonIdName), page, limit);
         return ResponseEntity.ok(overallRanking);
     }
 }

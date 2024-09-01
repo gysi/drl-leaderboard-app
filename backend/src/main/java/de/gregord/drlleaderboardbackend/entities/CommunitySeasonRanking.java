@@ -28,6 +28,7 @@ public class CommunitySeasonRanking {
     private Long invalidRuns;
     private Long completedTracks;
     private Long crashes;
+    private Long penalties;
     private Long totalTime;
     private Double topSpeed;
 

@@ -10,6 +10,7 @@ const routes = [
       { name: 'news', path: 'news', component: () => import('pages/NewsPage.vue')},
       { name: 'overallrankings', path: 'overall-rankings', component: () => import('pages/OverallPage.vue') },
       { name: 'community-rankings', path: 'community-rankings', component: () => import('pages/CommunityRankingPage.vue') },
+      { name: 'community-previous-season-rankings', path: 'community-previous-season-rankings', component: () => import('pages/CommunityPreviousSeasonRankingPage.vue') },
       { name: 'tournaments', path: 'tournaments', component: () => import('pages/TournamentsPage.vue') },
       { name: 'tracks', path: 'tracks', component: () => import('pages/TracksPage.vue') },
       { name: 'tracks-community', path: 'tracks-community', component: () => import('pages/TracksCommunityPage.vue') },

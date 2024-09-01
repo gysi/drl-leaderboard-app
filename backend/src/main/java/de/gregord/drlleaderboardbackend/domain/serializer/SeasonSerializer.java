@@ -18,11 +18,14 @@ public class SeasonSerializer extends StdSerializer<Season> {
     @Override
     public void serialize(Season value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
-        gen.writeNumberField("id", value.ordinal());
+        gen.writeNumberField("id", value.getId());
         gen.writeStringField("idName", value.getSeasonIdName());
         gen.writeStringField("name", value.getSeasonName());
         gen.writeStringField("startDate", formatter.format(value.getSeasonStartDate()));
         gen.writeStringField("endDate", formatter.format(value.getSeasonEndDate()));
+        if(value.getDetails_v1() != null){
+            gen.writeObjectField("details_v1", value.getDetails_v1());
+        }
         gen.writeEndObject();
     }
 }
