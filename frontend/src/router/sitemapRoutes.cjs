@@ -3,6 +3,7 @@ const sitemapRoutes = [
   { url: '/news', priority: 0.9 },
   { url: '/overall-rankings', priority: 0.9 },
   { url: '/community-rankings', priority: 0.9 },
+  { url: '/community-pastseason-rankings', priority: 0.9 },
   { url: '/tournaments', priority: 0.9 },
   // { url: '/tracks', priority: 0.9 },
   { url: '/tracks-community', priority: 0.9 },

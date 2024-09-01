@@ -38,6 +38,7 @@ public class CommunitySeasonRankingHistoryService {
             communitySeasonRanking.setInvalidRuns(communityRankingView.getInvalidRuns());
             communitySeasonRanking.setCompletedTracks(communityRankingView.getCompletedTracks());
             communitySeasonRanking.setCrashes(communityRankingView.getTotalCrashCount());
+            communitySeasonRanking.setPenalties(communityRankingView.getTotalPenalties());
             communitySeasonRanking.setTotalTime(communityRankingView.getTotalScore());
             communitySeasonRanking.setTopSpeed(communityRankingView.getMaxTopSpeed());
             return communitySeasonRanking;

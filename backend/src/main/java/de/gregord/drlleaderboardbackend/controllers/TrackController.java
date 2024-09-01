@@ -50,7 +50,7 @@ public class TrackController {
             return ResponseEntity.notFound().build();
         }
         List<TrackCommunitySeasonView> all = communitySeasonService.findBySeasonIdAndExcludedIsFalseAndSortedByDifficulty(
-                bySeasionIdName.ordinal());
+                bySeasionIdName.getId());
         return ResponseEntity.ok(all);
     }
 

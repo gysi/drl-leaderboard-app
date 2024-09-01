@@ -53,13 +53,14 @@ public class CommunitySeasonFinalizerScheduler {
         }
 
         LocalDateTime seasonEndDate = previousSeason.getSeasonEndDate();
-        if (seasonEndDate.toLocalDate().isBefore(LocalDate.now())) {
+        if (seasonEndDate.isAfter(LocalDateTime.now())) {
             LOG.info("Previous season has not ended yet. Skipping finalization.");
             return;
         }
 
         if(communitySeasonRankingHistoryService.countBySeasonId((long) previousSeason.getSeasonId()) > 0){
             LOG.info("Season ranking history already exists for this season, Skipping finalization.");
+            return;
         }
 
         List<CommunityRankingView> overallRankingCurrentSeasonNoCache =

@@ -1,8 +1,5 @@
 package de.gregord.drlleaderboardbackend.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.gregord.drlleaderboardbackend.domain.serializer.MapCategorySerializer;
-import de.gregord.drlleaderboardbackend.domain.serializer.SeasonSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +27,22 @@ public enum Season {
             LocalDateTime.of(2024,6,1, 0, 0)),
     SEASON_2024_SUMMER("2024-02-SUMMER", "Summer Season 2024",
             LocalDateTime.of(2024,6,1, 0, 0),
-            LocalDateTime.of(2024,9,1, 0, 0)),
+            LocalDateTime.of(2024,9,1, 0, 0)) {
+        {
+            this.details_v1 = new Details_V1();
+            this.details_v1.prizePool.add("$509");
+            this.details_v1.prizePool.add("$363");
+            this.details_v1.prizePool.add("$247");
+            this.details_v1.prizePool.add("$189");
+            this.details_v1.prizePool.add("$145");
+            this.details_v1.qualificationType = Details_V1.QualificationType.TIME_TRIAL;
+            this.details_v1.matcherino = new Details_V1.Matcherino();
+            this.details_v1.matcherino.matcherinoEventLink = "https://matcherino.com/tournaments/116263";
+            this.details_v1.matcherino.promoBannerImageName = "background-Summer_Series_2024_matcherino_register";
+        }
+    },
     SEASON_2024_FALL("2024-03-FALL", "Fall Season 2024",
-            LocalDateTime.of(2024,9,1, 0, 0),
+            LocalDateTime.of(2024,9,7, 0, 0),
             LocalDateTime.of(2024,12,1, 0, 0)),
     SEASON_2024_WINTER("2024-04-WINTER", "Winter Season 2024/25",
             LocalDateTime.of(2024,12,1, 0, 0),
@@ -156,13 +166,17 @@ public enum Season {
             LocalDateTime.of(2034,12,1, 0, 0)),
     SEASON_2034_WINTER("2034-04-WINTER", "Winter Season 2034/2035",
             LocalDateTime.of(2034,12,1, 0, 0),
-            LocalDateTime.of(2035,3,1, 0, 0));
+            LocalDateTime.of(2035,3,1, 0, 0)),
+    NO_SEASON("NO-SEASON", "No Season",
+                       LocalDateTime.of(3000,1,1, 0, 0),
+            LocalDateTime.of(3000,12,1, 0, 0));
 
     private static final Logger LOG = LoggerFactory.getLogger(Season.class);
     private final String seasonIdName;
     private final String seasonName;
     private final LocalDateTime seasonStartDate; // inclusive
     private final LocalDateTime seasonEndDate; // exclusive
+    Details_V1 details_v1 = null;
 
     public static final Map<String, Season> SEASON_MAPPING_BY_SEASON_ID_NAME = Arrays.stream(Season.values())
             .collect(Collectors.toMap(Season::getSeasonIdName, season -> season));
@@ -177,8 +191,15 @@ public enum Season {
         this.seasonEndDate = seasonEndDate;
     }
 
+    public int getId() {
+        if(this == NO_SEASON) {
+            return -1;
+        }
+        return ordinal();
+    }
+
     public int getSeasonId(){
-        return this.ordinal();
+        return getId();
     }
 
     public String getSeasonIdName() {
@@ -192,12 +213,17 @@ public enum Season {
     public LocalDateTime getSeasonStartDate() {
         return seasonStartDate;
     }
+
     public LocalDateTime getSeasonEndDate() {
         return seasonEndDate;
     }
 
+    public Details_V1 getDetails_v1() {
+        return this.details_v1;
+    }
+
     public static int getCurrentSeasonId() {
-        return getCurrentSeason().ordinal();
+        return getCurrentSeason().getId();
     }
 
     public static String getCurrentSeasonIdName() {
@@ -205,15 +231,27 @@ public enum Season {
     }
 
     public static Season getCurrentSeason() {
-        return SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
+        Season currentSeason = SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
+        if(currentSeason.getSeasonEndDate().isBefore(LocalDateTime.now())) {
+            return NO_SEASON;
+        }
+        return currentSeason;
     }
 
     @CheckForNull
     public static Season getPreviousSeason(Season season) {
+        if(season == NO_SEASON){
+            season = SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
+            if (season == null){
+                return NO_SEASON;
+            } else {
+                return season;
+            }
+        }
         int seasonOrdinal = season.ordinal();
         if(seasonOrdinal == 0){
             LOG.warn("There is no previous season before season: {}", season);
-            return null;
+            return NO_SEASON;
         }
         return Season.values()[season.ordinal() - 1];
     }
@@ -225,6 +263,9 @@ public enum Season {
 
     @CheckForNull
     public static Season getNextSeason(Season season) {
+        if(season == NO_SEASON){
+            season = SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
+        }
         int seasonOrdinal = season.ordinal();
         if(seasonOrdinal == Season.SEASON_2034_SUMMER.ordinal()){
             LOG.warn("There is no previous season after season: {}", season);
@@ -241,6 +282,23 @@ public enum Season {
     @CheckForNull
     public static Season getBySeasionIdName(String seasonIdName) {
         return SEASON_MAPPING_BY_SEASON_ID_NAME.get(seasonIdName);
+    }
+
+    public static class Details_V1 {
+        public List<String> prizePool = new ArrayList<>();
+        public QualificationType qualificationType;
+        public Matcherino matcherino;
+
+        public static enum QualificationType {
+            TIME_TRIAL,
+            TIME_TRIAL_AND_TOURNAMENTS
+        }
+
+        public static class Matcherino {
+            public String matcherinoEventLink;
+            public String promoBannerImageName;
+
+        }
     }
 
     public static void main(String[] args) {

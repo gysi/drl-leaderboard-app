@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-alpine as backend-builder
+FROM eclipse-temurin:21-jdk-alpine AS backend-builder
 WORKDIR /app
 COPY backend/.mvn .mvn
 COPY backend/mvnw backend/pom.xml ./
@@ -28,7 +28,7 @@ RUN ./mvnw package
 #RUN ./mvnw -Pnative native:compile
 
 
-FROM node:18-alpine as frontend-builder
+FROM node:18-alpine AS frontend-builder
 WORKDIR /app
 COPY frontend/.yarn .yarn/
 COPY frontend/.yarnrc.yml frontend/package.json frontend/yarn.lock ./
@@ -41,20 +41,20 @@ COPY frontend/.eslintignore frontend/.eslintrc.cjs frontend/.npmrc \
     frontend/postcss.config.cjs frontend/quasar.config.js frontend/purgecss.config.cjs ./
 
 
-FROM frontend-builder as frontend-builder-staging
+FROM frontend-builder AS frontend-builder-staging
 WORKDIR /app
 # TODO deactivate purge for now, because it removes too much
 #RUN yarn quasar build && yarn purgecss --config ./purgecss.config.cjs
 RUN rm env/.env.prod && mv env/.env.staging env/.env.prod
 RUN DLAPP_ENV=STAGING yarn quasar build
 
-FROM frontend-builder as frontend-builder-prod
+FROM frontend-builder AS frontend-builder-prod
 WORKDIR /app
 # TODO deactivate purge for now, because it removes too much
 #RUN yarn quasar build && yarn purgecss --config ./purgecss.config.cjs
 RUN DLAPP_ENV=PROD yarn quasar build
 
-FROM python:3.11-bullseye as runner
+FROM python:3.11-bullseye AS runner
 WORKDIR /
 
 RUN apt-get update
