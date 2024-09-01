@@ -256,23 +256,27 @@ const rankingsTable = {
 
 const fetchTournamentRankings = async () => {
   rankingsTable.loading.value = true;
-  const response = await axios.get(
-    `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
-    + `/tournaments/rankings-current-season`
-  )
-  if(response.data.rankings){
-    response.data.rankings = response.data.rankings.map((row) => {
-      if (row['profileThumb'].includes('placeholder.png')) {
-        row['profileThumb'] = placeholder;
-      }else{
-        row['profileThumb'] = buildImgCacheUrlForThumbs(row['profileThumb']);
-      }
-      row['awards'] = playerIdToAwardMap[row['playerId']]
-      console.log(row['playerId'])
-      return row;
-    });
+  try {
+    const response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `/tournaments/rankings-current-season`
+    )
+    if (response.data.rankings) {
+      response.data.rankings = response.data.rankings.map((row) => {
+        if (row['profileThumb'].includes('placeholder.png')) {
+          row['profileThumb'] = placeholder;
+        } else {
+          row['profileThumb'] = buildImgCacheUrlForThumbs(row['profileThumb']);
+        }
+        row['awards'] = playerIdToAwardMap[row['playerId']]
+        console.log(row['playerId'])
+        return row;
+      });
+    }
+    tournamentRanking.value = response.data;
+  } catch (error) {
+    console.error(error);
   }
-  tournamentRanking.value = response.data;
   rankingsTable.loading.value = false;
 }
 
@@ -348,12 +352,16 @@ const getDateDifferenceToNow = (dateString) => {
 
 const fetchTournaments = async () => {
   tournamentTable.loading.value = true;
-  const response = await axios.get(
-    `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
-    + `/tournaments/tournaments-current-season`
-  )
-  tournaments.value = response.data;
-  // console.log(tournaments.value);
+  try {
+    const response = await axios.get(
+      `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
+      + `/tournaments/tournaments-current-season`
+    )
+    tournaments.value = response.data;
+    // console.log(tournaments.value);
+  } catch (error) {
+    console.error(error)
+  }
   tournamentTable.loading.value = false;
 }
 
