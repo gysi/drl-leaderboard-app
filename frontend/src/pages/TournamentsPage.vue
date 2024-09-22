@@ -269,7 +269,6 @@ const fetchTournamentRankings = async () => {
           row['profileThumb'] = buildImgCacheUrlForThumbs(row['profileThumb']);
         }
         row['awards'] = playerIdToAwardMap[row['playerId']]
-        console.log(row['playerId'])
         return row;
       });
     }
