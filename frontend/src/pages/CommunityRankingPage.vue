@@ -61,7 +61,7 @@
           </th>
         </template>
         <template v-slot:header-cell-prize="props">
-          <th :class="props.col.__thclass">
+          <th v-if="showPrizeColumn" :class="props.col.__thclass">
             {{ props.col.label }}
             <q-btn type="a" icon="help" size="1.3rem"
                    fab flat padding="5px"
@@ -130,7 +130,7 @@
                 </q-item-section>
               </q-item>
             </q-td>
-            <q-td :props="props" key="prize">
+            <q-td v-if="showPrizeColumn" :props="props" key="prize">
               {{ props.cols[props.colsMap['prize'].index].value  }}
             </q-td>
             <q-td :props="props" key="totalPoints">
@@ -243,14 +243,16 @@ const selectedPlayer = ref(null);
 const overallTable = shallowRef(null);
 const season = shallowRef({});
 const showExcludedPlayers = shallowRef(false)
+const showPrizeColumn = ref(false);
 
-const prizes = [
-  "$509",
-  "$363",
-  "$247",
-  "$189",
-  "$145"
-]
+const seasonPromise = fetchCurrentSeason();
+
+seasonPromise.then((season) => {
+  const seasonDetails = season.details_v1
+  if(seasonDetails?.hasPrizePool && !seasonDetails?.hasQualification){
+    showPrizeColumn.value = true
+  }
+})
 
 const fetchData = async function () {
   try {
@@ -259,7 +261,6 @@ const fetchData = async function () {
       + `/seasons/ranking-current-season?page=1&limit=500`
     );
     rows.value = markRaw(response.data.map((row, i) => {
-      row['prize'] = prizes[i];
       row['encodedPlayerName'] = encodeURIComponent(row['playerName']);
       if (row['profileThumb'].includes('placeholder.png')) {
         row['profileThumb'] = placeholder;
@@ -269,6 +270,13 @@ const fetchData = async function () {
       row['awards'] = playerIdToAwardMap[row['playerId']]
       return row;
     }));
+    seasonPromise.then((season) => {
+      const seasonDetails = season.details_v1
+      rows.value = markRaw(response.data.map((row, i) => {
+        row['prize'] = seasonDetails?.hasPrizePool ? seasonDetails.prizePool[i] : null
+        return row
+      }))
+    })
   } catch (error) {
     console.error(error);
   } finally {
