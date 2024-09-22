@@ -35,15 +35,33 @@ public enum Season {
             this.details_v1.prizePool.add("$247");
             this.details_v1.prizePool.add("$189");
             this.details_v1.prizePool.add("$145");
-            this.details_v1.qualificationType = Details_V1.QualificationType.TIME_TRIAL;
+            this.details_v1.format = Details_V1.Format.QUAL_TIME_TRIAL_FINISH_TIME_TRIAL;
             this.details_v1.matcherino = new Details_V1.Matcherino();
+            this.details_v1.matcherino.eventId = "116263";
             this.details_v1.matcherino.matcherinoEventLink = "https://matcherino.com/tournaments/116263";
             this.details_v1.matcherino.promoBannerImageName = "background-Summer_Series_2024_matcherino_register";
+
         }
     },
     SEASON_2024_FALL("2024-03-FALL", "Fall Season 2024",
-            LocalDateTime.of(2024,9,7, 0, 0),
-            LocalDateTime.of(2024,12,1, 0, 0)),
+            LocalDateTime.of(2024,9,16, 0, 0),
+            LocalDateTime.of(2024,12,1, 0, 0))
+            {
+                {
+                    this.details_v1 = new Details_V1();
+                    this.details_v1.prizePool.add("$400");
+                    this.details_v1.prizePool.add("$250");
+                    this.details_v1.prizePool.add("$150");
+                    this.details_v1.prizePool.add("$100");
+                    this.details_v1.prizePool.add("$50");
+                    this.details_v1.prizePool.add("$50");
+                    this.details_v1.format = Details_V1.Format.QUAL_TIME_TRAIL_FINISH_TOURNAMENT;
+                    this.details_v1.matcherino = new Details_V1.Matcherino();
+                    this.details_v1.matcherino.eventId = "drl-community-fall-season-2024";
+                    this.details_v1.matcherino.matcherinoEventLink = "https://matcherino.com/t/drl-community-fall-season-2024";
+                    this.details_v1.matcherino.promoBannerImageName = "background-Summer_Series_2024_matcherino_register";
+                }
+            },
     SEASON_2024_WINTER("2024-04-WINTER", "Winter Season 2024/25",
             LocalDateTime.of(2024,12,1, 0, 0),
             LocalDateTime.of(2025,3,1, 0, 0)),
@@ -286,15 +304,17 @@ public enum Season {
 
     public static class Details_V1 {
         public List<String> prizePool = new ArrayList<>();
-        public QualificationType qualificationType;
+        public Format format;
         public Matcherino matcherino;
 
-        public static enum QualificationType {
-            TIME_TRIAL,
-            TIME_TRIAL_AND_TOURNAMENTS
+        public static enum Format {
+            QUAL_TIME_TRIAL_FINISH_TIME_TRIAL,
+            QUAL_TIME_TRAIL_FINISH_TOURNAMENT,
+            QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT,
         }
 
         public static class Matcherino {
+            public String eventId;
             public String matcherinoEventLink;
             public String promoBannerImageName;
 

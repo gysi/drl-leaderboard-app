@@ -183,6 +183,10 @@ import NewsDialog from "components/NewsDialog.vue";
 import isCrawler from "src/modules/isCrawler";
 import axios from "axios";
 import {fetchCurrentSeason} from "src/modules/backendApi.js";
+import {
+  NAVIGATION_QUAL_TIME_TRAIL_FINISH_TOURNAMENT,
+  NAVIGATION_QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT, NAVIGATION_QUAL_TIME_TRIAL_FINISH_TIME_TRIAL
+} from "src/modules/navigation.js";
 
 const linksListTop = [
   {
@@ -397,99 +401,15 @@ onMounted(() => {
       currentSeasonLabel.value = data.name
     }
 
-    if (data.details_v1?.qualificationType === 'TIME_TRIAL') {
-      console.log(data.details_v1?.qualificationType);
-      linksListCommunitySeason.value = [
-        {
-          type: 'link',
-          title: 'Tracks',
-          // caption: 'Community season tracks',
-          icon: 'route',
-          link: '/tracks-community'
-        },
-        {
-          type: 'link',
-          title: 'Rankings',
-          // caption: 'Player rankings for season tracks',
-          icon: 'leaderboard', // sports_score as alternative
-          link: '/community-rankings'
-        },
-        {
-          type: 'link',
-          title: 'Player Leaderboard',
-          // caption: 'Leaderboard for a specific player',
-          icon: 'sports_martial_arts',
-          link: '/player-leaderboard-community'
-        },
-        {
-          type: 'link',
-          title: 'FAQ',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'help',
-          link: '/community-season-competition-faq'
-        },
-        {
-          type: 'link',
-          title: 'Previous Seasons',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'inventory_2',
-          link: '/community-previous-season-rankings'
-        }
-      ]
+    if (data.details_v1?.format === 'QUAL_TIME_TRIAL_FINISH_TIME_TRIAL') {
+      console.log(data.details_v1?.format);
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_FINISH_TIME_TRIAL;
     }
-    if (data.details_v1?.qualificationType === 'TIME_TRIAL_AND_TOURNAMENTS') {
-      linksListCommunitySeason.value = [
-        {
-          type: 'link',
-          title: 'Tracks',
-          // caption: 'Community season tracks',
-          icon: 'route',
-          link: '/tracks-community'
-        },
-        {
-          type: 'expansion-item',
-          title: 'Qualification options',
-          defaultOpened: true,
-          contentInsetLevel: 0.25,
-          children: [
-            {
-              type: 'link',
-              title: '1. Time Trial',
-              // caption: 'Player rankings for season tracks',
-              icon: 'leaderboard', // sports_score as alternative
-              link: '/community-rankings'
-            },
-            {
-              type: 'link',
-              title: '2. Tournaments',
-              // caption: 'Tourney Rankings and upcoming dates',
-              icon: 'leaderboard', // sports_score as alternative
-              link: '/community-rankings'
-            },
-          ]
-        },
-        {
-          type: 'link',
-          title: 'Final Tournament',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'sports_score',
-          link: '/community-season-competition-faq'
-        },
-        {
-          type: 'link',
-          title: 'FAQ',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'help',
-          link: '/community-season-competition-faq'
-        },
-        {
-          type: 'link',
-          title: 'Previous Seasons',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'inventory_2',
-          link: '/community-previous-season-rankings'
-        }
-      ];
+    if (data.details_v1?.format === 'QUAL_TIME_TRAIL_FINISH_TOURNAMENT') {
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRAIL_FINISH_TOURNAMENT;
+    }
+    if (data.details_v1?.format === 'QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT') {
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT;
     }
     if (data.details_v1?.matcherino?.promoBannerImageName) {
       nextTick(() => {
