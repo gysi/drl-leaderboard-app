@@ -78,11 +78,11 @@
                   >{{ props.row.player.profilePlatform }}</q-badge>
                 </q-item-label>
               </q-item-section>
-              <q-item-section side v-if="props.row.player.awards">
-                <img :src="props.row.player.awards.asset" loading="lazy" alt="Award"
+              <q-item-section side v-for="(award, i) in props.row.awards" :key="i">
+                <img :src="award.asset" loading="lazy" alt="Award"
                      style="width: 25px; height:42px"/>
                 <q-tooltip>
-                  {{ props.row.player.awards.tooltip }}
+                  {{ award.tooltip }}
                 </q-tooltip>
               </q-item-section>
             </q-item>
