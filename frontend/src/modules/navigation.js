@@ -71,6 +71,14 @@ const navigation = {
     },
     {
       type: 'link',
+      title: 'Register',
+      icon: 'how_to_reg',
+      link: '',
+      external: true,
+      openInNew: true
+    },
+    {
+      type: 'link',
       title: 'FAQ',
       // caption: 'Summer Season Competition FAQ',
       icon: 'help',
@@ -79,7 +87,6 @@ const navigation = {
     {
       type: 'link',
       title: 'Previous Seasons',
-      // caption: 'Summer Season Competition FAQ',
       icon: 'inventory_2',
       link: '/community-previous-season-rankings'
     }

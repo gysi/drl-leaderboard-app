@@ -54,7 +54,7 @@
             <q-card-section class="q-ma-none q-px-sm q-pt-sm q-pb-none">
               <NavigationLinks v-for="link in linksListCommunitySeason" :key="link.title" v-bind="link"/>
             </q-card-section>
-            <q-item v-if="currentSeason.details_v1?.matcherino" :href="currentSeason.details_v1.matcherino.matcherinoEventLink"
+            <q-item v-if="currentSeason.details_v1?.matcherino?.promoBannerImageName" :href="currentSeason.details_v1.matcherino.matcherinoEventLink"
                     target="_blank"
                     class="q-pa-none q-ma-xs q-pb-xs"
             >
@@ -410,6 +410,14 @@ onMounted(() => {
     }
     if (data.details_v1?.format === 'QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT') {
       linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT;
+    }
+    if(data.details_v1?.matcherino?.matcherinoEventLink){
+      linksListCommunitySeason.value = linksListCommunitySeason.value.map(link => {
+        if (link.title === 'Register') {
+          link.link = data.details_v1.matcherino?.matcherinoEventLink;
+        }
+        return link;
+      });
     }
     if (data.details_v1?.matcherino?.promoBannerImageName) {
       nextTick(() => {

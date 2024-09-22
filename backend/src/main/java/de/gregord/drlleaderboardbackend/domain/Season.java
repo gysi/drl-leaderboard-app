@@ -30,6 +30,8 @@ public enum Season {
             LocalDateTime.of(2024,9,1, 0, 0)) {
         {
             this.details_v1 = new Details_V1();
+            this.details_v1.hasPrizePool = true;
+            this.details_v1.hasQualification = false;
             this.details_v1.prizePool.add("$509");
             this.details_v1.prizePool.add("$363");
             this.details_v1.prizePool.add("$247");
@@ -49,6 +51,9 @@ public enum Season {
             {
                 {
                     this.details_v1 = new Details_V1();
+                    this.details_v1.hasPrizePool = true;
+                    this.details_v1.hasQualification = true;
+                    this.details_v1.numberOfQualifications = 24;
                     this.details_v1.prizePool.add("$400");
                     this.details_v1.prizePool.add("$250");
                     this.details_v1.prizePool.add("$150");
@@ -59,7 +64,8 @@ public enum Season {
                     this.details_v1.matcherino = new Details_V1.Matcherino();
                     this.details_v1.matcherino.eventId = "drl-community-fall-season-2024";
                     this.details_v1.matcherino.matcherinoEventLink = "https://matcherino.com/t/drl-community-fall-season-2024";
-                    this.details_v1.matcherino.promoBannerImageName = "background-Summer_Series_2024_matcherino_register";
+                    // TODO add banner!
+//                    this.details_v1.matcherino.promoBannerImageName = "background-Summer_Series_2024_matcherino_register";
                 }
             },
     SEASON_2024_WINTER("2024-04-WINTER", "Winter Season 2024/25",
@@ -303,6 +309,9 @@ public enum Season {
     }
 
     public static class Details_V1 {
+        public Boolean hasPrizePool = false;
+        public Boolean hasQualification = false;
+        public Integer numberOfQualifications = 0;
         public List<String> prizePool = new ArrayList<>();
         public Format format;
         public Matcherino matcherino;
