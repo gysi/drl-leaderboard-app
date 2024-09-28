@@ -41,18 +41,18 @@ const navigation = {
   /////////////////////////////////////////////////////////////
   'QUAL_TIME_TRAIL_FINISH_TOURNAMENT': [
     {
-      type: 'link',
-      title: 'Tracks',
-      // caption: 'Community season tracks',
-      icon: 'route',
-      link: '/tracks-community'
-    },
-    {
       type: 'expansion-item',
       title: 'Qualification',
       defaultOpened: true,
       contentInsetLevel: 0.25,
       children: [
+        {
+          type: 'link',
+          title: 'Tracks',
+          // caption: 'Community season tracks',
+          icon: 'route',
+          link: '/tracks-community'
+        },
         {
           type: 'link',
           title: 'Time Trial',
@@ -64,7 +64,7 @@ const navigation = {
     },
     {
       type: 'link',
-      title: 'Final Tournament',
+      title: 'Grand Finals',
       // caption: 'Summer Season Competition FAQ',
       icon: 'sports_score',
       link: '/community-season-competition-faq'
