@@ -3,16 +3,22 @@
     <div class="grid">
       <div class="grid-sizer"></div>
       <FAQCard
-        title="How can I compete and join the Summer Season 24 competition?"
+        title="How can I compete and join the Fall Season 24 competition?"
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'how-to-compete'"
       >
-        You will join the competition automatically by flying the community season tracks.
+        To participate in the Fall 2024 season, you must register on the Matcherino site.
         <br/>
-        You will find the tracks in the navigation within the Community Season section.
+        First, join the qualification by flying the community season tracks.
         <br/>
-        Additionally you should create an account on matcherino.com and join the competition
-        <a href="https://matcherino.com/tournaments/116" target="_blank">https://matcherino.com/tournaments/113</a>
+        After qualifying, you will compete in the final tournament at the end of the season.
+        <br/>
+        <strong>Important:</strong> If you don't register on Matcherino, you will still appear in the leaderboard rankings but
+        you won't be eligible to participate in the final tournament.
+        <br/>
+        <a :href="currentSeasonDetails?.matcherino?.matcherinoEventLink" target="_blank">
+          Register here on Matcherino
+        </a>
       </FAQCard>
       <FAQCard
         title="How do I find the tracks within the DRL Simulator?"
@@ -32,34 +38,30 @@
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'are-tournaments-relevant'"
       >
-        No, the tournaments are divided into seasons, just like the community season ranking, but tournaments don't play a role in the current competition.
+        No, the tournaments are divided into seasons, just like the community season ranking,
+        but normal tournaments don't play a role in the current competition.
+        <br/><br/>
+        However, there is one tournament that is of particular significance: the Grand Final, which marks the conclusion of the season.
       </FAQCard>
       <FAQCard
+        v-if="currentSeasonDetails?.hasPrizePool"
         title="What can I win?"
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'what-can-i-win'"
       >
-        When the season ends, the top 5 players on the Community Season Ranking win money from the prize pool:
+        The top 6 players on the Grand finals win money from the prize pool:
         <ul>
-          <li>1st Place: $509</li>
-          <li>2nd Place: $363</li>
-          <li>3rd Place: $247</li>
-          <li>4th Place: $189</li>
-          <li>5th Place: $145</li>
+          <li v-for="(prize, i) in currentSeasonDetails?.prizePool" :key="i">
+            {{ i+1 }}{{ i === 0 ? 'st' : 'nd' }} Place: {{ prize }}
+          </li>
         </ul>
         The money for the prize pool got sponsored from passionate players:
         <ul>
-          <li>gysi: $575</li>
-          <li>FPVgan: $250</li>
-          <li>itsLeeFPV: $200</li>
-          <li>THE_BOB!!: $200</li>
-          <li>TrippFPV: $100</li>
-          <li>Kung Fu Chicken (Gnostic): $100 </li>
-          <li>Str33tz: $20</li>
-          <li>TheSauceror: $10</li>
+          <li>gysi: $1000</li>
         </ul>
       </FAQCard>
       <FAQCard
+        v-if="currentSeasonDetails?.hasPrizePool"
         title="How do I get the money?"
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'how-do-i-get-the-money'"
@@ -68,29 +70,28 @@
         <br/>
         If you are in the DRL Discord and your name on discord is somewhat like your name within the game, he will find you.
         <br/>
-        Please create an Account on Matcherino and join the competition, if you are one of the winners you will
+        Create an Account on Matcherino and join the competition, if you are one of the winners you will
         get assigned to your winning position on Matcherino and can claim the money. <br/>
-        <a href="https://matcherino.com/tournaments/1" target="_blank">https://matcherino.com/tournaments/1</a>
+        <a :href="currentSeasonDetails?.matcherino?.matcherinoEventLink" target="_blank">{{ currentSeasonDetails?.matcherino?.matcherinoEventLink }}</a>
       </FAQCard>
       <FAQCard
+        v-if="currentSeasonDetails?.hasPrizePool"
         title="How can I contribute to the prize pool?"
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'how-to-contribute'"
       >
         gysi manages the prize pool fund through Matcherino, you can contribute there.
         <br/>
-        <a href="https://matcherino.com/tournaments/116263" target="_blank">https://matcherino.com/tournaments/116263</a>
+        <a :href="currentSeasonDetails?.matcherino?.matcherinoEventLink" target="_blank">{{ currentSeasonDetails?.matcherino?.matcherinoEventLink }}</a>
       </FAQCard>
       <FAQCard
         title="When does the Season end?"
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'when-does-the-season-end'"
       >
-        The season ends exactly on
+        The season ends with the grand finals on
         <br/>
-        {{ toLocalDateformat('2024-09-01 00:00:00') }}.
-        <br/><br/>
-        The top 5 players on the Community Season Ranking page are then the winners.
+        {{ toLocalDateformat(currentSeason.endDate) }}.
       </FAQCard>
       <FAQCard
         title="I currently only see X tracks, will there be more?"
@@ -104,23 +105,28 @@
         <ul>
           <li><b>🔵 Blue Series - Beginner (30-40 seconds)</b><br/>
             Basic elements, chicane + slalom, gentle turns, lots of space between gates.<br/>
-            Release: {{ toLocalDateformat('2024-06-01 00:00:00') }}
+            Release start: {{ toLocalDateformat('2024-09-15 00:00:00') }}<br/>
+            Release end: {{ toLocalDateformat('2024-09-22 00:00:00') }}
           </li>
           <li><b>🟢 Green Series - Easier Intermediate (40-50 seconds)</b><br/>
             Easy elements, split S/Immelmann, sweeper/blaster tunnels.<br/>
-            Release: {{ toLocalDateformat('2024-06-08 00:00:00') }}
+            Release start: {{ toLocalDateformat('2024-09-24 00:00:00') }}<br/>
+            Release end: {{ toLocalDateformat('2024-10-03 00:00:00') }}
           </li>
           <li><b>🟡 Yellow Series - Intermediate (50-60 seconds)</b><br/>
             Intermediate elements, inversions/gravity elements, dive gates, hairpin turns.<br/>
-            Release: {{ toLocalDateformat('2024-06-15 00:00:00') }}
+            Release start: {{ toLocalDateformat('2024-10-06 00:00:00') }}<br/>
+            Release end: {{ toLocalDateformat('2024-10-15 00:00:00') }}
           </li>
           <li><b>🟠 Orange Series - Easier Advanced (60-70 seconds)</b><br/>
             Intro to technical elements, ladders, corkscrews, hurdles.<br/>
-            Release: {{ toLocalDateformat('2024-06-22 00:00:00') }}
+            Release start: {{ toLocalDateformat('2024-10-17 00:00:00') }}<br/>
+            Release end: {{ toLocalDateformat('2024-06-27 00:00:00') }}
           </li>
           <li><b>🔴 Red Series - Advanced (70-80 seconds)</b><br/>
             All elements, technical, precision, gravity.<br/>
-            Release: {{ toLocalDateformat('2024-06-29 00:00:00') }}
+            Release start: {{ toLocalDateformat('2024-10-29 00:00:00') }}<br/>
+            Release end: {{ toLocalDateformat('2024-11-05 00:00:00') }}
           </li>
         </ul>
       </FAQCard>
@@ -155,26 +161,29 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue'
+import {nextTick, onMounted, ref, shallowRef, watch} from 'vue'
 import Masonry from 'masonry-layout'
 import FAQCard from 'components/FAQCard.vue'
 import { useRouter } from 'vue-router';
 import {useMeta} from "src/modules/meta.js"
 import {utcToZonedTime} from "date-fns-tz";
 import {format} from "date-fns";
+import {fetchCurrentSeason} from "src/modules/backendApi.js";
 
 useMeta({
   title: "Community Season Competition FAQ",
   meta: {
     description: {
       name: 'description',
-      content: `Do you have a question about the Community Summer Season 2024 competition? Here you will find anything you want to know.`
+      content: `Do you have a question about the Community Fall Season 2024 competition? Here you will find anything you want to know.`
     }
   }
 })
 
 const router = useRouter()
 const msnry = ref(undefined)
+const currentSeason = shallowRef({})
+const currentSeasonDetails = shallowRef({})
 
 const toLocalDateformat = (val) => {
   if (val) {
@@ -186,17 +195,47 @@ const toLocalDateformat = (val) => {
   }
 };
 
-
-onMounted(() => {
+const initializeMasonry = () => {
   msnry.value = new Masonry('.grid', {
     itemSelector: '.grid-item',
     columnWidth: '.grid-sizer',
     percentPosition: true,
     transitionDuration: '0.2s',
     gutter: 10
-    // fitWidth: true
   });
-})
+};
+
+const resetMasonryLayout = () => {
+  if (msnry.value) {
+    msnry.value.destroy(); // Destroy the existing Masonry instance
+  }
+  nextTick(() => {
+    initializeMasonry(); // Re-initialize Masonry after the DOM update
+  });
+};
+
+onMounted(() => {
+  fetchCurrentSeason().then(data => {
+    currentSeason.value = data;
+    currentSeasonDetails.value = data.details_v1;
+    console.log(currentSeason.value);
+
+    nextTick(() => {
+      initializeMasonry();
+    });
+  });
+});
+
+watch(
+  () => currentSeasonDetails.value?.hasPrizePool,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      resetMasonryLayout(); // Re-layout Masonry when hasPrizePool changes
+    }
+  }
+);
+
+
 </script>
 
 <style lang="sass" scoped>
