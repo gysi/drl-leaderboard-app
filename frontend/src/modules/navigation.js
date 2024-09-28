@@ -67,7 +67,8 @@ const navigation = {
       title: 'Grand Finals',
       // caption: 'Summer Season Competition FAQ',
       icon: 'sports_score',
-      link: '/community-season-competition-faq'
+      link: '/community-season-competition-faq',
+      disable: true
     },
     {
       type: 'link',
