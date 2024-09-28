@@ -2,7 +2,6 @@
   "name": "drl-leaderboard-frontend",
   "packageManager": "yarn@1.22.19",
   "version": "3.11.0",
-
   "description": "🚀 Awesome 🛩️ DRL Leaderboard 🏆 Webapp by gysi 🥇🥈🥉",
   "productName": "🏆 DRL Leaderboards 🏆",
   "author": "Gregor Dieter <github@i337.de>",
@@ -42,7 +41,9 @@
     "sitemap": "^7",
     "terser": "^5",
     "vite": "^2",
-    "vite-plugin-checker": "^0"
+    "vite-plugin-checker": "^0",
+    "@volar/language-server": "2.4.0-alpha.18",
+    "@vue/language-server": "2.0.28"
   },
   "engines": {
     "node": "^18",
