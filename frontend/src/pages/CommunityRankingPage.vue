@@ -3,10 +3,11 @@
           style="height: 100%; max-height: 100%; display: grid; grid-template-rows: auto auto auto auto 1fr;">
       <div class="rounded-borders tournament-header-top header-toolbar row items-center q-pa-xs">
         <div class="doc-card-title q-my-xs q-mr-sm ">
-          <span>Rankings - {{ season.name }}</span>
+          <span>{{ seasonDetails.hasQualification ? 'Qualification' : 'Rankings'}} - {{ season.name }}</span>
           <div class="text-caption text-right">
             <q-icon name="event"></q-icon>
-            {{ formatISODateTimeToDate(season.startDate) }} - {{ formatISODateTimeToDate(season.endDate) }} UTC
+            {{ formatISODateTimeToDate(season.startDate) }} -
+            {{ formatISODateTimeToDate(seasonDetails.hasQualification ? seasonDetails.qualificationEndDate : season.endDate) }} UTC
           </div>
         </div>
         <PlayerSearchSelect @onPlayerSelected="onPlayerSelected" label="Jump to player name" class="q-ma-sm"
@@ -242,16 +243,17 @@ const loading = ref(true);
 const selectedPlayer = ref(null);
 const overallTable = shallowRef(null);
 const season = shallowRef({});
+const seasonDetails = shallowRef({});
 const showExcludedPlayers = shallowRef(false)
 const showPrizeColumn = ref(false);
 
 const seasonPromise = fetchCurrentSeason();
-
-seasonPromise.then((season) => {
-  const seasonDetails = season.details_v1
-  if(seasonDetails?.hasPrizePool && !seasonDetails?.hasQualification){
+seasonPromise.then((season_) => {
+  seasonDetails.value = season_.details_v1
+  if(seasonDetails.value.hasPrizePool && !seasonDetails.value.hasQualification){
     showPrizeColumn.value = true
   }
+  season.value = season_
 })
 
 const fetchData = async function () {
@@ -308,9 +310,6 @@ const filterMethod = function (rows, terms) {
   return rows;
 }
 
-fetchCurrentSeason().then((data) => {
-  season.value = data;
-})
 fetchData();
 
 </script>
