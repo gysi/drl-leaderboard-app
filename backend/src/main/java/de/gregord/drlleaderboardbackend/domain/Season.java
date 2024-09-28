@@ -32,6 +32,7 @@ public enum Season {
             this.details_v1 = new Details_V1();
             this.details_v1.hasPrizePool = true;
             this.details_v1.hasQualification = false;
+            this.details_v1.tracksBuiltByCommunity = true;
             this.details_v1.prizePool.add("$509");
             this.details_v1.prizePool.add("$363");
             this.details_v1.prizePool.add("$247");
@@ -42,18 +43,22 @@ public enum Season {
             this.details_v1.matcherino.eventId = "116263";
             this.details_v1.matcherino.matcherinoEventLink = "https://matcherino.com/tournaments/116263";
             this.details_v1.matcherino.promoBannerImageName = "background-Summer_Series_2024_matcherino_register";
-
         }
     },
     SEASON_2024_FALL("2024-03-FALL", "Fall Season 2024",
             LocalDateTime.of(2024,9,16, 0, 0),
-            LocalDateTime.of(2024,12,1, 0, 0))
+            LocalDateTime.of(2024,12,16, 0, 0))
             {
                 {
                     this.details_v1 = new Details_V1();
                     this.details_v1.hasPrizePool = true;
                     this.details_v1.hasQualification = true;
+                    this.details_v1.tracksBuiltByCommunity = true;
+                    this.details_v1.tracksBuiltByCommunityPrefix = "[FALL24-%]%";
                     this.details_v1.numberOfQualifications = 24;
+                    // TODO IF AN QUAL ENDDATE EXISTS YOU WANT TO USE THIS INSTEAD OF THE SEASON ENDDATE TO ARCHIVE THE SEASON AND STOP CRAWLING
+                    // TODO ALSO ARCHIVING THE SEASON DOESN'T MAKE SENSE IN THIS FORMAT...
+                    this.details_v1.qualificationEndDate = LocalDateTime.of(2024,12,1, 0, 0);
                     this.details_v1.prizePool.add("$400");
                     this.details_v1.prizePool.add("$250");
                     this.details_v1.prizePool.add("$150");
@@ -191,6 +196,7 @@ public enum Season {
     SEASON_2034_WINTER("2034-04-WINTER", "Winter Season 2034/2035",
             LocalDateTime.of(2034,12,1, 0, 0),
             LocalDateTime.of(2035,3,1, 0, 0)),
+    // If you want to add further seasons, you also need to modify getNextSeason() because SEASON_2034_WINTER is hardcoded there
     NO_SEASON("NO-SEASON", "No Season",
                        LocalDateTime.of(3000,1,1, 0, 0),
             LocalDateTime.of(3000,12,1, 0, 0));
@@ -291,8 +297,8 @@ public enum Season {
             season = SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
         }
         int seasonOrdinal = season.ordinal();
-        if(seasonOrdinal == Season.SEASON_2034_SUMMER.ordinal()){
-            LOG.warn("There is no previous season after season: {}", season);
+        if(seasonOrdinal == Season.SEASON_2034_WINTER.ordinal()){
+            LOG.warn("There is no next season after season: {}", season);
             return null;
         }
         return Season.values()[season.ordinal() + 1];
@@ -311,12 +317,15 @@ public enum Season {
     public static class Details_V1 {
         public Boolean hasPrizePool = false;
         public Boolean hasQualification = false;
+        public LocalDateTime qualificationEndDate;
         public Integer numberOfQualifications = 0;
         public List<String> prizePool = new ArrayList<>();
         public Format format;
         public Matcherino matcherino;
+        public Boolean tracksBuiltByCommunity = false;
+        public String tracksBuiltByCommunityPrefix;
 
-        public static enum Format {
+        public enum Format {
             QUAL_TIME_TRIAL_FINISH_TIME_TRIAL,
             QUAL_TIME_TRAIL_FINISH_TOURNAMENT,
             QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT,
