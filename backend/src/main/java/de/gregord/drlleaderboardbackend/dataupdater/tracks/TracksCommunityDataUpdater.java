@@ -1,4 +1,4 @@
-package de.gregord.drlleaderboardbackend.dataupdater;
+package de.gregord.drlleaderboardbackend.dataupdater.tracks;
 
 import de.gregord.drlleaderboardbackend.entities.MapCategory;
 import de.gregord.drlleaderboardbackend.services.DRLApiService;

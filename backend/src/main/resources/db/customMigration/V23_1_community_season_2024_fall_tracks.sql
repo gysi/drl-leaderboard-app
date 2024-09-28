@@ -4,9 +4,9 @@
 
 -- Selected tracks fall season 2024:
 -- easy (blue series)
-INSERT INTO community_seasons values (5, '2024-03-FALL', (SELECT id from tracks where name = '[FALL24-01] CONTAIN YOURSELF'), 0, false);
-INSERT INTO community_seasons values (5, '2024-03-FALL', (SELECT id from tracks where name = '[FALL24-02] ARTILLERY STATION'), 1, false);
-INSERT INTO community_seasons values (5, '2024-03-FALL', (SELECT id from tracks where name = '[FALL24-03] SILO SPEEDWAY'), 1, false);
+INSERT INTO community_seasons values (5, '2024-03-FALL', (SELECT id from tracks where name like '[FALL24-01]%'), 0, false);
+INSERT INTO community_seasons values (5, '2024-03-FALL', (SELECT id from tracks where name like '[FALL24-02]%'), 1, false);
+INSERT INTO community_seasons values (5, '2024-03-FALL', (SELECT id from tracks where name like '[FALL24-03]%'), 1, false);
 INSERT INTO community_seasons values (5, '2024-03-FALL', (SELECT id from tracks where name like '[FALL24-04]%'), 1, false);
 INSERT INTO community_seasons values (5, '2024-03-FALL', (SELECT id from tracks where name like '[FALL24-05]%'), 1, false);
 
