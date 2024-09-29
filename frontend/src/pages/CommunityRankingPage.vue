@@ -199,12 +199,28 @@ const columns = [
   {
     index: 0, name: 'position', label: '#', field: 'position', required: true,
     style: row => {
+      if(seasonDetails.value.hasQualification){
+        if (row.position <= 24) {
+          return {
+            backgroundColor: '#59b43d'
+          }
+        } else if(row.position <= 29) {
+          return {
+            backgroundColor: '#b2b43d'
+          }
+        } else {
+          return {
+            backgroundColor: '#b43d3d'
+          }
+        }
+      }
       return {
         backgroundColor: !row.isEligible ? 'var(--app-player-lb-missing-run-background-color)' :
           backGroundColorByPosition(row.position)
       }
     },
     classes: row => {
+      if (seasonDetails.value.hasQualification) return ''
       if (!row.isEligible) return ''
       return row.position === 1 ? 'first-place' : row.position === 2 ? 'second-place' : row.position === 3 ? 'third-place' : ''
     }
