@@ -17,7 +17,7 @@
         <q-card-section class="q-py-none q-px-sm row news-content-header">
           <div class="text-h5 q-py-sm">📢 Fall Season 2024 is in Full Swing! New Tracks, Tournament, and More! 🍂🏆</div>
           <q-space />
-          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-09-29') }}</div>
+          <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-09-30 01:00') }}</div>
         </q-card-section>
         <q-card-section class="q-pa-sm news-content">
           <div class="q-my-sm" style="font-size: 1rem">
@@ -26,7 +26,7 @@
 
             <div class="text-h6">What's New This Season?</div>
             <ul>
-              <li><b>Dynamic Track Releases:</b> We're shaking things up! Instead of releasing all tracks at once, we'll be unveiling new
+              <li><b>Dynamic Track Releases:</b> We're shaking things up! Instead of releasing tracks in batches, we'll be unveiling new
                 ones alongside the weekly tournaments. This means fresh challenges and exciting racing every week!</li>
               <li><b>Diverse Track Selection:</b> 25 brand-new tracks await, spread across five series of increasing difficulty: Blue, Green,
                 Yellow, Orange, and the climactic Red Series. Each series offers a unique challenge, ensuring pilots of all skill levels can enjoy the competition.</li>
@@ -49,10 +49,10 @@
                 <ul>
                   <li>Quarterfinals: A random track from the Green or Yellow Series.</li>
                   <li>Semifinals: A random track from the Orange or Red Series.</li>
-                  <li>Finals: A surprise unreleased track, revealed 1 hour before the finals begin!</li>
+                  <li>Finals: A surprise unreleased track, revealed 1 hour before the grand finals starts!</li>
                 </ul>
               </li>
-              <li><b>Warmup Sessions:</b> 10-minute warmup sessions will be held between each stage to allow pilots to familiarize themselves with the next track.</li>
+              <li><b>Warmup Sessions:</b> 10-minute warmup sessions will be held between each stage to allow pilots to warm up for the next track.</li>
               <li><b>Live Stream:</b> Catch all the action live on Twitch, with expert commentary by FPVgan and Seltro!</li>
             </ul>
 
