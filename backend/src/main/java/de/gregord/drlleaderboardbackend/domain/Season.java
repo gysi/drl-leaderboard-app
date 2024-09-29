@@ -47,7 +47,7 @@ public enum Season {
     },
     SEASON_2024_FALL("2024-03-FALL", "Fall Season 2024",
             LocalDateTime.of(2024,9,16, 0, 0),
-            LocalDateTime.of(2024,12,16, 0, 0))
+            LocalDateTime.of(2024,12,9, 0, 0))
             {
                 {
                     this.details_v1 = new Details_V1();
