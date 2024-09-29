@@ -41,6 +41,14 @@ const navigation = {
   /////////////////////////////////////////////////////////////
   'QUAL_TIME_TRAIL_FINISH_TOURNAMENT': [
     {
+      type: 'link',
+      title: 'Register',
+      icon: 'how_to_reg',
+      link: '',
+      external: true,
+      openInNew: true
+    },
+    {
       type: 'expansion-item',
       title: 'Qualification',
       defaultOpened: true,
@@ -69,14 +77,6 @@ const navigation = {
       icon: 'sports_score',
       link: '/community-season-competition-faq',
       disable: true
-    },
-    {
-      type: 'link',
-      title: 'Register',
-      icon: 'how_to_reg',
-      link: '',
-      external: true,
-      openInNew: true
     },
     {
       type: 'link',
