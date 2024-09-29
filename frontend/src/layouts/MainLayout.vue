@@ -187,6 +187,7 @@ import {
   NAVIGATION_QUAL_TIME_TRAIL_FINISH_TOURNAMENT,
   NAVIGATION_QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT, NAVIGATION_QUAL_TIME_TRIAL_FINISH_TIME_TRIAL
 } from "src/modules/navigation.js";
+import {formatISODateTimeToDate, toLocalDateformat} from "src/modules/LeaderboardFunctions.js";
 
 const linksListTop = [
   {
@@ -403,13 +404,21 @@ onMounted(() => {
 
     if (data.details_v1?.format === 'QUAL_TIME_TRIAL_FINISH_TIME_TRIAL') {
       console.log(data.details_v1?.format);
-      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_FINISH_TIME_TRIAL;
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_FINISH_TIME_TRIAL
     }
     if (data.details_v1?.format === 'QUAL_TIME_TRAIL_FINISH_TOURNAMENT') {
-      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRAIL_FINISH_TOURNAMENT;
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRAIL_FINISH_TOURNAMENT
     }
     if (data.details_v1?.format === 'QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT') {
-      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT;
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT
+    }
+    if(data.details_v1?.grandFinalStartDate) {
+      linksListCommunitySeason.value = linksListCommunitySeason.value.map(link => {
+        if (link.title === 'Grand Finals') {
+          link.caption = toLocalDateformat(data.details_v1?.grandFinalStartDate)
+        }
+        return link;
+      });
     }
     if(data.details_v1?.matcherino?.matcherinoEventLink){
       linksListCommunitySeason.value = linksListCommunitySeason.value.map(link => {
@@ -421,7 +430,7 @@ onMounted(() => {
     }
     if (data.details_v1?.matcherino?.promoBannerImageName) {
       nextTick(() => {
-        setupAdBanner();
+        setupAdBanner()
       });
     }
   });
