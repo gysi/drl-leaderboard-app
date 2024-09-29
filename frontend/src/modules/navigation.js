@@ -55,7 +55,7 @@ const navigation = {
         },
         {
           type: 'link',
-          title: 'Time Trial',
+          title: 'Standings',
           // caption: 'Player rankings for season tracks',
           icon: 'leaderboard', // sports_score as alternative
           link: '/community-rankings'

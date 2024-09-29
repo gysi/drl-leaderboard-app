@@ -225,7 +225,7 @@ const linksListTop = [
   },
   {
     type: 'link',
-    title: 'Tournaments',
+    title: 'Weekly DRL Tournaments',
     // caption: 'Seasonal Tournament Rankings',
     icon: 'emoji_events',
     link: '/tournaments'
