@@ -18,7 +18,7 @@
     "axios": "^1",
     "date-fns": "^2",
     "date-fns-tz": "^2",
-    "flag-icons": "^7.2.0",
+    "flag-icons": "^7",
     "masonry-layout": "^4",
     "pako": "^2",
     "quasar": "^2",
@@ -29,7 +29,9 @@
     "vue-router": "^4"
   },
   "devDependencies": {
-    "@quasar/app-vite": "^2.0.0-beta.1",
+    "@quasar/app-vite": "^2.0.0-beta.22",
+    "@volar/language-server": "2.4.0-alpha.18",
+    "@vue/language-server": "2.0.28",
     "autoprefixer": "^10",
     "ejs": "^3",
     "eslint": "^8",
@@ -40,13 +42,10 @@
     "purgecss": "^5",
     "sitemap": "^7",
     "terser": "^5",
-    "vite": "^2",
-    "vite-plugin-checker": "^0",
-    "@volar/language-server": "2.4.0-alpha.18",
-    "@vue/language-server": "2.0.28"
+    "vite-plugin-checker": "^0"
   },
   "engines": {
-    "node": "^18",
+    "node": "^24 || ^22 || ^20 || ^18",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   }
