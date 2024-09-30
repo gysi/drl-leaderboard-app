@@ -61,10 +61,10 @@
 
             <div class="text-h6">Get Involved!</div>
             <ul>
-              <li><b>Compete:</b> Register on Matcherino and start flying those tracks!</li>
-              <li><b>Contribute:</b> Help us grow the prize pool and support the community.</li>
+              <li><b>Compete:</b> Register on <a href="https://matcherino.com/t/drl-community-fall-season-2024" target="_blank">Matcherino</a> and start flying those tracks!</li>
+              <li><b>Contribute:</b> Help us grow the prize pool and support the community on <a href="https://matcherino.com/t/drl-community-fall-season-2024" target="_blank">Matcherino</a>.</li>
               <li><b>Watch:</b> Tune in to the weekly tournaments and cheer on your favorite pilots.</li>
-              <li><b>Stay Connected:</b> Join the DRL Discord for updates, discussions, and more.</li>
+              <li><b>Stay Connected:</b> Join the <a href="https://discord.gg/f6vPZeb7" target="_blank">DRL Discord</a> for updates, discussions, and more.</li>
             </ul>
 
             <p>We're excited to see what this season brings. Let's fly high and make Fall 2024 unforgettable!</p>
