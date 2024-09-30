@@ -14,4 +14,4 @@ const fetchPreviousSeason = async () => {
   return response.data;
 }
 
-export { fetchCurrentSeason, fetchPreviousSeason};
+export { fetchCurrentSeason, fetchPreviousSeason };

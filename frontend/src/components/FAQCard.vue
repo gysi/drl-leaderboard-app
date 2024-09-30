@@ -4,6 +4,14 @@
       <slot name="title">
         <div class="text-h6">{{ title }}</div>
       </slot>
+      <q-btn
+        v-if="isExpanded"
+        color="grey"
+        flat
+        icon="keyboard_arrow_up"
+        class="expanded-button"
+        @click="isExpanded = !isExpanded"
+      />
     </q-card-section>
 
     <q-separator inset />
@@ -13,22 +21,18 @@
       style="font-size: 1.1rem;"
     >
       <slot></slot>
+      <q-btn
+        v-if="!isExpanded"
+        color="grey"
+        flat
+        icon="keyboard_arrow_down"
+        class="truncated-button"
+        @click="isExpanded = !isExpanded"
+      />
     </q-card-section>
-    <q-btn
-      color="grey"
-      flat
-      :icon="isExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-      v-bind:class="{
-        'expanded-button': isExpanded,
-        'truncated-button': !isExpanded
-      }"
-      @click="isExpanded = !isExpanded; console.log('clicked')"
-      :style="{
-        'color': isExpanded ? 'rgba(0,0,0,0)' : 'black',
-      }"
-    />
   </q-card>
 </template>
+
 
 <script>
 export default {
@@ -68,6 +72,13 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.faq-card-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  >div
+    margin-right: 22px
+
 .faq-card-content
   overflow-x: auto
 
@@ -78,34 +89,54 @@ export default {
 
 .truncated::after
   content: ""
-  //background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, white 90%)
   position: absolute
-  bottom: 0
+  top: 0
   left: 0
   right: 0
-  height: 10rem
+  bottom: 0
 
 .truncated-button
   position: absolute
+  top: 0
+  left: 0
+  right: 0
   bottom: 0
-  width: 100%
-  height: 10rem
+  z-index: 1
 
 .expanded-button
   position: absolute
-  bottom: 0
+  top: 0
+  left: 0
   width: 100%
-  height: calc(100% - 64px)
-  //pointer-events: none
+  height: 100%
 
 :deep(.expanded-button span)
-  align-content: end
-  align-items: end
-  color: rgba(0,0,0,0)
+  //align-content: end
+  //align-items: end
+  //color: rgba(0,0,0,0)
+  align-items: center
+  flex-flow: row
+  justify-content: end
 
 :deep(.truncated-button span)
   align-items: end
   align-content: end
   flex-flow: column
   justify-content: end
+
+:deep(.q-separator--horizontal-inset)
+  margin: 0
+
+:deep(a:link)
+  color: var(--app-faq-card-link-color)
+
+:deep(a:visited)
+  color: var(--app-faq-card-link-color-visited)
+
+:deep(a:hover)
+  color: var(--app-faq-card-link-color-hover)
+
+:deep(a:active)
+  color: var(--app-faq-card-link-color-active)
 </style>
+

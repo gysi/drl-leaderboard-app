@@ -1,4 +1,4 @@
-package de.gregord.drlleaderboardbackend.dataupdater;
+package de.gregord.drlleaderboardbackend.dataupdater.leaderboard;
 
 import de.gregord.drlleaderboardbackend.domain.Season;
 import de.gregord.drlleaderboardbackend.repositories.TracksRepository;
@@ -12,7 +12,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;

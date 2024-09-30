@@ -54,7 +54,7 @@
             <q-card-section class="q-ma-none q-px-sm q-pt-sm q-pb-none">
               <NavigationLinks v-for="link in linksListCommunitySeason" :key="link.title" v-bind="link"/>
             </q-card-section>
-            <q-item v-if="currentSeason.details_v1?.matcherino" :href="currentSeason.details_v1.matcherino.matcherinoEventLink"
+            <q-item v-if="currentSeason.details_v1?.matcherino?.promoBannerImageName" :href="currentSeason.details_v1.matcherino.matcherinoEventLink"
                     target="_blank"
                     class="q-pa-none q-ma-xs q-pb-xs"
             >
@@ -183,6 +183,11 @@ import NewsDialog from "components/NewsDialog.vue";
 import isCrawler from "src/modules/isCrawler";
 import axios from "axios";
 import {fetchCurrentSeason} from "src/modules/backendApi.js";
+import {
+  NAVIGATION_QUAL_TIME_TRAIL_FINISH_TOURNAMENT,
+  NAVIGATION_QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT, NAVIGATION_QUAL_TIME_TRIAL_FINISH_TIME_TRIAL
+} from "src/modules/navigation.js";
+import {formatISODateTimeToDate, toLocalDateformat} from "src/modules/LeaderboardFunctions.js";
 
 const linksListTop = [
   {
@@ -221,7 +226,7 @@ const linksListTop = [
   },
   {
     type: 'link',
-    title: 'Tournaments',
+    title: 'Weekly DRL Tournaments',
     // caption: 'Seasonal Tournament Rankings',
     icon: 'emoji_events',
     link: '/tournaments'
@@ -397,103 +402,35 @@ onMounted(() => {
       currentSeasonLabel.value = data.name
     }
 
-    if (data.details_v1?.qualificationType === 'TIME_TRIAL') {
-      console.log(data.details_v1?.qualificationType);
-      linksListCommunitySeason.value = [
-        {
-          type: 'link',
-          title: 'Tracks',
-          // caption: 'Community season tracks',
-          icon: 'route',
-          link: '/tracks-community'
-        },
-        {
-          type: 'link',
-          title: 'Rankings',
-          // caption: 'Player rankings for season tracks',
-          icon: 'leaderboard', // sports_score as alternative
-          link: '/community-rankings'
-        },
-        {
-          type: 'link',
-          title: 'Player Leaderboard',
-          // caption: 'Leaderboard for a specific player',
-          icon: 'sports_martial_arts',
-          link: '/player-leaderboard-community'
-        },
-        {
-          type: 'link',
-          title: 'FAQ',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'help',
-          link: '/community-season-competition-faq'
-        },
-        {
-          type: 'link',
-          title: 'Previous Seasons',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'inventory_2',
-          link: '/community-previous-season-rankings'
-        }
-      ]
+    if (data.details_v1?.format === 'QUAL_TIME_TRIAL_FINISH_TIME_TRIAL') {
+      console.log(data.details_v1?.format);
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_FINISH_TIME_TRIAL
     }
-    if (data.details_v1?.qualificationType === 'TIME_TRIAL_AND_TOURNAMENTS') {
-      linksListCommunitySeason.value = [
-        {
-          type: 'link',
-          title: 'Tracks',
-          // caption: 'Community season tracks',
-          icon: 'route',
-          link: '/tracks-community'
-        },
-        {
-          type: 'expansion-item',
-          title: 'Qualification options',
-          defaultOpened: true,
-          contentInsetLevel: 0.25,
-          children: [
-            {
-              type: 'link',
-              title: '1. Time Trial',
-              // caption: 'Player rankings for season tracks',
-              icon: 'leaderboard', // sports_score as alternative
-              link: '/community-rankings'
-            },
-            {
-              type: 'link',
-              title: '2. Tournaments',
-              // caption: 'Tourney Rankings and upcoming dates',
-              icon: 'leaderboard', // sports_score as alternative
-              link: '/community-rankings'
-            },
-          ]
-        },
-        {
-          type: 'link',
-          title: 'Final Tournament',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'sports_score',
-          link: '/community-season-competition-faq'
-        },
-        {
-          type: 'link',
-          title: 'FAQ',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'help',
-          link: '/community-season-competition-faq'
-        },
-        {
-          type: 'link',
-          title: 'Previous Seasons',
-          // caption: 'Summer Season Competition FAQ',
-          icon: 'inventory_2',
-          link: '/community-previous-season-rankings'
+    if (data.details_v1?.format === 'QUAL_TIME_TRAIL_FINISH_TOURNAMENT') {
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRAIL_FINISH_TOURNAMENT
+    }
+    if (data.details_v1?.format === 'QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT') {
+      linksListCommunitySeason.value = NAVIGATION_QUAL_TIME_TRIAL_AND_TOURNAMENTS_FINISH_TOURNAMENT
+    }
+    if(data.details_v1?.grandFinalStartDate) {
+      linksListCommunitySeason.value = linksListCommunitySeason.value.map(link => {
+        if (link.title === 'Grand Finals') {
+          link.caption = toLocalDateformat(data.details_v1?.grandFinalStartDate)
         }
-      ];
+        return link;
+      });
+    }
+    if(data.details_v1?.matcherino?.matcherinoEventLink){
+      linksListCommunitySeason.value = linksListCommunitySeason.value.map(link => {
+        if (link.title === 'Register') {
+          link.link = data.details_v1.matcherino?.matcherinoEventLink;
+        }
+        return link;
+      });
     }
     if (data.details_v1?.matcherino?.promoBannerImageName) {
       nextTick(() => {
-        setupAdBanner();
+        setupAdBanner()
       });
     }
   });

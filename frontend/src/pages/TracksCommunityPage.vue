@@ -4,10 +4,10 @@
     <div class="rounded-borders tournament-header-top header-toolbar row items-center q-pa-xs">
       <div class="doc-card-title q-my-xs q-mr-sm ">
         <span>Tracks - {{ season.name }}</span>
-        <div class="text-caption text-right">
-          <q-icon name="event"></q-icon>
-          {{ formatISODateTimeToDate(season.startDate) }} - {{ formatISODateTimeToDate(season.endDate) }} UTC
-        </div>
+<!--        <div class="text-caption text-right">-->
+<!--          <q-icon name="event"></q-icon>-->
+<!--          {{ formatISODateTimeToDate(season.startDate) }} - {{ formatISODateTimeToDate(season.endDate) }} UTC-->
+<!--        </div>-->
       </div>
     </div>
     <q-table

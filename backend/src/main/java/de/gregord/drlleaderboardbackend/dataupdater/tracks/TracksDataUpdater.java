@@ -1,4 +1,4 @@
-package de.gregord.drlleaderboardbackend.dataupdater;
+package de.gregord.drlleaderboardbackend.dataupdater.tracks;
 
 import de.gregord.drlleaderboardbackend.domain.convert.DRLTrackToTrackEntity;
 import de.gregord.drlleaderboardbackend.entities.MapCategory;
@@ -17,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 

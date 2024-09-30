@@ -402,25 +402,16 @@
           seasons of the year: spring, summer, fall, and winter. Each three-month period launches a series
           of engaging activities, offering a structured cadence to our community's involvement.
         </p>
-        <p>The season's highlights are the Tournaments and Community Tracks. Weekly, players can dive into
+        <p>The season's highlights are the Tournaments and Community Competition. Weekly, players can dive into
           up to six tournaments, with their outcomes and upcoming schedules illustrated on the leaderboard
           through a simple color-coded system: green dots signal completed tournaments, yellow dots indicate
           future competitions, and red dots denote missed ones. This intuitive indicator, complemented by hoverable
           dates, simplifies tracking one's progress and planning for future engagements.
         </p>
 
-        <p>For Community Tracks, each season unveils 30 new challenges, curated from the community's creative outputs.
-          These tracks are chosen through a blend of algorithmic selection and manual refinement, ensuring a diverse
-          and fair competition field every season. Crucially, the leaderboard for these tracks is exclusively shaped
-          by performances within the current season.
-        </p>
-        <p>Players must secure at least one top time on these tracks to be featured on the rankings, guaranteeing that
-          the leaderboard remains vibrant and current. This approach encourages continuous
-          participation, as there's always the potential to improve on at least one of the 30 tracks, offering
-          everyone—from newcomers to seasoned racers—a shot at bettering their standings. Moreover, this system naturally
-          phases out dated achievements, particularly from those no longer actively competing, by focusing on recent
-          contributions and successes. This ensures that even well-established tracks maintain their competitive edge,
-          keeping the leaderboard fresh and reflective of active community engagement.
+        <p>For the Community Competition, each season unveils new challenges, curated from the community's creative outputs.
+          Sometimes tracks are chosen through a blend of algorithmic selection and manual refinement, but usually we
+          try craft new tracks made by the community.
         </p>
 
         <p>A heartfelt appreciation goes to Mr. Persister &lt;3, whose boundless enthusiasm and meticulous testing of the
@@ -428,20 +419,15 @@
           discussions and collaborations have directly influenced the seasonal offerings, enhancing the competitive spirit
           and community involvement on the website.
         </p>
-
-        <p>This iteration aims to more accurately represent the significance of current season performances in shaping
-          the leaderboard, emphasizing the ongoing opportunities for improvement and the dynamic nature of competition
-          on the website.
-        </p>
       </FAQCard>
       <FAQCard
-        title="Why do I see myself in the Community Rankings only when toggling 'Show Excluded Players'"
+        title="Why do I see myself in the Community Rankings or Qualification only when toggling 'Show Excluded Players'"
         :msnry="msnry"
         :initially-expanded="router.currentRoute.value.query.card === 'excluded-from-season'"
       >
-        <p>In the Community Season rankings, the primary focus is on highlighting the contributions of players
+        <p>In the Community Season rankings or qualification, the primary focus is on highlighting the contributions of players
           actively engaged with the current season. This means the leaderboard prominently displays players who
-          have secured at least one top time on the 30 designated tracks for the current season, crucially with
+          have secured at least one top time on the designated tracks for the current season, crucially with
           that time being achieved within the season itself. This method ensures the leaderboard is a reflection
           of the current season's active competition, emphasizing recent efforts and achievements.
         </p>

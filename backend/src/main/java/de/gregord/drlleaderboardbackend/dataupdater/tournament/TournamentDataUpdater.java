@@ -1,4 +1,4 @@
-package de.gregord.drlleaderboardbackend.dataupdater;
+package de.gregord.drlleaderboardbackend.dataupdater.tournament;
 
 import de.gregord.drlleaderboardbackend.entities.Tournament;
 import de.gregord.drlleaderboardbackend.entities.tournament.TournamentRanking;

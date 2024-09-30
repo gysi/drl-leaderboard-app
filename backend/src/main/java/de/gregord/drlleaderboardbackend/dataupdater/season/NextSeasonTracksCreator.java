@@ -1,5 +1,6 @@
-package de.gregord.drlleaderboardbackend.dataupdater;
+package de.gregord.drlleaderboardbackend.dataupdater.season;
 
+import de.gregord.drlleaderboardbackend.config.CacheConfig;
 import de.gregord.drlleaderboardbackend.domain.Season;
 import de.gregord.drlleaderboardbackend.domain.TrackWeightedRatingView;
 import de.gregord.drlleaderboardbackend.entities.CommunitySeason;
@@ -13,6 +14,8 @@ import de.gregord.drlleaderboardbackend.services.LeaderboardProcessorResult;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,31 +28,48 @@ import java.util.function.Predicate;
 import static de.gregord.drlleaderboardbackend.config.CacheConfig.CACHE_COMMUNITY_CURRENT_SEASON_TRACKIDS;
 
 @Component
-public class CommunityTracksSeasonUpdater {
-    private static final Logger LOG = LoggerFactory.getLogger(CommunityTracksSeasonUpdater.class);
+public class NextSeasonTracksCreator {
+    private static final Logger LOG = LoggerFactory.getLogger(NextSeasonTracksCreator.class);
     private static final int NEXT_SEASON_LEAD_PERIOD_DAYS = 14;
 
     private final DRLApiService drlApiService;
     private final TracksRepository tracksRepository;
     private final CommunitySeasonsRepository communitySeasonsRepository;
     private final ModelMapper modelMapper;
+    private final CacheManager cacheManager;
 
-    public CommunityTracksSeasonUpdater(DRLApiService drlApiService,
-                                        TracksRepository tracksRepository,
-                                        CommunitySeasonsRepository communitySeasonsRepository,
-                                        ModelMapper modelMapper) {
+    public NextSeasonTracksCreator(DRLApiService drlApiService,
+                                   TracksRepository tracksRepository,
+                                   CommunitySeasonsRepository communitySeasonsRepository,
+                                   ModelMapper modelMapper,
+                                   CacheManager cacheManager) {
         this.drlApiService = drlApiService;
         this.tracksRepository = tracksRepository;
         this.communitySeasonsRepository = communitySeasonsRepository;
         this.modelMapper = modelMapper;
+        this.cacheManager = cacheManager;
     }
 
     @Transactional
     @CacheEvict(CACHE_COMMUNITY_CURRENT_SEASON_TRACKIDS)
-    public void updateCommunitySeasonTracks() {
+    public void addSeasonTracks() {
+        Season currentSeason = Season.getCurrentSeason();
+        if(currentSeason.getDetails_v1().tracksBuiltByCommunity) {
+            int modifiedRows = communitySeasonsRepository.updateCustomCommunitySeasonTracks(
+                    currentSeason.getId(),
+                    currentSeason.getSeasonIdName(),
+                    currentSeason.getDetails_v1().tracksBuiltByCommunityPrefix
+            );
+            if(modifiedRows > 0){
+                Objects.requireNonNull(this.cacheManager.getCache(CacheConfig.CACHE_TRACKS)).invalidate();
+            }
+            LOG.info("Number of new custom season tracks added: {}", modifiedRows);
+            return;
+        }
+
+        // TODO: Not sure if this code below will work correctly with the NO_SEASON logic
         final int pastSeasonTracksLimit = 25;
         final int bestRatedSeasonTracksLimit = 5;
-        Season currentSeason = Season.getCurrentSeason();
         LocalDateTime currentSeasonEndDate = currentSeason.getSeasonEndDate();
         LocalDateTime now = LocalDateTime.now();
         boolean isPreviewSeason = currentSeasonEndDate.minusDays(NEXT_SEASON_LEAD_PERIOD_DAYS).isBefore(now);

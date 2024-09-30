@@ -17,7 +17,7 @@ const routes = [
       { name: 'tracklb', path: 'track-leaderboard', component: () => import('pages/TrackLbPage.vue'), props: route => ({ q: route.query.q }) },
       { name: 'playerlb', path: 'player-leaderboard', component: () => import('pages/PlayerLbPage.vue'), props: route => ({ q: route.query.q }) },
       { name: 'playerlb-community', path: 'player-leaderboard-community', component: () => import('pages/PlayerLbCommunityPage.vue'), props: route => ({ q: route.query.q }) },
-      { name: 'communitySeasonCompetitionFaq', path: 'community-season-competition-faq', component: () => import('pages/FAQCommunitySeasonCompetitionPage.vue') },
+      { name: 'communitySeasonCompetitionFaq', path: 'community-season-competition-faq', component: () => import('pages/FAQCommunitySeasonCompetitionPage_2024_Fall.vue') },
       { name: 'faq', path: 'faq', component: () => import('pages/FAQPage.vue') },
       { name: 'worstTracksPicker', path: 'worst-tracks-picker', component: () => import('pages/WorstTracksPickerPage.vue') },
       { name: 'replayviewer', path: 'replay-viewer', component: () => import('pages/ReplayPage.vue') },

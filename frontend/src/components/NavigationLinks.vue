@@ -17,6 +17,7 @@
   <q-item
     v-if="type === 'link'"
     clickable
+    :disable="disable"
     tag="a"
     :to="external ? undefined : link"
     :href="external ? link : undefined"
@@ -72,6 +73,10 @@ const props = defineProps({
     default: ''
   },
   openInNew: {
+    type: Boolean,
+    default: false
+  },
+  disable: {
     type: Boolean,
     default: false
   },

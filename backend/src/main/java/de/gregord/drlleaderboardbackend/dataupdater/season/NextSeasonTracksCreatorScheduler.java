@@ -1,4 +1,4 @@
-package de.gregord.drlleaderboardbackend.dataupdater;
+package de.gregord.drlleaderboardbackend.dataupdater.season;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -10,31 +10,31 @@ import org.springframework.stereotype.Component;
 
 @EnableScheduling
 @Component
-public class CommunityTracksSeasonScheduler {
+public class NextSeasonTracksCreatorScheduler {
 
-    CommunityTracksSeasonUpdater communityTracksSeasonUpdater;
+    NextSeasonTracksCreator nextSeasonTracksCreator;
     boolean isEnabled;
 
-    public CommunityTracksSeasonScheduler(
+    public NextSeasonTracksCreatorScheduler(
             @Value("${app.data-updater.season.enabled}") boolean isEnabled,
-            CommunityTracksSeasonUpdater communityTracksSeasonUpdater
+            NextSeasonTracksCreator nextSeasonTracksCreator
     ) {
         this.isEnabled = isEnabled;
-        this.communityTracksSeasonUpdater = communityTracksSeasonUpdater;
+        this.nextSeasonTracksCreator = nextSeasonTracksCreator;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     @Order(150)
     public void initialize() {
         if(isEnabled) {
-            communityTracksSeasonUpdater.updateCommunitySeasonTracks();
+            nextSeasonTracksCreator.addSeasonTracks();
         }
     }
 
     @Scheduled(cron = "${app.data-updater.season.cron}")
     public void updateMapsData(){
         if(isEnabled) {
-            communityTracksSeasonUpdater.updateCommunitySeasonTracks();
+            nextSeasonTracksCreator.addSeasonTracks();
         }
     }
 }

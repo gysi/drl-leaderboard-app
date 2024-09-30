@@ -1,7 +1,6 @@
-package de.gregord.drlleaderboardbackend.dataupdater;
+package de.gregord.drlleaderboardbackend.dataupdater.leaderboard;
 
 import de.gregord.drlleaderboardbackend.domain.PlayerImprovement;
-import de.gregord.drlleaderboardbackend.entities.LeaderboardEntry;
 import de.gregord.drlleaderboardbackend.entities.Track;
 import de.gregord.drlleaderboardbackend.services.DRLApiService;
 import de.gregord.drlleaderboardbackend.services.LeaderboardProcessorResult;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class LeaderboardUpdater {
