@@ -59,12 +59,12 @@ public enum Season {
             // TODO ALSO ARCHIVING THE SEASON DOESN'T MAKE SENSE IN THIS FORMAT...
             this.details_v1.qualificationEndDate = LocalDateTime.of(2024, 12, 1, 0, 0);
             this.details_v1.grandFinalStartDate = LocalDateTime.of(2024, 12, 8, 21, 0);
-            this.details_v1.prizePool.add("$400");
-            this.details_v1.prizePool.add("$250");
-            this.details_v1.prizePool.add("$150");
-            this.details_v1.prizePool.add("$100");
-            this.details_v1.prizePool.add("$50");
-            this.details_v1.prizePool.add("$50");
+            this.details_v1.prizePool.add("$440");
+            this.details_v1.prizePool.add("$275");
+            this.details_v1.prizePool.add("$165");
+            this.details_v1.prizePool.add("$110");
+            this.details_v1.prizePool.add("$55");
+            this.details_v1.prizePool.add("$55");
             this.details_v1.format = Details_V1.Format.QUAL_TIME_TRAIL_FINISH_TOURNAMENT;
             this.details_v1.matcherino = new Details_V1.Matcherino();
             this.details_v1.matcherino.eventId = "drl-community-fall-season-2024";
