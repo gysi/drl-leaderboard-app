@@ -47,6 +47,8 @@ const awards = {
 }
 
 const playerIdToAwardMap = {
+  // Tydronious
+  "547594057484276339": [awards['2024-fall-season-gold']],
   //gysi 5xx
   "547247576684373546": [awards['2024-summer-season-diamond'], awards['2024-fall-season-diamond']],
   //vgan 250
