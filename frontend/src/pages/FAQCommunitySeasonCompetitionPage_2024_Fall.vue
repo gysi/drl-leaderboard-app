@@ -58,6 +58,9 @@
         The money for the prize pool got sponsored from passionate players:
         <ul>
           <li>gysi: $1000</li>
+          <li>THE_B0B!!: $363.89</li>
+          <li>Tydronious: $100</li>
+
         </ul>
       </FAQCard>
       <FAQCard

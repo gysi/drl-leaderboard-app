@@ -35,6 +35,12 @@
     <q-item-section side top v-if="openInNew" style="padding-right: 0">
       <q-icon name="open_in_new" />
     </q-item-section>
+    <q-item-section side v-if="sideText" style="padding-right: 0">
+      sideText
+    </q-item-section>
+    <q-item-section side v-if="sideHtml" style="padding-right: 0" >
+      <div v-html="sideHtml"></div>
+    </q-item-section>
   </q-item>
 </template>
 
@@ -75,6 +81,14 @@ const props = defineProps({
   openInNew: {
     type: Boolean,
     default: false
+  },
+  sideText: {
+    type: String,
+    default: ''
+  },
+  sideHtml: {
+    type: String,
+    default: ''
   },
   disable: {
     type: Boolean,

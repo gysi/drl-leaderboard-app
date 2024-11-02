@@ -56,7 +56,7 @@ const playerIdToAwardMap = {
   //ItsleeFpv 200
   "547247575287661837": [awards['2024-summer-season-gold']],
   // The Bob 200
-  "547247575891648956": [awards['2024-summer-season-gold']],
+  "547247575891648956": [awards['2024-summer-season-gold'], awards['2024-fall-season-diamond']],
   // tripp 100
   "547247575321225883": [awards['2024-summer-season-gold']],
   // Kung Fu Chicken (Gnostic)

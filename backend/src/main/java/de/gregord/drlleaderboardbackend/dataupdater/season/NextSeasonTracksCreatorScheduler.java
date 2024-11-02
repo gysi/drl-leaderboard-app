@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class NextSeasonTracksCreatorScheduler {
 
-    NextSeasonTracksCreator nextSeasonTracksCreator;
-    boolean isEnabled;
+    private final NextSeasonTracksCreator nextSeasonTracksCreator;
+    private final boolean isEnabled;
 
     public NextSeasonTracksCreatorScheduler(
             @Value("${app.data-updater.season.enabled}") boolean isEnabled,
