@@ -7,6 +7,22 @@
       <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2024-11-25 14:30') }}</div> </q-card-section>
     <q-card-section class="q-pa-sm news-content">
       <div class="q-my-sm" style="font-size: 1rem">
+        <q-carousel
+          animated
+          v-model="slide"
+          infinite
+          navigation
+          :autoplay="2000"
+          class="flex justify-center"
+          style="margin-bottom: 12px; height: auto; width:100%; background: rgba(0,0,0,0);"
+        >
+          <q-carousel-slide class="slideImage" :name="1" img-src="~assets/community-season/fall-season/Fall_Series_2024_-_Grand_Finals_-_Page_1.jpg" />
+          <q-carousel-slide class="slideImage" :name="2" img-src="~assets/community-season/fall-season/Fall_Series_2024_-_Grand_Finals_-_Page_2.jpg" />
+          <q-carousel-slide class="slideImage" :name="3" img-src="~assets/community-season/fall-season/Fall_Series_2024_-_Grand_Finals_-_Page_3.jpg" />
+          <q-carousel-slide class="slideImage" :name="4" img-src="~assets/community-season/fall-season/Fall_Series_2024_-_Grand_Finals_-_Page_4.jpg" />
+          <q-carousel-slide class="slideImage" :name="5" img-src="~assets/community-season/fall-season/Fall_Series_2024_-_Grand_Finals_-_Page_5.jpg" />
+          <q-carousel-slide class="slideImage" :name="6" img-src="~assets/community-season/fall-season/Fall_Series_2024_-_Grand_Finals_-_Page_6.jpg" />
+        </q-carousel>
         <p>The <b>Grand Finals</b> of the <b>DRL Community Fall Season 2024</b> are finally here! The top 24 pilots will compete in this thrilling showdown on <b>Sunday, December 8th, 2024</b>, starting at <b>21:00 UTC</b> (16:00 EST, 22:00 CET). Witness the action live on <a href="https://twitch.tv/flitedek" target="_blank">Twitch</a>!</p>
 
         <div class="text-h6">📅 Important Dates:</div>
@@ -43,4 +59,25 @@
 
 <script setup>
 import { getDateDifferenceToNowByGermanTimezone } from "src/modules/LeaderboardFunctions.js";
+import {ref} from "vue";
+
+const slide = ref(1)
 </script>
+
+<style lang="sass" scoped>
+
+:deep(.q-carousel__slides-container)
+  display: flex
+  justify-content: center
+  width: 100%
+  .q-panel
+    display: flex
+    justify-content: center
+
+.slideImage
+  width: 100%
+  aspect-ratio: 1
+  max-width: 600px
+  max-height: 600px
+  object-fit: contain
+</style>
