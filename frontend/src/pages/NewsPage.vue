@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md" style="height: 100%">
     <NewsContent />
   </q-page>
 </template>
