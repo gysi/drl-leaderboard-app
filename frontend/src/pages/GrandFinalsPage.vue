@@ -13,25 +13,30 @@
 </script>
 
 <style lang="sass" scoped>
+
 .promo-grid
+  --max-image-size: 570px
   display: grid
   gap: 1rem
-  grid-template-columns: repeat(3, auto)
-  grid-template-rows: auto auto
+  grid-template-columns: repeat(3, minmax(0, var(--max-image-size))) // 3 columns that shrink and grow equally
+  grid-template-rows: auto // Let rows grow based on content
   align-content: start
-  justify-content: start
+  justify-content: start // Center the grid horizontally if it doesn’t take full width
 
   @media (max-width: $breakpoint-lg)
-    grid-template-columns: repeat(2, auto)
-    grid-template-rows: repeat(3, auto)
+    grid-template-columns: repeat(2, minmax(0, var(--max-image-size))) // Adjust to 2 columns
+    grid-template-rows: auto
 
   @media (max-width: $breakpoint-md)
-    grid-template-columns: auto
-    grid-template-rows: repeat(6, auto)
+    grid-template-columns: var(--max-image-size) // Single column
+    grid-template-rows: auto
 
 .promo-img
-  max-width: 570px
-  max-height: 570px
+  max-width: var(--max-image-size) // Prevent overflow
+  max-height: var(--max-image-size) // Ensure images fit within grid cells
+  width: 100% // Allow images to fill the grid cell
+  height: 100% // Allow images to fill the grid cell
+  object-fit: contain // Preserve aspect ratio without cropping
   display: block
-  object-fit: contain
+  margin: auto // Center the image inside its grid cell
 </style>
