@@ -16,21 +16,22 @@
 .promo-grid
   display: grid
   gap: 1rem
-  grid-template-columns: repeat(3, 1fr)
+  grid-template-columns: repeat(3, auto)
   grid-template-rows: auto auto
   align-content: start
+  justify-content: start
 
   @media (max-width: $breakpoint-lg)
-    grid-template-columns: repeat(2, 1fr)
+    grid-template-columns: repeat(2, auto)
     grid-template-rows: repeat(3, auto)
 
   @media (max-width: $breakpoint-md)
-    grid-template-columns: 1fr
+    grid-template-columns: auto
     grid-template-rows: repeat(6, auto)
 
 .promo-img
-  max-width: 100%
-  max-height: 100%
+  max-width: 570px
+  max-height: 570px
   display: block
   object-fit: contain
 </style>

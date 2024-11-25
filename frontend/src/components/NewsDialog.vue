@@ -3,7 +3,6 @@
     v-model="value"
     transition-show="scale"
     transition-hide="scale"
-    maximized
     @show="handleDialogShow">
     <NewsContent />
   </q-dialog>
