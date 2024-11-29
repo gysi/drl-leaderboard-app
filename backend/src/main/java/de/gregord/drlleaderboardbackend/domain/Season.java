@@ -1,9 +1,10 @@
 package de.gregord.drlleaderboardbackend.domain;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.CheckForNull;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,8 +56,6 @@ public enum Season {
             this.details_v1.tracksBuiltByCommunity = true;
             this.details_v1.tracksBuiltByCommunityPrefix = "[FALL24-%]%";
             this.details_v1.numberOfQualifications = 24;
-            // TODO IF AN QUAL ENDDATE EXISTS YOU WANT TO USE THIS INSTEAD OF THE SEASON ENDDATE TO ARCHIVE THE SEASON AND STOP CRAWLING
-            // TODO ALSO ARCHIVING THE SEASON DOESN'T MAKE SENSE IN THIS FORMAT...
             this.details_v1.qualificationEndDate = LocalDateTime.of(2024, 12, 1, 0, 0);
             this.details_v1.grandFinalStartDate = LocalDateTime.of(2024, 12, 8, 21, 0);
             this.details_v1.prizePool.add("$585.55");
@@ -260,7 +259,7 @@ public enum Season {
         return getCurrentSeason().getSeasonIdName();
     }
 
-    public static Season getCurrentSeason() {
+    public static @NotNull Season getCurrentSeason() {
         Season currentSeason = SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
         if (currentSeason.getSeasonEndDate().isBefore(LocalDateTime.now())) {
             return NO_SEASON;
@@ -268,8 +267,7 @@ public enum Season {
         return currentSeason;
     }
 
-    @CheckForNull
-    public static Season getPreviousSeason(Season season) {
+    public static @Nullable Season getPreviousSeason(Season season) {
         if (season == NO_SEASON) {
             season = SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
             if (season == null) {
@@ -286,13 +284,11 @@ public enum Season {
         return Season.values()[season.ordinal() - 1];
     }
 
-    @CheckForNull
-    public static Season getPreviousSeason() {
+    public static @Nullable Season getPreviousSeason() {
         return getPreviousSeason(getCurrentSeason());
     }
 
-    @CheckForNull
-    public static Season getNextSeason(Season season) {
+    public static @Nullable Season getNextSeason(Season season) {
         if (season == NO_SEASON) {
             season = SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
         }
@@ -304,13 +300,11 @@ public enum Season {
         return Season.values()[season.ordinal() + 1];
     }
 
-    @CheckForNull
-    public static Season getNextSeason() {
+    public static @Nullable Season getNextSeason() {
         return getNextSeason(getCurrentSeason());
     }
 
-    @CheckForNull
-    public static Season getBySeasionIdName(String seasonIdName) {
+    public static @Nullable Season getBySeasonIdName(String seasonIdName) {
         return SEASON_MAPPING_BY_SEASON_ID_NAME.get(seasonIdName);
     }
 

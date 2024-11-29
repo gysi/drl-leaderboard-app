@@ -59,7 +59,7 @@ public class SeasonController {
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "50") @Min(1) @Max(500) int limit
     ) {
-        List<CommunityRankingHistoryView> overallRanking = communitySeasonService.getRankingHistory(Season.getBySeasionIdName(seasonIdName), page, limit);
+        List<CommunityRankingHistoryView> overallRanking = communitySeasonService.getRankingHistory(Season.getBySeasonIdName(seasonIdName), page, limit);
         return ResponseEntity.ok(overallRanking);
     }
 }

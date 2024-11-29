@@ -36,12 +36,46 @@ public class CommunitySeasonFinalizerScheduler {
     @EventListener(ApplicationReadyEvent.class)
     @Order(149)
     public void initialize() {
+        finalizeQualifier();
         finalizeSeason();
     }
 
     @Scheduled(cron = "${app.data-updater.season.cron}")
     public void updateMapsData(){
+        finalizeQualifier();
         finalizeSeason();
+    }
+
+    private void finalizeQualifier() {
+        Season currentSeason = Season.getCurrentSeason();
+        if (Season.NO_SEASON == currentSeason) {
+            LOG.info("No current season found. Skipping qualifier finalization.");
+            return;
+        }
+
+        if(currentSeason.getDetails_v1() == null){
+            LOG.info("No details for current season found. Skipping qualifier finalization.");
+            return;
+        }
+
+        if(currentSeason.getDetails_v1().qualificationEndDate == null){
+            LOG.info("No qualification end date for current season found. Skipping qualifier finalization.");
+            return;
+        }
+
+        if(currentSeason.getDetails_v1().qualificationEndDate.isAfter(LocalDateTime.now())){
+            LOG.info("Qualifier has not ended yet. Skipping qualifier finalization.");
+            return;
+        }
+
+        if(communitySeasonRankingHistoryService.countBySeasonId((long) currentSeason.getSeasonId()) > 0){
+            LOG.info("Qualifier ranking history already exists for this season, Skipping qualifier finalization.");
+        }
+
+        List<CommunityRankingView> overallRankingCurrentSeasonNoCache =
+                communitySeasonService.getOverallRankingForSeason(currentSeason,true,1, 100);
+        communitySeasonRankingHistoryService.saveRankingHistory(currentSeason, overallRankingCurrentSeasonNoCache);
+        LOG.info("Finalizing qualifier with {} entries", overallRankingCurrentSeasonNoCache.size());
     }
 
     private void finalizeSeason() {
@@ -53,6 +87,7 @@ public class CommunitySeasonFinalizerScheduler {
 
         LocalDateTime seasonEndDate = previousSeason.getSeasonEndDate();
         if (seasonEndDate.isAfter(LocalDateTime.now())) {
+            // normally this shouldn't really happen
             LOG.info("Previous season has not ended yet. Skipping finalization.");
             return;
         }

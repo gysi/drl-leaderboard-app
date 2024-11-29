@@ -12,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,7 +50,12 @@ public class LeaderboardDataScheduler {
     }
 
     public List<Long> getTracksOrderedByPriority() {
-        return tracksRepository.getTracksToBeUpdatedByPriority(Season.getCurrentSeasonId());
+        Season currentSeason = Season.getCurrentSeason();
+        Season.Details_V1 detailsV1 = currentSeason.getDetails_v1();
+        boolean hasQualificationAndItsEnded = detailsV1 != null
+                && detailsV1.qualificationEndDate != null
+                && detailsV1.qualificationEndDate.isBefore(LocalDateTime.now());
+        return tracksRepository.getTracksToBeUpdatedByPriority(hasQualificationAndItsEnded ? -1 : Season.getCurrentSeasonId());
     }
 
     public List<Long> getHighestPriorityTracks() {

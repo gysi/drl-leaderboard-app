@@ -194,7 +194,6 @@ useMeta({
 
 const $q = useQuasar()
 let darkModeInStorage = $q.localStorage.getItem('darkMode');
-console.log('darkMode', darkModeInStorage);
 const columns = [
   {
     index: 0, name: 'position', label: '#', field: 'position', required: true,
@@ -274,9 +273,14 @@ seasonPromise.then((season_) => {
 
 const fetchData = async function () {
   try {
+    const season = await seasonPromise
+    let qualifyingEnded = false
+    if(season.details_v1?.qualificationEndDate != null){
+      qualifyingEnded = new Date(season.details_v1.qualificationEndDate + 'Z') < new Date()
+    }
     const response = await axios.get(
       `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
-      + `/seasons/ranking-current-season?page=1&limit=500`
+      + (qualifyingEnded ? `/seasons/ranking-previous-seasons?seasonIdName=${season.idName}&page=1&limit=500` : `/seasons/ranking-current-season?page=1&limit=500`)
     );
     rows.value = markRaw(response.data.map((row, i) => {
       row['encodedPlayerName'] = encodeURIComponent(row['playerName']);
@@ -286,6 +290,9 @@ const fetchData = async function () {
         row['profileThumb'] = buildImgCacheUrl(row['profileThumb']);
       }
       row['awards'] = playerIdToAwardMap[row['playerId']]
+      if(row['isEligible'] === undefined){
+        row['isEligible'] = true
+      }
       return row;
     }));
     seasonPromise.then((season) => {
@@ -320,9 +327,9 @@ const buildImgCacheUrl = function (url) {
 }
 
 const filterMethod = function (rows, terms) {
-  console.log("filterMethod");
-  if (!terms.showExcludedPlayers)
+  if (!terms.showExcludedPlayers) {
     return rows.filter(row => row.isEligible)
+  }
   return rows;
 }
 
