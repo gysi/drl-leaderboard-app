@@ -70,6 +70,7 @@ public class CommunitySeasonFinalizerScheduler {
 
         if(communitySeasonRankingHistoryService.countBySeasonId((long) currentSeason.getSeasonId()) > 0){
             LOG.info("Qualifier ranking history already exists for this season, Skipping qualifier finalization.");
+            return;
         }
 
         List<CommunityRankingView> overallRankingCurrentSeasonNoCache =
