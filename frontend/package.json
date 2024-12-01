@@ -41,7 +41,7 @@
     "purgecss": "^5",
     "sitemap": "^7",
     "terser": "^5",
-    "vite": "^2",
+    "vite": "^3",
     "vite-plugin-checker": "^0"
   },
   "engines": {
