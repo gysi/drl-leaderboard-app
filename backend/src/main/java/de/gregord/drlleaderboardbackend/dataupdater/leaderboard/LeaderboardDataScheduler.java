@@ -50,12 +50,7 @@ public class LeaderboardDataScheduler {
     }
 
     public List<Long> getTracksOrderedByPriority() {
-        Season currentSeason = Season.getCurrentSeason();
-        Season.Details_V1 detailsV1 = currentSeason.getDetails_v1();
-        boolean hasQualificationAndItsEnded = detailsV1 != null
-                && detailsV1.qualificationEndDate != null
-                && detailsV1.qualificationEndDate.isBefore(LocalDateTime.now());
-        return tracksRepository.getTracksToBeUpdatedByPriority(hasQualificationAndItsEnded ? -1 : Season.getCurrentSeasonId());
+        return tracksRepository.getTracksToBeUpdatedByPriority(Season.getCurrentSeasonId());
     }
 
     public List<Long> getHighestPriorityTracks() {
