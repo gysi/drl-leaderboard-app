@@ -73,7 +73,7 @@ public enum Season {
         }
     },
     SEASON_2024_WINTER("2024-04-WINTER", "Winter Season 2024/25",
-            LocalDateTime.of(2024, 12, 1, 0, 0),
+            LocalDateTime.of(2024, 12, 16, 0, 0),
             LocalDateTime.of(2025, 3, 1, 0, 0)),
     SEASON_2025_SPRING("2025-01-SPRING", "Spring Season 2025",
             LocalDateTime.of(2025, 3, 1, 0, 0),
