@@ -47,12 +47,14 @@ const awards = {
 }
 
 const playerIdToAwardMap = {
+  // Corrupted
+  "547247575740651943": [awards['2024-fall-season-silver']],
   // Tydronious
   "547594057484276339": [awards['2024-fall-season-gold']],
   //gysi 5xx
   "547247576684373546": [awards['2024-summer-season-diamond'], awards['2024-fall-season-diamond']],
   //vgan 250
-  "547247574603995155": [awards['2024-summer-season-diamond']],
+  "547247574603995155": [awards['2024-summer-season-diamond'], awards['2024-fall-season-bronze']],
   //ItsleeFpv 200
   "547247575287661837": [awards['2024-summer-season-gold']],
   // The Bob 200

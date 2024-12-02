@@ -60,7 +60,8 @@
           <li>gysi: $1000</li>
           <li>THE_B0B!!: $363.89</li>
           <li>Tydronious: $100</li>
-
+          <li>Corrupted: $50</li>
+          <li>Vgan: 36.11</li>
         </ul>
       </FAQCard>
       <FAQCard
