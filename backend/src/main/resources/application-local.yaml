@@ -9,7 +9,7 @@ spring:
 app:
   show-sql: false
   drl-api:
-    duration-between-requests: 200ms
+    duration-between-requests: 500ms
   data-updater:
     leaderboards:
       enabled: false
@@ -19,6 +19,9 @@ app:
       cron: "-" # disabled
     tournaments:
       cron: "-" # disabled
+    season:
+      enabled: false
+      cron: "0 0 * * * *"
 
 logging:
   logback:

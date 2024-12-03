@@ -4,6 +4,7 @@ import de.gregord.drlleaderboardbackend.domain.CommunityRankingView;
 import de.gregord.drlleaderboardbackend.domain.TrackCommunitySeasonView;
 import de.gregord.drlleaderboardbackend.entities.CommunitySeason;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
@@ -104,4 +105,23 @@ public interface CommunitySeasonsRepository extends JpaRepository<CommunitySeaso
             WHERE (:onlyEligible = FALSE OR isEligible = TRUE)
             """, nativeQuery = true)
     List<CommunityRankingView> getOverallRankingCurrentSeason(int seasonId, LocalDateTime seasonStartDate, boolean onlyEligible, int limit, int offset);
+
+    @Modifying
+    @Query(value = """
+            INSERT INTO community_seasons (season_id, season_id_name, track_id, custom_track_difficulty, excluded)
+            SELECT :seasonId, :seasonIdName, t.id,
+                   CASE
+                       WHEN t.name LIKE '%-01]%' THEN 0
+                       WHEN t.name LIKE '%-02]%' OR t.name LIKE '%-03]%' OR t.name LIKE '%-04]%' OR t.name LIKE '%-05]%' THEN 1
+                       WHEN t.name LIKE '%-06]%' OR t.name LIKE '%-07]%' OR t.name LIKE '%-08]%' OR t.name LIKE '%-09]%' OR t.name LIKE '%-10]%' THEN 1
+                       WHEN t.name LIKE '%-11]%' OR t.name LIKE '%-12]%' OR t.name LIKE '%-13]%' OR t.name LIKE '%-14]%' OR t.name LIKE '%-15]%' THEN 2
+                       WHEN t.name LIKE '%-16]%' OR t.name LIKE '%-17]%' OR t.name LIKE '%-18]%' OR t.name LIKE '%-19]%' OR t.name LIKE '%-20]%' THEN 3
+                       WHEN t.name LIKE '%-21]%' OR t.name LIKE '%-22]%' OR t.name LIKE '%-23]%' OR t.name LIKE '%-24]%' OR t.name LIKE '%-25]%' THEN 3
+                       END as custom_track_difficulty,
+                   false
+            FROM tracks t
+            WHERE t.name ILIKE :seasonPrefix
+            ON CONFLICT (season_id, track_id) DO NOTHING
+            """, nativeQuery = true)
+    int updateCustomCommunitySeasonTracks(Integer seasonId, String seasonIdName, String seasonPrefix);
 }

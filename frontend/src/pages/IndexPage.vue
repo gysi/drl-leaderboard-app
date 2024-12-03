@@ -83,7 +83,8 @@
         >
           <template v-slot:body="props">
             <q-tr :props="props" style="position:relative;">
-              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+              <q-td v-for="col in props.cols" :key="col.name" :props="props"
+                    style="padding-top: 6px; padding-bottom: 7px">
                   {{ props.row[col.name] }}
               </q-td>
               <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"
@@ -107,7 +108,8 @@
         >
           <template v-slot:body="props">
             <q-tr :props="props" style="position:relative;">
-              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+              <q-td v-for="col in props.cols" :key="col.name" :props="props"
+                    style="padding-top: 6px; padding-bottom: 7px">
                 {{ props.row[col.name] }}
               </q-td>
               <q-btn type="a" :to="{ name: 'playerlb', query: { playerName: props.row.playerName } }"

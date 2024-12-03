@@ -1,5 +1,5 @@
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
-import { zonedTimeToUtc } from 'date-fns-tz';
+import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz';
 
 function backGroundColorByPosition(position){
   if (position > 75) {
@@ -100,6 +100,16 @@ function formatISODateTimeToDate (isoDateTime) {
   return format(date, 'MMM do, yyyy');
 }
 
+const toLocalDateformat = (val) => {
+  if (val) {
+    const date = new Date(val+'Z')
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const zonedDate = utcToZonedTime(date, userTimezone);
+    const pattern = 'yyyy-MM-dd HH:mm:ss'
+    return format(zonedDate, pattern, { timeZone: userTimezone }) + ' ' + userTimezone
+  }
+};
+
 function sortByBeatenBy(a, b, rowa, rowb) {
   // shouldn't happen, but just to make sure its not null
   if (a == null && b == null) {
@@ -139,4 +149,4 @@ function sortByBeatenBy(a, b, rowa, rowb) {
 }
 
 export { backGroundColorByPosition, formatMilliSeconds, getDateDifference, substractAndformatMilliSeconds,
-  getDateDifferenceToNowByGermanTimezone, formatISODateTimeToDate, sortByBeatenBy }
+  getDateDifferenceToNowByGermanTimezone, formatISODateTimeToDate, toLocalDateformat, sortByBeatenBy }

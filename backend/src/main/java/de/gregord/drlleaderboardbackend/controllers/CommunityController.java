@@ -23,7 +23,7 @@ public class CommunityController {
 
     @GetMapping("/tracks")
     public ResponseEntity<Collection<TrackCommunityView>> getTracks(@RequestParam String seasonIdName) {
-        Season bySeasionIdName = Season.getBySeasionIdName(seasonIdName);
+        Season bySeasionIdName = Season.getBySeasonIdName(seasonIdName);
         if (bySeasionIdName == null) {
             return ResponseEntity.notFound().build();
         }

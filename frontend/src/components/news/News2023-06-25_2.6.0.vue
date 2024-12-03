@@ -1,0 +1,25 @@
+<template>
+  <!-- 2.6.0 Release -->
+  <q-card>
+    <q-card-section class="q-py-none q-px-sm row news-content-header">
+      <div class="text-h5 q-py-sm">2.6.0 Release</div><q-space />
+      <div style="padding-top: 5px">{{ getDateDifferenceToNowByGermanTimezone('2023-06-25 01:30') }}</div>
+    </q-card-section>
+    <q-card-section class="q-py-sm q-pl-lg news-content">
+      <div class="text-h6">Features</div>
+      <ul class="q-my-sm" style="font-size: 1rem">
+        <li>Adds a progressbar to the tournament page to show the season progress.
+        </li>
+      </ul>
+      <div class="text-h6">Misc</div>
+      <ul class="q-my-sm" style="font-size: 1rem">
+        <li>Moves tournament point system explanation to the FAQ.
+        </li>
+      </ul>
+    </q-card-section>
+  </q-card>
+</template>
+
+<script setup>
+import {getDateDifferenceToNowByGermanTimezone} from "src/modules/LeaderboardFunctions.js";
+</script>

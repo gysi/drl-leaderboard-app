@@ -64,14 +64,14 @@ app:
     leaderboards:
       enabled: true
     tracks:
-      cron: "0 */30 * * * *" # every 30 minutes
+      cron: "0 */30 * * * *"
     community-tracks:
-      cron: "0 */30 * * * *" # every 30 minutes
+      cron: "0 */30 * * * *"
     tournaments:
-      cron: "0 */1 * * * *" # every Minute (But waits for the previous run to finish)
+      cron: "0 */1 * * * *"
     season:
-      enabled: false
-      cron: "0 0 0 * * *" # every day at midnight
+      enabled: true
+      cron: "0 0 * * * *"
 
 server:
   shutdown: graceful

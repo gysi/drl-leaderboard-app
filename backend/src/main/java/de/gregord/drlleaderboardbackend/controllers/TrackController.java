@@ -45,7 +45,7 @@ public class TrackController {
 
     @GetMapping("/community-season")
     public ResponseEntity<List<TrackCommunitySeasonView>> communitySeasonTracks(@RequestParam String seasionIdName) {
-        Season bySeasionIdName = Season.getBySeasionIdName(seasionIdName);
+        Season bySeasionIdName = Season.getBySeasonIdName(seasionIdName);
         if (bySeasionIdName == null) {
             return ResponseEntity.notFound().build();
         }

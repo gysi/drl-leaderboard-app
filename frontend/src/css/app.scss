@@ -71,6 +71,10 @@ $dark-accent4-color: 217, 205, 205;
   --app-faq-card-content-background-color: #{$dark-primary};
   --app-faq-card-content-text-color: #{$dark-white};
   --app-faq-card-transparent-effect-color: #{$dark-light};
+  --app-faq-card-link-color: #{$dark-accent3};
+  --app-faq-card-link-color-visited: #{$dark-accent3};
+  --app-faq-card-link-color-hover: #{$dark-accent2};
+  --app-faq-card-link-color-active: #{$dark-accent2};
   --app-player-lb-missing-run-background-color: #{$dark-secondary};
 
   --app-slotmachine-main-box-background-color: #{$dark-primary};
@@ -177,6 +181,10 @@ body {
   --app-faq-card-content-background-color: #{$light-light};
   --app-faq-card-content-text-color: #{$light-dark};
   --app-faq-card-transparent-effect-color: #{$light-light};
+  --app-faq-card-link-color: #{$light-secondary};
+  --app-faq-card-link-color-visited: #{$light-secondary};
+  --app-faq-card-link-color-hover: #{$light-primary};
+  --app-faq-card-link-color-active: #{$light-primary};
   --app-player-lb-missing-run-background-color: #{$grey-5};
 
   --app-slotmachine-main-box-background-color: #{$light-primary};

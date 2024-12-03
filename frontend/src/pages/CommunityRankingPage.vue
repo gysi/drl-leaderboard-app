@@ -3,10 +3,11 @@
           style="height: 100%; max-height: 100%; display: grid; grid-template-rows: auto auto auto auto 1fr;">
       <div class="rounded-borders tournament-header-top header-toolbar row items-center q-pa-xs">
         <div class="doc-card-title q-my-xs q-mr-sm ">
-          <span>Rankings - {{ season.name }}</span>
+          <span>{{ seasonDetails.hasQualification ? 'Qualification' : 'Rankings'}} - {{ season.name }}</span>
           <div class="text-caption text-right">
             <q-icon name="event"></q-icon>
-            {{ formatISODateTimeToDate(season.startDate) }} - {{ formatISODateTimeToDate(season.endDate) }} UTC
+            {{ formatISODateTimeToDate(season.startDate) }} -
+            {{ formatISODateTimeToDate(seasonDetails.hasQualification ? seasonDetails.qualificationEndDate : season.endDate) }} UTC
           </div>
         </div>
         <PlayerSearchSelect @onPlayerSelected="onPlayerSelected" label="Jump to player name" class="q-ma-sm"
@@ -61,7 +62,7 @@
           </th>
         </template>
         <template v-slot:header-cell-prize="props">
-          <th :class="props.col.__thclass">
+          <th v-if="showPrizeColumn" :class="props.col.__thclass">
             {{ props.col.label }}
             <q-btn type="a" icon="help" size="1.3rem"
                    fab flat padding="5px"
@@ -121,16 +122,16 @@
                     </q-badge>
                   </q-item-label>
                 </q-item-section>
-                <q-item-section side v-if="props.row.awards">
-                  <img :src="props.row.awards.asset" loading="lazy" alt="Award"
+                <q-item-section side v-for="(award, i) in props.row.awards" :key="i">
+                  <img :src="award.asset" loading="lazy" alt="Award"
                        style="width: 25px; height:42px"/>
                   <q-tooltip>
-                    {{ props.row.awards.tooltip }}
+                    {{ award.tooltip }}
                   </q-tooltip>
                 </q-item-section>
               </q-item>
             </q-td>
-            <q-td :props="props" key="prize">
+            <q-td v-if="showPrizeColumn" :props="props" key="prize">
               {{ props.cols[props.colsMap['prize'].index].value  }}
             </q-td>
             <q-td :props="props" key="totalPoints">
@@ -193,17 +194,32 @@ useMeta({
 
 const $q = useQuasar()
 let darkModeInStorage = $q.localStorage.getItem('darkMode');
-console.log('darkMode', darkModeInStorage);
 const columns = [
   {
     index: 0, name: 'position', label: '#', field: 'position', required: true,
     style: row => {
+      if(seasonDetails.value.hasQualification){
+        if (row.position <= 24) {
+          return {
+            backgroundColor: '#59b43d'
+          }
+        } else if(row.position <= 29) {
+          return {
+            backgroundColor: '#b2b43d'
+          }
+        } else {
+          return {
+            backgroundColor: '#b43d3d'
+          }
+        }
+      }
       return {
         backgroundColor: !row.isEligible ? 'var(--app-player-lb-missing-run-background-color)' :
           backGroundColorByPosition(row.position)
       }
     },
     classes: row => {
+      if (seasonDetails.value.hasQualification) return ''
       if (!row.isEligible) return ''
       return row.position === 1 ? 'first-place' : row.position === 2 ? 'second-place' : row.position === 3 ? 'third-place' : ''
     }
@@ -242,24 +258,31 @@ const loading = ref(true);
 const selectedPlayer = ref(null);
 const overallTable = shallowRef(null);
 const season = shallowRef({});
+const seasonDetails = shallowRef({});
 const showExcludedPlayers = shallowRef(false)
+const showPrizeColumn = ref(false);
 
-const prizes = [
-  "$509",
-  "$363",
-  "$247",
-  "$189",
-  "$145"
-]
+const seasonPromise = fetchCurrentSeason();
+seasonPromise.then((season_) => {
+  seasonDetails.value = season_.details_v1
+  if(seasonDetails.value.hasPrizePool && !seasonDetails.value.hasQualification){
+    showPrizeColumn.value = true
+  }
+  season.value = season_
+})
 
 const fetchData = async function () {
   try {
+    const season = await seasonPromise
+    let qualifyingEnded = false
+    if(season.details_v1?.qualificationEndDate != null){
+      qualifyingEnded = new Date(season.details_v1.qualificationEndDate + 'Z') < new Date()
+    }
     const response = await axios.get(
       `${process.env.DLAPP_PROTOCOL}://${window.location.hostname}${process.env.DLAPP_API_PORT}${process.env.DLAPP_API_PATH}`
-      + `/seasons/ranking-current-season?page=1&limit=500`
+      + (qualifyingEnded ? `/seasons/ranking-previous-seasons?seasonIdName=${season.idName}&page=1&limit=500` : `/seasons/ranking-current-season?page=1&limit=500`)
     );
     rows.value = markRaw(response.data.map((row, i) => {
-      row['prize'] = prizes[i];
       row['encodedPlayerName'] = encodeURIComponent(row['playerName']);
       if (row['profileThumb'].includes('placeholder.png')) {
         row['profileThumb'] = placeholder;
@@ -267,8 +290,18 @@ const fetchData = async function () {
         row['profileThumb'] = buildImgCacheUrl(row['profileThumb']);
       }
       row['awards'] = playerIdToAwardMap[row['playerId']]
+      if(row['isEligible'] === undefined){
+        row['isEligible'] = true
+      }
       return row;
     }));
+    seasonPromise.then((season) => {
+      const seasonDetails = season.details_v1
+      rows.value = markRaw(response.data.map((row, i) => {
+        row['prize'] = seasonDetails?.hasPrizePool ? seasonDetails.prizePool[i] : null
+        return row
+      }))
+    })
   } catch (error) {
     console.error(error);
   } finally {
@@ -294,15 +327,12 @@ const buildImgCacheUrl = function (url) {
 }
 
 const filterMethod = function (rows, terms) {
-  console.log("filterMethod");
-  if (!terms.showExcludedPlayers)
+  if (!terms.showExcludedPlayers) {
     return rows.filter(row => row.isEligible)
+  }
   return rows;
 }
 
-fetchCurrentSeason().then((data) => {
-  season.value = data;
-})
 fetchData();
 
 </script>

@@ -38,8 +38,9 @@ public class TournamentController {
 
     @GetMapping(path = "/rankings-current-season", produces = {"application/json", "application/x-protobuf"})
     public TournamentRankingsOuterClass.TournamentRankings rankingsCurrentSeason() {
+        Season season = Season.getCurrentSeason() == Season.NO_SEASON ? Season.getPreviousSeason() : Season.getCurrentSeason();
         return TournamentRankingsToProto.convertDomainToProto(
-                tournamentService.getTournamentRankingForSeason(Season.getCurrentSeason())
+                tournamentService.getTournamentRankingForSeason(season)
         );
     }
 
