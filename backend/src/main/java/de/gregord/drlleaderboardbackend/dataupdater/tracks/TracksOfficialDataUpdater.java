@@ -118,11 +118,11 @@ public class TracksOfficialDataUpdater extends TracksDataUpdater {
         super.setExcludedMapsByName(excludedMapsByName);
         super.setMapIdToParentCategory(mapIdToParentCategory);
         super.setManualTracksToBeAdded(manualTracksToBeAdded);
-        super.setTracksIdsRemappedToAnotherCategorySupplier(() ->
-                communitySeasonService.findTrackIdsByExcludedIsFalse()
-                        .stream()
-                        .collect(Collectors.toMap(trackId -> trackId, trackId -> MapCategory.MapCommunity))
-        );
+//        super.setTracksIdsRemappedToAnotherCategorySupplier(() ->
+//                communitySeasonService.findTrackIdsByExcludedIsFalse()
+//                        .stream()
+//                        .collect(Collectors.toMap(trackId -> trackId, trackId -> MapCategory.MapCommunity))
+//        );
     }
 
     @Override
