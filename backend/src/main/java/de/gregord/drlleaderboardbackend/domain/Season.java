@@ -58,12 +58,12 @@ public enum Season {
             this.details_v1.numberOfQualifications = 24;
             this.details_v1.qualificationEndDate = LocalDateTime.of(2024, 12, 1, 0, 0);
             this.details_v1.grandFinalStartDate = LocalDateTime.of(2024, 12, 8, 21, 0);
-            this.details_v1.prizePool.add("$620.00");
-            this.details_v1.prizePool.add("$387.50");
-            this.details_v1.prizePool.add("$232.50");
-            this.details_v1.prizePool.add("$155.00");
-            this.details_v1.prizePool.add("$77.50");
-            this.details_v1.prizePool.add("$77.50");
+            this.details_v1.prizePool.add("$640.00");
+            this.details_v1.prizePool.add("$400.50");
+            this.details_v1.prizePool.add("$240.50");
+            this.details_v1.prizePool.add("$160.00");
+            this.details_v1.prizePool.add("$80.00");
+            this.details_v1.prizePool.add("$80.00");
             this.details_v1.format = Details_V1.Format.QUAL_TIME_TRAIL_FINISH_TOURNAMENT;
             this.details_v1.matcherino = new Details_V1.Matcherino();
             this.details_v1.matcherino.eventId = "drl-community-fall-season-2024";
