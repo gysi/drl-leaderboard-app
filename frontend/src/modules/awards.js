@@ -47,6 +47,8 @@ const awards = {
 }
 
 const playerIdToAwardMap = {
+  // phil__ppp
+  "547247574637544341": [awards['2024-fall-season-silver']],
   // Corrupted
   "547247575740651943": [awards['2024-fall-season-silver']],
   // Tydronious

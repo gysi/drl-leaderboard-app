@@ -59,8 +59,8 @@ public enum Season {
             this.details_v1.qualificationEndDate = LocalDateTime.of(2024, 12, 1, 0, 0);
             this.details_v1.grandFinalStartDate = LocalDateTime.of(2024, 12, 8, 21, 0);
             this.details_v1.prizePool.add("$640.00");
-            this.details_v1.prizePool.add("$400.50");
-            this.details_v1.prizePool.add("$240.50");
+            this.details_v1.prizePool.add("$400.00");
+            this.details_v1.prizePool.add("$240.00");
             this.details_v1.prizePool.add("$160.00");
             this.details_v1.prizePool.add("$80.00");
             this.details_v1.prizePool.add("$80.00");
