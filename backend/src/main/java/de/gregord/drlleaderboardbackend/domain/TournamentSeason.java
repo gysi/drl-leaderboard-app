@@ -55,8 +55,8 @@ public class TournamentSeason {
             for (Tournament upcomingTournament : tournaments) {
                 if (upcomingTournament.startTime.toLocalDate().equals(pastTournament.startTime.toLocalDate()) &&
                         (upcomingTournament.startTime.getHour() == pastTournament.startTime.getHour()
-                        || upcomingTournament.startTime.getHour()-1 == pastTournament.startTime.getHour()
-                        || upcomingTournament.startTime.getHour()+1 == pastTournament.startTime.getHour()
+                        || upcomingTournament.startTime.getHour()-2 == pastTournament.startTime.getHour()
+                        || upcomingTournament.startTime.getHour()+2 == pastTournament.startTime.getHour()
                         )
                 ) {
                     upcomingTournament.status = pastTournament.status;
