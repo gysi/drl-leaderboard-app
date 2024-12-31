@@ -54,13 +54,13 @@ public class NextSeasonTracksCreator {
     @CacheEvict(CACHE_COMMUNITY_CURRENT_SEASON_TRACKIDS)
     public void addSeasonTracks() {
         Season currentSeason = Season.getCurrentSeason();
-        if(currentSeason.getDetails_v1().tracksBuiltByCommunity) {
+        if (currentSeason.getDetails_v1() != null && currentSeason.getDetails_v1().tracksBuiltByCommunity) {
             int modifiedRows = communitySeasonsRepository.updateCustomCommunitySeasonTracks(
                     currentSeason.getId(),
                     currentSeason.getSeasonIdName(),
                     currentSeason.getDetails_v1().tracksBuiltByCommunityPrefix
             );
-            if(modifiedRows > 0){
+            if (modifiedRows > 0) {
                 Objects.requireNonNull(this.cacheManager.getCache(CacheConfig.CACHE_TRACKS)).invalidate();
             }
             LOG.info("Number of new custom season tracks added: {}", modifiedRows);
