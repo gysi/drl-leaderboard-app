@@ -2,6 +2,7 @@ package de.gregord.drlleaderboardbackend.domain;
 
 import lombok.Data;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +54,9 @@ public class TournamentSeason {
     public void checkStatusOfTournaments(List<Tournament> pastTournaments) {
         for (Tournament pastTournament : pastTournaments) {
             for (Tournament upcomingTournament : tournaments) {
-                if (upcomingTournament.startTime.toLocalDate().equals(pastTournament.startTime.toLocalDate()) &&
-                        (upcomingTournament.startTime.getHour() == pastTournament.startTime.getHour()
-                        || upcomingTournament.startTime.getHour()-2 == pastTournament.startTime.getHour()
-                        || upcomingTournament.startTime.getHour()+2 == pastTournament.startTime.getHour()
-                        )
-                ) {
+                Duration timeDifference = Duration.between(pastTournament.startTime, upcomingTournament.startTime).abs();
+                // Check if the tournaments are within 2 hours of each other
+                if (timeDifference.toHours() <= 2) {
                     upcomingTournament.status = pastTournament.status;
                 } else if (upcomingTournament.startTime.isBefore(pastTournament.startTime) &&
                         upcomingTournament.status == TournamentStatus.UPCOMING) {
