@@ -48,7 +48,7 @@ public enum Season {
     },
     SEASON_2024_FALL("2024-03-FALL", "Fall Season 2024",
             LocalDateTime.of(2024, 9, 16, 0, 0),
-            LocalDateTime.of(2024, 12, 9, 0, 0)) {
+            LocalDateTime.of(2024, 12, 16, 0, 0)) {
         {
             this.details_v1 = new Details_V1();
             this.details_v1.hasPrizePool = true;
@@ -72,9 +72,9 @@ public enum Season {
 //                    this.details_v1.matcherino.promoBannerImageName = "background-Summer_Series_2024_matcherino_register";
         }
     },
-    SEASON_2024_WINTER("2024-04-WINTER", "Winter Season 2024/25",
-            LocalDateTime.of(2024, 12, 16, 0, 0),
-            LocalDateTime.of(2025, 3, 1, 0, 0)),
+//    SEASON_2024_WINTER("2024-04-WINTER", "Winter Season 2024/25",
+//            LocalDateTime.of(2024, 12, 20, 0, 0),
+//            LocalDateTime.of(2025, 3, 1, 0, 0)),
     SEASON_2025_SPRING("2025-01-SPRING", "Spring Season 2025",
             LocalDateTime.of(2025, 3, 1, 0, 0),
             LocalDateTime.of(2025, 6, 1, 0, 0)),
@@ -247,7 +247,7 @@ public enum Season {
         return seasonEndDate;
     }
 
-    public Details_V1 getDetails_v1() {
+    public @Nullable Details_V1 getDetails_v1() {
         return this.details_v1;
     }
 
