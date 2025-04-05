@@ -172,7 +172,7 @@ public interface TracksRepository extends JpaRepository<Track, Long> {
                                   INNER JOIN tracks t ON cs.track_id = t.id
                          WHERE cs.season_id = :seasonId and cs.excluded = FALSE
                      ) AS filtered_tracks
-                         LEFT JOIN (
+                LEFT JOIN (
                     SELECT l.track_id, MAX(l.updated_at) AS max_updated_at
                     FROM leaderboards l
                     GROUP BY l.track_id

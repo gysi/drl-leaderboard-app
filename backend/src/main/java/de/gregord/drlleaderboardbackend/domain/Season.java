@@ -259,6 +259,10 @@ public enum Season {
         return getCurrentSeason().getSeasonIdName();
     }
 
+    public boolean isNoSeason() {
+        return this == NO_SEASON;
+    }
+
     public static @NotNull Season getCurrentSeason() {
         Season currentSeason = SEASON_MAPPING_BY_DATE.floorEntry(LocalDateTime.now()).getValue();
         if (currentSeason.getSeasonEndDate().isBefore(LocalDateTime.now())) {

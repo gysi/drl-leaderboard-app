@@ -54,6 +54,10 @@ public class NextSeasonTracksCreator {
     @CacheEvict(CACHE_COMMUNITY_CURRENT_SEASON_TRACKIDS)
     public void addSeasonTracks() {
         Season currentSeason = Season.getCurrentSeason();
+        if(currentSeason.isNoSeason()){
+            LOG.info("No season is set, so we can't pick any track!");
+            return;
+        }
         if (currentSeason.getDetails_v1() != null && currentSeason.getDetails_v1().tracksBuiltByCommunity) {
             int modifiedRows = communitySeasonsRepository.updateCustomCommunitySeasonTracks(
                     currentSeason.getId(),
